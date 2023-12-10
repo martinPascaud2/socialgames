@@ -7,5 +7,5 @@ export async function jwtVerify(token) {
     token.value,
     secret
   );
-  return { userStatus: payload.sub, protectedHeader };
+  return { userStatus: payload.sub, userMail: payload.mail, protectedHeader };
 }

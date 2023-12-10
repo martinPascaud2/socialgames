@@ -17,6 +17,7 @@ export async function connect(prevState, formData) {
 
     const jwt = await new jose.SignJWT({
       [process.env.NEXT_PUBLIC_APP_URL]: true,
+      mail,
     })
       .setProtectedHeader({ alg })
       .setSubject(status)
@@ -72,7 +73,7 @@ export async function connect(prevState, formData) {
   console.log("isValidPassword", isValidPassword);
 
   if (isValidPassword) {
-    setCookieToken("User");
+    setCookieToken("User", mail);
     redirect(`/categories`);
   } else {
     return {
