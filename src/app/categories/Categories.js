@@ -5,16 +5,7 @@ import Link from "next/link";
 
 import classNames from "classnames";
 
-const categories = [
-  { name: "Catégorie 1", href: "/" },
-  { name: "Catégorie 2", href: "/" },
-  { name: "Catégorie 3", href: "/" },
-  { name: "Catégorie 4", href: "/" },
-  { name: "Catégorie 5", href: "/" },
-  { name: "Catégorie 6", href: "/" },
-  { name: "Catégorie 7", href: "/" },
-  { name: "Catégorie 8", href: "/" },
-];
+import { categories } from "@/assets/globals";
 
 export default function Categories({ signOut }) {
   const [togglingParameters, setTogglingParameters] = useState(false);

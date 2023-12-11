@@ -10,8 +10,6 @@ export async function middleware(request) {
 
   const token = request.cookies.get("SG_token");
 
-  console.log("request", request);
-
   if (
     !token &&
     request.nextUrl.pathname !== "/" &&
