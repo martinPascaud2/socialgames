@@ -70,8 +70,6 @@ export async function connect(prevState, formData) {
     };
   }
 
-  console.log("isValidPassword", isValidPassword);
-
   if (isValidPassword) {
     setCookieToken("User", mail);
     redirect(`/categories`);

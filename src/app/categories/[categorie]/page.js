@@ -93,7 +93,7 @@ export default function OneCategoriePage({ params }) {
                   onTouchMove={onTouchMove}
                   onTouchEnd={onTouchEnd}
                   onClick={() =>
-                    router.push(`/categories/${categorie}/${game.name}`)
+                    router.push(`/categories/${categorie}/${game.path}`)
                   }
                   priority
                 />

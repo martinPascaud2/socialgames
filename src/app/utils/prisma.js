@@ -1,5 +1,9 @@
 const { PrismaClient } = require("@prisma/client");
 
-const prisma = new PrismaClient();
+const prismaClientSingleton = () => {
+  return new PrismaClient();
+};
 
-export default prisma;
+global.prisma = global.prisma ?? prismaClientSingleton();
+
+export default global.prisma;

@@ -1,5 +1,7 @@
 "use server";
 
+import { redirect } from "next/navigation";
+
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
@@ -48,6 +50,8 @@ export async function createAccount(prevState, formData) {
       srMessage: "Erreur durant la création du compte ; veuillez réessayer",
     };
   }
+
+  redirect("/");
 
   return {
     status: 200,
