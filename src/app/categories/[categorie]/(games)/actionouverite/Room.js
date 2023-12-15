@@ -7,7 +7,7 @@ var pusher = new Pusher("61853af9f30abf9d5b3d", {
   cluster: "eu",
 });
 
-import { serverCreate, serverJoin, getId } from "./actions";
+import { serverCreate, serverJoin, joinAgain, getId } from "./actions";
 
 const genRoomToken = () => {
   let roomId = "";
@@ -66,7 +66,7 @@ export default function Room({ user, gameName, Game, launchGame }) {
   const joinRoom = async () => {
     const token = inputValue;
     try {
-      const gamers = await serverJoin(token, user);
+      const { gamers, alreadyStarted } = await serverJoin(token, user);
 
       const channel = pusher.subscribe(`room-${token}`);
       channel.bind("room-event", function (data) {
@@ -78,6 +78,7 @@ export default function Room({ user, gameName, Game, launchGame }) {
       setRoomToken(token);
       setGamerList(gamers);
       setIsChosen(true);
+      alreadyStarted && (await joinAgain(token));
     } catch (error) {
       setServerMessage(error.message);
     }

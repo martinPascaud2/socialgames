@@ -44,7 +44,8 @@ export async function serverJoin(token, user) {
   });
 
   if (!room) throw new Error("Token incorrect");
-  if (room.started) throw new Error("La partie a déjà été lancée");
+  if (room.started && !room.gamerList.some((gamer) => gamer.name === user.name))
+    throw new Error("La partie a déjà été lancée");
 
   const { id: roomId } = room;
   const newGamerList = [...room.gamerList, user];
@@ -69,7 +70,23 @@ export async function serverJoin(token, user) {
     clientGamerList,
   });
 
-  return clientGamerList;
+  return { gamers: clientGamerList, alreadyStarted: room.started };
+}
+
+export async function joinAgain(token) {
+  const { started, gameData } = await prisma.room.findFirst({
+    where: {
+      token,
+    },
+    select: {
+      started: true,
+      gameData: true,
+    },
+  });
+  await pusher.trigger(`room-${token}`, "room-event", {
+    started,
+    gameData,
+  });
 }
 
 export async function getId(token) {
