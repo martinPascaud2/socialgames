@@ -7,7 +7,7 @@ var pusher = new Pusher("61853af9f30abf9d5b3d", {
   cluster: "eu",
 });
 
-import { serverCreate, serverJoin, launch } from "./actions";
+import { serverCreate, serverJoin, getId } from "./actions";
 
 const genRoomToken = () => {
   let roomId = "";
@@ -20,10 +20,11 @@ const genRoomToken = () => {
   return roomId;
 };
 
-export default function Game({ user, game }) {
+export default function Room({ user, gameName, Game, launchGame }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [roomToken, setRoomToken] = useState("");
   const [gamerList, setGamerList] = useState([]);
+  const [options, setOptions] = useState({});
 
   const [isChosen, setIsChosen] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
@@ -31,7 +32,16 @@ export default function Game({ user, game }) {
   const [inputValue, setInputValue] = useState("");
   const [serverMessage, setServerMessage] = useState("");
 
+  const [roomId, setRoomId] = useState(0);
+  const [gameData, setGameData] = useState({});
+
   useEffect(() => {
+    async function getRoomId() {
+      const id = await getId(roomToken);
+      setRoomId(id);
+    }
+    getRoomId();
+
     return () => {
       pusher.unsubscribe(`room-${roomToken}`);
     };
@@ -39,11 +49,12 @@ export default function Game({ user, game }) {
 
   const createRoom = async () => {
     const newRoomToken = genRoomToken();
-    const gamers = await serverCreate(newRoomToken, user, game);
+    const gamers = await serverCreate(newRoomToken, user, gameName);
 
     const channel = pusher.subscribe(`room-${newRoomToken}`);
     channel.bind("room-event", function (data) {
       data.clientGamerList && setGamerList(data.clientGamerList);
+      data.gameData && setGameData(data.gameData);
     });
 
     setIsAdmin(true);
@@ -61,6 +72,7 @@ export default function Game({ user, game }) {
       channel.bind("room-event", function (data) {
         data.clientGamerList && setGamerList(data.clientGamerList);
         data.started && setIsStarted(true);
+        data.gameData && setGameData(data.gameData);
       });
 
       setRoomToken(token);
@@ -72,14 +84,13 @@ export default function Game({ user, game }) {
   };
 
   const launchRoom = async () => {
-    await launch(roomToken);
+    await launchGame(roomId, roomToken, gamerList, options);
     setIsStarted(true);
   };
 
   if (!isStarted) {
     return (
       <>
-        <div>jeu action ou vérité</div>
         {!isChosen ? (
           <>
             <button onClick={createRoom}>Créer une nouvelle partie</button>
@@ -97,7 +108,7 @@ export default function Game({ user, game }) {
         ) : (
           <>
             <div>
-              liste des joueurs{" "}
+              liste des joueurs
               {gamerList.map((gamer) => (
                 <div key={gamer}>{gamer}</div>
               ))}
@@ -109,6 +120,13 @@ export default function Game({ user, game }) {
       </>
     );
   } else {
-    return <div>jeu lancé</div>;
+    return (
+      <Game
+        roomId={roomId}
+        roomToken={roomToken}
+        userName={user.name}
+        gameData={gameData}
+      />
+    );
   }
 }

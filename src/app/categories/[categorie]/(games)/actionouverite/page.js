@@ -1,8 +1,17 @@
 import getUser from "@/utils/getUser";
-import Game from "./Game";
+import Room from "./Room";
+import Actionouverite from "./Actionouverite";
+import { launchGame } from "./gameActions";
 
 export default async function ActionOuVerite() {
   const user = await getUser();
 
-  return <Game user={user} game="actionouverite" />;
+  return (
+    <Room
+      user={user}
+      gameName="actionouverite"
+      Game={Actionouverite}
+      launchGame={launchGame}
+    />
+  );
 }

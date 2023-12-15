@@ -72,31 +72,14 @@ export async function serverJoin(token, user) {
   return clientGamerList;
 }
 
-export async function launch(token) {
+export async function getId(token) {
   const room = await prisma.room.findFirst({
     where: {
       token,
     },
-  });
-
-  const { id } = room;
-
-  const updatedRoom = await prisma.room.update({
-    where: {
-      id,
-    },
-    data: {
-      started: true,
-    },
-    include: {
-      gamerList: true,
+    select: {
+      id: true,
     },
   });
-
-  const clientGamerList = updatedRoom.gamerList.map((user) => user.name);
-
-  await pusher.trigger(`room-${token}`, "room-event", {
-    clientGamerList,
-    started: updatedRoom.started,
-  });
+  return room?.id;
 }
