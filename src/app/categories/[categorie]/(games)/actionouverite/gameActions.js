@@ -27,6 +27,7 @@ export async function launchGame(roomId, roomToken, gamers, options) {
     gameData: {
       activePlayer: gamers[0],
       gamers,
+      card: 0,
     },
   });
 }
@@ -40,13 +41,14 @@ const getNextGamer = (gamerList, gamer) => {
 
 export async function triggerGameEvent(roomId, roomToken, gameData) {
   const newActivePlayer = getNextGamer(gameData.gamers, gameData.activePlayer);
+  const newCard = gameData.card + 1;
   const newData = (
     await prisma.room.update({
       where: {
         id: roomId,
       },
       data: {
-        gameData: { ...gameData, activePlayer: newActivePlayer },
+        gameData: { ...gameData, activePlayer: newActivePlayer, card: newCard },
       },
     })
   ).gameData;

@@ -64,7 +64,7 @@ export default function Room({ user, gameName, Game, launchGame }) {
   };
 
   const joinRoom = async () => {
-    const token = inputValue;
+    const token = inputValue.toUpperCase();
     try {
       const { gamers, alreadyStarted } = await serverJoin(token, user);
 
