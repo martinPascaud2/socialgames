@@ -1,20 +1,14 @@
 "use server";
 
-import Pusher from "pusher";
-
 import prisma from "@/utils/prisma";
+import pusher from "@/utils/pusher";
 import getDistance from "@/utils/getDistance";
 
-const pusher = new Pusher({
-  appId: process.env.PUSHER_APP_ID,
-  key: process.env.PUSHER_KEY,
-  secret: process.env.PUSHER_SECRET,
-  cluster: process.env.PUSHER_CLUSTER,
-  useTLS: true,
-});
-
 export async function serverCreate(token, user, game, geoLocation) {
-  if (!geoLocation) throw new Error("Veuillez activer votre géolocalisation");
+  if (!geoLocation)
+    throw new Error(
+      "Veuillez activer votre géolocalisation ; détection en cours..."
+    );
 
   const userList = [user];
 
@@ -38,7 +32,10 @@ export async function serverCreate(token, user, game, geoLocation) {
 }
 
 export async function serverJoin(token, user, geoLocation) {
-  if (!geoLocation) throw new Error("Veuillez activer votre géolocalisation");
+  if (!geoLocation)
+    throw new Error(
+      "Veuillez activer votre géolocalisation ; détection en cours..."
+    );
 
   const room = await prisma.room.findFirst({
     where: {
