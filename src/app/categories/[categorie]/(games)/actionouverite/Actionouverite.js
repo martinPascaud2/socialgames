@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-
 import classNames from "classnames";
 
 import { triggerGameEvent } from "./gameActions";

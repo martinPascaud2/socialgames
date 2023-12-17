@@ -3,6 +3,7 @@
 import Pusher from "pusher";
 
 import prisma from "@/utils/prisma";
+import getDistance from "@/utils/getDistance";
 
 const pusher = new Pusher({
   appId: process.env.PUSHER_APP_ID,
@@ -12,7 +13,9 @@ const pusher = new Pusher({
   useTLS: true,
 });
 
-export async function serverCreate(token, user, game) {
+export async function serverCreate(token, user, game, geoLocation) {
+  if (!geoLocation) throw new Error("Veuillez activer votre géolocalisation");
+
   const userList = [user];
 
   const newRoom = await prisma.room.create({
@@ -20,6 +23,7 @@ export async function serverCreate(token, user, game) {
       game,
       token,
       admin: user.name,
+      adminLocation: geoLocation,
       gamerList: {
         connect: userList.map((u) => ({ id: u.id })),
       },
@@ -33,7 +37,9 @@ export async function serverCreate(token, user, game) {
   return gamerList;
 }
 
-export async function serverJoin(token, user) {
+export async function serverJoin(token, user, geoLocation) {
+  if (!geoLocation) throw new Error("Veuillez activer votre géolocalisation");
+
   const room = await prisma.room.findFirst({
     where: {
       token,
@@ -47,7 +53,12 @@ export async function serverJoin(token, user) {
   if (room.started && !room.gamerList.some((gamer) => gamer.name === user.name))
     throw new Error("La partie a déjà été lancée");
 
-  const { id: roomId } = room;
+  const { adminLocation, id: roomId } = room;
+
+  const distance = getDistance({ adminLocation, incomerLocation: geoLocation });
+  if (distance > 20)
+    throw new Error("Veuillez vous approcher de la zone de jeu");
+
   const newGamerList = [...room.gamerList, user];
 
   const updatedRoom = await prisma.room.update({

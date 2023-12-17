@@ -28,9 +28,10 @@ export default function Room({ user, gameName, Game, launchGame }) {
 
   const [isChosen, setIsChosen] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
+  const [serverMessage, setServerMessage] = useState("");
 
   const [inputValue, setInputValue] = useState("");
-  const [serverMessage, setServerMessage] = useState("");
+  const [geoLocation, setGeoLocation] = useState(null);
 
   const [roomId, setRoomId] = useState(0);
   const [gameData, setGameData] = useState({});
@@ -47,26 +48,49 @@ export default function Room({ user, gameName, Game, launchGame }) {
     };
   }, [roomToken]);
 
+  useEffect(() => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(({ coords }) => {
+        const { latitude, longitude } = coords;
+        setGeoLocation({ latitude, longitude });
+      });
+    }
+  }, []);
+
   const createRoom = async () => {
     const newRoomToken = genRoomToken();
-    const gamers = await serverCreate(newRoomToken, user, gameName);
 
-    const channel = pusher.subscribe(`room-${newRoomToken}`);
-    channel.bind("room-event", function (data) {
-      data.clientGamerList && setGamerList(data.clientGamerList);
-      data.gameData && setGameData(data.gameData);
-    });
+    try {
+      const gamers = await serverCreate(
+        newRoomToken,
+        user,
+        gameName,
+        geoLocation
+      );
 
-    setIsAdmin(true);
-    setRoomToken(newRoomToken);
-    setGamerList(gamers);
-    setIsChosen(true);
+      const channel = pusher.subscribe(`room-${newRoomToken}`);
+      channel.bind("room-event", function (data) {
+        data.clientGamerList && setGamerList(data.clientGamerList);
+        data.gameData && setGameData(data.gameData);
+      });
+
+      setIsAdmin(true);
+      setRoomToken(newRoomToken);
+      setGamerList(gamers);
+      setIsChosen(true);
+    } catch (error) {
+      setServerMessage(error.message);
+    }
   };
 
   const joinRoom = async () => {
     const token = inputValue.toUpperCase();
     try {
-      const { gamers, alreadyStarted } = await serverJoin(token, user);
+      const { gamers, alreadyStarted } = await serverJoin(
+        token,
+        user,
+        geoLocation
+      );
 
       const channel = pusher.subscribe(`room-${token}`);
       channel.bind("room-event", function (data) {
