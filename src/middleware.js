@@ -13,7 +13,8 @@ export async function middleware(request) {
   if (
     !token &&
     request.nextUrl.pathname !== "/" &&
-    request.nextUrl.pathname !== "/signin"
+    request.nextUrl.pathname !== "/signin" &&
+    request.nextUrl.pathname !== "/admin"
   ) {
     return NextResponse.redirect(new URL("/", request.url));
   }
@@ -27,8 +28,22 @@ export async function middleware(request) {
 
   const { userStatus } = await jwtVerify(token);
 
-  if (userStatus !== "Admin" && request.nextUrl.pathname.startsWith("/admin")) {
+  if (
+    userStatus !== "Admin" &&
+    request.nextUrl.pathname.startsWith("/admin/app-edition")
+  ) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  }
+
+  if (userStatus === "User" && request.nextUrl.pathname.startsWith("/admin")) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  }
+
+  if (
+    userStatus === "Admin" &&
+    !request.nextUrl.pathname.startsWith("/admin/app-edition")
+  ) {
+    return NextResponse.redirect(new URL("/admin/app-edition", request.url));
   }
 
   return NextResponse.next();

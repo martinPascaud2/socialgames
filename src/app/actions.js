@@ -31,14 +31,6 @@ export async function connect(prevState, formData) {
     });
   };
 
-  if (
-    mail === process.env.ADMIN_MAIL &&
-    password === process.env.ADMIN_PASSWORD
-  ) {
-    setCookieToken("Admin");
-    redirect(`/categories`);
-  }
-
   let hashedPassword;
   try {
     hashedPassword = (
