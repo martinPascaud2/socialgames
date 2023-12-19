@@ -1,7 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import Pusher from "pusher-js";
+import QRCode from "react-qr-code";
 
 var pusher = new Pusher("61853af9f30abf9d5b3d", {
   cluster: "eu",
@@ -20,7 +22,7 @@ const genRoomToken = () => {
   return roomId;
 };
 
-export default function Room({ user, gameName, Game, launchGame }) {
+export default function Room({ user, categorie, gameName, Game, launchGame }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [roomToken, setRoomToken] = useState("");
   const [gamerList, setGamerList] = useState([]);
@@ -35,6 +37,9 @@ export default function Room({ user, gameName, Game, launchGame }) {
 
   const [roomId, setRoomId] = useState(0);
   const [gameData, setGameData] = useState({});
+
+  const searchParams = useSearchParams();
+  const searchToken = searchParams.get("token");
 
   useEffect(() => {
     async function getRoomId() {
@@ -83,7 +88,7 @@ export default function Room({ user, gameName, Game, launchGame }) {
     }
   };
 
-  const joinRoom = async () => {
+  const joinRoom = useCallback(async () => {
     const token = inputValue.toUpperCase();
     try {
       const { gamers, alreadyStarted } = await serverJoin(
@@ -106,7 +111,16 @@ export default function Room({ user, gameName, Game, launchGame }) {
     } catch (error) {
       setServerMessage(error.message);
     }
-  };
+  }, [geoLocation, inputValue, user]);
+
+  useEffect(() => {
+    if (searchToken) {
+      console.log("yen a un");
+
+      setInputValue(searchToken);
+      joinRoom();
+    }
+  }, [searchToken, joinRoom]);
 
   const launchRoom = async () => {
     await launchGame(roomId, roomToken, gamerList, options);
@@ -139,7 +153,15 @@ export default function Room({ user, gameName, Game, launchGame }) {
               ))}
             </div>
             <div>token : {roomToken}</div>
-            {isAdmin && <button onClick={launchRoom}>Lancer la partie</button>}
+            {isAdmin && (
+              <>
+                <button onClick={launchRoom}>Lancer la partie</button>
+                <div>qrcode</div>
+                <QRCode
+                  value={`${process.env.NEXT_PUBLIC_APP_URL}/categories/${categorie}/${gameName}?token=${roomToken}`}
+                />
+              </>
+            )}
           </>
         )}
       </>
