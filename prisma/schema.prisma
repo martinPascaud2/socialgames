@@ -30,3 +30,12 @@ model Room {
   started       Boolean @default(false)
   gameData      Json?
 }
+
+model Actionouverite {
+  id         Int     @id @default(autoincrement())
+  title      String
+  type       String
+  text       String
+  difficulty Int
+  adult      Boolean @default(false)
+}
