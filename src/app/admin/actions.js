@@ -2,10 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-// const bcrypt = require("bcrypt");
 import * as jose from "jose";
-
-// import prisma from "@/utils/prisma";
 
 export async function adminConnect(prevState, formData) {
   const mail = formData.get("mail");

@@ -16,17 +16,17 @@ export async function launchGame(roomId, roomToken, gamers, options) {
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
     gameData: {
-      activePlayer: gamers[0],
+      activePlayer: gamers[0].id,
       gamers,
       card: 0,
     },
   });
 }
 
-const getNextGamer = (gamerList, gamer) => {
-  const index = gamerList.indexOf(gamer);
+const getNextGamer = (gamerList, gamerId) => {
+  const index = gamerList.findIndex((gamer) => gamer.id === gamerId);
   const nextIndex = (index + 1) % gamerList.length;
-  const nextGamer = gamerList[nextIndex];
+  const nextGamer = gamerList[nextIndex].id;
   return nextGamer;
 };
 
@@ -35,6 +35,7 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
   let veriteRemain;
 
   if (!gameData.remain) {
+    //enlever les cartes already
     actionRemain = (
       await prisma.actionouverite.findMany({
         where: {
@@ -60,6 +61,7 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
     veriteRemain = gameData.remain.veriteRemain;
   }
 
+  //à la place : rebattre les cartes
   const newActivePlayer =
     actionRemain.length && veriteRemain.length
       ? getNextGamer(gameData.gamers, gameData.activePlayer)

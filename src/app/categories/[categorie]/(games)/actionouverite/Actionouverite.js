@@ -5,12 +5,7 @@ import classNames from "classnames";
 
 import { triggerGameEvent } from "./gameActions";
 
-export default function Actionouverite({
-  roomId,
-  roomToken,
-  userName,
-  gameData,
-}) {
+export default function Actionouverite({ roomId, roomToken, user, gameData }) {
   const [isFirstRender, setIsFirstRender] = useState(true);
 
   const [newCard, setNewCard] = useState(null);
@@ -19,9 +14,10 @@ export default function Actionouverite({
   const [triggerReveal, setTriggerReveal] = useState(false);
   const [triggerTranslateOld, setTriggerTranslateOld] = useState(false);
 
-  const isActive = gameData.activePlayer === userName;
+  const isActive = gameData.activePlayer === user.id;
 
   console.log("gameData", gameData);
+  console.log("user client", user);
 
   useEffect(() => {
     if (!isFirstRender) {

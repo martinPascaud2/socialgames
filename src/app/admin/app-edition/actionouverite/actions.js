@@ -8,18 +8,6 @@ export async function addCard(prevState, formData) {
   const type = formData.get("type");
   const difficulty = parseInt(formData.get("difficulty"));
   const adult = !!formData.get("adult");
-  console.log(
-    "title",
-    title,
-    "text",
-    text,
-    "type",
-    type,
-    "difficulty",
-    difficulty,
-    "adult",
-    adult
-  );
 
   try {
     await prisma.actionouverite.create({
@@ -43,12 +31,3 @@ export async function addCard(prevState, formData) {
     };
   }
 }
-
-// model Actionouverite {
-//     id         Int     @id @default(autoincrement())
-//     title      String
-//     type       String
-//     text       String
-//     difficulty Int
-//     adult      Boolean @default(false)
-//   }

@@ -9,7 +9,7 @@ var pusher = new Pusher("61853af9f30abf9d5b3d", {
   cluster: "eu",
 });
 
-import { serverCreate, serverJoin, joinAgain, getId } from "./actions";
+import { serverCreate, serverJoin, joinAgain, getRoomId } from "./actions";
 
 const genRoomToken = () => {
   let roomId = "";
@@ -42,11 +42,11 @@ export default function Room({ user, categorie, gameName, Game, launchGame }) {
   const searchToken = searchParams.get("token");
 
   useEffect(() => {
-    async function getRoomId() {
-      const id = await getId(roomToken);
+    async function getId() {
+      const id = await getRoomId(roomToken);
       setRoomId(id);
     }
-    getRoomId();
+    getId();
 
     return () => {
       pusher.unsubscribe(`room-${roomToken}`);
@@ -115,8 +115,6 @@ export default function Room({ user, categorie, gameName, Game, launchGame }) {
 
   useEffect(() => {
     if (searchToken) {
-      console.log("yen a un");
-
       setInputValue(searchToken);
       joinRoom();
     }
@@ -149,7 +147,7 @@ export default function Room({ user, categorie, gameName, Game, launchGame }) {
             <div>
               liste des joueurs
               {gamerList.map((gamer) => (
-                <div key={gamer}>{gamer}</div>
+                <div key={gamer.name}>{gamer.name}</div>
               ))}
             </div>
             <div>token : {roomToken}</div>
@@ -171,7 +169,7 @@ export default function Room({ user, categorie, gameName, Game, launchGame }) {
       <Game
         roomId={roomId}
         roomToken={roomToken}
-        userName={user.name}
+        user={user}
         gameData={gameData}
       />
     );
