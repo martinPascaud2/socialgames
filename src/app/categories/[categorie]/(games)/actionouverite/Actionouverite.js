@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import classNames from "classnames";
 
 import { triggerGameEvent } from "./gameActions";
@@ -17,7 +17,7 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
   const isActive = gameData.activePlayer === user.id;
 
   console.log("gameData", gameData);
-  console.log("user client", user);
+  // console.log("user client", user);
 
   useEffect(() => {
     if (!isFirstRender) {
@@ -39,16 +39,13 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
     }
   }, [gameData.card]);
 
-  const takeAction = async () => {
+  const takeAction = useCallback(async () => {
     await triggerGameEvent(roomId, roomToken, gameData, "action");
-  };
-  const takeVerite = async () => {
-    await triggerGameEvent(roomId, roomToken, gameData, "verite");
-  };
+  }, [gameData, roomId, roomToken]);
 
-  if (gameData.activePlayer === null) {
-    return <div>Fin du jeu !</div>;
-  }
+  const takeVerite = useCallback(async () => {
+    await triggerGameEvent(roomId, roomToken, gameData, "verite");
+  }, [gameData, roomId, roomToken]);
 
   return (
     <>

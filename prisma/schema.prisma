@@ -18,6 +18,7 @@ model User {
   creationDate DateTime @db.Date
   room         Room?    @relation(fields: [roomId], references: [id])
   roomId       Int?
+  already      Json?
 }
 
 model Room {

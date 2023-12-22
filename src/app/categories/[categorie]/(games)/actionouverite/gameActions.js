@@ -35,7 +35,6 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
   let veriteRemain;
 
   if (!gameData.remain) {
-    //enlever les cartes already
     actionRemain = (
       await prisma.actionouverite.findMany({
         where: {
@@ -56,16 +55,41 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
         },
       })
     ).map((card) => card.id);
+
+    const allAlreadyUnflat = [];
+    await Promise.all(
+      gameData.gamers.map(async (gamer) => {
+        const gamerAlready =
+          (
+            await prisma.user.findFirst({
+              where: {
+                id: gamer.id,
+              },
+              select: {
+                already: true,
+              },
+            })
+          )?.already?.actionouverite || [];
+        allAlreadyUnflat.push(gamerAlready);
+      })
+    );
+    const allAlreadyFlat = allAlreadyUnflat.flat();
+
+    const actionRemainSET = new Set(actionRemain);
+    const veriteRemainSET = new Set(veriteRemain);
+    allAlreadyFlat.map((already) => {
+      actionRemainSET.delete(already);
+      veriteRemainSET.delete(already);
+    });
+
+    actionRemain = [...actionRemainSET];
+    veriteRemain = [...veriteRemainSET];
   } else {
     actionRemain = gameData.remain.actionRemain;
     veriteRemain = gameData.remain.veriteRemain;
   }
 
-  //à la place : rebattre les cartes
-  const newActivePlayer =
-    actionRemain.length && veriteRemain.length
-      ? getNextGamer(gameData.gamers, gameData.activePlayer)
-      : null;
+  const newActivePlayer = getNextGamer(gameData.gamers, gameData.activePlayer);
 
   const choicedList = choice === "action" ? actionRemain : veriteRemain;
   const randomIndex =
@@ -76,10 +100,146 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
     },
   });
 
+  await Promise.all(
+    gameData.gamers.map(async (gamer) => {
+      const oldAllAlready =
+        (
+          await prisma.user.findFirst({
+            where: {
+              id: gamer.id,
+            },
+            select: {
+              already: true,
+            },
+          })
+        )?.already || {};
+
+      const oldAlready = oldAllAlready?.actionouverite || [];
+      const newAlready = [...oldAlready, randomCard.id]; //ici
+      const newAllAlready = { ...oldAllAlready, actionouverite: newAlready };
+      await prisma.user.update({
+        where: {
+          id: gamer.id,
+        },
+        data: {
+          already: newAllAlready,
+        },
+      });
+    })
+  );
+
   if (choice === "action") {
     actionRemain = actionRemain.filter((action) => action !== randomCard.id);
   } else {
     veriteRemain = veriteRemain.filter((verite) => verite !== randomCard.id);
+  }
+
+  if (!actionRemain.length) {
+    await Promise.all(
+      gameData.gamers.map(async (gamer) => {
+        const gamerAlready =
+          (
+            await prisma.user.findFirst({
+              where: {
+                id: gamer.id,
+              },
+              select: {
+                already: true,
+              },
+            })
+          )?.already || [];
+        const actionouveriteAlready = gamerAlready?.actionouverite || []; //ici
+
+        const allActions = (
+          await prisma.actionouverite.findMany({
+            where: {
+              type: "action",
+            },
+            select: {
+              id: true,
+            },
+          })
+        ).map((card) => card.id);
+
+        const actionouveriteAlreadySET = new Set(actionouveriteAlready);
+        allActions.map((action) => actionouveriteAlreadySET.delete(action));
+        const newAlready = [...actionouveriteAlreadySET];
+
+        await prisma.user.update({
+          where: {
+            id: gamer.id,
+          },
+          data: {
+            already: newAlready,
+          },
+        });
+      })
+    );
+
+    actionRemain = (
+      await prisma.actionouverite.findMany({
+        where: {
+          type: "action",
+        },
+        select: {
+          id: true,
+        },
+      })
+    ).map((card) => card.id);
+  }
+
+  if (!veriteRemain.length) {
+    await Promise.all(
+      gameData.gamers.map(async (gamer) => {
+        const gamerAlready =
+          (
+            await prisma.user.findFirst({
+              where: {
+                id: gamer.id,
+              },
+              select: {
+                already: true,
+              },
+            })
+          )?.already || [];
+        const actionouveriteAlready = gamerAlready?.actionouverite || []; //ici
+
+        const allVerites = (
+          await prisma.actionouverite.findMany({
+            where: {
+              type: "vérité",
+            },
+            select: {
+              id: true,
+            },
+          })
+        ).map((card) => card.id);
+
+        const actionouveriteAlreadySET = new Set(actionouveriteAlready);
+        allVerites.map((verite) => actionouveriteAlreadySET.delete(verite));
+        const newAlready = [...actionouveriteAlreadySET];
+
+        await prisma.user.update({
+          where: {
+            id: gamer.id,
+          },
+          data: {
+            already: newAlready,
+          },
+        });
+      })
+    );
+
+    veriteRemain = (
+      await prisma.actionouverite.findMany({
+        where: {
+          type: "vérité",
+        },
+        select: {
+          id: true,
+        },
+      })
+    ).map((card) => card.id);
   }
 
   const newData = (
