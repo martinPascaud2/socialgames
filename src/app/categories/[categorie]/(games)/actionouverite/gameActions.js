@@ -36,7 +36,10 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
   let actionSecond = gameData?.secondRemain?.action || [];
   let veriteSecond = gameData?.secondRemain?.verite || [];
 
-  console.log("gameData", gameData);
+  // console.log("gameData.remain.actionRemain", gameData.remain.actionRemain);
+  // console.log("gameData.remain.veriteRemain", gameData.remain.veriteRemain);
+  // console.log("gameData.secondRemain.action", gameData.secondRemain.action);
+  // console.log("gameData.secondRemain.verite", gameData.secondRemain.verite);
 
   if (!gameData.remain) {
     actionRemain = (
@@ -74,7 +77,7 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
                 already: true,
               },
             })
-          )?.already?.actionouverite || [];
+          )?.already?.idList || [];
         allAlreadyUnflat.push(gamerAlready);
       })
     );
@@ -84,13 +87,14 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
     const veriteRemainSET = new Set(veriteRemain);
     const actionSecondSET = new Set(actionRemain);
     const veriteSecondSET = new Set(veriteRemain);
+
     allAlreadyFlat.map((already) => {
       actionRemainSET.delete(already);
       veriteRemainSET.delete(already);
     });
-
     actionRemain = [...actionRemainSET];
     veriteRemain = [...veriteRemainSET];
+
     actionRemain.map((action) => {
       actionSecondSET.delete(action);
     });
@@ -117,7 +121,7 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
 
   await Promise.all(
     gameData.gamers.map(async (gamer) => {
-      const oldAllAlready =
+      const oldAlready =
         (
           await prisma.user.findFirst({
             where: {
@@ -127,17 +131,16 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
               already: true,
             },
           })
-        )?.already || {};
+        )?.already?.idList || [];
 
-      const oldAlready = oldAllAlready?.actionouverite || [];
-      const newAlready = [...oldAlready, randomCard.id]; //ici
-      const newAllAlready = { ...oldAllAlready, actionouverite: newAlready };
+      const newAlready = [...oldAlready, randomCard.id];
+
       await prisma.user.update({
         where: {
           id: gamer.id,
         },
         data: {
-          already: newAllAlready,
+          already: { idList: newAlready },
         },
       });
     })
@@ -152,7 +155,7 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
   if (!actionRemain.length) {
     await Promise.all(
       gameData.gamers.map(async (gamer) => {
-        const gamerAlready =
+        const alreadyIdList =
           (
             await prisma.user.findFirst({
               where: {
@@ -162,8 +165,7 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
                 already: true,
               },
             })
-          )?.already || [];
-        const actionouveriteAlready = gamerAlready?.actionouverite || []; //ici
+          )?.already?.idList || [];
 
         const allActions = (
           await prisma.actionouverite.findMany({
@@ -176,10 +178,10 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
           })
         ).map((card) => card.id);
 
-        const actionouveriteAlreadySET = new Set(actionouveriteAlready);
-        allActions.map((action) => actionouveriteAlreadySET.delete(action)); //ici
-        const newAlready = [...actionouveriteAlreadySET];
+        const alreadyIdListSET = new Set(alreadyIdList);
+        allActions.map((action) => alreadyIdListSET.delete(action));
 
+        const newAlready = [...alreadyIdListSET];
         await prisma.user.update({
           where: {
             id: gamer.id,
@@ -211,7 +213,7 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
   if (!veriteRemain.length) {
     await Promise.all(
       gameData.gamers.map(async (gamer) => {
-        const gamerAlready =
+        const alreadyIdList =
           (
             await prisma.user.findFirst({
               where: {
@@ -221,8 +223,7 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
                 already: true,
               },
             })
-          )?.already || [];
-        const actionouveriteAlready = gamerAlready?.actionouverite || []; //ici
+          )?.already?.idList || [];
 
         const allVerites = (
           await prisma.actionouverite.findMany({
@@ -235,10 +236,10 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
           })
         ).map((card) => card.id);
 
-        const actionouveriteAlreadySET = new Set(actionouveriteAlready);
-        allVerites.map((verite) => actionouveriteAlreadySET.delete(verite)); //ici
-        const newAlready = [...actionouveriteAlreadySET];
+        const alreadyIdListSET = new Set(alreadyIdList);
+        allVerites.map((verite) => alreadyIdListSET.delete(verite));
 
+        const newAlready = [...alreadyIdListSET];
         await prisma.user.update({
           where: {
             id: gamer.id,

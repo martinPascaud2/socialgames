@@ -16,6 +16,11 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
 
   const isActive = gameData.activePlayer === user.id;
 
+  console.log("gameData.remain.actionRemain", gameData?.remain?.actionRemain);
+  console.log("gameData.remain.veriteRemain", gameData?.remain?.veriteRemain);
+  console.log("gameData.secondRemain.action", gameData?.secondRemain?.action);
+  console.log("gameData.secondRemain.verite", gameData?.secondRemain?.verite);
+
   useEffect(() => {
     if (!isFirstRender) {
       setNewCard(gameData.card);
