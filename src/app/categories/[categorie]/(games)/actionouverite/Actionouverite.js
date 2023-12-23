@@ -16,9 +16,6 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
 
   const isActive = gameData.activePlayer === user.id;
 
-  console.log("gameData", gameData);
-  // console.log("user client", user);
-
   useEffect(() => {
     if (!isFirstRender) {
       setNewCard(gameData.card);

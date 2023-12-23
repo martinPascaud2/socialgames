@@ -33,6 +33,10 @@ const getNextGamer = (gamerList, gamerId) => {
 export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
   let actionRemain;
   let veriteRemain;
+  let actionSecond = gameData?.secondRemain?.action || [];
+  let veriteSecond = gameData?.secondRemain?.verite || [];
+
+  console.log("gameData", gameData);
 
   if (!gameData.remain) {
     actionRemain = (
@@ -45,6 +49,7 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
         },
       })
     ).map((card) => card.id);
+
     veriteRemain = (
       await prisma.actionouverite.findMany({
         where: {
@@ -77,6 +82,8 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
 
     const actionRemainSET = new Set(actionRemain);
     const veriteRemainSET = new Set(veriteRemain);
+    const actionSecondSET = new Set(actionRemain);
+    const veriteSecondSET = new Set(veriteRemain);
     allAlreadyFlat.map((already) => {
       actionRemainSET.delete(already);
       veriteRemainSET.delete(already);
@@ -84,6 +91,14 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
 
     actionRemain = [...actionRemainSET];
     veriteRemain = [...veriteRemainSET];
+    actionRemain.map((action) => {
+      actionSecondSET.delete(action);
+    });
+    veriteRemain.map((verite) => {
+      veriteSecondSET.delete(verite);
+    });
+    actionSecond = [...actionSecondSET];
+    veriteSecond = [...veriteSecondSET];
   } else {
     actionRemain = gameData.remain.actionRemain;
     veriteRemain = gameData.remain.veriteRemain;
@@ -162,7 +177,7 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
         ).map((card) => card.id);
 
         const actionouveriteAlreadySET = new Set(actionouveriteAlready);
-        allActions.map((action) => actionouveriteAlreadySET.delete(action));
+        allActions.map((action) => actionouveriteAlreadySET.delete(action)); //ici
         const newAlready = [...actionouveriteAlreadySET];
 
         await prisma.user.update({
@@ -176,16 +191,21 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
       })
     );
 
-    actionRemain = (
-      await prisma.actionouverite.findMany({
-        where: {
-          type: "action",
-        },
-        select: {
-          id: true,
-        },
-      })
-    ).map((card) => card.id);
+    if (actionSecond.length) {
+      actionRemain = [...actionSecond];
+      actionSecond = [];
+    } else {
+      actionRemain = (
+        await prisma.actionouverite.findMany({
+          where: {
+            type: "action",
+          },
+          select: {
+            id: true,
+          },
+        })
+      ).map((card) => card.id);
+    }
   }
 
   if (!veriteRemain.length) {
@@ -216,7 +236,7 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
         ).map((card) => card.id);
 
         const actionouveriteAlreadySET = new Set(actionouveriteAlready);
-        allVerites.map((verite) => actionouveriteAlreadySET.delete(verite));
+        allVerites.map((verite) => actionouveriteAlreadySET.delete(verite)); //ici
         const newAlready = [...actionouveriteAlreadySET];
 
         await prisma.user.update({
@@ -230,16 +250,21 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
       })
     );
 
-    veriteRemain = (
-      await prisma.actionouverite.findMany({
-        where: {
-          type: "vérité",
-        },
-        select: {
-          id: true,
-        },
-      })
-    ).map((card) => card.id);
+    if (veriteSecond.length) {
+      veriteRemain = [...veriteSecond];
+      veriteSecond = [];
+    } else {
+      veriteRemain = (
+        await prisma.actionouverite.findMany({
+          where: {
+            type: "vérité",
+          },
+          select: {
+            id: true,
+          },
+        })
+      ).map((card) => card.id);
+    }
   }
 
   const newData = (
@@ -253,6 +278,7 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
           activePlayer: newActivePlayer,
           card: randomCard,
           remain: { actionRemain, veriteRemain },
+          secondRemain: { action: actionSecond, verite: veriteSecond },
         },
       },
     })
