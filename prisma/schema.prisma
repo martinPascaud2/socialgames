@@ -11,14 +11,14 @@ datasource db {
 }
 
 model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
-  name         String   @unique
-  password     String
-  creationDate DateTime @db.Date
-  room         Room?    @relation(fields: [roomId], references: [id])
-  roomId       Int?
-  already      Json?
+  id                    Int      @id @default(autoincrement())
+  email                 String   @unique
+  name                  String   @unique
+  password              String
+  creationDate          DateTime @db.Date
+  room                  Room?    @relation(fields: [roomId], references: [id])
+  roomId                Int?
+  alreadyActionouverite Json?
 }
 
 model Room {

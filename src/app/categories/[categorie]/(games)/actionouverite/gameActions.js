@@ -74,10 +74,10 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
                 id: gamer.id,
               },
               select: {
-                already: true,
+                alreadyActionouverite: true,
               },
             })
-          )?.already?.idList || [];
+          )?.alreadyActionouverite?.idList || [];
         allAlreadyUnflat.push(gamerAlready);
       })
     );
@@ -128,10 +128,10 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
               id: gamer.id,
             },
             select: {
-              already: true,
+              alreadyActionouverite: true,
             },
           })
-        )?.already?.idList || [];
+        )?.alreadyActionouverite?.idList || [];
 
       const newAlready = [...oldAlready, randomCard.id];
 
@@ -140,7 +140,7 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
           id: gamer.id,
         },
         data: {
-          already: { idList: newAlready },
+          alreadyActionouverite: { idList: newAlready },
         },
       });
     })
@@ -162,10 +162,10 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
                 id: gamer.id,
               },
               select: {
-                already: true,
+                alreadyActionouverite: true,
               },
             })
-          )?.already?.idList || [];
+          )?.alreadyActionouverite?.idList || [];
 
         const allActions = (
           await prisma.actionouverite.findMany({
@@ -187,7 +187,7 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
             id: gamer.id,
           },
           data: {
-            already: newAlready,
+            alreadyActionouverite: newAlready,
           },
         });
       })
@@ -220,10 +220,10 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
                 id: gamer.id,
               },
               select: {
-                already: true,
+                alreadyActionouverite: true,
               },
             })
-          )?.already?.idList || [];
+          )?.alreadyActionouverite?.idList || [];
 
         const allVerites = (
           await prisma.actionouverite.findMany({
@@ -245,7 +245,7 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
             id: gamer.id,
           },
           data: {
-            already: newAlready,
+            alreadyActionouverite: newAlready,
           },
         });
       })
