@@ -237,7 +237,7 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
   }
   if (!veriteRemain.length) {
     ({ newRemain: veriteRemain, secondRemain: veriteSecond } =
-      await getNextRemain("vérité", gameData.gamers, actionSecond));
+      await getNextRemain("vérité", gameData.gamers, veriteSecond));
   }
 
   const newData = (
