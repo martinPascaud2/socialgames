@@ -6,7 +6,7 @@ import { useCallback, useState } from "react";
 
 import { subCategories } from "@/assets/globals";
 
-const useSwipe = (activeIndex, updateIndex, maxIndex) => {
+const useSwipe = (activeIndex, updateIndex) => {
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
 
@@ -25,7 +25,7 @@ const useSwipe = (activeIndex, updateIndex, maxIndex) => {
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
 
-    if (isLeftSwipe && activeIndex < maxIndex) {
+    if (isLeftSwipe) {
       updateIndex(activeIndex + 1);
     }
     if (isRightSwipe) {
@@ -44,10 +44,11 @@ export default function OneCategoriePage({ params }) {
 
   const updateIndex = useCallback(
     (newIndex) => {
+      console.log("newIndex", newIndex);
       if (newIndex < 0) {
-        newIndex = 0;
-      } else if (newIndex >= games.length - 1) {
         newIndex = games.length - 1;
+      } else if (newIndex === games.length) {
+        newIndex = 0;
       }
       setActiveIndex(newIndex);
     },
@@ -56,8 +57,7 @@ export default function OneCategoriePage({ params }) {
 
   const { onTouchStart, onTouchMove, onTouchEnd } = useSwipe(
     activeIndex,
-    updateIndex,
-    games.length - 1
+    updateIndex
   );
 
   const divNavs = [];
@@ -65,6 +65,7 @@ export default function OneCategoriePage({ params }) {
     divNavs.push(
       <div
         key={i}
+        onClick={() => setActiveIndex(i)}
         className={`w-8 h-4 ${
           i === activeIndex ? "bg-yellow-700" : "bg-yellow-300"
         }`}
