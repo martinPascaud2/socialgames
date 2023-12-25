@@ -121,8 +121,12 @@ export default function Room({ user, categorie, gameName, Game, launchGame }) {
   }, [searchToken, joinRoom]);
 
   const launchRoom = async () => {
-    await launchGame(roomId, roomToken, gamerList, options);
-    setIsStarted(true);
+    try {
+      await launchGame(roomId, roomToken, gamerList, options);
+      setIsStarted(true);
+    } catch (error) {
+      setServerMessage(error.message);
+    }
   };
 
   if (!isStarted) {
@@ -139,7 +143,6 @@ export default function Room({ user, categorie, gameName, Game, launchGame }) {
                 className="border focus:outline-none focus:border-2"
               />
               <button onClick={joinRoom}>Rejoindre</button>
-              <div>{serverMessage}</div>
             </div>
           </>
         ) : (
@@ -162,6 +165,7 @@ export default function Room({ user, categorie, gameName, Game, launchGame }) {
             )}
           </>
         )}
+        <div>{serverMessage}</div>
       </>
     );
   } else {

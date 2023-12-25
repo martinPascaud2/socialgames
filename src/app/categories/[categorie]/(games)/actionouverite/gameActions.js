@@ -4,6 +4,9 @@ import prisma from "@/utils/prisma";
 import pusher from "@/utils/pusher";
 
 export async function launchGame(roomId, roomToken, gamers, options) {
+  if (gamers.length < 2)
+    throw new Error("Un plus grand nombre de joueurs est requis.");
+
   const startedRoom = await prisma.room.update({
     where: {
       id: roomId,
