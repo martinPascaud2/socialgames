@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useMemo } from "react";
 import Link from "next/link";
 import classNames from "classnames";
+import Html5QrcodePlugin from "./Html5QrcodePlugin";
 
 import { categories } from "@/assets/globals";
 
@@ -44,6 +45,23 @@ export default function Categories({ signOut }) {
 
     setBottomSpace((window.innerHeight - bottomSideRect.bottom + 1).toString());
   }, [bottomRect]);
+
+  const [scanning, setScanning] = useState(false);
+  const onNewScanResult = (decodedText, decodedResult) => {
+    console.log("decodedText", decodedText);
+    console.log("decodedResult", decodedResult);
+  };
+  const QrCodeScanner = useMemo(() => {
+    return (
+      <Html5QrcodePlugin
+        scanning={scanning}
+        fps={10}
+        qrbox={500}
+        aspectRatio="1.0"
+        qrCodeSuccessCallback={onNewScanResult}
+      />
+    );
+  }, [scanning]);
 
   return (
     <>
@@ -113,7 +131,7 @@ export default function Categories({ signOut }) {
             id="QR-zone"
             className=" z-30 absolute top-1/2 left-1/2 -translate-x-1/2	-translate-y-1/2 bg-slate-500 w-[75vw] h-[75vw] border-2 border-black"
           >
-            carré central
+            {QrCodeScanner}
           </div>
 
           <div
@@ -131,7 +149,9 @@ export default function Categories({ signOut }) {
             style={{ top: `${bottomRect}px` }}
           >
             <button className="m-3 p-2">Afficher mon QRCode</button>
-            <button className="m-3 p-2">Ajouter un ami</button>
+            <button onClick={() => setScanning(!scanning)} className="m-3 p-2">
+              Ajouter un ami
+            </button>
             <button className="m-3 p-2">Rejoindre la partie d'un ami</button>
           </div>
 
