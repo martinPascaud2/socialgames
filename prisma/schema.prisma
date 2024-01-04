@@ -16,9 +16,20 @@ model User {
   name                  String   @unique
   password              String
   creationDate          DateTime @db.Date
+  friends               Friend[] @relation("userFriends")
+  friendOf              Friend[] @relation("userFriendOf")
   room                  Room?    @relation(fields: [roomId], references: [id])
   roomId                Int?
   alreadyActionouverite Json?
+}
+
+model Friend {
+  id         Int     @id @default(autoincrement())
+  user       User    @relation("userFriends", fields: [userId], references: [id])
+  userId     Int
+  friend     User    @relation("userFriendOf", fields: [friendId], references: [id])
+  friendId   Int
+  customName String?
 }
 
 model Room {

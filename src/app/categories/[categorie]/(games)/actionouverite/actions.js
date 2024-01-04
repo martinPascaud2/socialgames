@@ -55,8 +55,8 @@ export async function serverJoin(token, user, geoLocation) {
 
   const { adminLocation, id: roomId } = room;
 
-  const distance = getDistance({ adminLocation, incomerLocation: geoLocation });
-  if (distance > 20)
+  const distance = getDistance({ first: adminLocation, second: geoLocation });
+  if (distance > 50)
     throw new Error("Veuillez vous approcher de la zone de jeu");
 
   const newGamerList = [...room.gamerList, user];
