@@ -44,7 +44,6 @@ export default function OneCategoriePage({ params }) {
 
   const updateIndex = useCallback(
     (newIndex) => {
-      console.log("newIndex", newIndex);
       if (newIndex < 0) {
         newIndex = games.length - 1;
       } else if (newIndex === games.length) {

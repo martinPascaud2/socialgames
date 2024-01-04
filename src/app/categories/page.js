@@ -62,10 +62,10 @@ export default async function CategoriesPage() {
       });
 
       await pusher.trigger(`user-${user.email}`, "user-event", {
-        message: `${friendName} ajouté en tant qu'ami avec succès!`,
+        message: `${friendName} ajouté dans vos amis !`,
       });
       await pusher.trigger(`user-${friendMail}`, "user-event", {
-        message: `${user.name} ajouté en tant qu'ami avec succès!`,
+        message: `${user.name} ajouté dans vos amis !`,
       });
 
       revalidatePath("/categories");

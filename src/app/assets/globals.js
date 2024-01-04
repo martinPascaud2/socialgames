@@ -26,3 +26,7 @@ export const subCategories = {
   ],
   categorie2: ["souscat6", "souscat7", "souscat8", "souscat9", "souscat10"],
 };
+
+export const gameNames = {
+  actionouverite: "Action ou Vérité",
+};

@@ -22,7 +22,15 @@ const genRoomToken = () => {
   return roomId;
 };
 
-export default function Room({ user, categorie, gameName, Game, launchGame }) {
+export default function Room({
+  user,
+  friendList,
+  categorie,
+  gameName,
+  Game,
+  inviteFriend,
+  launchGame,
+}) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [roomToken, setRoomToken] = useState("");
   const [gamerList, setGamerList] = useState([]);
@@ -83,6 +91,7 @@ export default function Room({ user, categorie, gameName, Game, launchGame }) {
       setRoomToken(newRoomToken);
       setGamerList(gamers);
       setIsChosen(true);
+      setServerMessage("");
     } catch (error) {
       setServerMessage(error.message);
     }
@@ -107,6 +116,7 @@ export default function Room({ user, categorie, gameName, Game, launchGame }) {
       setRoomToken(token);
       setGamerList(gamers);
       setIsChosen(true);
+      setServerMessage("");
       alreadyStarted && (await joinAgain(token));
     } catch (error) {
       setServerMessage(error.message);
@@ -123,6 +133,7 @@ export default function Room({ user, categorie, gameName, Game, launchGame }) {
   const launchRoom = async () => {
     try {
       await launchGame(roomId, roomToken, gamerList, options);
+      setServerMessage("");
       setIsStarted(true);
     } catch (error) {
       setServerMessage(error.message);
@@ -161,6 +172,28 @@ export default function Room({ user, categorie, gameName, Game, launchGame }) {
                 <QRCode
                   value={`${process.env.NEXT_PUBLIC_APP_URL}/categories/${categorie}/${gameName}?token=${roomToken}`}
                 />
+                <h1>Invitez vos amis !</h1>
+                <h2 className="text-sm italic">
+                  Ils recevront votre invitation via &quot;Invitations aux
+                  parties&quot;
+                </h2>
+                {friendList.map((friend) => (
+                  <button
+                    key={friend.id}
+                    onClick={() =>
+                      inviteFriend({
+                        userName: user.name,
+                        friendMail: friend.email,
+                        categorie,
+                        gameName,
+                        roomToken,
+                      })
+                    }
+                    className="border border-blue-300 bg-blue-100"
+                  >
+                    {friend.customName}
+                  </button>
+                ))}
               </>
             )}
           </>

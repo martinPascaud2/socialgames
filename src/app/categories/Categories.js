@@ -10,7 +10,7 @@ import Pusher from "pusher-js";
 import Html5QrcodePlugin from "./Html5QrcodePlugin";
 import getLocation from "@/utils/getLocation";
 
-import { categories } from "@/assets/globals";
+import { categories, gameNames } from "@/assets/globals";
 
 var pusher = new Pusher("61853af9f30abf9d5b3d", {
   cluster: "eu",
@@ -68,6 +68,8 @@ export default function Categories({
   const [showQrCode, setShowQrCode] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [scanLocked, setScanLocked] = useState(false);
+  const [showInvitations, setShowInvitations] = useState(false);
+  const [invitations, setInvitations] = useState([]);
 
   const onNewScanResult = useCallback(
     throttle(async (decodedText) => {
@@ -105,6 +107,13 @@ export default function Categories({
       if (data.message) {
         setServerMessage(data.message);
         router.refresh();
+      }
+      if (data.invitation) {
+        setInvitations((prevInvitations) => {
+          if (prevInvitations.some((inv) => inv.link === data.invitation.link))
+            return [...prevInvitations];
+          return [...prevInvitations, data.invitation];
+        });
       }
     });
     return () => {
@@ -203,6 +212,21 @@ export default function Categories({
               />
             )}
             {QrCodeScanner}
+            {showInvitations && (
+              <>
+                <div className="text-center text-slate-300">
+                  Invitations de vos amis
+                </div>
+                {invitations.map((invitation, i) => (
+                  <Link key={i} href={invitation.link}>
+                    <div className="border border-slate-700 bg-slate-300 text-center">
+                      {invitation.userName} pour{" "}
+                      {`${gameNames[invitation.gameName]}`}
+                    </div>
+                  </Link>
+                ))}
+              </>
+            )}
           </div>
 
           <div
@@ -219,10 +243,10 @@ export default function Categories({
             className="z-30 absolute bg-red-100 w-[75vw] h-36 translate-x-[12.5vw] flex flex-col justify-between"
             style={{ top: `${bottomRect}px` }}
           >
-            <div>{serverMessage}</div>
+            <div className="absolute w-full text-center">{serverMessage}</div>
             <button
-              className={classNames("m-3 p-2", {
-                "border border-black": showQrCode,
+              className={classNames("m-2 mt-8 p-2", {
+                "outline outline-black": showQrCode,
               })}
               onClick={async () => {
                 try {
@@ -233,6 +257,7 @@ export default function Categories({
                 }
                 setShowQrCode(true);
                 setScanning(false);
+                setShowInvitations(false);
               }}
             >
               Générer mon QRCode
@@ -241,14 +266,28 @@ export default function Categories({
               onClick={() => {
                 setShowQrCode(false);
                 setScanning(true);
+                setShowInvitations(false);
+                setServerMessage("");
               }}
-              className={classNames("m-3 p-2", {
-                "border border-black": scanning,
+              className={classNames("m-2 p-2", {
+                "outline outline-black": scanning,
               })}
             >
               Ajouter un ami
             </button>
-            <button className="m-3 p-2">Rejoindre la partie d'un ami</button>
+            <button
+              onClick={() => {
+                setShowQrCode(false);
+                setScanning(false);
+                setShowInvitations(true);
+                setServerMessage("");
+              }}
+              className={classNames("m-2 p-2", {
+                "outline outline-black": showInvitations,
+              })}
+            >
+              Invitations aux parties
+            </button>
           </div>
 
           <div
