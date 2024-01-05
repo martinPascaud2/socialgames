@@ -14,12 +14,9 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
   const [triggerReveal, setTriggerReveal] = useState(false);
   const [triggerTranslateOld, setTriggerTranslateOld] = useState(false);
 
-  const isActive = gameData.activePlayer === user.id;
-
-  console.log("gameData.remain.actionRemain", gameData?.remain?.actionRemain);
-  console.log("gameData.remain.veriteRemain", gameData?.remain?.veriteRemain);
-  console.log("gameData.secondRemain.action", gameData?.secondRemain?.action);
-  console.log("gameData.secondRemain.verite", gameData?.secondRemain?.verite);
+  const isActive =
+    gameData.activePlayer?.id === user.id ||
+    (gameData.activePlayer?.guest && gameData.admin === user.name);
 
   useEffect(() => {
     if (!isFirstRender) {
@@ -52,7 +49,7 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
   return (
     <>
       <div>token : {roomToken}</div>
-      <div className="absolute z-10">
+      <div className="absolute top-20 z-10">
         <div className="playing-card bg-transparent w-60 h-80 inline-block m-2.5 perspective-10">
           <div
             className={classNames(
@@ -73,7 +70,7 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
         </div>
       </div>
 
-      <div className="absolute z-0">
+      <div className="absolute top-20 z-0">
         <div className="playing-card bg-transparent	w-60 h-80 inline-block m-2.5 perspective-10">
           <div
             className={classNames(
@@ -93,13 +90,19 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
           </div>
         </div>
       </div>
-
+      <div>C&apos;est au tour de {gameData.activePlayer?.name}</div>
       {isActive && (
         <>
-          <button onClick={takeAction} className="absolute left-20 bottom-80">
+          <button
+            onClick={takeAction}
+            className="absolute bottom-48 left-20 bottom-80"
+          >
             Action
           </button>
-          <button onClick={takeVerite} className="absolute right-20 bottom-80">
+          <button
+            onClick={takeVerite}
+            className="absolute bottom-48 right-20 bottom-80"
+          >
             Vérité
           </button>
         </>

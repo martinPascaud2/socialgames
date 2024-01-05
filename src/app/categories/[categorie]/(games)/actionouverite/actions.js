@@ -21,6 +21,7 @@ export async function serverCreate(token, user, game, geoLocation) {
       gamerList: {
         connect: userList.map((u) => ({ id: u.id })),
       },
+      guests: {},
     },
     include: {
       gamerList: true,
@@ -79,11 +80,42 @@ export async function serverJoin(token, user, geoLocation) {
     name: user.name,
   }));
 
+  const guests = Object.keys(room.guests);
+
   await pusher.trigger(`room-${token}`, "room-event", {
     clientGamerList,
   });
 
-  return { gamers: clientGamerList, alreadyStarted: room.started };
+  return { gamers: clientGamerList, guests, alreadyStarted: room.started };
+}
+
+export async function serverAddGuest({ token, guestName }) {
+  const room = await prisma.room.findFirst({
+    where: {
+      token,
+    },
+  });
+  const { id: roomId, guests } = room;
+
+  const newGuests = Object.keys(
+    (
+      await prisma.room.update({
+        where: { id: roomId },
+        data: {
+          guests: {
+            ...guests,
+            [guestName]: true,
+          },
+        },
+      })
+    ).guests
+  );
+
+  await pusher.trigger(`room-${token}`, "room-event", {
+    guestList: newGuests,
+  });
+
+  return newGuests;
 }
 
 export async function joinAgain(token) {

@@ -3,7 +3,7 @@
 import prisma from "@/utils/prisma";
 import pusher from "@/utils/pusher";
 
-export async function launchGame(roomId, roomToken, gamers, options) {
+export async function launchGame(roomId, roomToken, gamers, guests, options) {
   if (gamers.length < 2)
     throw new Error("Un plus grand nombre de joueurs est requis.");
 
@@ -16,11 +16,19 @@ export async function launchGame(roomId, roomToken, gamers, options) {
     },
   });
 
+  const gamersAndGuests = gamers.map((gamer) => ({ ...gamer, guest: false }));
+  let startIndex = gamers.length + 1;
+  guests.map((guest) => {
+    gamersAndGuests.push({ id: startIndex, name: guest, guest: true });
+    startIndex++;
+  });
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
     gameData: {
-      activePlayer: gamers[0].id,
-      gamers,
+      admin: startedRoom.admin,
+      activePlayer: gamers[0],
+      gamers: gamersAndGuests,
       card: 0,
     },
   });
@@ -29,7 +37,7 @@ export async function launchGame(roomId, roomToken, gamers, options) {
 const getNextGamer = (gamerList, gamerId) => {
   const index = gamerList.findIndex((gamer) => gamer.id === gamerId);
   const nextIndex = (index + 1) % gamerList.length;
-  const nextGamer = gamerList[nextIndex].id;
+  const nextGamer = gamerList[nextIndex];
   return nextGamer;
 };
 
@@ -209,6 +217,9 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
   let veriteRemain;
   let actionSecond = gameData?.secondRemain?.action || [];
   let veriteSecond = gameData?.secondRemain?.verite || [];
+  const registeredGamers = gameData.gamers.filter(
+    (gamer) => gamer.guest === false
+  );
 
   if (!gameData.remain) {
     const { actionPackage, veritePackage } = await getPackages();
@@ -221,9 +232,12 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
   }
 
   const randomCard = await getRandomCard(choice, actionRemain, veriteRemain);
-  await updateAlreadys(gameData.gamers, randomCard.id);
+  await updateAlreadys(registeredGamers, randomCard.id);
 
-  const newActivePlayer = getNextGamer(gameData.gamers, gameData.activePlayer);
+  const newActivePlayer = getNextGamer(
+    gameData.gamers,
+    gameData.activePlayer.id
+  );
 
   if (choice === "action") {
     actionRemain = actionRemain.filter((action) => action !== randomCard.id);
@@ -233,11 +247,11 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
 
   if (!actionRemain.length) {
     ({ newRemain: actionRemain, secondRemain: actionSecond } =
-      await getNextRemain("action", gameData.gamers, actionSecond));
+      await getNextRemain("action", registeredGamers, actionSecond));
   }
   if (!veriteRemain.length) {
     ({ newRemain: veriteRemain, secondRemain: veriteSecond } =
-      await getNextRemain("vérité", gameData.gamers, veriteSecond));
+      await getNextRemain("vérité", registeredGamers, veriteSecond));
   }
 
   const newData = (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Pusher from "pusher-js";
 import QRCode from "react-qr-code";
@@ -9,7 +9,13 @@ var pusher = new Pusher("61853af9f30abf9d5b3d", {
   cluster: "eu",
 });
 
-import { serverCreate, serverJoin, joinAgain, getRoomId } from "./actions";
+import {
+  serverCreate,
+  serverJoin,
+  serverAddGuest,
+  joinAgain,
+  getRoomId,
+} from "./actions";
 
 const genRoomToken = () => {
   let roomId = "";
@@ -34,13 +40,17 @@ export default function Room({
   const [isAdmin, setIsAdmin] = useState(false);
   const [roomToken, setRoomToken] = useState("");
   const [gamerList, setGamerList] = useState([]);
+  const [guestList, setGuestList] = useState([]);
+  const [newGuest, setNewGuest] = useState("");
+  const refGuest = useRef();
   const [options, setOptions] = useState({});
 
   const [isChosen, setIsChosen] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
   const [serverMessage, setServerMessage] = useState("");
 
-  const [inputValue, setInputValue] = useState("");
+  const [showRoomRefs, setShowRoomRefs] = useState(false);
+  const [inputToken, setInputToken] = useState("");
   const [geoLocation, setGeoLocation] = useState(null);
 
   const [roomId, setRoomId] = useState(0);
@@ -98,9 +108,9 @@ export default function Room({
   };
 
   const joinRoom = useCallback(async () => {
-    const token = inputValue.toUpperCase();
+    const token = inputToken.toUpperCase();
     try {
-      const { gamers, alreadyStarted } = await serverJoin(
+      const { gamers, guests, alreadyStarted } = await serverJoin(
         token,
         user,
         geoLocation
@@ -109,30 +119,47 @@ export default function Room({
       const channel = pusher.subscribe(`room-${token}`);
       channel.bind("room-event", function (data) {
         data.clientGamerList && setGamerList(data.clientGamerList);
+        data.guestList && setGuestList(data.guestList);
         data.started && setIsStarted(true);
         data.gameData && setGameData(data.gameData);
       });
 
       setRoomToken(token);
       setGamerList(gamers);
+      setGuestList(guests);
       setIsChosen(true);
       setServerMessage("");
       alreadyStarted && (await joinAgain(token));
     } catch (error) {
       setServerMessage(error.message);
     }
-  }, [geoLocation, inputValue, user]);
+  }, [geoLocation, inputToken, user]);
 
   useEffect(() => {
     if (searchToken) {
-      setInputValue(searchToken);
+      setInputToken(searchToken);
       joinRoom();
     }
   }, [searchToken, joinRoom]);
 
+  const addGuest = async () => {
+    if (newGuest.length < 3) {
+      setServerMessage("Nom trop court");
+      return;
+    }
+    const guests = await serverAddGuest({
+      token: roomToken,
+      guestName: newGuest,
+    });
+    refGuest.current.value = "";
+    setServerMessage(`Guest ${newGuest} ajouté`);
+    setNewGuest("");
+    setGuestList(guests);
+  };
+
   const launchRoom = async () => {
     try {
-      await launchGame(roomId, roomToken, gamerList, options);
+      await launchGame(roomId, roomToken, gamerList, guestList, options);
       setServerMessage("");
       setIsStarted(true);
     } catch (error) {
@@ -149,8 +176,8 @@ export default function Room({
 
             <div>
               <input
-                onChange={(event) => setInputValue(event.target.value)}
-                value={inputValue}
+                onChange={(event) => setInputToken(event.target.value)}
+                value={inputToken}
                 className="border focus:outline-none focus:border-2"
               />
               <button onClick={joinRoom}>Rejoindre</button>
@@ -163,37 +190,80 @@ export default function Room({
               {gamerList.map((gamer) => (
                 <div key={gamer.name}>{gamer.name}</div>
               ))}
+              {guestList.map((guest, i) => (
+                <div key={i}>
+                  {guest} <span className="italic text-sm">(guest)</span>
+                </div>
+              ))}
             </div>
-            <div>token : {roomToken}</div>
+
+            <hr />
+
             {isAdmin && (
               <>
-                <button onClick={launchRoom}>Lancer la partie</button>
-                <div>qrcode</div>
-                <QRCode
-                  value={`${process.env.NEXT_PUBLIC_APP_URL}/categories/${categorie}/${gameName}?token=${roomToken}`}
-                />
+                <button onClick={() => setShowRoomRefs(!showRoomRefs)}>
+                  {!showRoomRefs ? "Montrer" : "Cacher"} les références
+                </button>
+                {showRoomRefs && (
+                  <>
+                    <div>token : {roomToken}</div>
+                    <QRCode
+                      value={`${process.env.NEXT_PUBLIC_APP_URL}/categories/${categorie}/${gameName}?token=${roomToken}`}
+                    />
+                  </>
+                )}
+
+                <hr />
+
                 <h1>Invitez vos amis !</h1>
                 <h2 className="text-sm italic">
                   Ils recevront votre invitation via &quot;Invitations aux
-                  parties&quot;
+                  parties&quot;.
                 </h2>
-                {friendList.map((friend) => (
-                  <button
-                    key={friend.id}
-                    onClick={() =>
-                      inviteFriend({
-                        userName: user.name,
-                        friendMail: friend.email,
-                        categorie,
-                        gameName,
-                        roomToken,
-                      })
-                    }
-                    className="border border-blue-300 bg-blue-100"
-                  >
-                    {friend.customName}
-                  </button>
-                ))}
+                <div>
+                  {friendList.map((friend) => (
+                    <button
+                      key={friend.id}
+                      onClick={() =>
+                        inviteFriend({
+                          userName: user.name,
+                          friendMail: friend.email,
+                          categorie,
+                          gameName,
+                          roomToken,
+                        })
+                      }
+                      className="border border-blue-300 bg-blue-100"
+                    >
+                      {friend.customName}
+                    </button>
+                  ))}
+                </div>
+
+                <hr />
+
+                <h1>Invitez des guests !</h1>
+                <h2 className="text-sm italic">
+                  Ils utiliseront votre écran à leur tour de jeu.
+                </h2>
+                <input
+                  ref={refGuest}
+                  placeholder="Nom du guest"
+                  onChange={(event) => setNewGuest(event.target.value)}
+                  className="outline-none focus:outline-black mr-2"
+                />
+                <button
+                  onClick={async () => {
+                    await addGuest();
+                  }}
+                  className="border border-blue-300 bg-blue-100"
+                >
+                  Ajoutez un guest
+                </button>
+
+                <hr />
+
+                <button onClick={launchRoom}>Lancer la partie</button>
               </>
             )}
           </>
