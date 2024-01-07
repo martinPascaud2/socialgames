@@ -8,8 +8,23 @@ import { launchGame } from "./gameActions";
 import getUser from "@/utils/getUser";
 import { getRoomFriendList } from "@/utils/getFriendList";
 
-export default async function ActionOuVerite({ params }) {
-  const user = await getUser();
+export default async function ActionOuVerite({ params, searchParams }) {
+  const user = await getUser(); //gérer le retour guest
+  console.log("user AoV", user);
+  console.log("searchParams AoV", searchParams);
+  //idem
+  if (!user)
+    return (
+      <Room
+        user={{ name: searchParams.guestName, multiGuest: true }}
+        friendList={null}
+        categorie={params?.categorie}
+        gameName="actionouverite"
+        Game={Actionouverite}
+        inviteFriend={null}
+        launchGame={null}
+      />
+    );
   const friendList = await getRoomFriendList({ userId: user.id });
 
   //mettre dans les outils

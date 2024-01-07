@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { jwtVerify } from "@/utils/jwtVerify";
+import { checkGuestAllowed } from "@/utils/checkGuestAllowed";
 
 export async function middleware(request) {
   //isolate the client's requested path
@@ -19,14 +20,30 @@ export async function middleware(request) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
+  const { userStatus } = await jwtVerify(token);
+  console.log("userStatus", userStatus);
+
   if (
     token &&
-    (request.nextUrl.pathname === "/" || request.nextUrl.pathname === "/signin")
+    // (request.nextUrl.pathname === "/" || request.nextUrl.pathname === "/signin")
+    (request.nextUrl.pathname === "/" ||
+      request.nextUrl.pathname === "/signin") &&
+    userStatus !== "Guest"
   ) {
     return NextResponse.redirect(new URL("/categories", request.url));
   }
 
-  const { userStatus } = await jwtVerify(token);
+  if (
+    userStatus === "Guest" &&
+    request.nextUrl.pathname !== "/guest" &&
+    !checkGuestAllowed(request.nextUrl.href)
+  ) {
+    return NextResponse.redirect(new URL("/guest", request.url));
+  }
+  // const isGuestAllowed = checkGuestAllowed(request.nextUrl.href);
+  // console.log("isGuestAllowed", isGuestAllowed);
+  // const { userStatus } = await jwtVerify(token);
+  // console.log("userStatus", userStatus);
 
   if (
     userStatus !== "Admin" &&

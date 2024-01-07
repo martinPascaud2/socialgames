@@ -17,14 +17,20 @@ export const subCategories = {
       path: "actionouverite",
       img: "/actionouverite.png",
     },
-    { name: "souscat3", path: "uno", img: "/uno.jpeg" },
-    { name: "souscat4", path: "uno", img: "/uno.jpeg" },
-    { name: "souscat5", path: "uno", img: "/uno.jpeg" },
-    { name: "souscat6", path: "uno", img: "/uno.jpeg" },
-    { name: "souscat7", path: "uno", img: "/uno.jpeg" },
-    { name: "souscat8", path: "uno", img: "/uno.jpeg" },
+    { name: "game3", path: "uno", img: "/uno.jpeg" },
+    { name: "game4", path: "uno", img: "/uno.jpeg" },
+    { name: "game5", path: "uno", img: "/uno.jpeg" },
+    { name: "game6", path: "uno", img: "/uno.jpeg" },
+    { name: "game7", path: "uno", img: "/uno.jpeg" },
+    { name: "game8", path: "uno", img: "/uno.jpeg" },
   ],
-  categorie2: ["souscat6", "souscat7", "souscat8", "souscat9", "souscat10"],
+  categorie2: [
+    { name: "game6", path: "uno", img: "/uno.jpeg" },
+    { name: "game7", path: "uno", img: "/uno.jpeg" },
+    { name: "game8", path: "uno", img: "/uno.jpeg" },
+    { name: "game9", path: "uno", img: "/uno.jpeg" },
+    { name: "game10", path: "uno", img: "/uno.jpeg" },
+  ],
 };
 
 export const gameNames = {

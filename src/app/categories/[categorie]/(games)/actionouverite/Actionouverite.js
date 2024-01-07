@@ -14,6 +14,9 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
   const [triggerReveal, setTriggerReveal] = useState(false);
   const [triggerTranslateOld, setTriggerTranslateOld] = useState(false);
 
+  console.log("user AoV", user);
+  console.log("gameData Aov", gameData);
+
   const isActive =
     gameData.activePlayer?.id === user.id ||
     (gameData.activePlayer?.guest && gameData.admin === user.name);
@@ -93,16 +96,10 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
       <div>C&apos;est au tour de {gameData.activePlayer?.name}</div>
       {isActive && (
         <>
-          <button
-            onClick={takeAction}
-            className="absolute bottom-48 left-20 bottom-80"
-          >
+          <button onClick={takeAction} className="absolute bottom-48 left-20">
             Action
           </button>
-          <button
-            onClick={takeVerite}
-            className="absolute bottom-48 right-20 bottom-80"
-          >
+          <button onClick={takeVerite} className="absolute bottom-48 right-20">
             Vérité
           </button>
         </>

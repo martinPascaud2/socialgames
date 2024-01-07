@@ -13,19 +13,22 @@ import {
   serverCreate,
   serverJoin,
   serverAddGuest,
+  serverAddMultiGuest,
   joinAgain,
+  getUniqueName,
   getRoomId,
 } from "./actions";
 
-const genRoomToken = () => {
-  let roomId = "";
+//utils
+const genToken = (length) => {
+  let roomToken = "";
   const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   let count = 0;
-  while (count < 5) {
-    roomId += chars.charAt(Math.floor(Math.random() * chars.length));
+  while (count < length) {
+    roomToken += chars.charAt(Math.floor(Math.random() * chars.length));
     count++;
   }
-  return roomId;
+  return roomToken;
 };
 
 export default function Room({
@@ -41,8 +44,11 @@ export default function Room({
   const [roomToken, setRoomToken] = useState("");
   const [gamerList, setGamerList] = useState([]);
   const [guestList, setGuestList] = useState([]);
+  const [multiGuestList, setMultiGuestList] = useState([]);
   const [newGuest, setNewGuest] = useState("");
   const refGuest = useRef();
+  const [multiGuestId, setMultiGuestId] = useState();
+  const [uniqueName, setUniqueName] = useState("");
   const [options, setOptions] = useState({});
 
   const [isChosen, setIsChosen] = useState(false);
@@ -81,7 +87,7 @@ export default function Room({
   }, []);
 
   const createRoom = async () => {
-    const newRoomToken = genRoomToken();
+    const newRoomToken = genToken(5);
 
     try {
       const gamers = await serverCreate(
@@ -94,6 +100,7 @@ export default function Room({
       const channel = pusher.subscribe(`room-${newRoomToken}`);
       channel.bind("room-event", function (data) {
         data.clientGamerList && setGamerList(data.clientGamerList);
+        data.multiGuestList && setMultiGuestList(data.multiGuestList);
         data.gameData && setGameData(data.gameData);
       });
 
@@ -108,64 +115,153 @@ export default function Room({
   };
 
   const joinRoom = useCallback(async () => {
+    if (!isChosen) {
+      setIsChosen(true);
+      return;
+    }
     const token = inputToken.toUpperCase();
+    const id = await getRoomId(token);
+    const uniqueUserName = await getUniqueName(id, user.name);
+    console.log("uniqueUserName", uniqueUserName);
+
     try {
-      const { gamers, guests, alreadyStarted } = await serverJoin(
+      const { gamers, guests, multiGuests, alreadyStarted } = await serverJoin({
         token,
-        user,
-        geoLocation
-      );
+        // user,
+        user: { ...user, name: uniqueUserName },
+      });
 
       const channel = pusher.subscribe(`room-${token}`);
       channel.bind("room-event", function (data) {
         data.clientGamerList && setGamerList(data.clientGamerList);
         data.guestList && setGuestList(data.guestList);
+        data.multiGuestList && setMultiGuestList(data.multiGuestList);
         data.started && setIsStarted(true);
         data.gameData && setGameData(data.gameData);
       });
 
       setRoomToken(token);
+      setUniqueName(uniqueUserName);
       setGamerList(gamers);
       setGuestList(guests);
+      setMultiGuestList(multiGuests);
+      //enlever
       setIsChosen(true);
       setServerMessage("");
-      alreadyStarted && (await joinAgain(token));
+      // alreadyStarted && (await joinAgain(token));
     } catch (error) {
       setServerMessage(error.message);
     }
   }, [geoLocation, inputToken, user]);
 
+  const addMultiGuest = useCallback(async () => {
+    if (!isChosen) {
+      setIsChosen(true);
+      return;
+    }
+    const token = inputToken.toUpperCase();
+    const id = await getRoomId(token);
+    // const multiGuestName = searchParams.get("guestName");
+    const multiGuestName = await getUniqueName(
+      id,
+      searchParams.get("guestName")
+    );
+    console.log("multiGuestName", multiGuestName);
+
+    try {
+      //ici
+      const { gamerList, guests, multiGuests, alreadyStarted } =
+        await serverAddMultiGuest(token, multiGuestName, geoLocation);
+
+      const channel = pusher.subscribe(`room-${token}`);
+      channel.bind("room-event", function (data) {
+        data.clientGamerList && setGamerList(data.clientGamerList);
+        data.guestList && setGuestList(data.guestList);
+        data.multiGuestList && setMultiGuestList(data.multiGuestList);
+        data.started && (setIsStarted(true), console.log("data channel", data));
+        // setMultiGuestId(
+        //   data.gameData.gamers.find((gamer) => gamer.name === user.name).id
+        // )
+        data.gameData && setGameData(data.gameData);
+      });
+
+      setRoomToken(token);
+      setUniqueName(multiGuestName);
+      setGamerList(gamerList);
+      setGuestList(guests);
+      setMultiGuestList(multiGuests);
+      //enlever
+      setIsChosen(true);
+      setServerMessage(`Guest ${multiGuestName} a rejoint le salon`); //???
+      //join again
+    } catch (error) {
+      setServerMessage(error.message);
+    }
+  }, [geoLocation]);
+
   useEffect(() => {
     if (searchToken) {
       setInputToken(searchToken);
-      joinRoom();
+      if (!user.multiGuest) joinRoom();
+      else addMultiGuest();
     }
   }, [searchToken, joinRoom]);
 
   const addGuest = async () => {
+    console.log("roomId addguest", roomId);
     if (newGuest.length < 3) {
       setServerMessage("Nom trop court");
       return;
     }
+    const uniqueGuestName = await getUniqueName(roomId, newGuest);
     const guests = await serverAddGuest({
       token: roomToken,
-      guestName: newGuest,
+      // guestName: newGuest,
+      guestName: uniqueGuestName,
     });
     refGuest.current.value = "";
-    setServerMessage(`Guest ${newGuest} ajouté`);
+    // setServerMessage(`Guest ${newGuest} ajouté`);
+    setServerMessage(`Guest ${uniqueGuestName} ajouté`);
     setNewGuest("");
     setGuestList(guests);
   };
 
   const launchRoom = async () => {
     try {
-      await launchGame(roomId, roomToken, gamerList, guestList, options);
+      await launchGame({
+        roomId,
+        roomToken,
+        adminId: user.id,
+        gamers: gamerList,
+        guests: guestList,
+        multiGuests: multiGuestList,
+        options,
+      });
       setServerMessage("");
       setIsStarted(true);
     } catch (error) {
       setServerMessage(error.message);
     }
   };
+
+  useEffect(() => {
+    console.log("gameData useeffect", gameData);
+    console.log("user useeffect", user);
+    console.log("uniqueName useeffect", uniqueName);
+    user.multiGuest &&
+      gameData.gamers &&
+      setMultiGuestId(
+        gameData.gamers.find((gamer) => gamer.name === uniqueName).id
+      );
+  }, [isStarted, gameData, user, uniqueName]);
+
+  console.log("multiGuestList", multiGuestList);
+  console.log("user", user);
+  console.log("!!multiGuestId", !!multiGuestId);
+  console.log("roomId", roomId);
+  console.log("gameData", gameData);
+  console.log("multiGuestId", multiGuestId);
+  console.log("uniqueName", uniqueName);
 
   if (!isStarted) {
     return (
@@ -193,6 +289,12 @@ export default function Room({
               {guestList.map((guest, i) => (
                 <div key={i}>
                   {guest} <span className="italic text-sm">(guest)</span>
+                </div>
+              ))}
+              {multiGuestList.map((multiGuest, i) => (
+                <div key={i}>
+                  {multiGuest}{" "}
+                  <span className="italic text-sm">(guest externe)</span>
                 </div>
               ))}
             </div>
@@ -276,7 +378,12 @@ export default function Room({
       <Game
         roomId={roomId}
         roomToken={roomToken}
-        user={user}
+        // user={!!multiGuestId ? { ...user, id: multiGuestId } : user}
+        user={{
+          ...user,
+          name: uniqueName,
+          ...(!!multiGuestId ? { id: multiGuestId } : {}),
+        }}
         gameData={gameData}
       />
     );

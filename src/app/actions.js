@@ -1,35 +1,54 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { cookies } from "next/headers";
 const bcrypt = require("bcrypt");
-import * as jose from "jose";
+import { setCookieToken } from "./utils/setCookieToken";
 
 import prisma from "@/utils/prisma";
+
+// const setCookieToken = async (status, mail) => {
+//   const secret = new TextEncoder().encode(process.env.PRIVATE_KEY);
+//   const alg = "HS256";
+
+//   const jwt = await new jose.SignJWT({
+//     [process.env.NEXT_PUBLIC_APP_URL]: true,
+//     mail,
+//   })
+//     .setProtectedHeader({ alg })
+//     .setSubject(status)
+//     .sign(secret);
+
+//   cookies().set({
+//     name: "SG_token",
+//     value: jwt,
+//     httpOnly: true,
+//     path: "/",
+//   });
+// };
 
 export async function connect(prevState, formData) {
   const mail = formData.get("mail");
   const password = formData.get("password");
 
-  const setCookieToken = async (status) => {
-    const secret = new TextEncoder().encode(process.env.PRIVATE_KEY);
-    const alg = "HS256";
+  // const setCookieToken = async (status) => {
+  //   const secret = new TextEncoder().encode(process.env.PRIVATE_KEY);
+  //   const alg = "HS256";
 
-    const jwt = await new jose.SignJWT({
-      [process.env.NEXT_PUBLIC_APP_URL]: true,
-      mail,
-    })
-      .setProtectedHeader({ alg })
-      .setSubject(status)
-      .sign(secret);
+  //   const jwt = await new jose.SignJWT({
+  //     [process.env.NEXT_PUBLIC_APP_URL]: true,
+  //     mail,
+  //   })
+  //     .setProtectedHeader({ alg })
+  //     .setSubject(status)
+  //     .sign(secret);
 
-    cookies().set({
-      name: "SG_token",
-      value: jwt,
-      httpOnly: true,
-      path: "/",
-    });
-  };
+  //   cookies().set({
+  //     name: "SG_token",
+  //     value: jwt,
+  //     httpOnly: true,
+  //     path: "/",
+  //   });
+  // };
 
   let hashedPassword;
   try {
@@ -63,7 +82,7 @@ export async function connect(prevState, formData) {
   }
 
   if (isValidPassword) {
-    setCookieToken("User", mail);
+    await setCookieToken("User", mail);
     redirect(`/categories`);
   } else {
     return {

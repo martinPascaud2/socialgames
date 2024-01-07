@@ -3,8 +3,19 @@
 import prisma from "@/utils/prisma";
 import pusher from "@/utils/pusher";
 
-export async function launchGame(roomId, roomToken, gamers, guests, options) {
-  if (gamers.length < 2)
+export async function launchGame({
+  roomId,
+  roomToken,
+  adminId,
+  gamers,
+  guests,
+  multiGuests,
+  options,
+}) {
+  console.log("gamers launch", gamers);
+  console.log("guests launch", guests);
+  console.log("multiGuests launch", multiGuests);
+  if (gamers.length + guests.length + multiGuests.length < 2)
     throw new Error("Un plus grand nombre de joueurs est requis.");
 
   const startedRoom = await prisma.room.update({
@@ -16,12 +27,53 @@ export async function launchGame(roomId, roomToken, gamers, guests, options) {
     },
   });
 
-  const gamersAndGuests = gamers.map((gamer) => ({ ...gamer, guest: false }));
-  let startIndex = gamers.length + 1;
+  const gamersAndGuests = gamers.map((gamer) => ({
+    ...gamer,
+    guest: false,
+    multiGuest: false,
+  }));
+  // let startIndex = gamers.length + 1;
+  let startIndex = 0;
+  gamers.map((gamer) => {
+    if (gamer.id >= startIndex) startIndex = gamer.id + 1;
+  });
   guests.map((guest) => {
-    gamersAndGuests.push({ id: startIndex, name: guest, guest: true });
+    gamersAndGuests.push({
+      // id: startIndex,
+      id: adminId,
+      name: guest,
+      guest: true,
+      multiGuest: false,
+    });
+    // startIndex++;
+  });
+  console.log("multiGuests launchgame", multiGuests);
+  // let startIndex = gamers.length + 1;
+  multiGuests.map((multiGuest) => {
+    gamersAndGuests.push({
+      id: startIndex,
+      name: multiGuest,
+      guest: false,
+      multiGuest: true,
+    });
     startIndex++;
   });
+
+  // const nameCounts = {};
+  // const oneNamedGamersAndGuests = gamersAndGuests.map((gamer) => {
+  //   console.log("gamer launch", gamer);
+  //   let { name } = gamer;
+  //   const count = nameCounts[name] || 0;
+  //   nameCounts[name] = (nameCounts[name] || 0) + 1;
+
+  //   if (count > 0) {
+  //     name = `${name}(${count + 1})`;
+  //   }
+
+  //   return { ...gamer, name };
+  // });
+
+  // console.log("oneNamedGamersAndGuests", oneNamedGamersAndGuests);
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
@@ -29,13 +81,17 @@ export async function launchGame(roomId, roomToken, gamers, guests, options) {
       admin: startedRoom.admin,
       activePlayer: gamers[0],
       gamers: gamersAndGuests,
+      // gamers: oneNamedGamersAndGuests,
       card: 0,
     },
   });
 }
 
-const getNextGamer = (gamerList, gamerId) => {
-  const index = gamerList.findIndex((gamer) => gamer.id === gamerId);
+// const getNextGamer = (gamerList, gamerId) => {
+const getNextGamer = (gamerList, activePlayer) => {
+  const index = gamerList.findIndex(
+    (gamer) => gamer.id === activePlayer.id && gamer.name === activePlayer.name
+  );
   const nextIndex = (index + 1) % gamerList.length;
   const nextGamer = gamerList[nextIndex];
   return nextGamer;
@@ -218,7 +274,7 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
   let actionSecond = gameData?.secondRemain?.action || [];
   let veriteSecond = gameData?.secondRemain?.verite || [];
   const registeredGamers = gameData.gamers.filter(
-    (gamer) => gamer.guest === false
+    (gamer) => gamer.guest === false && gamer.multiGuest === false
   );
 
   if (!gameData.remain) {
@@ -236,7 +292,8 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
 
   const newActivePlayer = getNextGamer(
     gameData.gamers,
-    gameData.activePlayer.id
+    // gameData.activePlayer.id
+    gameData.activePlayer
   );
 
   if (choice === "action") {
@@ -253,6 +310,11 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
     ({ newRemain: veriteRemain, secondRemain: veriteSecond } =
       await getNextRemain("vérité", registeredGamers, veriteSecond));
   }
+
+  console.log("actionRemain", actionRemain);
+  console.log("veriteRemain", veriteRemain);
+  console.log("actionSecond", actionSecond);
+  console.log("veriteSecond", veriteSecond);
 
   const newData = (
     await prisma.room.update({
