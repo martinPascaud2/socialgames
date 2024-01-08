@@ -119,6 +119,7 @@ export default function Room({
       setIsChosen(true);
       return;
     }
+    console.log("un joinRoom, user:", user, "gamerList", gamerList);
     const token = inputToken.toUpperCase();
     const id = await getRoomId(token);
     const uniqueUserName = await getUniqueName(id, user.name);
@@ -152,7 +153,8 @@ export default function Room({
     } catch (error) {
       setServerMessage(error.message);
     }
-  }, [geoLocation, inputToken, user]);
+    // }, [geoLocation, inputToken, user]);
+  }, [inputToken, user]);
 
   const addMultiGuest = useCallback(async () => {
     if (!isChosen) {
@@ -197,7 +199,7 @@ export default function Room({
     } catch (error) {
       setServerMessage(error.message);
     }
-  }, [geoLocation]);
+  }, [geoLocation, searchParams]);
 
   useEffect(() => {
     if (searchToken) {
@@ -205,7 +207,7 @@ export default function Room({
       if (!user.multiGuest) joinRoom();
       else addMultiGuest();
     }
-  }, [searchToken, joinRoom]);
+  }, [searchToken, joinRoom, addMultiGuest]);
 
   const addGuest = async () => {
     console.log("roomId addguest", roomId);
@@ -276,7 +278,7 @@ export default function Room({
                 value={inputToken}
                 className="border focus:outline-none focus:border-2"
               />
-              <button onClick={joinRoom}>Rejoindre</button>
+              <button onClick={() => joinRoom()}>Rejoindre</button>
             </div>
           </>
         ) : (

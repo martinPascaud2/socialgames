@@ -45,9 +45,12 @@ export default async function ActionOuVerite({ params, searchParams }) {
     });
   };
 
+  const { id, name, alreadyActionouverite } = user;
+
   return (
     <Room
-      user={user}
+      // user={user}
+      user={{ id, name, alreadyActionouverite }}
       friendList={friendList}
       categorie={params?.categorie}
       gameName="actionouverite"

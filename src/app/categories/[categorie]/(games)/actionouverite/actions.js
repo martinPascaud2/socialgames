@@ -38,7 +38,7 @@ export async function serverCreate(token, user, game, geoLocation) {
 }
 
 export async function serverJoin({ token, user }) {
-  console.log("user serverjoin", user);
+  console.log("user serverjoin 14", user);
   // if (!geoLocation)
   //   throw new Error(
   //     "Veuillez activer votre géolocalisation ; détection en cours..."
@@ -54,6 +54,7 @@ export async function serverJoin({ token, user }) {
   });
 
   if (!room) throw new Error("Token incorrect");
+  //ici
   if (room.started && !room.gamerList.some((gamer) => gamer.name === user.name))
     throw new Error("La partie a déjà été lancée");
 
@@ -66,26 +67,63 @@ export async function serverJoin({ token, user }) {
   //   throw new Error("Veuillez vous approcher de la zone de jeu");
 
   const newGamerList = [...room.gamerList, user];
+  // const newGamerList = room.gamerList.map((gamer) => {
+  //   const uniqueNamedGamer = {
+  //     ...gamer,
+  //     ...(gamer.id === user.id ? { name: user.name } : {}),
+  //   };
+  //   return uniqueNamedGamer;
+  // });
   console.log("newGamerList", newGamerList);
+  // console.log("newGamerListTEST", newGamerListTEST);
 
+  // const updatedRoom = await prisma.room.update({
   const updatedRoom = await prisma.room.update({
     where: {
       id: roomId,
     },
     data: {
+      // gamerList: {
       gamerList: {
+        connect: {
+          id: user.id,
+        },
+
         // set: newGamerList.map((u) => ({ id: u.id, name: u.name })),
-        // set: newGamerList,
-        set: newGamerList.map((u) => ({ id: u.id })),
+        // { ...newGamerList },
+        // set: newGamerList.map((u) => ({ id: u.id })),
+        // },
+        // gamerList: newGamerList,
       },
-      // gamerList: [...newGamerList],
     },
     include: {
       gamerList: true,
     },
   });
 
-  console.log("updatedRoom", updatedRoom);
+  const updatedRoomTEST = await prisma.room.update({
+    where: {
+      id: roomId,
+    },
+    data: {
+      gamerList: {
+        update: {
+          where: {
+            id: user.id,
+          },
+          data: {
+            name: user.name,
+          },
+        },
+      },
+    },
+    include: {
+      gamerList: true,
+    },
+  });
+  console.log("updatedRoomTEST", updatedRoomTEST);
+
+  console.log("updatedRoom serverjoin", updatedRoom);
   const clientGamerList = updatedRoom.gamerList.map((user) => ({
     id: user.id,
     name: user.name,
@@ -112,6 +150,8 @@ export async function serverAddGuest({ token, guestName }) {
       token,
     },
   });
+  if (!room) throw new Error("Token incorrect");
+
   const { id: roomId, guests } = room;
 
   console.log("room serverAddGuest before", room);
@@ -148,6 +188,7 @@ export async function serverAddGuest({ token, guestName }) {
 }
 
 export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
+  console.log("allé dans add");
   console.log("geoLocation", geoLocation);
   if (!geoLocation)
     throw new Error(
