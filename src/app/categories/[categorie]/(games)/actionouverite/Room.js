@@ -305,20 +305,6 @@ export default function Room({
 
             {isAdmin && (
               <>
-                <button onClick={() => setShowRoomRefs(!showRoomRefs)}>
-                  {!showRoomRefs ? "Montrer" : "Cacher"} les références
-                </button>
-                {showRoomRefs && (
-                  <>
-                    <div>token : {roomToken}</div>
-                    <QRCode
-                      value={`${process.env.NEXT_PUBLIC_APP_URL}/categories/${categorie}/${gameName}?token=${roomToken}`}
-                    />
-                  </>
-                )}
-
-                <hr />
-
                 <h1>Invitez vos amis !</h1>
                 <h2 className="text-sm italic">
                   Ils recevront votre invitation via &quot;Invitations aux
@@ -346,7 +332,26 @@ export default function Room({
 
                 <hr />
 
-                <h1>Invitez des guests !</h1>
+                <h1>Invitez des guests multiscreen !</h1>
+                <h2 className="text-sm italic">
+                  Ils joueront sur leur propre écran.
+                </h2>
+                <button
+                  onClick={() => setShowRoomRefs(!showRoomRefs)}
+                  className="border border-blue-300 bg-blue-100"
+                >
+                  {!showRoomRefs ? "Montrer" : "Cacher"} le QrCode
+                </button>
+                {showRoomRefs && (
+                  <QRCode
+                    // value={`${process.env.NEXT_PUBLIC_APP_URL}/categories/${categorie}/${gameName}?token=${roomToken}`}
+                    value={`/categories/${categorie}/${gameName}?token=${roomToken}`}
+                  />
+                )}
+
+                <hr />
+
+                <h1>Ajoutez des guests monoscreen !</h1>
                 <h2 className="text-sm italic">
                   Ils utiliseront votre écran à leur tour de jeu.
                 </h2>

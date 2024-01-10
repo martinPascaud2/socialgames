@@ -10,8 +10,9 @@ export default function GuestLink({ setCookieToken }) {
         await setCookieToken("Guest", "guest");
         router.push("/guest");
       }}
+      className="border border-blue-300 bg-blue-100"
     >
-      bouton guest
+      Connexion guest
     </button>
   );
 }

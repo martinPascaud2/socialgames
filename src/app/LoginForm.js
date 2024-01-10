@@ -39,12 +39,16 @@ export function LoginForm() {
 
         <div className="text-justify font-bold">{state.message}</div>
 
-        <button type="submit">Se connecter</button>
+        <button type="submit" className="border border-blue-300 bg-blue-100">
+          Se connecter
+        </button>
 
         <p aria-live="polite" className="sr-only">
           {state?.srMessage}
         </p>
-        <Link href="/signin">Créer un compte</Link>
+        <Link href="/signin" className="border border-blue-300 bg-blue-100">
+          Créer un compte
+        </Link>
       </form>
     </>
   );
