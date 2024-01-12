@@ -25,8 +25,7 @@ const createConfig = (props) => {
   return config;
 };
 
-//utils
-const Html5QrcodePlugin = (props) => {
+export default function Html5QrcodePlugin(props) {
   useEffect(() => {
     if (!props.scanning) return;
 
@@ -55,6 +54,4 @@ const Html5QrcodePlugin = (props) => {
   }, [props]);
 
   return <div id={qrcodeRegionId} />;
-};
-
-export default Html5QrcodePlugin;
+}

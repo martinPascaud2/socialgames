@@ -1,18 +1,14 @@
 import pusher from "@/utils/pusher";
-
-import Room from "./Room";
-import Actionouverite from "./Actionouverite";
-
-import { launchGame } from "./gameActions";
-
 import getUser from "@/utils/getUser";
 import { getRoomFriendList } from "@/utils/getFriendList";
 
+import Room from "./Room";
+import Actionouverite from "./Actionouverite";
+import { launchGame } from "./gameActions";
+
 export default async function ActionOuVerite({ params, searchParams }) {
-  const user = await getUser(); //gérer le retour guest
-  console.log("user AoV", user);
-  console.log("searchParams AoV", searchParams);
-  //idem
+  const user = await getUser();
+
   if (!user)
     return (
       <Room
@@ -25,9 +21,11 @@ export default async function ActionOuVerite({ params, searchParams }) {
         launchGame={null}
       />
     );
+
+  const { id, name, alreadyActionouverite } = user;
   const friendList = await getRoomFriendList({ userId: user.id });
 
-  //mettre dans les outils
+  //utils quand 2e jeu
   const inviteFriend = async ({
     userName,
     friendMail,
@@ -45,11 +43,8 @@ export default async function ActionOuVerite({ params, searchParams }) {
     });
   };
 
-  const { id, name, alreadyActionouverite } = user;
-
   return (
     <Room
-      // user={user}
       user={{ id, name, alreadyActionouverite }}
       friendList={friendList}
       categorie={params?.categorie}

@@ -14,9 +14,6 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
   const [triggerReveal, setTriggerReveal] = useState(false);
   const [triggerTranslateOld, setTriggerTranslateOld] = useState(false);
 
-  console.log("user AoV", user);
-  console.log("gameData Aov", gameData);
-
   const isActive =
     gameData.activePlayer?.id === user.id ||
     (gameData.activePlayer?.guest && gameData.admin === user.name);

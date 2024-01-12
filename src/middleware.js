@@ -21,11 +21,9 @@ export async function middleware(request) {
   }
 
   const { userStatus } = await jwtVerify(token);
-  console.log("userStatus", userStatus);
 
   if (
     token &&
-    // (request.nextUrl.pathname === "/" || request.nextUrl.pathname === "/signin")
     (request.nextUrl.pathname === "/" ||
       request.nextUrl.pathname === "/signin") &&
     userStatus !== "Guest"
@@ -40,10 +38,6 @@ export async function middleware(request) {
   ) {
     return NextResponse.redirect(new URL("/guest", request.url));
   }
-  // const isGuestAllowed = checkGuestAllowed(request.nextUrl.href);
-  // console.log("isGuestAllowed", isGuestAllowed);
-  // const { userStatus } = await jwtVerify(token);
-  // console.log("userStatus", userStatus);
 
   if (
     userStatus !== "Admin" &&

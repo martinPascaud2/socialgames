@@ -3,10 +3,10 @@ import { revalidatePath } from "next/cache";
 
 import pusher from "@/utils/pusher";
 import prisma from "@/utils/prisma";
-import Categories from "./Categories";
 import getUser from "@/utils/getUser";
-import getFriendList from "@/utils/getFriendList";
 import getDistance from "@/utils/getDistance";
+import getFriendList from "@/utils/getFriendList";
+import Categories from "./Categories";
 
 export default async function CategoriesPage() {
   const user = await getUser();

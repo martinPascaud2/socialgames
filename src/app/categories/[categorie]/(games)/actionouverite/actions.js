@@ -29,7 +29,6 @@ export async function serverCreate(token, user, game, geoLocation) {
     },
   });
 
-  //dispensable
   const gamerList = newRoom.gamerList.map((gamer) => ({
     id: gamer.id,
     name: gamer.name,
@@ -38,12 +37,6 @@ export async function serverCreate(token, user, game, geoLocation) {
 }
 
 export async function serverJoin({ token, user }) {
-  console.log("user serverjoin 14", user);
-  // if (!geoLocation)
-  //   throw new Error(
-  //     "Veuillez activer votre géolocalisation ; détection en cours..."
-  //   );
-
   const room = await prisma.room.findFirst({
     where: {
       token,
@@ -154,7 +147,6 @@ export async function serverAddGuest({ token, guestName }) {
 
   const { id: roomId, guests } = room;
 
-  console.log("room serverAddGuest before", room);
   const newGuests = Object.keys(
     (
       await prisma.room.update({
@@ -173,28 +165,15 @@ export async function serverAddGuest({ token, guestName }) {
     guestList: newGuests,
   });
 
-  //enlever
-  const updatedRoom = await prisma.room.findFirst({
-    where: {
-      token,
-    },
-    include: {
-      gamerList: true,
-    },
-  });
-  console.log("updatedRoom", updatedRoom);
-
   return newGuests;
 }
 
 export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
-  console.log("allé dans add");
-  console.log("geoLocation", geoLocation);
   if (!geoLocation)
     throw new Error(
       "Veuillez activer votre géolocalisation ; détection en cours..."
     );
-  console.log("toujours rien");
+
   const room = await prisma.room.findFirst({
     where: {
       token,
@@ -207,7 +186,7 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
   if (!room) throw new Error("Token incorrect");
   if (
     room.started &&
-    !room.gamerList.some((gamer) => gamer.name === multiGuestName) //vérifier multiguest dans liste
+    !room.gamerList.some((gamer) => gamer.name === multiGuestName)
   )
     throw new Error("La partie a déjà été lancée");
 
@@ -217,10 +196,7 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
   if (distance > 50)
     throw new Error("Veuillez vous approcher de la zone de jeu");
 
-  const guests = Object.keys(room.guests); //ici
-
-  console.log("room", room);
-
+  const guests = Object.keys(room.guests);
   const newMultiGuests = Object.keys(
     (
       await prisma.room.update({
@@ -234,7 +210,6 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
       })
     ).multiGuests
   );
-  console.log("newMultiGuests", newMultiGuests);
 
   await pusher.trigger(`room-${token}`, "room-event", {
     multiGuestList: newMultiGuests,
@@ -248,36 +223,23 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
   };
 }
 
-export async function joinAgain(token) {
-  const { started, gameData } = await prisma.room.findFirst({
-    where: {
-      token,
-    },
-    select: {
-      started: true,
-      gameData: true,
-    },
-  });
-  await pusher.trigger(`room-${token}`, "room-event", {
-    started,
-    gameData,
-  });
-}
+// export async function joinAgain(token) {
+//   const { started, gameData } = await prisma.room.findFirst({
+//     where: {
+//       token,
+//     },
+//     select: {
+//       started: true,
+//       gameData: true,
+//     },
+//   });
+//   await pusher.trigger(`room-${token}`, "room-event", {
+//     started,
+//     gameData,
+//   });
+// }
 
 export async function getUniqueName(roomId, wantedName) {
-  console.log("wantedName", wantedName);
-  //utils
-  // const genToken = (length) => {
-  //   let roomToken = "";
-  //   const chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  //   let count = 0;
-  //   while (count < length) {
-  //     roomToken += chars.charAt(Math.floor(Math.random() * chars.length));
-  //     count++;
-  //   }
-  //   return roomToken;
-  // };
-  // console.log("getUniqueName");
   const room = await prisma.room.findFirst({
     where: {
       id: roomId,
@@ -286,24 +248,15 @@ export async function getUniqueName(roomId, wantedName) {
       gamerList: true,
     },
   });
-  console.log("room uniqueName", room);
   const gamers = room.gamerList.map((gamer) => gamer.name);
-  console.log("gamers uniqueName", gamers);
   const guests = Object.keys(room.guests);
-  console.log("guests uniqueName", guests);
   const multiGuests = Object.keys(room.multiGuests);
-  console.log("multiGuests uniqueName", multiGuests);
   const allNames = [...gamers, ...guests, ...multiGuests];
-  console.log("allNames", allNames);
+
   const getAlreadyTaken = (triedName) => {
-    console.log(
-      "triedName",
-      triedName,
-      "allNames.some((name) => name === triedName)",
-      allNames.some((name) => name === triedName)
-    );
     return allNames.some((name) => name === triedName);
   };
+
   let uniqueName = wantedName;
   let addedNumber = 0;
   while (getAlreadyTaken(uniqueName)) {
@@ -313,15 +266,6 @@ export async function getUniqueName(roomId, wantedName) {
     addedNumber++;
   }
 
-  // const occurences = allNames.reduce((acc, name) => {
-  //   if (name === wantedName) return acc + 1;
-  //   return acc;
-  // }, 0);
-  // console.log("occurences", occurences);
-  // const uniqueName = `${wantedName}${
-  //   occurences > 0 ? `(${occurences + 1})` : ""
-  // }`;
-  console.log("uniqueName in function", uniqueName);
   return uniqueName;
 }
 

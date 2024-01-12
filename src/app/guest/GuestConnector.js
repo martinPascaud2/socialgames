@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { throttle } from "lodash";
 
-import Html5QrcodePlugin from "@/categories/Html5QrcodePlugin";
+import Html5QrcodePlugin from "@/components/Html5QrcodePlugin";
 
 export default function GuestConnector() {
   const router = useRouter();
@@ -18,25 +18,17 @@ export default function GuestConnector() {
   useEffect(() => {
     setScanning(true);
   }, []);
+
   const onNewScanResult = useCallback(
     throttle(async (decodedText) => {
       if (scanLocked) return;
-      //   let userLocation;
       try {
-        // userLocation = await getLocation();
-        // await addFriend({ userLocation, friendCode: decodedText });
-        console.log("decodedText", decodedText);
         setGameUrl(decodedText);
         setScanLocked(true);
         setToggleInput(true);
       } catch (error) {
         setServerMessage(error.message);
       }
-      //   finally {
-      //     setTimeout(() => {
-      //       setScanLocked(false);
-      //     }, 10000);
-      //   }
     }, 10000),
     []
   );
@@ -49,10 +41,6 @@ export default function GuestConnector() {
       router.push(guestUrl);
     }
   };
-
-  console.log("gameUrl", gameUrl);
-  console.log("guestName", guestName);
-  console.log("serverMessage", serverMessage);
 
   return (
     <div>
@@ -68,6 +56,7 @@ export default function GuestConnector() {
           />
         </>
       )}
+
       {toggleInput && (
         <div className="flex flex-col justify-center">
           <div className="text-center">Choisissez votre pseudonyme Guest</div>
@@ -83,6 +72,7 @@ export default function GuestConnector() {
           </button>
         </div>
       )}
+
       <div>{serverMessage}</div>
     </div>
   );

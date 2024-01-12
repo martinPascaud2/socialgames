@@ -4,7 +4,6 @@ import * as jose from "jose";
 import { cookies } from "next/headers";
 
 export async function setCookieToken(status, mail) {
-  console.log("status là", status, "mail", mail);
   const secret = new TextEncoder().encode(process.env.PRIVATE_KEY);
   const alg = "HS256";
 

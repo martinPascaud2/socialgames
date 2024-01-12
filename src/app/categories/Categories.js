@@ -7,11 +7,10 @@ import classNames from "classnames";
 import QRCode from "react-qr-code";
 import Pusher from "pusher-js";
 
-import Html5QrcodePlugin from "./Html5QrcodePlugin";
+import Html5QrcodePlugin from "@/components/Html5QrcodePlugin";
 import getLocation from "@/utils/getLocation";
 
 import { categories, gameNames } from "@/assets/globals";
-
 var pusher = new Pusher("61853af9f30abf9d5b3d", {
   cluster: "eu",
 });
