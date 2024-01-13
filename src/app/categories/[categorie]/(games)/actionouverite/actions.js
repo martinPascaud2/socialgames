@@ -34,8 +34,7 @@ export async function serverJoin({ token, user }) {
 
   if (Object.values(room.gamers).includes(user.id)) return;
   if (!room) throw new Error("Token incorrect");
-  // if (room.started && !room.gamerList.some((gamer) => gamer.name === user.name))
-  //   throw new Error("La partie a déjà été lancée");
+  if (room.started) throw new Error("La partie a déjà été lancée");
 
   const { id: roomId } = room;
   const newGamerList = Object.keys(
@@ -62,7 +61,6 @@ export async function serverJoin({ token, user }) {
     gamers: newGamerList,
     guests,
     multiGuests,
-    alreadyStarted: room.started,
   };
 }
 
@@ -110,11 +108,7 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
   });
 
   if (!room) throw new Error("Token incorrect");
-  // if (
-  //   room.started &&
-  //   !room.gamerList.some((gamer) => gamer.name === multiGuestName)
-  // )
-  //   throw new Error("La partie a déjà été lancée");
+  if (room.started) throw new Error("La partie a déjà été lancée");
 
   const { id: roomId, adminLocation, gamers, multiGuests } = room;
 
@@ -146,7 +140,6 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
     gamerList,
     guests,
     multiGuests: newMultiGuests,
-    alreadyStarted: room.started,
   };
 }
 

@@ -120,7 +120,7 @@ export default function Room({
         user: { ...user, name: uniqueUserName },
       });
       if (joinData === undefined) return;
-      const { gamers, guests, multiGuests, alreadyStarted } = joinData;
+      const { gamers, guests, multiGuests } = joinData;
 
       const channel = pusher.subscribe(`room-${token}`);
       channel.bind("room-event", function (data) {
@@ -137,7 +137,6 @@ export default function Room({
       setGuestList(guests);
       setMultiGuestList(multiGuests);
       setServerMessage("");
-      // alreadyStarted && (await joinAgain(token));
     } catch (error) {
       setServerMessage(error.message);
     }
@@ -156,8 +155,11 @@ export default function Room({
     );
 
     try {
-      const { gamerList, guests, multiGuests, alreadyStarted } =
-        await serverAddMultiGuest(token, multiGuestName, geoLocation);
+      const { gamerList, guests, multiGuests } = await serverAddMultiGuest(
+        token,
+        multiGuestName,
+        geoLocation
+      );
 
       const channel = pusher.subscribe(`room-${token}`);
       channel.bind("room-event", function (data) {
