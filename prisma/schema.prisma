@@ -39,6 +39,7 @@ model Room {
   admin         String
   adminLocation Json?
   gamerList     User[]
+  gamers        Json?
   guests        Json?
   multiGuests   Json?
   started       Boolean @default(false)

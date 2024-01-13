@@ -22,7 +22,7 @@ export default async function ActionOuVerite({ params, searchParams }) {
       />
     );
 
-  const { id, name, alreadyActionouverite } = user;
+  const { id, name } = user;
   const friendList = await getRoomFriendList({ userId: user.id });
 
   //utils quand 2e jeu
@@ -45,7 +45,7 @@ export default async function ActionOuVerite({ params, searchParams }) {
 
   return (
     <Room
-      user={{ id, name, alreadyActionouverite }}
+      user={{ id, name }}
       friendList={friendList}
       categorie={params?.categorie}
       gameName="actionouverite"

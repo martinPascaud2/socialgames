@@ -10,30 +10,19 @@ export async function serverCreate(token, user, game, geoLocation) {
       "Veuillez activer votre géolocalisation ; détection en cours..."
     );
 
-  const userList = [user];
-
-  const newRoom = await prisma.room.create({
+  await prisma.room.create({
     data: {
       game,
       token,
       admin: user.name,
       adminLocation: geoLocation,
-      gamerList: {
-        connect: userList.map((u) => ({ id: u.id })),
-      },
+      gamers: { [user.name]: user.id },
       guests: {},
       multiGuests: {},
     },
-    include: {
-      gamerList: true,
-    },
   });
 
-  const gamerList = newRoom.gamerList.map((gamer) => ({
-    id: gamer.id,
-    name: gamer.name,
-  }));
-  return gamerList;
+  return [user.name];
 }
 
 export async function serverJoin({ token, user }) {
@@ -41,96 +30,36 @@ export async function serverJoin({ token, user }) {
     where: {
       token,
     },
-    include: {
-      gamerList: true,
-    },
   });
 
+  if (Object.values(room.gamers).includes(user.id)) return;
   if (!room) throw new Error("Token incorrect");
-  //ici
-  if (room.started && !room.gamerList.some((gamer) => gamer.name === user.name))
-    throw new Error("La partie a déjà été lancée");
+  // if (room.started && !room.gamerList.some((gamer) => gamer.name === user.name))
+  //   throw new Error("La partie a déjà été lancée");
 
-  console.log("room serverJoin", room);
-  // const { adminLocation, id: roomId } = room;
   const { id: roomId } = room;
-
-  // const distance = getDistance({ first: adminLocation, second: geoLocation });
-  // if (distance > 50)
-  //   throw new Error("Veuillez vous approcher de la zone de jeu");
-
-  const newGamerList = [...room.gamerList, user];
-  // const newGamerList = room.gamerList.map((gamer) => {
-  //   const uniqueNamedGamer = {
-  //     ...gamer,
-  //     ...(gamer.id === user.id ? { name: user.name } : {}),
-  //   };
-  //   return uniqueNamedGamer;
-  // });
-  console.log("newGamerList", newGamerList);
-  // console.log("newGamerListTEST", newGamerListTEST);
-
-  // const updatedRoom = await prisma.room.update({
-  const updatedRoom = await prisma.room.update({
-    where: {
-      id: roomId,
-    },
-    data: {
-      // gamerList: {
-      gamerList: {
-        connect: {
-          id: user.id,
-        },
-
-        // set: newGamerList.map((u) => ({ id: u.id, name: u.name })),
-        // { ...newGamerList },
-        // set: newGamerList.map((u) => ({ id: u.id })),
-        // },
-        // gamerList: newGamerList,
-      },
-    },
-    include: {
-      gamerList: true,
-    },
-  });
-
-  const updatedRoomTEST = await prisma.room.update({
-    where: {
-      id: roomId,
-    },
-    data: {
-      gamerList: {
-        update: {
-          where: {
-            id: user.id,
-          },
-          data: {
-            name: user.name,
+  const newGamerList = Object.keys(
+    (
+      await prisma.room.update({
+        where: { id: roomId },
+        data: {
+          gamers: {
+            ...room.gamers,
+            [user.name]: user.id,
           },
         },
-      },
-    },
-    include: {
-      gamerList: true,
-    },
-  });
-  console.log("updatedRoomTEST", updatedRoomTEST);
-
-  console.log("updatedRoom serverjoin", updatedRoom);
-  const clientGamerList = updatedRoom.gamerList.map((user) => ({
-    id: user.id,
-    name: user.name,
-  }));
-
+      })
+    ).gamers
+  );
   const guests = Object.keys(room.guests);
   const multiGuests = Object.keys(room.multiGuests);
 
   await pusher.trigger(`room-${token}`, "room-event", {
-    clientGamerList,
+    clientGamerList: newGamerList,
   });
 
   return {
-    gamers: clientGamerList,
+    gamers: newGamerList,
     guests,
     multiGuests,
     alreadyStarted: room.started,
@@ -178,24 +107,22 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
     where: {
       token,
     },
-    include: {
-      gamerList: true,
-    },
   });
 
   if (!room) throw new Error("Token incorrect");
-  if (
-    room.started &&
-    !room.gamerList.some((gamer) => gamer.name === multiGuestName)
-  )
-    throw new Error("La partie a déjà été lancée");
+  // if (
+  //   room.started &&
+  //   !room.gamerList.some((gamer) => gamer.name === multiGuestName)
+  // )
+  //   throw new Error("La partie a déjà été lancée");
 
-  const { id: roomId, adminLocation, gamerList, multiGuests } = room;
+  const { id: roomId, adminLocation, gamers, multiGuests } = room;
 
   const distance = getDistance({ first: adminLocation, second: geoLocation });
   if (distance > 50)
     throw new Error("Veuillez vous approcher de la zone de jeu");
 
+  const gamerList = Object.keys(gamers);
   const guests = Object.keys(room.guests);
   const newMultiGuests = Object.keys(
     (
@@ -223,32 +150,13 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
   };
 }
 
-// export async function joinAgain(token) {
-//   const { started, gameData } = await prisma.room.findFirst({
-//     where: {
-//       token,
-//     },
-//     select: {
-//       started: true,
-//       gameData: true,
-//     },
-//   });
-//   await pusher.trigger(`room-${token}`, "room-event", {
-//     started,
-//     gameData,
-//   });
-// }
-
 export async function getUniqueName(roomId, wantedName) {
   const room = await prisma.room.findFirst({
     where: {
       id: roomId,
     },
-    include: {
-      gamerList: true,
-    },
   });
-  const gamers = room.gamerList.map((gamer) => gamer.name);
+  const gamers = Object.keys(room.gamers);
   const guests = Object.keys(room.guests);
   const multiGuests = Object.keys(room.multiGuests);
   const allNames = [...gamers, ...guests, ...multiGuests];

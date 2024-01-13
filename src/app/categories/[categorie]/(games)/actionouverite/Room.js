@@ -93,8 +93,9 @@ export default function Room({
         data.gameData && setGameData(data.gameData);
       });
 
-      setIsAdmin(true);
       setRoomToken(newRoomToken);
+      setIsAdmin(true);
+      setUniqueName(user.name);
       setGamerList(gamers);
       setIsChosen(true);
       setServerMessage("");
@@ -104,7 +105,7 @@ export default function Room({
   };
 
   const joinRoom = useCallback(async () => {
-    if (!isChosen) {
+    if (!isChosen || !inputToken) {
       setIsChosen(true);
       return;
     }
@@ -114,10 +115,12 @@ export default function Room({
     const uniqueUserName = await getUniqueName(id, user.name);
 
     try {
-      const { gamers, guests, multiGuests, alreadyStarted } = await serverJoin({
+      const joinData = await serverJoin({
         token,
         user: { ...user, name: uniqueUserName },
       });
+      if (joinData === undefined) return;
+      const { gamers, guests, multiGuests, alreadyStarted } = joinData;
 
       const channel = pusher.subscribe(`room-${token}`);
       channel.bind("room-event", function (data) {
@@ -170,7 +173,7 @@ export default function Room({
       setGamerList(gamerList);
       setGuestList(guests);
       setMultiGuestList(multiGuests);
-      setServerMessage(`Guest ${multiGuestName} a rejoint le salon`); //???
+      setServerMessage("");
     } catch (error) {
       setServerMessage(error.message);
     }
@@ -234,7 +237,9 @@ export default function Room({
       <>
         {!isChosen ? (
           <>
-            <button onClick={createRoom}>Créer une nouvelle partie</button>
+            <button onClick={() => createRoom()}>
+              Créer une nouvelle partie
+            </button>
 
             <div>
               <input
@@ -250,7 +255,7 @@ export default function Room({
             <div>
               liste des joueurs
               {gamerList.map((gamer) => (
-                <div key={gamer.name}>{gamer.name}</div>
+                <div key={gamer}>{gamer}</div>
               ))}
               {guestList.map((guest, i) => (
                 <div key={i}>

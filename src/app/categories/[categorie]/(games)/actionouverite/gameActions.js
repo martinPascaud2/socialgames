@@ -25,8 +25,9 @@ export async function launchGame({
   });
 
   // utils quand 2e jeu
-  const gamersAndGuests = gamers.map((gamer) => ({
-    ...gamer,
+  const gamersAndGuests = Object.entries(startedRoom.gamers).map((gamer) => ({
+    id: gamer[1],
+    name: gamer[0],
     guest: false,
     multiGuest: false,
   }));
@@ -41,7 +42,7 @@ export async function launchGame({
   });
 
   let startIndex = 0;
-  gamers.map((gamer) => {
+  gamersAndGuests.map((gamer) => {
     if (gamer.id >= startIndex) startIndex = gamer.id + 1;
   });
   multiGuests.map((multiGuest) => {
@@ -58,7 +59,7 @@ export async function launchGame({
     started: startedRoom.started,
     gameData: {
       admin: startedRoom.admin,
-      activePlayer: gamers[0],
+      activePlayer: gamersAndGuests[0],
       gamers: gamersAndGuests,
       card: 0,
     },
