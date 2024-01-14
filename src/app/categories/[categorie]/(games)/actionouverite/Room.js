@@ -18,6 +18,7 @@ import {
   serverAddMultiGuest,
   getUniqueName,
   getRoomId,
+  getRoomRefs,
 } from "./actions";
 
 export default function Room({
@@ -49,17 +50,19 @@ export default function Room({
   const [geoLocation, setGeoLocation] = useState(null);
 
   const [roomId, setRoomId] = useState(0);
+  const [isPrivate, setIsPrivate] = useState(false);
   const [gameData, setGameData] = useState({});
 
   const searchParams = useSearchParams();
   const searchToken = searchParams.get("token");
 
   useEffect(() => {
-    async function getId() {
-      const id = await getRoomId(roomToken);
+    async function get() {
+      const { id, priv } = await getRoomRefs(roomToken);
       setRoomId(id);
+      priv && setIsPrivate(true);
     }
-    getId();
+    get();
 
     return () => {
       pusher.unsubscribe(`room-${roomToken}`);
@@ -75,12 +78,13 @@ export default function Room({
     }
   }, []);
 
-  const createRoom = async () => {
+  const createRoom = async (privacy) => {
     const newRoomToken = genToken(5);
 
     try {
       const gamers = await serverCreate(
         newRoomToken,
+        privacy,
         user,
         gameName,
         geoLocation
@@ -239,18 +243,30 @@ export default function Room({
       <>
         {!isChosen ? (
           <>
-            <button onClick={() => createRoom()}>
-              Créer une nouvelle partie
+            <button
+              onClick={() => createRoom("public")}
+              className="border border-blue-300 bg-blue-100"
+            >
+              Nouvelle partie publique
             </button>
+            <h2 className="text-sm italic">
+              Tous les amis pourront vous rejoindre.
+            </h2>
 
-            <div>
-              <input
-                onChange={(event) => setInputToken(event.target.value)}
-                value={inputToken}
-                className="border focus:outline-none focus:border-2"
-              />
-              <button onClick={() => joinRoom()}>Rejoindre</button>
-            </div>
+            <hr />
+
+            <button
+              onClick={() => {
+                createRoom("private");
+                setIsPrivate(true);
+              }}
+              className="border border-blue-300 bg-blue-100"
+            >
+              Nouvelle partie privée
+            </button>
+            <h2 className="text-sm italic">
+              Seuls les amis invités pourront vous rejoindre.
+            </h2>
           </>
         ) : (
           <>
@@ -274,7 +290,7 @@ export default function Room({
 
             <hr />
 
-            {isAdmin && (
+            {isPrivate && (
               <>
                 <h1>Invitez vos amis !</h1>
                 <h2 className="text-sm italic">
@@ -300,7 +316,11 @@ export default function Room({
                     </button>
                   ))}
                 </div>
+              </>
+            )}
 
+            {isAdmin && (
+              <>
                 <hr />
 
                 <h1>Invitez des guests multiscreen !</h1>

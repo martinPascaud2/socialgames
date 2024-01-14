@@ -7,10 +7,12 @@ import classNames from "classnames";
 import QRCode from "react-qr-code";
 import Pusher from "pusher-js";
 
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
+
 import Html5QrcodePlugin from "@/components/Html5QrcodePlugin";
 import getLocation from "@/utils/getLocation";
 
-import { categories, gameNames } from "@/assets/globals";
+import { categories, gamesRefs } from "@/assets/globals";
 var pusher = new Pusher("61853af9f30abf9d5b3d", {
   cluster: "eu",
 });
@@ -21,6 +23,7 @@ export default function Categories({
   deleteFriend,
   signOut,
   friendList,
+  getPublicRooms,
 }) {
   const router = useRouter();
 
@@ -120,6 +123,14 @@ export default function Categories({
     };
   }, [user.email]);
 
+  const [publicRooms, setPublicRooms] = useState({});
+  useEffect(() => {
+    const getRooms = async () => {
+      setPublicRooms(await getPublicRooms());
+    };
+    getRooms();
+  }, []);
+
   return (
     <>
       <div
@@ -213,17 +224,40 @@ export default function Categories({
             {QrCodeScanner}
             {showInvitations && (
               <>
-                <div className="text-center text-slate-300">
-                  Invitations de vos amis
+                <div className="border text-center text-slate-300">
+                  Invitations
                 </div>
+                {!invitations.length && (
+                  <div className="text-center text-black">
+                    Pas d&apos;invitation actuellement
+                  </div>
+                )}
                 {invitations.map((invitation, i) => (
                   <Link key={i} href={invitation.link}>
                     <div className="border border-slate-700 bg-slate-300 text-center">
                       {invitation.userName} pour{" "}
-                      {`${gameNames[invitation.gameName]}`}
+                      {`${gamesRefs[invitation.gameName].name}`}
                     </div>
                   </Link>
                 ))}
+                <div
+                  onClick={async () => setPublicRooms(await getPublicRooms())}
+                  className="flex justify-center items-center border text-center text-slate-300"
+                >
+                  Parties publiques <ArrowPathIcon className="ml-2 h-4 w-4" />
+                </div>
+                {Object.entries(publicRooms).map((room) => {
+                  const { friendName, gameName, gamersNumber } = room[1];
+                  return (
+                    <Link key={room[0]} href={`${room[1].link}`}>
+                      <div className="border border-slate-700 bg-slate-300 text-center">
+                        {friendName}
+                        {gamersNumber > 1 && `(+${gamersNumber - 1})`} pour{" "}
+                        {gameName}
+                      </div>
+                    </Link>
+                  );
+                })}
               </>
             )}
           </div>
@@ -285,7 +319,7 @@ export default function Categories({
                 "outline outline-black": showInvitations,
               })}
             >
-              Invitations aux parties
+              Parties de vos amis
             </button>
           </div>
 

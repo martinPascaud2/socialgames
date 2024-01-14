@@ -33,6 +33,6 @@ export const subCategories = {
   ],
 };
 
-export const gameNames = {
-  actionouverite: "Action ou Vérité",
+export const gamesRefs = {
+  actionouverite: { name: "Action ou Vérité", categorie: "categorie1" },
 };

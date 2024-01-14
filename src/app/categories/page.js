@@ -8,9 +8,58 @@ import getDistance from "@/utils/getDistance";
 import getFriendList from "@/utils/getFriendList";
 import Categories from "./Categories";
 
+import { gamesRefs } from "@/assets/globals";
+
 export default async function CategoriesPage() {
   const user = await getUser();
   const friendList = await getFriendList({ userId: user.id });
+
+  const getPublicRooms = async () => {
+    "use server";
+    const publicRooms = {};
+    (
+      await prisma.user.findUnique({
+        where: { id: user.id },
+        select: {
+          friends: {
+            select: {
+              friend: {
+                select: {
+                  room: {
+                    where: {
+                      private: false,
+                      started: false,
+                      creationDate: {
+                        gte: new Date(new Date() - 30 * 60 * 1000),
+                      },
+                    },
+                  },
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      })
+    ).friends.map((ref) => {
+      if (ref.friend.room) {
+        const friendName = ref.friend.name;
+        const { id: roomId, game } = ref.friend.room;
+        const { name: gameName, categorie } = gamesRefs[game];
+        const roomToken = ref.friend.room.token;
+        const link = `${process.env.NEXT_PUBLIC_APP_URL}/categories/${categorie}/${game}?token=${roomToken}`;
+
+        const gamersNumber = publicRooms[`${roomId}`]?.gamersNumber || 0;
+        publicRooms[roomId] = {
+          friendName,
+          gameName,
+          link,
+          gamersNumber: gamersNumber + 1,
+        };
+      }
+    });
+    return publicRooms;
+  };
 
   const addFriend = async ({ userLocation, friendCode }) => {
     "use server";
@@ -96,6 +145,7 @@ export default async function CategoriesPage() {
       deleteFriend={deleteFriend}
       signOut={signOut}
       friendList={friendList}
+      getPublicRooms={getPublicRooms}
     />
   );
 }

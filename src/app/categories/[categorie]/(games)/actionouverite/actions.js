@@ -4,21 +4,34 @@ import prisma from "@/utils/prisma";
 import pusher from "@/utils/pusher";
 import getDistance from "@/utils/getDistance";
 
-export async function serverCreate(token, user, game, geoLocation) {
+export async function serverCreate(token, privacy, user, game, geoLocation) {
   if (!geoLocation)
     throw new Error(
       "Veuillez activer votre géolocalisation ; détection en cours..."
     );
 
-  await prisma.room.create({
+  const roomId = (
+    await prisma.room.create({
+      data: {
+        private: privacy === "private",
+        game,
+        token,
+        admin: user.name,
+        adminLocation: geoLocation,
+        gamers: { [user.name]: user.id },
+        guests: {},
+        multiGuests: {},
+        creationDate: new Date(),
+      },
+    })
+  ).id;
+
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
     data: {
-      game,
-      token,
-      admin: user.name,
-      adminLocation: geoLocation,
-      gamers: { [user.name]: user.id },
-      guests: {},
-      multiGuests: {},
+      roomId,
     },
   });
 
@@ -37,6 +50,16 @@ export async function serverJoin({ token, user }) {
   if (room.started) throw new Error("La partie a déjà été lancée");
 
   const { id: roomId } = room;
+
+  await prisma.user.update({
+    where: {
+      id: user.id,
+    },
+    data: {
+      roomId,
+    },
+  });
+
   const newGamerList = Object.keys(
     (
       await prisma.room.update({
@@ -180,4 +203,17 @@ export async function getRoomId(token) {
     },
   });
   return room?.id;
+}
+
+export async function getRoomRefs(token) {
+  const room = await prisma.room.findFirst({
+    where: {
+      token,
+    },
+    select: {
+      id: true,
+      private: true,
+    },
+  });
+  return { id: room?.id, priv: room?.private };
 }

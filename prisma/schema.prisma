@@ -33,17 +33,19 @@ model Friend {
 }
 
 model Room {
-  id            Int     @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
+  private       Boolean  @default(false)
   game          String
   token         String
   admin         String
   adminLocation Json?
-  gamerList     User[]
   gamers        Json?
   guests        Json?
   multiGuests   Json?
-  started       Boolean @default(false)
+  started       Boolean  @default(false)
   gameData      Json?
+  creationDate  DateTime @db.DateTime(0)
+  User          User[]
 }
 
 model Actionouverite {
