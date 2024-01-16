@@ -38,6 +38,30 @@ export async function serverCreate(token, privacy, user, game, geoLocation) {
   return [user.name];
 }
 
+export async function chooseOneMoreGame({ roomToken }) {
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ended: true,
+    },
+  });
+}
+
+export async function goOneMoreGame({
+  pathname,
+  oldRoomToken,
+  newRoomToken,
+  gameName,
+}) {
+  await pusher.trigger(`room-${oldRoomToken}`, "room-event", {
+    gameData: {
+      nextGame: {
+        name: gameName,
+        path: `${pathname}?token=${newRoomToken}`,
+      },
+    },
+  });
+}
+
 export async function serverJoin({ token, user }) {
   const room = await prisma.room.findFirst({
     where: {

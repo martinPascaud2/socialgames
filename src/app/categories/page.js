@@ -141,11 +141,11 @@ export default async function CategoriesPage() {
   return (
     <Categories
       user={user}
+      friendList={friendList}
       addFriend={addFriend}
       deleteFriend={deleteFriend}
-      signOut={signOut}
-      friendList={friendList}
       getPublicRooms={getPublicRooms}
+      signOut={signOut}
     />
   );
 }

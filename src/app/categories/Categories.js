@@ -2,7 +2,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { throttle } from "lodash";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import classNames from "classnames";
 import QRCode from "react-qr-code";
 import Pusher from "pusher-js";
@@ -10,6 +10,7 @@ import Pusher from "pusher-js";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
 import Html5QrcodePlugin from "@/components/Html5QrcodePlugin";
+import DeleteGroup from "@/components/DeleteGroup";
 import getLocation from "@/utils/getLocation";
 
 import { categories, gamesRefs } from "@/assets/globals";
@@ -19,11 +20,11 @@ var pusher = new Pusher("61853af9f30abf9d5b3d", {
 
 export default function Categories({
   user,
+  friendList,
   addFriend,
   deleteFriend,
-  signOut,
-  friendList,
   getPublicRooms,
+  signOut,
 }) {
   const router = useRouter();
 
@@ -33,6 +34,8 @@ export default function Categories({
   const [togglingParameters, setTogglingParameters] = useState(false);
   const [toggledParameters, setToggledParameters] = useState(false);
 
+  const searchParams = useSearchParams();
+  const isGroup = searchParams.get("group") === "true";
   const handleBgClick = () => {
     setTogglingParameters(!togglingParameters);
     setTimeout(() => {
@@ -134,7 +137,7 @@ export default function Categories({
   return (
     <>
       <div
-        onClick={handleBgClick}
+        onClick={() => !isGroup && handleBgClick()}
         className="z-10 absolute h-screen w-screen"
       />
 
@@ -344,7 +347,7 @@ export default function Categories({
           {categories.map((categorie, index) => (
             <Link
               key={index}
-              href={categorie.href}
+              href={`${categorie.href}${isGroup ? "?group=true" : ""}`}
               className={classNames(
                 `z-20 absolute w-1/3 p-3 text-center border`,
 
@@ -362,6 +365,8 @@ export default function Categories({
             </Link>
           ))}
         </div>
+
+        <DeleteGroup />
       </main>
     </>
   );

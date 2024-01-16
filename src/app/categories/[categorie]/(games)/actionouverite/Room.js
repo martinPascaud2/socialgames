@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import Pusher from "pusher-js";
 import QRCode from "react-qr-code";
 
 import genToken from "@/utils/genToken";
+
+import { gamesRefs } from "@/assets/globals";
 
 var pusher = new Pusher("61853af9f30abf9d5b3d", {
   cluster: "eu",
@@ -13,6 +15,7 @@ var pusher = new Pusher("61853af9f30abf9d5b3d", {
 
 import {
   serverCreate,
+  goOneMoreGame,
   serverJoin,
   serverAddGuest,
   serverAddMultiGuest,
@@ -30,6 +33,11 @@ export default function Room({
   inviteFriend,
   launchGame,
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const searchToken = searchParams.get("token");
+
   const [isAdmin, setIsAdmin] = useState(false);
   const [roomToken, setRoomToken] = useState("");
   const [gamerList, setGamerList] = useState([]);
@@ -52,9 +60,6 @@ export default function Room({
   const [roomId, setRoomId] = useState(0);
   const [isPrivate, setIsPrivate] = useState(false);
   const [gameData, setGameData] = useState({});
-
-  const searchParams = useSearchParams();
-  const searchToken = searchParams.get("token");
 
   useEffect(() => {
     async function get() {
@@ -147,7 +152,7 @@ export default function Room({
   }, [inputToken, user]);
 
   const addMultiGuest = useCallback(async () => {
-    if (!isChosen) {
+    if (!isChosen || !inputToken) {
       setIsChosen(true);
       return;
     }
@@ -183,7 +188,7 @@ export default function Room({
     } catch (error) {
       setServerMessage(error.message);
     }
-  }, [geoLocation, searchParams]);
+  }, [geoLocation, searchParams, inputToken, isChosen]);
 
   useEffect(() => {
     if (searchToken) {
@@ -191,7 +196,7 @@ export default function Room({
       if (!user.multiGuest) joinRoom();
       else addMultiGuest();
     }
-  }, [searchToken, joinRoom, addMultiGuest]);
+  }, [searchToken, joinRoom, addMultiGuest, user.multiGuest]);
 
   const addGuest = async () => {
     if (newGuest.length < 3) {
@@ -237,6 +242,75 @@ export default function Room({
         gameData.gamers.find((gamer) => gamer.name === uniqueName).id
       );
   }, [isStarted, gameData, user, uniqueName]);
+
+  useEffect(() => {
+    const group = JSON.parse(localStorage.getItem("group"));
+    if (!roomToken && group) {
+      group.privacy === "public" ? createRoom("public") : createRoom("private");
+    } else if (group && geoLocation && roomToken) {
+      localStorage.removeItem("group");
+
+      const addElderGuests = async () => {
+        let elderGuests = [];
+        await Promise.all(
+          group.guests.map(async (guest) => {
+            await serverAddGuest({
+              token: roomToken,
+              guestName: guest.name,
+            });
+            elderGuests.push(guest.name);
+          })
+        );
+        setGuestList(elderGuests);
+      };
+      addElderGuests();
+
+      setGameData({});
+
+      goOneMoreGame({
+        pathname,
+        oldRoomToken: group.roomToken,
+        newRoomToken: roomToken,
+        gameName,
+      });
+    }
+  }, [geoLocation, roomToken]);
+
+  if (gameData.nextGame) {
+    return (
+      <div className="flex flex-col items-center">
+        {gameData.nextGame !== "deleted group" ? (
+          <h1>Nouvelle partie : {gamesRefs[gameName].name}</h1>
+        ) : (
+          <h1>Le groupe a été supprimé</h1>
+        )}
+        {gameData.nextGame.path && (
+          <button
+            onClick={() => {
+              setGameData({});
+              setRoomToken("");
+              setInputToken("");
+              setIsStarted(false);
+              router.push(
+                `${gameData.nextGame.path}${
+                  user.multiGuest ? `&guestName=${user.name}` : ""
+                }`
+              );
+            }}
+            className="border border-blue-300 bg-blue-100"
+          >
+            Rejoindre
+          </button>
+        )}
+        <button
+          onClick={() => router.push("/")}
+          className="border border-blue-300 bg-blue-100"
+        >
+          Quitter
+        </button>
+      </div>
+    );
+  }
 
   if (!isStarted) {
     return (
@@ -290,7 +364,7 @@ export default function Room({
 
             <hr />
 
-            {isPrivate && (
+            {isPrivate && !user.multiGuest && (
               <>
                 <h1>Invitez vos amis !</h1>
                 <h2 className="text-sm italic">
@@ -362,7 +436,12 @@ export default function Room({
 
                 <hr />
 
-                <button onClick={launchRoom}>Lancer la partie</button>
+                <button
+                  onClick={launchRoom}
+                  className="border border-blue-300 bg-blue-100"
+                >
+                  Lancer la partie
+                </button>
               </>
             )}
           </>

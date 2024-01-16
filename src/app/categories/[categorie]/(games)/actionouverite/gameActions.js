@@ -61,7 +61,7 @@ export async function launchGame({
       admin: startedRoom.admin,
       activePlayer: gamersAndGuests[0],
       gamers: gamersAndGuests,
-      card: 0,
+      card: null,
     },
   });
 }
