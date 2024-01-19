@@ -1,14 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-
-export default function GuestDisconnector({ signOut, revalidate }) {
-  const router = useRouter();
+export default function GuestDisconnector({ signOut }) {
   return (
     <button
       onClick={async () => {
         await signOut();
-        router.push("/");
+        window.location.reload();
       }}
       className="w-1/2 self-center border border-blue-300 bg-blue-100 mt-20"
     >
