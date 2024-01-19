@@ -4,6 +4,14 @@ import { jwtVerify } from "@/utils/jwtVerify";
 import { checkGuestAllowed } from "@/utils/checkGuestAllowed";
 
 export async function middleware(request) {
+  if (
+    request.nextUrl.pathname.startsWith("/sw.js") ||
+    request.nextUrl.pathname.startsWith("/workbox") ||
+    request.nextUrl.pathname.startsWith("/manifest.json") ||
+    request.nextUrl.pathname.startsWith("/icon")
+  )
+    return NextResponse.next();
+
   //isolate the client's requested path
   if (request.nextUrl.pathname.startsWith("/_next")) {
     return NextResponse.next();

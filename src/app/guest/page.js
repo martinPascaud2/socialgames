@@ -8,6 +8,7 @@ export default async function GuestPage() {
     "use server";
     cookies().delete("SG_token");
   };
+
   return (
     <div className="h-screen flex flex-col justify-center	">
       <GuestConnector />

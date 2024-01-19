@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 
-export default function GuestDisconnector({ signOut }) {
+export default function GuestDisconnector({ signOut, revalidate }) {
   const router = useRouter();
   return (
     <button

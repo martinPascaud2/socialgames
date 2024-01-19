@@ -12,7 +12,7 @@ export default function EditionPage() {
   };
   return (
     <>
-      <div>l'éditeur</div>
+      <div>l&apos;éditeur</div>
       <LogOut signOut={signOut} />
       <Link
         href="/admin/app-edition/actionouverite"
