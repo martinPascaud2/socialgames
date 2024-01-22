@@ -203,7 +203,7 @@ export default function Categories({
               href="/"
               onClick={async () => {
                 await signOut();
-                router.push("/");
+                window.location.reload();
               }}
               className={classNames(
                 { hidden: !togglingParameters && !toggledParameters },
