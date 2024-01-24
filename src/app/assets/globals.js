@@ -17,7 +17,7 @@ export const subCategories = {
       path: "actionouverite",
       img: "/actionouverite.png",
     },
-    { name: "game3", path: "uno", img: "/uno.jpeg" },
+    { name: "Undercover", path: "undercover", img: "/undercover.png" },
     { name: "game4", path: "uno", img: "/uno.jpeg" },
     { name: "game5", path: "uno", img: "/uno.jpeg" },
     { name: "game6", path: "uno", img: "/uno.jpeg" },
@@ -35,4 +35,5 @@ export const subCategories = {
 
 export const gamesRefs = {
   actionouverite: { name: "Action ou Vérité", categorie: "categorie1" },
+  undercover: { name: "Undercover", categorie: "categorie1" },
 };

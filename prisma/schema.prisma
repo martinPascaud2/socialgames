@@ -56,3 +56,16 @@ model Actionouverite {
   difficulty Int
   adult      Boolean @default(false)
 }
+
+model Undercoverword {
+  id      Int             @id @default(autoincrement())
+  word    String
+  themeId Int
+  theme   Undercovertheme @relation(fields: [themeId], references: [id])
+}
+
+model Undercovertheme {
+  id    Int              @id @default(autoincrement())
+  theme String
+  words Undercoverword[]
+}

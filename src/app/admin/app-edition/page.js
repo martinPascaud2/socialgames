@@ -20,6 +20,12 @@ export default function EditionPage() {
       >
         Action ou Vérité
       </Link>
+      <Link
+        href="/admin/app-edition/undercover"
+        className="w-1/3 text-center border"
+      >
+        Undercover
+      </Link>
     </>
   );
 }
