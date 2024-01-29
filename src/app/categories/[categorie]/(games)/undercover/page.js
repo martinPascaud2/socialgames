@@ -16,7 +16,7 @@ export default async function UndercoverPage({ params, searchParams }) {
         friendList={null}
         categorie={params?.categorie}
         gameName="undercover"
-        Game={UnderCover}
+        Game={Undercover}
         inviteFriend={null}
         launchGame={null}
       />

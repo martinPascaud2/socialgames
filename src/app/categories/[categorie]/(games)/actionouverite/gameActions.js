@@ -285,6 +285,7 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
       await getNextRemain("vérité", registeredGamers, veriteSecond));
   }
 
+  //check
   const newData = (
     await prisma.room.update({
       where: {

@@ -11,16 +11,17 @@ datasource db {
 }
 
 model User {
-  id                    Int      @id @default(autoincrement())
-  email                 String   @unique
-  name                  String   @unique
-  password              String
-  creationDate          DateTime @db.Date
-  friends               Friend[] @relation("userFriends")
-  friendOf              Friend[] @relation("userFriendOf")
-  room                  Room?    @relation(fields: [roomId], references: [id])
-  roomId                Int?
-  alreadyActionouverite Json?
+  id                     Int                       @id @default(autoincrement())
+  email                  String                    @unique
+  name                   String                    @unique
+  password               String
+  creationDate           DateTime                  @db.Date
+  friends                Friend[]                  @relation("userFriends")
+  friendOf               Friend[]                  @relation("userFriendOf")
+  room                   Room?                     @relation(fields: [roomId], references: [id])
+  roomId                 Int?
+  alreadyActionouverite  Json?
+  alreadyUndercovertheme UndercoverthemesOnUsers[]
 }
 
 model Friend {
@@ -65,7 +66,16 @@ model Undercoverword {
 }
 
 model Undercovertheme {
-  id    Int              @id @default(autoincrement())
+  id    Int                       @id @default(autoincrement())
   theme String
   words Undercoverword[]
+  users UndercoverthemesOnUsers[]
+}
+
+model UndercoverthemesOnUsers {
+  id                Int             @id @default(autoincrement())
+  userId            Int
+  undercoverthemeId Int
+  user              User            @relation(fields: [userId], references: [id])
+  undercovertheme   Undercovertheme @relation(fields: [undercoverthemeId], references: [id])
 }
