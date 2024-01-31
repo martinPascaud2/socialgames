@@ -10,6 +10,7 @@ export const categories = [
 ];
 
 export const subCategories = {
+  grouping: [{ name: "grouping", path: "grouping" }],
   categorie1: [
     { name: "Uno", path: "uno", img: "/uno.jpeg" },
     {
@@ -34,6 +35,7 @@ export const subCategories = {
 };
 
 export const gamesRefs = {
+  grouping: { name: "un nouveau groupe", categorie: "grouping" },
   actionouverite: { name: "Action ou Vérité", categorie: "categorie1" },
   undercover: { name: "Undercover", categorie: "categorie1" },
 };

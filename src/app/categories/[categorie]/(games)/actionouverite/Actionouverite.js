@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, useCallback } from "react";
 import classNames from "classnames";
 
 import { triggerGameEvent } from "./gameActions";
@@ -10,8 +9,6 @@ import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import EndGame from "@/components/EndGame";
 
 export default function Actionouverite({ roomId, roomToken, user, gameData }) {
-  const router = useRouter();
-
   const [isFirstRender, setIsFirstRender] = useState(true);
   const [isEnded, setIsEnded] = useState(false);
 
@@ -128,7 +125,8 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
       {isEnded && <EndGame />}
 
       {isAdmin && (
-        <ChooseOneMoreGame gamers={gameData.gamers} roomToken={roomToken} />
+        // <ChooseOneMoreGame gamers={gameData.gamers} roomToken={roomToken} />
+        <ChooseOneMoreGame gameData={gameData} roomToken={roomToken} />
       )}
     </>
   );

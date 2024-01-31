@@ -276,40 +276,65 @@ export default function Room({
     }
   }, [geoLocation, roomToken]);
 
+  // if (gameData.nextGame) {
+  //   return (
+  //     <div className="flex flex-col items-center">
+  //       {gameData.nextGame !== "deleted group" ? (
+  //         <h1>Nouvelle partie : {gamesRefs[gameName].name}</h1>
+  //       ) : (
+  //         <h1>Le groupe a été supprimé</h1>
+  //       )}
+  //       {gameData.nextGame.path && (
+  //         <button
+  //           onClick={() => {
+  //             setGameData({});
+  //             setRoomToken("");
+  //             setInputToken("");
+  //             setIsStarted(false);
+  //             router.push(
+  //               `${gameData.nextGame.path}${
+  //                 user.multiGuest ? `&guestName=${user.name}` : ""
+  //               }`
+  //             );
+  //           }}
+  //           className="border border-blue-300 bg-blue-100"
+  //         >
+  //           Rejoindre
+  //         </button>
+  //       )}
+  //       <button
+  //         onClick={() => router.push("/")}
+  //         className="border border-blue-300 bg-blue-100"
+  //       >
+  //         Quitter
+  //       </button>
+  //     </div>
+  //   );
+  // }
   if (gameData.nextGame) {
-    return (
-      <div className="flex flex-col items-center">
-        {gameData.nextGame !== "deleted group" ? (
-          <h1>Nouvelle partie : {gamesRefs[gameName].name}</h1>
-        ) : (
+    if (gameData.nextGame === "deleted group") {
+      return (
+        <>
           <h1>Le groupe a été supprimé</h1>
-        )}
-        {gameData.nextGame.path && (
           <button
-            onClick={() => {
-              setGameData({});
-              setRoomToken("");
-              setInputToken("");
-              setIsStarted(false);
-              router.push(
-                `${gameData.nextGame.path}${
-                  user.multiGuest ? `&guestName=${user.name}` : ""
-                }`
-              );
-            }}
+            onClick={() => router.push("/")}
             className="border border-blue-300 bg-blue-100"
           >
-            Rejoindre
+            Quitter
           </button>
-        )}
-        <button
-          onClick={() => router.push("/")}
-          className="border border-blue-300 bg-blue-100"
-        >
-          Quitter
-        </button>
-      </div>
-    );
+        </>
+      );
+    } else {
+      setGameData({});
+      setRoomToken("");
+      setInputToken("");
+      setIsStarted(false);
+      router.push(
+        `${gameData.nextGame.path}${
+          user.multiGuest ? `&guestName=${user.name}` : ""
+        }`
+      );
+    }
   }
 
   if (!isStarted) {
@@ -440,7 +465,9 @@ export default function Room({
                   onClick={launchRoom}
                   className="border border-blue-300 bg-blue-100"
                 >
-                  Lancer la partie
+                  {gameName === "grouping"
+                    ? "Rechercher un jeu"
+                    : "Lancer la partie"}
                 </button>
               </>
             )}

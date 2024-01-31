@@ -73,7 +73,7 @@ export default function Categories({
   const [showQrCode, setShowQrCode] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [scanLocked, setScanLocked] = useState(false);
-  const [showInvitations, setShowInvitations] = useState(false);
+  const [showInvitations, setShowInvitations] = useState(true);
   const [invitations, setInvitations] = useState([]);
 
   const onNewScanResult = useCallback(
@@ -132,7 +132,7 @@ export default function Categories({
       setPublicRooms(await getPublicRooms());
     };
     getRooms();
-  }, []);
+  }, [getPublicRooms, invitations]);
 
   return (
     <>
@@ -227,12 +227,16 @@ export default function Categories({
             {QrCodeScanner}
             {showInvitations && (
               <>
-                <div className="border text-center text-slate-300">
-                  Invitations
+                <div
+                  onClick={async () => setPublicRooms(await getPublicRooms())}
+                  className="flex justify-center items-center border text-center text-slate-300"
+                >
+                  Parties de vos amis <ArrowPathIcon className="ml-2 h-4 w-4" />
                 </div>
-                {!invitations.length && (
+
+                {!invitations.length && !Object.keys(publicRooms).length && (
                   <div className="text-center text-black">
-                    Pas d&apos;invitation actuellement
+                    Aucune partie disponible
                   </div>
                 )}
                 {invitations.map((invitation, i) => (
@@ -243,12 +247,6 @@ export default function Categories({
                     </div>
                   </Link>
                 ))}
-                <div
-                  onClick={async () => setPublicRooms(await getPublicRooms())}
-                  className="flex justify-center items-center border text-center text-slate-300"
-                >
-                  Parties publiques <ArrowPathIcon className="ml-2 h-4 w-4" />
-                </div>
                 {Object.entries(publicRooms).map((room) => {
                   const { friendName, gameName, gamersNumber } = room[1];
                   return (
@@ -281,7 +279,26 @@ export default function Categories({
           >
             <div className="absolute w-full text-center">{serverMessage}</div>
             <button
-              className={classNames("m-2 mt-8 p-2", {
+              onClick={() => {
+                setShowQrCode(false);
+                setScanning(false);
+                setShowInvitations(true);
+                setServerMessage("");
+              }}
+              className={classNames("mt-8 m-1 p-2", {
+                "outline outline-black": showInvitations,
+              })}
+            >
+              Parties de vos amis
+            </button>
+            <Link
+              href="/categories/grouping/grouping"
+              className="text-center p-2"
+            >
+              Créer un nouveau groupe
+            </Link>
+            <button
+              className={classNames("m-1 p-2", {
                 "outline outline-black": showQrCode,
               })}
               onClick={async () => {
@@ -305,24 +322,11 @@ export default function Categories({
                 setShowInvitations(false);
                 setServerMessage("");
               }}
-              className={classNames("m-2 p-2", {
+              className={classNames("m-1 p-2", {
                 "outline outline-black": scanning,
               })}
             >
               Ajouter un ami
-            </button>
-            <button
-              onClick={() => {
-                setShowQrCode(false);
-                setScanning(false);
-                setShowInvitations(true);
-                setServerMessage("");
-              }}
-              className={classNames("m-2 p-2", {
-                "outline outline-black": showInvitations,
-              })}
-            >
-              Parties de vos amis
             </button>
           </div>
 
