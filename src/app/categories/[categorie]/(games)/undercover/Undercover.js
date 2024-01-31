@@ -17,13 +17,13 @@ import {
 } from "./gameActions";
 
 export default function Undercover({ roomId, roomToken, user, gameData }) {
-  console.log("gameData", gameData);
-  console.log("user", user);
   const [deviceGamers, setDeviceGamers] = useState([]);
+
   const [reveals, setReveals] = useState({});
   const [adminVoter, setAdminVoter] = useState(0);
   const [adminPossibleVotes, setAdminPossibleVotes] = useState([]);
   const [hasVoted, setHasVoted] = useState(false);
+
   const [goddess, setGoddess] = useState("");
   const [isGoddess, setIsGoddess] = useState(false);
   const [isDead, setIsDead] = useState(false);
@@ -63,9 +63,6 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
     );
   }, [gameData.gamers, user.name, gameData.admin]);
 
-  console.log("deviceGamers", deviceGamers);
-  console.log("reveals", reveals);
-
   const possibleVotes = gameData.gamers?.map((gamer) => {
     if (isDead) return;
     if (gamer.id === user.id || !gamer.alive) return;
@@ -76,6 +73,7 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
           voteAgainst(gameData, roomToken, gamer.name);
           setHasVoted(true);
         }}
+        className="border border-blue-300 bg-blue-100"
       >
         {gamer.name}
       </button>
@@ -85,7 +83,6 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
   useEffect(() => {
     if (user.name !== gameData.admin) return;
 
-    // const adminAndGuests = [user];
     const adminAndGuests = [
       gameData.gamers.find((gamer) => gamer.name === user.name),
     ];
@@ -94,21 +91,6 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
         adminAndGuests.push(gamer);
       }
     });
-
-    // let nextIndex = index + 1;
-    // while (nextIndex !== gamerList.length) {
-    //   if (gamerList[nextIndex].alive) {
-    //     phase = "description";
-    //     nextGamer = gamerList[nextIndex];
-    //     break;
-    //   }
-    //   nextIndex++;
-    // }
-
-    // if (!nextGamer) {
-    //   phase = "vote";
-    //   nextGamer = gamerList[0];
-    // }
 
     let voterIndex = adminVoter;
     let voter;
@@ -126,22 +108,6 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
       return;
     }
 
-    // if (adminVoter > adminAndGuests.length - 1) {
-    //   setAdminVoter(0);
-    //   setHasVoted(true);
-    //   return;
-    // }
-
-    // let voterIndex = adminVoter;
-    // let voter = adminAndGuests[voterIndex];
-    // while (adminAndGuests[voterIndex]?.alive === false) {
-    //   voter = adminAndGuests[voterIndex];
-    //   voterIndex++;
-    // }
-
-    // const voter = adminAndGuests[adminVoter];
-    console.log("voter", voter);
-    console.log("adminAndGuests", adminAndGuests);
     const fromWhichToChoose = (
       <>
         <div>C&apos;est au tour de {`${voter.name}`} de voter.</div>
@@ -155,6 +121,7 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
                   setAdminVoter(parseInt(voterIndex + 1));
                   voteAgainst(gameData, roomToken, gamer.name);
                 }}
+                className="border border-blue-300 bg-blue-100"
               >
                 {gamer.name}
               </button>
@@ -163,7 +130,6 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
         </div>
       </>
     );
-
     setAdminPossibleVotes(fromWhichToChoose);
   }, [adminVoter, gameData, roomToken, user]);
 
@@ -203,16 +169,11 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
         className="border focus:outline-none focus:border-2"
       />
 
-      {/* <div className="text-justify font-bold">{state.message}</div> */}
-
-      <button type="submit">Proposer</button>
+      <button type="submit" className="border border-blue-300 bg-blue-100">
+        Proposer
+      </button>
     </form>
   ) : null;
-
-  console.log("adminVoter", adminVoter);
-  console.log("isDead", isDead);
-  console.log("isGoddess", isGoddess);
-  console.log("isWhite", isWhite);
 
   return (
     <>
@@ -226,6 +187,7 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
                   [gamer.name]: !reveals[gamer.name],
                 }))
               }
+              className="border border-blue-300 bg-blue-100"
             >
               {deviceGamers.length === 1
                 ? "Révéler votre mot"
@@ -240,7 +202,10 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
         <div>
           <div>Phase de découverte des mots</div>
           {user.name === gameData.admin && (
-            <button onClick={() => launchDescriptions({ gameData, roomToken })}>
+            <button
+              onClick={() => launchDescriptions({ gameData, roomToken })}
+              className="border border-blue-300 bg-blue-100"
+            >
               Lancer le tour des descriptions
             </button>
           )}
@@ -257,7 +222,10 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
                     C&apos;est au tour de {`${gameData.activePlayer.name}`} de
                     décrire le mot.
                   </div>
-                  <button onClick={() => getNextGamer(gameData, roomToken)}>
+                  <button
+                    onClick={() => getNextGamer(gameData, roomToken)}
+                    className="border border-blue-300 bg-blue-100"
+                  >
                     Passer au joueur suivant
                   </button>
                 </>
@@ -277,7 +245,6 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
       {gameData.phase === "vote" && (
         <>
           <div>Phase d&apos;élimination</div>
-
           {!hasVoted ? (
             <div>
               {user.name === gameData.admin ? (
@@ -293,7 +260,6 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
       )}
 
       <div>Déesse de la Justice : {goddess}</div>
-
       {gameData.phase === "goddess" && (
         <div>
           <div>La Déesse de la Justice tranche !</div>
@@ -305,23 +271,6 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
         <>
           <div>Mister White a été tué !</div>
           {whiteForm}
-          {/* <form
-            action={formAction}
-            className="flex flex-col justify-center items-center"
-          >
-            <label htmlFor="guess">Essayez de deviner le mot :</label>
-            <input
-              type="text"
-              name="guess"
-              id="guess"
-              autoFocus
-              className="border focus:outline-none focus:border-2"
-            />
-
-            <div className="text-justify font-bold">{state.message}</div>
-
-            <button type="submit">Proposer</button>
-          </form> */}
         </>
       )}
 
@@ -371,7 +320,3 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
     </>
   );
 }
-
-// onst isActive =
-//     gameData.activePlayer?.id === user.id ||
-//     (gameData.activePlayer?.guest && isAdmin);
