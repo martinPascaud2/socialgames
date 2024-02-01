@@ -38,7 +38,6 @@ export default function GuestConnector() {
       setServerMessage("Nom trop court");
     } else {
       const guestUrl = `${gameUrl}&guestName=${guestName}`;
-      console.log("guestUrl", guestUrl);
       router.push(guestUrl);
     }
   };

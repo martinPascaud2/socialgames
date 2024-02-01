@@ -125,7 +125,6 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
       {isEnded && <EndGame />}
 
       {isAdmin && (
-        // <ChooseOneMoreGame gamers={gameData.gamers} roomToken={roomToken} />
         <ChooseOneMoreGame gameData={gameData} roomToken={roomToken} />
       )}
     </>

@@ -39,7 +39,6 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
   const gamers = useMemo(() => gameData.gamers || [], [gameData.gamers]);
 
   useEffect(() => {
-    // const dead = !gameData.gamers?.find((gamer) => gamer.name === user.name)
     const dead = !gamers?.find((gamer) => gamer.name === user.name)?.alive;
     setIsDead(dead);
 
@@ -49,7 +48,6 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
     )
       setIsGoddess(true);
 
-    // const white = gameData.gamers?.find((gamer) => gamer.role === "white");
     const white = gamers?.find((gamer) => gamer.role === "white");
     if (
       user.name === white ||
@@ -57,26 +55,20 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
     ) {
       setIsWhite(true);
     }
-    // }, [gameData.gamers, user.name, deviceGamers, goddess]);
   }, [gamers, user.name, deviceGamers, goddess]);
 
   useEffect(() => {
-    // const gamers = gameData.gamers.filter(
-    // const gamers = gamers.filter(
     const deviced = gamers.filter(
       (gamer) =>
         gamer.name === user.name ||
         (user.name === gameData.admin && gamer.guest)
     );
     setDeviceGamers(deviced);
-    // gamers.map((gamer) =>
     deviced.map((gamer) =>
       setReveals((prevReveals) => ({ ...prevReveals, [gamer.name]: false }))
     );
-    // }, [gameData.gamers, user.name, gameData.admin]);
   }, [gamers, user.name, gameData.admin]);
 
-  // const possibleVotes = gameData.gamers?.map((gamer) => {
   const possibleVotes = gamers?.map((gamer) => {
     if (isDead) return;
     if (gamer.id === user.id || !gamer.alive) return;
@@ -97,11 +89,7 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
   useEffect(() => {
     if (user.name !== gameData.admin) return;
 
-    const adminAndGuests = [
-      // gameData.gamers.find((gamer) => gamer.name === user.name),
-      gamers.find((gamer) => gamer.name === user.name),
-    ];
-    // gameData.gamers.map((gamer) => {
+    const adminAndGuests = [gamers.find((gamer) => gamer.name === user.name)];
     gamers.map((gamer) => {
       if (gamer.guest) {
         adminAndGuests.push(gamer);
@@ -128,7 +116,6 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
       <>
         <div>C&apos;est au tour de {`${voter.name}`} de voter.</div>
         <div>
-          {/* {gameData.gamers.map((gamer) => { */}
           {gamers.map((gamer) => {
             if (gamer.name === voter.name || !gamer.alive) return;
             return (
@@ -148,14 +135,11 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
       </>
     );
     setAdminPossibleVotes(fromWhichToChoose);
-    // }, [adminVoter, gameData, roomToken, user]);
   }, [adminVoter, gameData, roomToken, user, gamers]);
 
   useEffect(() => {
-    // const goddess = gameData.gamers.find((gamer) => gamer.goddess);
     const goddess = gamers.find((gamer) => gamer.goddess);
     setGoddess(goddess.name);
-    // }, [gameData.gamers]);
   }, [gamers]);
 
   const goddessPossibleVotes = gameData.deadMen?.map((gamerName) => {
@@ -165,6 +149,7 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
         onClick={() => {
           goddessVote(gameData, roomToken, gamerName);
         }}
+        className="border border-blue-300 bg-blue-100"
       >
         {gamerName}
       </button>
@@ -206,8 +191,6 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
       setIsEnded(true);
   }, [gameData.phase, gameData.ended]);
 
-  console.log("gameData", gameData);
-  console.log("isEnded", isEnded);
   const isAdmin = gameData.admin === user.name;
 
   return (
@@ -251,7 +234,6 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
         <div>
           {gameData.activePlayer.id === user.id ? (
             <div>
-              {/* {gameData.gamers.some((gamer) => gamer.guest === true) ? ( */}
               {gamers.some((gamer) => gamer.guest === true) ? (
                 <>
                   <div>
@@ -335,10 +317,9 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
         <div>Les undercovers ainsi que Mister White remportent la partie !</div>
       )}
 
-      {/* {gameData && gameData.gamers && ( */}
       {gamers && (
         <div>
-          Joueurs restants : {/* {gameData.gamers */}
+          Joueurs restants :
           {gamers
             ?.filter(
               (gamer) =>
@@ -360,7 +341,6 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
       {isEnded && <EndGame />}
 
       {isAdmin && (
-        // <ChooseOneMoreGame gamers={gameData.gamers} roomToken={roomToken} />
         <ChooseOneMoreGame gameData={gameData} roomToken={roomToken} />
       )}
     </>
