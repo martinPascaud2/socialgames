@@ -5,12 +5,14 @@ import classNames from "classnames";
 
 import { triggerGameEvent } from "./gameActions";
 
+import FinishGame from "@/components/FinishGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import EndGame from "@/components/EndGame";
 
 export default function Actionouverite({ roomId, roomToken, user, gameData }) {
   const [isFirstRender, setIsFirstRender] = useState(true);
   const [isEnded, setIsEnded] = useState(false);
+  const [stats, setStats] = useState({});
 
   const [newCard, setNewCard] = useState(null);
   const [oldCard, setOldCard] = useState(null);
@@ -53,6 +55,11 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
 
   useEffect(() => {
     gameData.ended && setIsEnded(true);
+
+    const calculateStats = () => {
+      return { stat: "La grosse stat" }; //to be done
+    };
+    setStats(calculateStats());
   }, [gameData.ended]);
 
   return (
@@ -122,11 +129,25 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
         </>
       )}
 
-      {isEnded && <EndGame />}
-
-      {isAdmin && (
-        <ChooseOneMoreGame gameData={gameData} roomToken={roomToken} />
+      {isEnded && (
+        <>
+          <div>Statistiques :</div>
+          {Object.values(stats).map((stat, i) => (
+            <div key={i}>{stat}</div>
+          ))}
+          <EndGame gameData={gameData} user={user} />
+        </>
       )}
+
+      {isAdmin ? (
+        !isEnded ? (
+          <div className="absolute bottom-0">
+            <FinishGame gameData={gameData} roomToken={roomToken} />
+          </div>
+        ) : (
+          <ChooseOneMoreGame gameData={gameData} roomToken={roomToken} />
+        )
+      ) : null}
     </>
   );
 }

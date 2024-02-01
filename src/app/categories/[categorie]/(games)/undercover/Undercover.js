@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useFormState } from "react-dom";
 
+import FinishGame from "@/components/FinishGame";
 import EndGame from "@/components/EndGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 
@@ -35,6 +36,7 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
   const [state, formAction] = useFormState(whiteGuessWithData, initialState);
 
   const [isEnded, setIsEnded] = useState(false);
+  const [stats, setStats] = useState({});
 
   const gamers = useMemo(() => gameData.gamers || [], [gameData.gamers]);
 
@@ -139,7 +141,7 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
 
   useEffect(() => {
     const goddess = gamers.find((gamer) => gamer.goddess);
-    setGoddess(goddess.name);
+    goddess && setGoddess(goddess.name);
   }, [gamers]);
 
   const goddessPossibleVotes = gameData.deadMen?.map((gamerName) => {
@@ -189,160 +191,181 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
     ].includes(gameData.phase) ||
       gameData.ended) &&
       setIsEnded(true);
+
+    const calculateStats = () => {
+      return { stat: "Résultats de fin de partie" }; //to be done
+    };
+    setStats(calculateStats());
   }, [gameData.phase, gameData.ended]);
 
   const isAdmin = gameData.admin === user.name;
 
   return (
     <>
-      <div>
-        {deviceGamers.map((gamer) => (
-          <div key={gamer.name} className="m-20">
-            <button
-              onClick={() =>
-                setReveals((prevReveals) => ({
-                  ...prevReveals,
-                  [gamer.name]: !reveals[gamer.name],
-                }))
-              }
-              className="border border-blue-300 bg-blue-100"
-            >
-              {deviceGamers.length === 1
-                ? "Révéler votre mot"
-                : `Révéler le mot de ${gamer.name}`}
-            </button>
-            {reveals[gamer.name] && <div>Votre mot : {gamer.word}</div>}
-          </div>
-        ))}
-      </div>
-
-      {gameData.phase === "reveal" && (
-        <div>
-          <div>Phase de découverte des mots</div>
-          {user.name === gameData.admin && (
-            <button
-              onClick={() => launchDescriptions({ gameData, roomToken })}
-              className="border border-blue-300 bg-blue-100"
-            >
-              Lancer le tour des descriptions
-            </button>
-          )}
-        </div>
-      )}
-
-      {gameData.phase === "description" && (
-        <div>
-          {gameData.activePlayer.id === user.id ? (
-            <div>
-              {gamers.some((gamer) => gamer.guest === true) ? (
-                <>
-                  <div>
-                    C&apos;est au tour de {`${gameData.activePlayer.name}`} de
-                    décrire le mot.
-                  </div>
-                  <button
-                    onClick={() => getNextGamer(gameData, roomToken)}
-                    className="border border-blue-300 bg-blue-100"
-                  >
-                    Passer au joueur suivant
-                  </button>
-                </>
-              ) : (
-                <div>C&apos;est à votre tour !</div>
-              )}
-            </div>
-          ) : (
-            <div>
-              C&apos;est au tour de {`${gameData.activePlayer.name}`} de décrire
-              le mot.
-            </div>
-          )}
-        </div>
-      )}
-
-      {gameData.phase === "vote" && (
-        <>
-          <div>Phase d&apos;élimination</div>
-          {!hasVoted ? (
-            <div>
-              {user.name === gameData.admin ? (
-                <div>{adminPossibleVotes}</div>
-              ) : (
-                <div className="flex flex-col">{possibleVotes}</div>
-              )}
-            </div>
-          ) : (
-            <div>Vous avez voté ! En attente de la fin du vote.</div>
-          )}
-        </>
-      )}
-
-      <div>Déesse de la Justice : {goddess}</div>
-      {gameData.phase === "goddess" && (
-        <div>
-          <div>La Déesse de la Justice tranche !</div>
-          {isGoddess && <div>{goddessPossibleVotes}</div>}
-        </div>
-      )}
-
-      {gameData.phase === "white" && (
-        <>
-          <div>Mister White a été tué !</div>
-          {whiteForm}
-        </>
-      )}
-
-      {gameData.phase === "undercoversWinMaybeWhite" && (
+      {!isEnded ? (
         <>
           <div>
-            Les undercovers remportent la partie, Mister White avec eux ?
+            {deviceGamers.map((gamer) => (
+              <div key={gamer.name} className="m-20">
+                <button
+                  onClick={() =>
+                    setReveals((prevReveals) => ({
+                      ...prevReveals,
+                      [gamer.name]: !reveals[gamer.name],
+                    }))
+                  }
+                  className="border border-blue-300 bg-blue-100"
+                >
+                  {deviceGamers.length === 1
+                    ? "Révéler votre mot"
+                    : `Révéler le mot de ${gamer.name}`}
+                </button>
+                {reveals[gamer.name] && <div>Votre mot : {gamer.word}</div>}
+              </div>
+            ))}
           </div>
-          {whiteForm}
+
+          {gameData.phase === "reveal" && (
+            <div>
+              <div>Phase de découverte des mots</div>
+              {user.name === gameData.admin && (
+                <button
+                  onClick={() => launchDescriptions({ gameData, roomToken })}
+                  className="border border-blue-300 bg-blue-100"
+                >
+                  Lancer le tour des descriptions
+                </button>
+              )}
+            </div>
+          )}
+
+          {gameData.phase === "description" && (
+            <div>
+              {gameData.activePlayer.id === user.id ? (
+                <div>
+                  {gamers.some((gamer) => gamer.guest === true) ? (
+                    <>
+                      <div>
+                        C&apos;est au tour de {`${gameData.activePlayer.name}`}{" "}
+                        de décrire le mot.
+                      </div>
+                      <button
+                        onClick={() => getNextGamer(gameData, roomToken)}
+                        className="border border-blue-300 bg-blue-100"
+                      >
+                        Passer au joueur suivant
+                      </button>
+                    </>
+                  ) : (
+                    <div>C&apos;est à votre tour !</div>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  C&apos;est au tour de {`${gameData.activePlayer.name}`} de
+                  décrire le mot.
+                </div>
+              )}
+            </div>
+          )}
+
+          {gameData.phase === "vote" && (
+            <>
+              <div>Phase d&apos;élimination</div>
+              {!hasVoted ? (
+                <div>
+                  {user.name === gameData.admin ? (
+                    <div>{adminPossibleVotes}</div>
+                  ) : (
+                    <div className="flex flex-col">{possibleVotes}</div>
+                  )}
+                </div>
+              ) : (
+                <div>Vous avez voté ! En attente de la fin du vote.</div>
+              )}
+            </>
+          )}
+
+          {gameData.phase && <div>Déesse de la Justice : {goddess}</div>}
+          {gameData.phase === "goddess" && (
+            <div>
+              <div>La Déesse de la Justice tranche !</div>
+              {isGoddess && <div>{goddessPossibleVotes}</div>}
+            </div>
+          )}
+
+          {gameData.phase === "white" && (
+            <>
+              <div>Mister White a été tué !</div>
+              {whiteForm}
+            </>
+          )}
+
+          {gameData.phase === "undercoversWinMaybeWhite" && (
+            <>
+              <div>
+                Les undercovers remportent la partie, Mister White avec eux ?
+              </div>
+              {whiteForm}
+            </>
+          )}
+
+          {gameData.phase === "whiteWin" && (
+            <div>Mister White remporte la partie !</div>
+          )}
+
+          {gameData.phase === "civilsWin" && (
+            <div>Les civils remportent la partie !</div>
+          )}
+
+          {gameData.phase === "undercoversWin" && (
+            <div>Les undercovers remportent la partie !</div>
+          )}
+
+          {gameData.phase === "undercoversWinWithWhite" && (
+            <div>
+              Les undercovers ainsi que Mister White remportent la partie !
+            </div>
+          )}
+
+          {!!gamers.length && (
+            <div>
+              Joueurs restants :
+              {gamers
+                ?.filter(
+                  (gamer) =>
+                    gamer.alive ||
+                    (gamer.role === "white" &&
+                      [
+                        "white",
+                        "undercoversWinMaybeWhite",
+                        "whiteWin",
+                        "undercoversWinWithWhite",
+                      ].includes(gameData.phase))
+                )
+                .map((alive) => (
+                  <div key={alive.name}>{alive.name}</div>
+                ))}
+            </div>
+          )}
+        </>
+      ) : (
+        <>
+          <div>Statistiques :</div>
+          {Object.values(stats).map((stat, i) => (
+            <div key={i}>{stat}</div>
+          ))}
+          <EndGame gameData={gameData} user={user} />
         </>
       )}
 
-      {gameData.phase === "whiteWin" && (
-        <div>Mister White remporte la partie !</div>
-      )}
-
-      {gameData.phase === "civilsWin" && (
-        <div>Les civils remportent la partie !</div>
-      )}
-
-      {gameData.phase === "undercoversWin" && (
-        <div>Les undercovers remportent la partie !</div>
-      )}
-
-      {gameData.phase === "undercoversWinWithWhite" && (
-        <div>Les undercovers ainsi que Mister White remportent la partie !</div>
-      )}
-
-      {gamers && (
-        <div>
-          Joueurs restants :
-          {gamers
-            ?.filter(
-              (gamer) =>
-                gamer.alive ||
-                (gamer.role === "white" &&
-                  [
-                    "white",
-                    "undercoversWinMaybeWhite",
-                    "whiteWin",
-                    "undercoversWinWithWhite",
-                  ].includes(gameData.phase))
-            )
-            .map((alive) => (
-              <div key={alive.name}>{alive.name}</div>
-            ))}
-        </div>
-      )}
-
-      {isEnded && <EndGame />}
-
-      {isAdmin && (
-        <ChooseOneMoreGame gameData={gameData} roomToken={roomToken} />
-      )}
+      {isAdmin ? (
+        !isEnded ? (
+          <FinishGame gameData={gameData} roomToken={roomToken} />
+        ) : (
+          <ChooseOneMoreGame gameData={gameData} roomToken={roomToken} />
+        )
+      ) : null}
     </>
   );
 }

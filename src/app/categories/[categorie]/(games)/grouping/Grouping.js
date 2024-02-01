@@ -13,7 +13,10 @@ export default function Grouping({ roomId, roomToken, user, gameData }) {
 
   return (
     <>
-      {gameData.ended && <EndGame />}
+      {gameData.ended && (
+        <EndGame gameData={gameData} user={user} isFirst={true} />
+      )}
+
       {isAdmin && (
         <ChooseOneMoreGame
           gameData={gameData}

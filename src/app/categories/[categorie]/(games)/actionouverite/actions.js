@@ -38,7 +38,7 @@ export async function serverCreate(token, privacy, user, game, geoLocation) {
   return [user.name];
 }
 
-export async function chooseOneMoreGame({ roomToken, gameData }) {
+export async function finishGame({ roomToken, gameData }) {
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,

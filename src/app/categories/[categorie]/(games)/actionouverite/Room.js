@@ -271,12 +271,12 @@ export default function Room({
         pathname,
         oldRoomToken: group.roomToken,
         newRoomToken: roomToken,
-        gameName,
+        gameName: "grouping",
       });
     }
   }, [geoLocation, roomToken]);
 
-  if (gameData.nextGame) {
+  if (gameData.nextGame && user) {
     if (gameData.nextGame === "deleted group") {
       return (
         <>
@@ -290,15 +290,18 @@ export default function Room({
         </>
       );
     } else {
-      setGameData({});
-      setRoomToken("");
-      setInputToken("");
-      setIsStarted(false);
-      router.push(
-        `${gameData.nextGame.path}${
-          user.multiGuest ? `&guestName=${user.name}` : ""
-        }`
-      );
+      const goNewGame = () => {
+        setGameData({});
+        setRoomToken("");
+        setInputToken("");
+        setIsStarted(false);
+        router.push(
+          `${gameData.nextGame.path}${
+            user.multiGuest ? `&guestName=${user.name}` : ""
+          }`
+        );
+      };
+      if (gameName === "grouping") goNewGame();
     }
   }
 
