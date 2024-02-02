@@ -10,7 +10,6 @@ import Pusher from "pusher-js";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
 import Html5QrcodePlugin from "@/components/Html5QrcodePlugin";
-import DeleteGroup from "@/components/DeleteGroup";
 import getLocation from "@/utils/getLocation";
 
 import { categories, gamesRefs } from "@/assets/globals";
@@ -137,7 +136,11 @@ export default function Categories({
   return (
     <>
       <div
-        onClick={() => !isGroup && handleBgClick()}
+        onClick={() =>
+          !isGroup
+            ? handleBgClick()
+            : router.push("/categories/grouping/grouping")
+        }
         className="z-10 absolute h-screen w-screen"
       />
 
@@ -360,7 +363,7 @@ export default function Categories({
                 }
               )}
               style={{
-                top: `${Math.floor(index / 2) * 25 + 5}vh`,
+                top: `${Math.floor(index / 2) * 25 + 8.5}vh`,
                 left: index % 2 === 0 && "2rem",
                 right: index % 2 === 1 && "2rem",
               }}
@@ -369,8 +372,6 @@ export default function Categories({
             </Link>
           ))}
         </div>
-
-        <DeleteGroup />
       </main>
     </>
   );

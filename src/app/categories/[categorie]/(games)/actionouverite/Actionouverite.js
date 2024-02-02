@@ -57,7 +57,7 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
     gameData.ended && setIsEnded(true);
 
     const calculateStats = () => {
-      return { stat: "La grosse stat" }; //to be done
+      return { stat: "Résultats de fin de partie" }; //to be done
     };
     setStats(calculateStats());
   }, [gameData.ended]);

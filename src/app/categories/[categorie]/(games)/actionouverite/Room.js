@@ -7,7 +7,8 @@ import QRCode from "react-qr-code";
 
 import genToken from "@/utils/genToken";
 
-import { gamesRefs } from "@/assets/globals";
+import DeleteGroup from "@/components/DeleteGroup";
+import ChooseAnotherGame from "@/components/ChooseAnotherGame";
 
 var pusher = new Pusher("61853af9f30abf9d5b3d", {
   cluster: "eu",
@@ -40,6 +41,7 @@ export default function Room({
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [roomToken, setRoomToken] = useState("");
+  const [group, setGroup] = useState();
   const [gamerList, setGamerList] = useState([]);
   const [guestList, setGuestList] = useState([]);
   const [multiGuestList, setMultiGuestList] = useState([]);
@@ -246,6 +248,7 @@ export default function Room({
   useEffect(() => {
     const group = JSON.parse(localStorage.getItem("group"));
     if (!roomToken && group) {
+      setGroup(group);
       group.privacy === "public" ? createRoom("public") : createRoom("private");
     } else if (group && geoLocation && roomToken) {
       localStorage.removeItem("group");
@@ -301,14 +304,14 @@ export default function Room({
           }`
         );
       };
-      if (gameName === "grouping") goNewGame();
+      if (gameName === "grouping" || !isStarted) goNewGame();
     }
   }
 
   if (!isStarted) {
     return (
       <>
-        {!isChosen ? (
+        {!isChosen && !group ? (
           <>
             <button
               onClick={() => createRoom("public")}
@@ -357,75 +360,80 @@ export default function Room({
 
             <hr />
 
-            {isPrivate && !user.multiGuest && (
-              <>
-                <h1>Invitez vos amis !</h1>
-                <h2 className="text-sm italic">
-                  Ils recevront votre invitation via &quot;Invitations aux
-                  parties&quot;.
-                </h2>
-                <div>
-                  {friendList.map((friend) => (
-                    <button
-                      key={friend.id}
-                      onClick={() =>
-                        inviteFriend({
-                          userName: user.name,
-                          friendMail: friend.email,
-                          categorie,
-                          gameName,
-                          roomToken,
-                        })
-                      }
-                      className="border border-blue-300 bg-blue-100"
-                    >
-                      {friend.customName}
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
+            {isPrivate &&
+              !user.multiGuest &&
+              (gameName === "grouping" || !group) && (
+                <>
+                  <h1>Invitez vos amis !</h1>
+                  <h2 className="text-sm italic">
+                    Ils recevront votre invitation via &quot;Invitations aux
+                    parties&quot;.
+                  </h2>
+                  <div>
+                    {friendList.map((friend) => (
+                      <button
+                        key={friend.id}
+                        onClick={() =>
+                          inviteFriend({
+                            userName: user.name,
+                            friendMail: friend.email,
+                            categorie,
+                            gameName,
+                            roomToken,
+                          })
+                        }
+                        className="border border-blue-300 bg-blue-100"
+                      >
+                        {friend.customName}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
 
             {isAdmin && (
               <>
                 <hr />
+                {(gameName === "grouping" || !group) && (
+                  <>
+                    <h1>Invitez des guests multiscreen !</h1>
+                    <h2 className="text-sm italic">
+                      Ils joueront sur leur propre écran.
+                    </h2>
+                    <button
+                      onClick={() => setShowRoomRefs(!showRoomRefs)}
+                      className="border border-blue-300 bg-blue-100"
+                    >
+                      {!showRoomRefs ? "Montrer" : "Cacher"} le QrCode
+                    </button>
+                    {showRoomRefs && (
+                      <QRCode
+                        value={`/categories/${categorie}/${gameName}?token=${roomToken}`}
+                      />
+                    )}
 
-                <h1>Invitez des guests multiscreen !</h1>
-                <h2 className="text-sm italic">
-                  Ils joueront sur leur propre écran.
-                </h2>
-                <button
-                  onClick={() => setShowRoomRefs(!showRoomRefs)}
-                  className="border border-blue-300 bg-blue-100"
-                >
-                  {!showRoomRefs ? "Montrer" : "Cacher"} le QrCode
-                </button>
-                {showRoomRefs && (
-                  <QRCode
-                    value={`/categories/${categorie}/${gameName}?token=${roomToken}`}
-                  />
+                    <hr />
+
+                    <h1>Ajoutez des guests monoscreen !</h1>
+                    <h2 className="text-sm italic">
+                      Ils utiliseront votre écran à leur tour de jeu.
+                    </h2>
+                    <input
+                      ref={refGuest}
+                      placeholder="Nom du guest"
+                      onChange={(event) => setNewGuest(event.target.value)}
+                      className="outline-none focus:outline-black mr-2"
+                    />
+                    <button
+                      onClick={async () => {
+                        await addGuest();
+                      }}
+                      className="border border-blue-300 bg-blue-100"
+                    >
+                      Ajoutez un guest
+                    </button>
+                  </>
                 )}
-
-                <hr />
-
-                <h1>Ajoutez des guests monoscreen !</h1>
-                <h2 className="text-sm italic">
-                  Ils utiliseront votre écran à leur tour de jeu.
-                </h2>
-                <input
-                  ref={refGuest}
-                  placeholder="Nom du guest"
-                  onChange={(event) => setNewGuest(event.target.value)}
-                  className="outline-none focus:outline-black mr-2"
-                />
-                <button
-                  onClick={async () => {
-                    await addGuest();
-                  }}
-                  className="border border-blue-300 bg-blue-100"
-                >
-                  Ajoutez un guest
-                </button>
 
                 <hr />
 
@@ -437,6 +445,25 @@ export default function Room({
                     ? "Rechercher un jeu"
                     : "Lancer la partie"}
                 </button>
+
+                {gameName !== "grouping" && group && (
+                  <>
+                    <ChooseAnotherGame
+                      group={group}
+                      roomToken={roomToken}
+                      gameData={gameData}
+                      isReturnLobby={false}
+                    />
+                    <ChooseAnotherGame
+                      group={group}
+                      roomToken={roomToken}
+                      gameData={gameData}
+                      isReturnLobby={true}
+                    />
+                  </>
+                )}
+
+                <DeleteGroup roomToken={roomToken} />
               </>
             )}
           </>

@@ -1,7 +1,7 @@
 export default function GroupingLayout({ children }) {
   return (
     <>
-      <div>Création du groupe</div>
+      <div className="flex justify-center">Lobby</div>
       <div className="border">{children}</div>
     </>
   );

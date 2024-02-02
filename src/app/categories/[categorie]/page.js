@@ -4,10 +4,6 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
-import deleteGroup from "@/utils/deleteGroup";
-
-import DeleteGroup from "@/components/DeleteGroup";
-
 import { subCategories } from "@/assets/globals";
 
 const useSwipe = (activeIndex, updateIndex) => {
@@ -108,8 +104,6 @@ export default function OneCategoriePage({ params }) {
         <div>{games[activeIndex].name}</div>
         <div className="flex justify-between">{divNavs}</div>
       </div>
-
-      <DeleteGroup deleteGroup={deleteGroup} />
     </main>
   );
 }

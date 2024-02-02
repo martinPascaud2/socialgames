@@ -6,6 +6,8 @@ import { useRouter } from "next/navigation";
 import getRoomPrivacy from "@/utils/getRoomPrivacy";
 import { finishGame } from "@/categories/[categorie]/(games)/actionouverite/actions";
 
+import DeleteGroup from "./DeleteGroup";
+
 export default function ChooseOneMoreGame({
   gameData,
   roomToken,
@@ -37,20 +39,29 @@ export default function ChooseOneMoreGame({
     isFirst && privacy !== null && goChooseGame(privacy);
   }, [roomToken, isFirst, privacy, goChooseGame]);
 
+  if (isFirst) return null;
+
   return (
-    <div className="flex justify-center">
-      <button
-        onClick={() => goChooseGame("private")}
-        className="border border-blue-300 bg-blue-100"
-      >
-        Lobby privé
-      </button>
-      <button
-        onClick={() => goChooseGame("public")}
-        className="border border-blue-300 bg-blue-100"
-      >
-        Lobby public
-      </button>
-    </div>
+    <>
+      <div className="flex flex-col items-center">
+        <div className="flex mb-4">
+          <button
+            onClick={() => goChooseGame("private")}
+            className="border border-blue-300 bg-blue-100"
+          >
+            Lobby privé
+          </button>
+          <button
+            onClick={() => goChooseGame("public")}
+            className="border border-blue-300 bg-blue-100"
+          >
+            Lobby public
+          </button>
+        </div>
+        <div>
+          <DeleteGroup roomToken={roomToken} />
+        </div>
+      </div>
+    </>
   );
 }

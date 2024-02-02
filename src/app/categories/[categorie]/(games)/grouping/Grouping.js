@@ -4,7 +4,8 @@ import EndGame from "@/components/EndGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import { useEffect, useState } from "react";
 
-export default function Grouping({ roomId, roomToken, user, gameData }) {
+// export default function Grouping({ roomId, roomToken, user, gameData }) {
+export default function Grouping({ roomToken, user, gameData }) {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {

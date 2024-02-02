@@ -5,10 +5,7 @@ import pusher from "@/utils/pusher";
 import getDistance from "@/utils/getDistance";
 
 export async function serverCreate(token, privacy, user, game, geoLocation) {
-  if (!geoLocation)
-    throw new Error(
-      "Veuillez activer votre géolocalisation ; détection en cours..."
-    );
+  if (!geoLocation) throw new Error("Détection de votre géolocalisation...");
 
   const roomId = (
     await prisma.room.create({

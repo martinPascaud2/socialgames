@@ -33,7 +33,7 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
   const [isDead, setIsDead] = useState(false);
   const [isWhite, setIsWhite] = useState(false);
   const whiteGuessWithData = whiteGuess.bind(null, gameData, roomToken);
-  const [state, formAction] = useFormState(whiteGuessWithData, initialState);
+  const [state, formAction] = useFormState(whiteGuessWithData, initialState); //id
 
   const [isEnded, setIsEnded] = useState(false);
   const [stats, setStats] = useState({});
