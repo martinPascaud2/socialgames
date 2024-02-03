@@ -109,6 +109,31 @@ export async function serverJoin({ token, user }) {
   };
 }
 
+export async function serverDeleteGamer({ token, gamerName }) {
+  const room = await prisma.room.findFirst({
+    where: {
+      token,
+    },
+  });
+  const { id: roomId, gamers } = room;
+
+  delete gamers[gamerName];
+
+  await prisma.room.update({
+    where: { id: roomId },
+    data: {
+      gamers,
+    },
+  });
+
+  const gamerList = Object.keys(gamers);
+  await pusher.trigger(`room-${token}`, "room-event", {
+    clientGamerList: gamerList,
+    deleted: gamerName,
+  });
+  return gamerList;
+}
+
 export async function serverAddGuest({ token, guestName }) {
   const room = await prisma.room.findFirst({
     where: {
@@ -138,6 +163,31 @@ export async function serverAddGuest({ token, guestName }) {
   });
 
   return newGuests;
+}
+
+export async function serverDeleteGuest({ token, guestName }) {
+  const room = await prisma.room.findFirst({
+    where: {
+      token,
+    },
+  });
+  const { id: roomId, guests } = room;
+  const newGuests = { ...guests };
+
+  delete newGuests[guestName];
+
+  await prisma.room.update({
+    where: { id: roomId },
+    data: {
+      guests: newGuests,
+    },
+  });
+
+  const newGuestList = Object.keys(newGuests);
+  await pusher.trigger(`room-${token}`, "room-event", {
+    guestList: newGuestList,
+  });
+  return newGuestList;
 }
 
 export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
@@ -186,6 +236,31 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
     guests,
     multiGuests: newMultiGuests,
   };
+}
+
+export async function serverDeleteMultiGuest({ token, multiGuestName }) {
+  const room = await prisma.room.findFirst({
+    where: {
+      token,
+    },
+  });
+  const { id: roomId, multiGuests } = room;
+
+  delete multiGuests[multiGuestName];
+
+  await prisma.room.update({
+    where: { id: roomId },
+    data: {
+      multiGuests,
+    },
+  });
+
+  const multiGuestList = Object.keys(multiGuests);
+  await pusher.trigger(`room-${token}`, "room-event", {
+    multiGuestList,
+    deleted: multiGuestName,
+  });
+  return multiGuestList;
 }
 
 export async function getUniqueName(roomId, wantedName) {

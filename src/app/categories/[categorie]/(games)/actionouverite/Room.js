@@ -18,8 +18,11 @@ import {
   serverCreate,
   goOneMoreGame,
   serverJoin,
+  serverDeleteGamer,
   serverAddGuest,
+  serverDeleteGuest,
   serverAddMultiGuest,
+  serverDeleteMultiGuest,
   getUniqueName,
   getRoomId,
   getRoomRefs,
@@ -49,8 +52,9 @@ export default function Room({
   const refGuest = useRef();
   const [multiGuestId, setMultiGuestId] = useState();
   const [uniqueName, setUniqueName] = useState("");
-  const [options, setOptions] = useState({});
+  const [deletedGamer, setDeletedGamer] = useState(null);
 
+  const [options, setOptions] = useState({});
   const [isChosen, setIsChosen] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
   const [serverMessage, setServerMessage] = useState("");
@@ -140,6 +144,7 @@ export default function Room({
         data.multiGuestList && setMultiGuestList(data.multiGuestList);
         data.started && setIsStarted(true);
         data.gameData && setGameData(data.gameData);
+        data.deleted && setDeletedGamer(data.deleted);
       });
 
       setRoomToken(token);
@@ -152,6 +157,16 @@ export default function Room({
       setServerMessage(error.message);
     }
   }, [inputToken, user]);
+
+  const deleteGamer = async (gamer) => {
+    const gamers = await serverDeleteGamer({
+      token: roomToken,
+      gamerName: gamer,
+    });
+
+    setServerMessage(`Joueur ${gamer} retiré`);
+    setGamerList(gamers);
+  };
 
   const addMultiGuest = useCallback(async () => {
     if (!isChosen || !inputToken) {
@@ -179,6 +194,7 @@ export default function Room({
         data.multiGuestList && setMultiGuestList(data.multiGuestList);
         data.started && setIsStarted(true);
         data.gameData && setGameData(data.gameData);
+        data.deleted && setDeletedGamer(data.deleted);
       });
 
       setRoomToken(token);
@@ -192,6 +208,16 @@ export default function Room({
     }
   }, [geoLocation, searchParams, inputToken, isChosen]);
 
+  const deleteMultiGuest = async (multiGuest) => {
+    const multiGuests = await serverDeleteMultiGuest({
+      token: roomToken,
+      multiGuestName: multiGuest,
+    });
+
+    setServerMessage(`Guest ${multiGuest} retiré`);
+    setMultiGuestList(multiGuests);
+  };
+
   useEffect(() => {
     if (searchToken) {
       setInputToken(searchToken);
@@ -199,6 +225,10 @@ export default function Room({
       else addMultiGuest();
     }
   }, [searchToken, joinRoom, addMultiGuest, user.multiGuest]);
+
+  useEffect(() => {
+    if (deletedGamer === uniqueName) router.push("/");
+  }, [deletedGamer]);
 
   const addGuest = async () => {
     if (newGuest.length < 3) {
@@ -215,6 +245,16 @@ export default function Room({
     refGuest.current.value = "";
     setServerMessage(`Guest ${uniqueGuestName} ajouté`);
     setNewGuest("");
+    setGuestList(guests);
+  };
+
+  const deleteGuest = async (guest) => {
+    const guests = await serverDeleteGuest({
+      token: roomToken,
+      guestName: guest,
+    });
+
+    setServerMessage(`Guest ${guest} retiré`);
     setGuestList(guests);
   };
 
@@ -343,17 +383,49 @@ export default function Room({
             <div>
               liste des joueurs
               {gamerList.map((gamer) => (
-                <div key={gamer}>{gamer}</div>
+                <div key={gamer} className="flex">
+                  <div>{gamer}</div>
+                  {gameName === "grouping" &&
+                    isAdmin &&
+                    gamer !== user.name && (
+                      <button
+                        onClick={() => deleteGamer(gamer)}
+                        className="border border-blue-300 bg-blue-100"
+                      >
+                        Retirer
+                      </button>
+                    )}
+                </div>
               ))}
               {guestList.map((guest, i) => (
-                <div key={i}>
-                  {guest} <span className="italic text-sm">(guest)</span>
+                <div key={i} className="flex">
+                  <div>
+                    {guest} <span className="italic text-sm">(guest)</span>
+                  </div>
+                  {gameName === "grouping" && isAdmin && (
+                    <button
+                      onClick={() => deleteGuest(guest)}
+                      className="border border-blue-300 bg-blue-100"
+                    >
+                      Retirer
+                    </button>
+                  )}
                 </div>
               ))}
               {multiGuestList.map((multiGuest, i) => (
-                <div key={i}>
-                  {multiGuest}{" "}
-                  <span className="italic text-sm">(guest externe)</span>
+                <div key={i} className="flex">
+                  <div>
+                    {multiGuest}{" "}
+                    <span className="italic text-sm">(guest externe)</span>
+                  </div>
+                  {gameName === "grouping" && isAdmin && (
+                    <button
+                      onClick={() => deleteMultiGuest(multiGuest)}
+                      className="border border-blue-300 bg-blue-100"
+                    >
+                      Retirer
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -390,6 +462,23 @@ export default function Room({
                   </div>
                 </>
               )}
+
+            {!user.multiGuest && !isAdmin && (
+              <button
+                onClick={() => deleteGamer(uniqueName)}
+                className="border border-blue-300 bg-blue-100"
+              >
+                Quitter le groupe
+              </button>
+            )}
+            {user.multiGuest && (
+              <button
+                onClick={() => deleteMultiGuest(uniqueName)}
+                className="border border-blue-300 bg-blue-100"
+              >
+                Quitter le groupe
+              </button>
+            )}
 
             {isAdmin && (
               <>

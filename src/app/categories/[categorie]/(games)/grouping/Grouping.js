@@ -4,7 +4,6 @@ import EndGame from "@/components/EndGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import { useEffect, useState } from "react";
 
-// export default function Grouping({ roomId, roomToken, user, gameData }) {
 export default function Grouping({ roomToken, user, gameData }) {
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -18,6 +17,7 @@ export default function Grouping({ roomToken, user, gameData }) {
         <EndGame gameData={gameData} user={user} isFirst={true} />
       )}
 
+      {/* check  */}
       {isAdmin && (
         <ChooseOneMoreGame
           gameData={gameData}

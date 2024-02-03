@@ -342,11 +342,11 @@ export default function Categories({
         <div
           className={classNames(
             {
-              "transition-opacity ease-in-out duration-500 opacity-100":
+              "m-auto transition-opacity ease-in-out duration-500 opacity-100":
                 !togglingParameters,
             },
             {
-              "transition-opacity ease-in-out duration-500 opacity-0":
+              "m-auto transition-opacity ease-in-out duration-500 opacity-0":
                 togglingParameters,
             }
           )}
@@ -356,19 +356,20 @@ export default function Categories({
               key={index}
               href={`${categorie.href}${isGroup ? "?group=true" : ""}`}
               className={classNames(
-                `z-20 absolute w-1/3 p-3 text-center border`,
-
+                `z-20 absolute w-1/3 aspect-square p-3 border`,
                 {
                   hidden: togglingParameters && toggledParameters,
                 }
               )}
               style={{
-                top: `${Math.floor(index / 2) * 25 + 8.5}vh`,
+                top: `${Math.floor(index / 2) * 23 + 6.4}vh`,
                 left: index % 2 === 0 && "2rem",
                 right: index % 2 === 1 && "2rem",
               }}
             >
-              {categorie.name}
+              <div className="flex items-center justify-center h-full">
+                {categorie.name}
+              </div>
             </Link>
           ))}
         </div>

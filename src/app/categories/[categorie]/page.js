@@ -1,7 +1,8 @@
 "use client";
 
+import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
 import { subCategories } from "@/assets/globals";
@@ -38,6 +39,9 @@ const useSwipe = (activeIndex, updateIndex) => {
 
 export default function OneCategoriePage({ params }) {
   const { categorie } = params;
+  const searchParams = useSearchParams();
+  const isGroup = searchParams.get("group") === "true";
+
   const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
   const games = subCategories[categorie];
@@ -74,6 +78,13 @@ export default function OneCategoriePage({ params }) {
 
   return (
     <main className="bg-slate-300">
+      <Link
+        href={!isGroup ? "/categories" : "/categories?group=true"}
+        className="absolute bottom-5 left-5 border border-blue-300 bg-blue-100"
+      >
+        {"<-"}Catégories
+      </Link>
+
       <div className="p-5">
         <div className="w-full overflow-hidden mx-auto">
           <div
