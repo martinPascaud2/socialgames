@@ -9,6 +9,7 @@ import genToken from "@/utils/genToken";
 
 import DeleteGroup from "@/components/DeleteGroup";
 import ChooseAnotherGame from "@/components/ChooseAnotherGame";
+import { CheckIcon } from "@heroicons/react/24/outline";
 
 var pusher = new Pusher("61853af9f30abf9d5b3d", {
   cluster: "eu",
@@ -380,23 +381,103 @@ export default function Room({
           </>
         ) : (
           <>
-            <div>
-              liste des joueurs
-              {gamerList.map((gamer) => (
-                <div key={gamer} className="flex">
-                  <div>{gamer}</div>
-                  {gameName === "grouping" &&
-                    isAdmin &&
-                    gamer !== user.name && (
+            <div>Liste des joueurs</div>
+
+            {group?.gamers &&
+              group.gamers.map((gamer) => {
+                const gamerName = gamer.name;
+                const isHere = gamerList.includes(gamerName);
+                return (
+                  <div className="flex">
+                    <div className="flex">
+                      {gamerName}
+                      {gamerName !== user.name ? (
+                        isHere ? (
+                          <CheckIcon className="block h-6 w-6 " />
+                        ) : (
+                          " ... "
+                        )
+                      ) : null}
+                    </div>
+                    {gameName === "grouping" &&
+                      isHere &&
+                      gamerName !== user.name && (
+                        <button
+                          onClick={() => {
+                            const newGamersGroup = [...group.gamers].filter(
+                              (gamer) => gamer.name !== gamerName
+                            );
+                            setGroup((prevGroup) => ({
+                              ...prevGroup,
+                              gamers: newGamersGroup,
+                            }));
+                            deleteGamer(gamerName);
+                          }}
+                          className="border border-blue-300 bg-blue-100"
+                        >
+                          Retirer
+                        </button>
+                      )}
+                  </div>
+                );
+              })}
+            {group?.multiGuests &&
+              group.multiGuests.map((multi) => {
+                const multiName = multi.name;
+                const isHere = multiGuestList.includes(multiName);
+                return (
+                  <div className="flex">
+                    <div className="flex">
+                      {multiName}{" "}
+                      <span className="italic text-sm">(guest externe)</span>
+                      {isHere ? (
+                        <CheckIcon className="block h-6 w-6 " />
+                      ) : (
+                        " ... "
+                      )}
+                    </div>
+                    {gameName === "grouping" && isHere && (
                       <button
-                        onClick={() => deleteGamer(gamer)}
+                        onClick={() => {
+                          const newMultiGroup = [...group.multiGuests].filter(
+                            (multi) => multi.name !== multiName
+                          );
+                          setGroup((prevGroup) => ({
+                            ...prevGroup,
+                            multiGuests: newMultiGroup,
+                          }));
+                          deleteMultiGuest(multiName);
+                        }}
                         className="border border-blue-300 bg-blue-100"
                       >
                         Retirer
                       </button>
                     )}
-                </div>
-              ))}
+                  </div>
+                );
+              })}
+
+            <div>
+              {gamerList.map((gamer) => {
+                const gamerNameList =
+                  group?.gamers?.map((gamer) => gamer.name) || [];
+                if (gamerNameList.includes(gamer)) return;
+                return (
+                  <div key={gamer} className="flex">
+                    <div>{gamer}</div>
+                    {gameName === "grouping" &&
+                      isAdmin &&
+                      gamer !== user.name && (
+                        <button
+                          onClick={() => deleteGamer(gamer)}
+                          className="border border-blue-300 bg-blue-100"
+                        >
+                          Retirer
+                        </button>
+                      )}
+                  </div>
+                );
+              })}
               {guestList.map((guest, i) => (
                 <div key={i} className="flex">
                   <div>
@@ -412,22 +493,27 @@ export default function Room({
                   )}
                 </div>
               ))}
-              {multiGuestList.map((multiGuest, i) => (
-                <div key={i} className="flex">
-                  <div>
-                    {multiGuest}{" "}
-                    <span className="italic text-sm">(guest externe)</span>
+              {multiGuestList.map((multiGuest, i) => {
+                const multiNameList =
+                  group?.multiGuests?.map((multi) => multi.name) || [];
+                if (multiNameList.includes(multiGuest)) return;
+                return (
+                  <div key={i} className="flex">
+                    <div>
+                      {multiGuest}{" "}
+                      <span className="italic text-sm">(guest externe)</span>
+                    </div>
+                    {gameName === "grouping" && isAdmin && (
+                      <button
+                        onClick={() => deleteMultiGuest(multiGuest)}
+                        className="border border-blue-300 bg-blue-100"
+                      >
+                        Retirer
+                      </button>
+                    )}
                   </div>
-                  {gameName === "grouping" && isAdmin && (
-                    <button
-                      onClick={() => deleteMultiGuest(multiGuest)}
-                      className="border border-blue-300 bg-blue-100"
-                    >
-                      Retirer
-                    </button>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <hr />

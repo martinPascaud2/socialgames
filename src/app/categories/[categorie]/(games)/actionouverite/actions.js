@@ -191,10 +191,7 @@ export async function serverDeleteGuest({ token, guestName }) {
 }
 
 export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
-  if (!geoLocation)
-    throw new Error(
-      "Veuillez activer votre géolocalisation ; détection en cours..."
-    );
+  if (!geoLocation) throw new Error("Détection de votre géolocalisation...");
 
   const room = await prisma.room.findFirst({
     where: {

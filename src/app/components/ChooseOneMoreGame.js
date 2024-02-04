@@ -18,10 +18,17 @@ export default function ChooseOneMoreGame({
 
   const goChooseGame = useCallback(
     (priv) => {
+      const gamers = gameData.gamers.filter(
+        (gamer) => !gamer.guest && !gamer.multiGuest
+      );
+      const multiGuests = gameData.gamers.filter((gamer) => gamer.multiGuest);
       const guests = gameData.gamers.filter((gamer) => gamer.guest);
-      const group = { roomToken, guests, privacy: priv };
+
+      const group = { roomToken, gamers, multiGuests, guests, privacy: priv };
       localStorage.setItem("group", JSON.stringify(group));
+
       finishGame({ gameData, roomToken });
+
       router.push(
         isFirst ? `/categories?group=true` : `/categories/grouping/grouping`
       );

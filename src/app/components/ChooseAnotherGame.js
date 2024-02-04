@@ -14,10 +14,21 @@ export default function ChooseAnotherGame({
   const router = useRouter();
 
   const returnLobby = useCallback(() => {
+    const gamers = [...group.gamers];
+    const multiGuests = [...group.multiGuests];
     const guests = [...group.guests];
-    const stored = { roomToken, guests, privacy: group.privacy };
+
+    const stored = {
+      roomToken,
+      gamers,
+      multiGuests,
+      guests,
+      privacy: group.privacy,
+    };
     localStorage.setItem("group", JSON.stringify(stored));
+
     finishGame({ gameData, roomToken });
+
     router.push(
       `${
         isReturnLobby
