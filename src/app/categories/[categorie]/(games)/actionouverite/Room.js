@@ -93,15 +93,17 @@ export default function Room({
   const createRoom = async (privacy) => {
     const newRoomToken = genToken(5);
 
-    try {
-      const gamers = await serverCreate(
-        newRoomToken,
-        privacy,
-        user,
-        gameName,
-        geoLocation
-      );
+    const { error, gamers } = await serverCreate(
+      newRoomToken,
+      privacy,
+      user,
+      gameName,
+      geoLocation
+    );
 
+    if (error) {
+      setServerMessage(error);
+    } else {
       const channel = pusher.subscribe(`room-${newRoomToken}`);
       channel.bind("room-event", function (data) {
         data.clientGamerList && setGamerList(data.clientGamerList);
@@ -115,8 +117,6 @@ export default function Room({
       setGamerList(gamers);
       setIsChosen(true);
       setServerMessage("");
-    } catch (error) {
-      setServerMessage(error.message);
     }
   };
 
@@ -130,11 +130,14 @@ export default function Room({
     const id = await getRoomId(token);
     const uniqueUserName = await getUniqueName(id, user.name);
 
-    try {
-      const joinData = await serverJoin({
-        token,
-        user: { ...user, name: uniqueUserName },
-      });
+    const { error, joinData } = await serverJoin({
+      token,
+      user: { ...user, name: uniqueUserName },
+    });
+
+    if (error) {
+      setServerMessage(error);
+    } else {
       if (joinData === undefined) return;
       const { gamers, guests, multiGuests } = joinData;
 
@@ -154,8 +157,6 @@ export default function Room({
       setGuestList(guests);
       setMultiGuestList(multiGuests);
       setServerMessage("");
-    } catch (error) {
-      setServerMessage(error.message);
     }
   }, [inputToken, user]);
 
@@ -182,13 +183,16 @@ export default function Room({
       searchParams.get("guestName")
     );
 
-    try {
-      const { gamerList, guests, multiGuests } = await serverAddMultiGuest(
-        token,
-        multiGuestName,
-        geoLocation
-      );
+    const { error, data } = await serverAddMultiGuest(
+      token,
+      multiGuestName,
+      geoLocation
+    );
 
+    if (error) {
+      setServerMessage(error);
+    } else {
+      const { gamerList, guests, multiGuests } = data;
       const channel = pusher.subscribe(`room-${token}`);
       channel.bind("room-event", function (data) {
         data.clientGamerList && setGamerList(data.clientGamerList);
@@ -205,8 +209,6 @@ export default function Room({
       setGuestList(guests);
       setMultiGuestList(multiGuests);
       setServerMessage("");
-    } catch (error) {
-      setServerMessage(error.message);
     }
   }, [geoLocation, searchParams, inputToken, isChosen]);
 
@@ -262,21 +264,21 @@ export default function Room({
   };
 
   const launchRoom = async () => {
-    try {
-      await launchGame({
-        roomId,
-        roomToken,
-        adminId: user.id,
-        gamers: gamerList,
-        guests: guestList,
-        multiGuests: multiGuestList,
-        options,
-      });
+    const { error } = await launchGame({
+      roomId,
+      roomToken,
+      adminId: user.id,
+      gamers: gamerList,
+      guests: guestList,
+      multiGuests: multiGuestList,
+      options,
+    });
 
+    if (error) {
+      setServerMessage(error);
+    } else {
       setServerMessage("");
       setIsStarted(true);
-    } catch (error) {
-      setServerMessage(error.message);
     }
   };
 

@@ -10,9 +10,10 @@ export async function launchGame({
   options,
 }) {
   if (gamers.length + guests.length + multiGuests.length < 3)
-    throw new Error("Un plus grand nombre de joueurs est requis.");
+    return { error: "Un plus grand nombre de joueurs est requis." };
+
   if (gamers.length + guests.length + multiGuests.length > 20)
-    throw new Error("Limite du nombre de joueurs dépassée : 20.");
+    return { error: "Limite du nombre de joueurs dépassée : 20." };
 
   const startedRoom = await prisma.room.update({
     where: {
@@ -177,6 +178,8 @@ export async function launchGame({
       deadMen: [],
     },
   });
+
+  return {};
 }
 
 export async function launchDescriptions({ gameData, roomToken }) {

@@ -13,7 +13,7 @@ export async function launchGame({
   options,
 }) {
   if (gamers.length + guests.length + multiGuests.length < 2)
-    throw new Error("Un plus grand nombre de joueurs est requis.");
+    return { error: "Un plus grand nombre de joueurs est requis." };
 
   const startedRoom = await prisma.room.update({
     where: {
@@ -64,6 +64,8 @@ export async function launchGame({
       card: null,
     },
   });
+
+  return {};
 }
 
 const getNextGamer = (gamerList, activePlayer) => {

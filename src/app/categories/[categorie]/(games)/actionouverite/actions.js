@@ -5,7 +5,7 @@ import pusher from "@/utils/pusher";
 import getDistance from "@/utils/getDistance";
 
 export async function serverCreate(token, privacy, user, game, geoLocation) {
-  if (!geoLocation) throw new Error("Détection de votre géolocalisation...");
+  if (!geoLocation) return { error: "Détection de votre géolocalisation..." };
 
   const roomId = (
     await prisma.room.create({
@@ -32,7 +32,7 @@ export async function serverCreate(token, privacy, user, game, geoLocation) {
     },
   });
 
-  return [user.name];
+  return { gamers: [user.name] };
 }
 
 export async function finishGame({ roomToken, gameData }) {
@@ -67,9 +67,9 @@ export async function serverJoin({ token, user }) {
     },
   });
 
-  if (Object.values(room.gamers).includes(user.id)) return;
-  if (!room) throw new Error("Token incorrect");
-  if (room.started) throw new Error("La partie a déjà été lancée");
+  if (Object.values(room.gamers).includes(user.id)) return {};
+  if (!room) return { error: "Token incorrect" };
+  if (room.started) return { error: "La partie a déjà été lancée" };
 
   const { id: roomId } = room;
 
@@ -103,9 +103,11 @@ export async function serverJoin({ token, user }) {
   });
 
   return {
-    gamers: newGamerList,
-    guests,
-    multiGuests,
+    joinData: {
+      gamers: newGamerList,
+      guests,
+      multiGuests,
+    },
   };
 }
 
@@ -193,7 +195,7 @@ export async function serverDeleteGuest({ token, guestName }) {
 }
 
 export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
-  if (!geoLocation) throw new Error("Détection de votre géolocalisation...");
+  if (!geoLocation) return { error: "Détection de votre géolocalisation..." };
 
   const room = await prisma.room.findFirst({
     where: {
@@ -201,14 +203,14 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
     },
   });
 
-  if (!room) throw new Error("Token incorrect");
-  if (room.started) throw new Error("La partie a déjà été lancée");
+  if (!room) return { error: "Token incorrect" };
+  if (room.started) return { error: "La partie a déjà été lancée" };
 
   const { id: roomId, adminLocation, gamers, multiGuests } = room;
 
   const distance = getDistance({ first: adminLocation, second: geoLocation });
   if (distance > 50)
-    throw new Error("Veuillez vous approcher de la zone de jeu");
+    return { error: "Veuillez vous approcher de la zone de jeu" };
 
   const gamerList = Object.keys(gamers);
   const guests = Object.keys(room.guests);
@@ -231,9 +233,11 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
   });
 
   return {
-    gamerList,
-    guests,
-    multiGuests: newMultiGuests,
+    data: {
+      gamerList,
+      guests,
+      multiGuests: newMultiGuests,
+    },
   };
 }
 

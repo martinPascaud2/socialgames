@@ -56,4 +56,6 @@ export async function launchGame({
       ended: true,
     },
   });
+
+  return {};
 }
