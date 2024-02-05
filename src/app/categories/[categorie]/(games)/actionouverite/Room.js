@@ -164,6 +164,7 @@ export default function Room({
       token: roomToken,
       gamerName: gamer,
     });
+    if (!gamers) router.push("/");
 
     setServerMessage(`Joueur ${gamer} retiré`);
     setGamerList(gamers);
@@ -214,6 +215,7 @@ export default function Room({
       token: roomToken,
       multiGuestName: multiGuest,
     });
+    if (!multiGuests) router.push("/");
 
     setServerMessage(`Guest ${multiGuest} retiré`);
     setMultiGuestList(multiGuests);
@@ -386,9 +388,9 @@ export default function Room({
             {group?.gamers &&
               group.gamers.map((gamer) => {
                 const gamerName = gamer.name;
-                const isHere = gamerList.includes(gamerName);
+                const isHere = gamerList?.includes(gamerName);
                 return (
-                  <div className="flex">
+                  <div key={gamerName} className="flex">
                     <div className="flex">
                       {gamerName}
                       {gamerName !== user.name ? (
@@ -424,9 +426,9 @@ export default function Room({
             {group?.multiGuests &&
               group.multiGuests.map((multi) => {
                 const multiName = multi.name;
-                const isHere = multiGuestList.includes(multiName);
+                const isHere = multiGuestList?.includes(multiName);
                 return (
-                  <div className="flex">
+                  <div key={multiName} className="flex">
                     <div className="flex">
                       {multiName}{" "}
                       <span className="italic text-sm">(guest externe)</span>
@@ -458,7 +460,7 @@ export default function Room({
               })}
 
             <div>
-              {gamerList.map((gamer) => {
+              {gamerList?.map((gamer) => {
                 const gamerNameList =
                   group?.gamers?.map((gamer) => gamer.name) || [];
                 if (gamerNameList.includes(gamer)) return;
@@ -478,7 +480,7 @@ export default function Room({
                   </div>
                 );
               })}
-              {guestList.map((guest, i) => (
+              {guestList?.map((guest, i) => (
                 <div key={i} className="flex">
                   <div>
                     {guest} <span className="italic text-sm">(guest)</span>
@@ -493,7 +495,7 @@ export default function Room({
                   )}
                 </div>
               ))}
-              {multiGuestList.map((multiGuest, i) => {
+              {multiGuestList?.map((multiGuest, i) => {
                 const multiNameList =
                   group?.multiGuests?.map((multi) => multi.name) || [];
                 if (multiNameList.includes(multiGuest)) return;
@@ -613,7 +615,7 @@ export default function Room({
                 <hr />
 
                 <button
-                  onClick={launchRoom}
+                  onClick={() => launchRoom()}
                   className="border border-blue-300 bg-blue-100"
                 >
                   {gameName === "grouping"

@@ -110,6 +110,8 @@ export async function serverJoin({ token, user }) {
 }
 
 export async function serverDeleteGamer({ token, gamerName }) {
+  if (!token || !gamerName) return;
+
   const room = await prisma.room.findFirst({
     where: {
       token,
@@ -236,6 +238,8 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
 }
 
 export async function serverDeleteMultiGuest({ token, multiGuestName }) {
+  if (!token || !multiGuestName) return;
+
   const room = await prisma.room.findFirst({
     where: {
       token,

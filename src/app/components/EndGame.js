@@ -7,7 +7,7 @@ export default function EndGame({ gameData, user, isFirst = false }) {
     <div className="flex flex-col items-center">
       {isFirst && <div>Recherche de la prochaine partie...</div>}
 
-      {gameData?.nextGame && gameData.admin !== user.name && (
+      {gameData?.nextGame ? (
         <>
           <button
             onClick={() => {
@@ -21,13 +21,17 @@ export default function EndGame({ gameData, user, isFirst = false }) {
           >
             Retour au lobby
           </button>
-          <button
-            onClick={() => router.push("/")}
-            className="border border-blue-300 bg-blue-100"
-          >
-            Quitter le groupe
-          </button>
         </>
+      ) : (
+        <div>En attente de l&apos;admin...</div>
+      )}
+      {gameData.admin !== user.name && (
+        <button
+          onClick={() => router.push("/")}
+          className="border border-blue-300 bg-blue-100"
+        >
+          Quitter le groupe
+        </button>
       )}
     </div>
   );
