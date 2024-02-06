@@ -325,7 +325,7 @@ export default function Categories({
                 setShowInvitations(false);
                 setServerMessage("");
               }}
-              className={classNames("m-1 p-2", {
+              className={classNames("m-1 p-2 bg-red-100", {
                 "outline outline-black": scanning,
               })}
             >
