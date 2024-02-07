@@ -79,19 +79,19 @@ export default async function CategoriesPage() {
         },
       })) !== null;
     if (!isFriendExists || !user || friendMail === user.email)
-      throw new Error("Utilisateur introuvable");
+      return { error: "Utilisateur introuvable" };
 
     const distance = getDistance({
       first: userLocation,
       second: friendLocation,
     });
-    if (distance > 20) throw new Error("Vous êtes trop loin !");
+    if (distance > 20) return { error: "Vous êtes trop loin !" };
 
     const friendList = await getFriendList({ userId: user.id });
     const isAlreadyFriend = friendList.some(
       (friend) => friend.friendId === friendId
     );
-    if (isAlreadyFriend) throw new Error(`${friendName} est votre ami !`);
+    if (isAlreadyFriend) return { error: `${friendName} est votre ami !` };
 
     try {
       await prisma.friend.create({
@@ -117,9 +117,11 @@ export default async function CategoriesPage() {
       });
 
       revalidatePath("/categories");
-    } catch (error) {
-      throw new Error("Une erreur s'est produite lors de l'ajout");
+    } catch (e) {
+      return { error: "Une erreur s'est produite lors de l'ajout" };
     }
+
+    return {};
   };
 
   const deleteFriend = async ({ userId, friendId }) => {

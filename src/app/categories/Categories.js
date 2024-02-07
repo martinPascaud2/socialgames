@@ -79,17 +79,16 @@ export default function Categories({
     throttle(async (decodedText) => {
       if (scanLocked) return;
       let userLocation;
-      try {
-        setScanLocked(true);
-        userLocation = await getLocation();
-        await addFriend({ userLocation, friendCode: decodedText });
-      } catch (error) {
-        setServerMessage(error.message);
-      } finally {
-        setTimeout(() => {
-          setScanLocked(false);
-        }, 10000);
-      }
+      setScanLocked(true);
+      userLocation = await getLocation();
+      const { error: addFriendError } = await addFriend({
+        userLocation,
+        friendCode: decodedText,
+      });
+      if (addFriendError) setServerMessage(addFriendError);
+      setTimeout(() => {
+        setScanLocked(false);
+      }, 10000);
     }, 10000),
     []
   );
