@@ -387,6 +387,41 @@ export default function Room({
           <>
             <div>Liste des joueurs</div>
 
+            {group?.guests &&
+              group.guests.map((guest) => {
+                const guestName = guest.name;
+                const isHere = guestList?.includes(guestName);
+                return (
+                  <div key={guestName} className="flex">
+                    <div className="flex">
+                      {guestName}{" "}
+                      <span className="italic text-sm">(guest)</span>
+                      {isHere ? (
+                        <CheckIcon className="block h-6 w-6 " />
+                      ) : (
+                        " ... "
+                      )}
+                    </div>
+                    {gameName === "grouping" && isHere && (
+                      <button
+                        onClick={() => {
+                          const newGuestsGroup = [...group.guests].filter(
+                            (guest) => guest.name !== guestName
+                          );
+                          setGroup((prevGroup) => ({
+                            ...prevGroup,
+                            guests: newGuestsGroup,
+                          }));
+                          deleteGuest(guestName);
+                        }}
+                        className="border border-blue-300 bg-blue-100"
+                      >
+                        Retirer
+                      </button>
+                    )}
+                  </div>
+                );
+              })}
             {group?.gamers &&
               group.gamers.map((gamer) => {
                 const gamerName = gamer.name;
@@ -482,21 +517,26 @@ export default function Room({
                   </div>
                 );
               })}
-              {guestList?.map((guest, i) => (
-                <div key={i} className="flex">
-                  <div>
-                    {guest} <span className="italic text-sm">(guest)</span>
+              {guestList?.map((guest, i) => {
+                const guestNameList =
+                  group?.guests?.map((guest) => guest.name) || [];
+                if (guestNameList.includes(guest)) return;
+                return (
+                  <div key={i} className="flex">
+                    <div>
+                      {guest} <span className="italic text-sm">(guest)</span>
+                    </div>
+                    {gameName === "grouping" && isAdmin && (
+                      <button
+                        onClick={() => deleteGuest(guest)}
+                        className="border border-blue-300 bg-blue-100"
+                      >
+                        Retirer
+                      </button>
+                    )}
                   </div>
-                  {gameName === "grouping" && isAdmin && (
-                    <button
-                      onClick={() => deleteGuest(guest)}
-                      className="border border-blue-300 bg-blue-100"
-                    >
-                      Retirer
-                    </button>
-                  )}
-                </div>
-              ))}
+                );
+              })}
               {multiGuestList?.map((multiGuest, i) => {
                 const multiNameList =
                   group?.multiGuests?.map((multi) => multi.name) || [];
