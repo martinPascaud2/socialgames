@@ -1,0 +1,8 @@
+#reader {
+  height: 74vw !important;
+}
+
+video {
+  height: 74vw !important;
+  object-fit: cover;
+}

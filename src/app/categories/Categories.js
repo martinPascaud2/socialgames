@@ -93,14 +93,17 @@ export default function Categories({
     []
   );
   const QrCodeScanner = useMemo(() => {
+    if (!scanning) return;
     return (
-      <Html5QrcodePlugin
-        scanning={scanning}
-        fps={10}
-        qrbox={500}
-        aspectRatio="1.0"
-        qrCodeSuccessCallback={onNewScanResult}
-      />
+      <>
+        <Html5QrcodePlugin
+          scanning={scanning}
+          fps={10}
+          qrbox={500}
+          aspectRatio="1.0"
+          qrCodeSuccessCallback={onNewScanResult}
+        />
+      </>
     );
   }, [scanning]);
 
@@ -226,7 +229,9 @@ export default function Categories({
                 className="w-full h-full"
               />
             )}
+
             {QrCodeScanner}
+
             {showInvitations && (
               <>
                 <div
