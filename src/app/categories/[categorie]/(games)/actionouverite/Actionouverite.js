@@ -114,13 +114,13 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
             <>
               <button
                 onClick={takeAction}
-                className="absolute bottom-48 left-20"
+                className="absolute bottom-32 left-20 border border-blue-300 bg-blue-100"
               >
                 Action
               </button>
               <button
                 onClick={takeVerite}
-                className="absolute bottom-48 right-20"
+                className="absolute bottom-32 right-20 border border-blue-300 bg-blue-100"
               >
                 Vérité
               </button>

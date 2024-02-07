@@ -277,60 +277,64 @@ export default function Categories({
 
           <div
             id="bottom"
-            className="z-30 absolute bg-red-100 w-[75vw] h-36 translate-x-[12.5vw] flex flex-col justify-between"
+            className="z-30 absolute bg-red-100 w-[75vw] h-36 translate-x-[12.5vw] flex flex-col justify-between items-center"
             style={{ top: `${bottomRect}px` }}
           >
-            <div className="absolute w-full text-center">{serverMessage}</div>
-            <button
-              onClick={() => {
-                setShowQrCode(false);
-                setScanning(false);
-                setShowInvitations(true);
-                setServerMessage("");
-              }}
-              className={classNames("mt-8 m-1 p-2", {
-                "outline outline-black": showInvitations,
-              })}
-            >
-              Parties de vos amis
-            </button>
-            <Link
-              href="/categories/grouping/grouping"
-              className="text-center p-2"
-            >
-              Créer un nouveau groupe
-            </Link>
-            <button
-              className={classNames("m-1 p-2", {
-                "outline outline-black": showQrCode,
-              })}
-              onClick={async () => {
-                try {
-                  setLocation(await getLocation());
-                  setServerMessage("QR code généré !");
-                } catch (error) {
-                  setServerMessage(error.message);
-                }
-                setShowQrCode(true);
-                setScanning(false);
-                setShowInvitations(false);
-              }}
-            >
-              Générer mon QRCode
-            </button>
-            <button
-              onClick={() => {
-                setShowQrCode(false);
-                setScanning(true);
-                setShowInvitations(false);
-                setServerMessage("");
-              }}
-              className={classNames("m-1 p-2 bg-red-100", {
-                "outline outline-black": scanning,
-              })}
-            >
-              Ajouter un ami
-            </button>
+            <div className="z-30 w-full text-center">{serverMessage}</div>
+            <div className="flex flex-row m-3">
+              <button
+                onClick={() => {
+                  setShowQrCode(false);
+                  setScanning(false);
+                  setShowInvitations(true);
+                  setServerMessage("");
+                }}
+                className={classNames("m-1 p-2", {
+                  "outline outline-black": showInvitations,
+                })}
+              >
+                Parties en cours
+              </button>
+              <Link
+                href="/categories/grouping/grouping"
+                className="text-center m-1 p-2"
+              >
+                Créer un groupe
+              </Link>
+            </div>
+            <div className="flex flex-row m-3">
+              <button
+                className={classNames("m-1 p-2", {
+                  "outline outline-black": showQrCode,
+                })}
+                onClick={async () => {
+                  try {
+                    setLocation(await getLocation());
+                    setServerMessage("QR code généré !");
+                  } catch (error) {
+                    setServerMessage(error.message);
+                  }
+                  setShowQrCode(true);
+                  setScanning(false);
+                  setShowInvitations(false);
+                }}
+              >
+                Générer votre QRCode
+              </button>
+              <button
+                onClick={() => {
+                  setShowQrCode(false);
+                  setScanning(true);
+                  setShowInvitations(false);
+                  setServerMessage("");
+                }}
+                className={classNames("m-1 p-2 bg-red-100", {
+                  "outline outline-black": scanning,
+                })}
+              >
+                Ajouter un ami
+              </button>
+            </div>
           </div>
 
           <div
