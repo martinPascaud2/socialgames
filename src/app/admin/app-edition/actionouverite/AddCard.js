@@ -57,6 +57,7 @@ export default function AddCard() {
           <option value="5">5</option>
         </select>
 
+        <label htmlFor="adult">+18</label>
         <input type="checkbox" name="adult" />
 
         <button type="submit">Créer</button>

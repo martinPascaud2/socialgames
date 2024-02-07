@@ -62,10 +62,6 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
     setStats(calculateStats());
   }, [gameData.ended]);
 
-  console.log("gameData", gameData);
-  console.log("newCard", newCard);
-  console.log("oldCard", oldCard);
-
   return (
     <>
       {!isEnded && (
@@ -117,13 +113,13 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
           {isActive && (
             <>
               <button
-                onClick={() => takeAction()}
+                onClick={async () => await takeAction()}
                 className="absolute bottom-32 left-20 border border-blue-300 bg-blue-100"
               >
                 Action
               </button>
               <button
-                onClick={() => takeVerite()}
+                onClick={async () => await takeVerite()}
                 className="absolute bottom-32 right-20 border border-blue-300 bg-blue-100"
               >
                 Vérité

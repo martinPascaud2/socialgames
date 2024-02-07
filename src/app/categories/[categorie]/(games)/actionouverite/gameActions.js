@@ -80,12 +80,14 @@ const getNextGamer = (gamerList, activePlayer) => {
 const getRandomCard = async (choice, actionRemain, veriteRemain) => {
   const choicedList = choice === "action" ? actionRemain : veriteRemain;
   const randomIndex =
-    choicedList[Math.floor(Math.random() * choicedList.length)];
+    choicedList[Math.floor(Math.random() * choicedList.length)] || 0;
+
   const randomCard = await prisma.actionouverite.findFirst({
     where: {
       id: randomIndex,
     },
   });
+
   return randomCard;
 };
 
@@ -268,6 +270,7 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
   }
 
   const randomCard = await getRandomCard(choice, actionRemain, veriteRemain);
+
   await updateAlreadys(registeredGamers, randomCard.id);
 
   const newActivePlayer = getNextGamer(gameData.gamers, gameData.activePlayer);
