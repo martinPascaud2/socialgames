@@ -62,6 +62,10 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
     setStats(calculateStats());
   }, [gameData.ended]);
 
+  console.log("gameData", gameData);
+  console.log("newCard", newCard);
+  console.log("oldCard", oldCard);
+
   return (
     <>
       {!isEnded && (
