@@ -347,7 +347,7 @@ export default function Categories({
           <div
             // className={`z-20 absolute bg-red-100 w-full bottom-0`}
             className={`z-20 absolute bg-blue-100 w-full bottom-0`}
-            style={{ height: `${bottomSpace}px` }}
+            style={{ height: `${bottomSpace}px`, maxHeight: "20vh" }}
           />
         </div>
 
