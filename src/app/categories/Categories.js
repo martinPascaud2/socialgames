@@ -364,8 +364,7 @@ export default function Categories({
               key={index}
               href={`${categorie.href}${isGroup ? "?group=true" : ""}`}
               className={classNames(
-                // `z-20 absolute w-1/3 aspect-square p-3 border`,
-                `z-20 absolute w-1/3 p-3 border`,
+                `z-20 absolute w-1/3 aspect-square p-3 border`,
                 {
                   hidden: togglingParameters && toggledParameters,
                 }
