@@ -143,8 +143,8 @@ export default function Categories({
             ? handleBgClick()
             : router.push("/categories/grouping/grouping")
         }
-        // className="z-10 absolute h-screen w-screen"
-        className="z-10 absolute h-[100svh] w-screen"
+        className="z-10 absolute h-screen w-screen"
+        // className="z-10 absolute h-[100svh] w-screen"
       />
 
       {/* <main className="relative h-screen"> */}
