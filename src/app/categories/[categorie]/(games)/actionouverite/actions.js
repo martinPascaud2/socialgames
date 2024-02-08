@@ -5,7 +5,8 @@ import pusher from "@/utils/pusher";
 import getDistance from "@/utils/getDistance";
 
 export async function serverCreate(token, privacy, user, game, geoLocation) {
-  if (!geoLocation) return { error: "Détection de votre géolocalisation..." };
+  if (!geoLocation)
+    return { error: "Détection en cours, veuillez patienter..." };
 
   const roomId = (
     await prisma.room.create({
@@ -195,7 +196,8 @@ export async function serverDeleteGuest({ token, guestName }) {
 }
 
 export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
-  if (!geoLocation) return { error: "Détection de votre géolocalisation..." };
+  if (!geoLocation)
+    return { error: "Détection en cours, veuillez patienter..." };
 
   const room = await prisma.room.findFirst({
     where: {
