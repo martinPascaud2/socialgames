@@ -42,6 +42,8 @@ export default function GuestConnector() {
     }
   };
 
+  console.log("guestUrl", guestUrl);
+
   return (
     <div>
       {!scanLocked && (
