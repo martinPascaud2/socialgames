@@ -143,16 +143,16 @@ export default function Categories({
             ? handleBgClick()
             : router.push("/categories/grouping/grouping")
         }
-        // className="z-10 absolute h-screen w-screen"
-        className="z-10 absolute h-[100svh] w-screen"
+        className="z-10 absolute h-screen w-screen"
+        // className="z-10 absolute h-[100svh] w-screen"
       />
 
-      {/* <main className="relative h-screen"> */}
-      <main className="relative h-[100svh]">
+      <main className="relative h-screen">
+        {/* <main className="relative h-[100svh]"> */}
         <div
           className={classNames(
-            // "relative h-screen w-screen",
-            "relative h-[100svh] w-screen",
+            "relative h-screen w-screen",
+            // "relative h-[100svh] w-screen",
             {
               "transition-opacity ease-in-out duration-500 opacity-100":
                 togglingParameters,
@@ -379,7 +379,7 @@ export default function Categories({
               }}
             >
               <div className="flex items-center justify-center h-full">
-                {categorie.name}TEST
+                {categorie.name}
               </div>
             </Link>
           ))}
