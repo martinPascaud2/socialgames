@@ -379,7 +379,7 @@ export default function Categories({
               }}
             >
               <div className="flex items-center justify-center h-full">
-                {categorie.name}
+                {categorie.name}TEST
               </div>
             </Link>
           ))}
