@@ -147,8 +147,8 @@ export default function Categories({
         // className="z-10 absolute h-[100svh] w-screen"
       />
 
-      <main className="relative h-screen">
-        {/* <main className="relative h-[100svh]"> */}
+      {/* <main className="relative h-screen"> */}
+      <main className="relative h-[100svh]">
         <div
           className={classNames(
             "relative h-screen w-screen",
