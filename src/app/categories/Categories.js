@@ -165,22 +165,22 @@ export default function Categories({
             style={{ height: `${topSpace + 1}px` }}
           />
           <div
-            className={`z-20 absolute bg-yellow-100 w-1/2 border-l border-black translate-x-[50vw]`}
+            className={`z-20 absolute bg-yellow-100 w-1/2 border-l border-black translate-x-[50dvw]`}
             style={{ height: `${topSpace + 1}px` }}
           />
 
           <div
-            className="z-30 absolute bg-blue-100 w-[12.6vw] h-36 skew-y-[45deg] -translate-y-[6.1vw] border-b-2 border-black"
+            className="z-30 absolute bg-blue-100 w-[12.6dvw] h-36 skew-y-[45deg] -translate-y-[6.1dvw] border-b-2 border-black"
             style={{ top: `${topRect - 144}px` }}
           />
           <div
-            className="z-30 absolute bg-yellow-100 w-[12.6vw] h-36 -skew-y-[45deg] -translate-y-[6.1vw] right-0 border-b-2 border-black"
+            className="z-30 absolute bg-yellow-100 w-[12.6dvw] h-36 -skew-y-[45deg] -translate-y-[6.1dvw] right-0 border-b-2 border-black"
             style={{ top: `${topRect - 144}px` }}
           />
 
           <div
             id="infosettings"
-            className="z-30 absolute bg-blue-100 w-[37.5vw] h-36 translate-x-[12.5vw] border-r border-black"
+            className="z-30 absolute bg-blue-100 w-[37.5dvw] h-36 translate-x-[12.5dvw] border-r border-black"
             style={{ top: `${topRect - 144}px` }}
           >
             <div>infos</div>
@@ -200,7 +200,7 @@ export default function Categories({
           </div>
 
           <div
-            className="z-30 absolute bg-yellow-100 w-[37.5vw] h-36 border-l border-black translate-x-[50vw]"
+            className="z-30 absolute bg-yellow-100 w-[37.5dvw] h-36 border-l border-black translate-x-[50dvw]"
             style={{ top: `${topRect - 144}px` }}
           >
             <div>settings</div>
@@ -221,7 +221,7 @@ export default function Categories({
 
           <div
             id="QR-zone"
-            className="z-30 absolute top-1/2 left-1/2 -translate-x-1/2	-translate-y-1/2 bg-slate-500 w-[75vw] h-[75vw] border-2 border-black"
+            className="z-30 absolute top-1/2 left-1/2 -translate-x-1/2	-translate-y-1/2 bg-slate-500 w-[75dvw] h-[75dvw] border-2 border-black"
           >
             {showQrCode && location && (
               <QRCode
@@ -271,17 +271,17 @@ export default function Categories({
           </div>
 
           <div
-            className="z-30 absolute bg-red-100 w-[12.6vw] h-36 -skew-y-[45deg] translate-y-[6.1vw] border-t-2 border-black"
+            className="z-30 absolute bg-red-100 w-[12.6dvw] h-36 -skew-y-[45deg] translate-y-[6.1dvw] border-t-2 border-black"
             style={{ top: `${bottomRect}px` }}
           />
           <div
-            className="z-30 absolute bg-red-100 w-[12.6vw] h-36 skew-y-[45deg] translate-y-[6.1vw] border-t-2 border-black"
+            className="z-30 absolute bg-red-100 w-[12.6dvw] h-36 skew-y-[45deg] translate-y-[6.1dvw] border-t-2 border-black"
             style={{ top: `${bottomRect}px`, right: "0px" }}
           />
 
           <div
             id="bottom"
-            className="z-30 absolute bg-red-100 w-[75vw] h-36 translate-x-[12.5vw] flex flex-col justify-between items-center"
+            className="z-30 absolute bg-red-100 w-[75dvw] h-36 translate-x-[12.5dvw] flex flex-col justify-between items-center"
             style={{ top: `${bottomRect}px` }}
           >
             <div className="z-30 w-full text-center">{serverMessage}</div>
