@@ -92,6 +92,7 @@ export default function Categories({
     }, 10000),
     []
   );
+
   const QrCodeScanner = useMemo(() => {
     if (!scanning) return;
     return (
@@ -99,7 +100,6 @@ export default function Categories({
         <Html5QrcodePlugin
           scanning={scanning}
           fps={10}
-          qrbox={500}
           aspectRatio="1.0"
           qrCodeSuccessCallback={onNewScanResult}
         />
