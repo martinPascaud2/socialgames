@@ -50,7 +50,7 @@ export default function GuestConnector() {
           <Html5QrcodePlugin
             scanning={scanning}
             fps={10}
-            qrbox={500}
+            // qrbox={500}
             aspectRatio="1.0"
             qrCodeSuccessCallback={onNewScanResult}
           />
