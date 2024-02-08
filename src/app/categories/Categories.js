@@ -152,7 +152,7 @@ export default function Categories({
         <div
           className={classNames(
             // "relative h-screen w-screen",
-            "relative h-[100dvh] w-screen",
+            // "relative h-[100dvh] w-screen",
             {
               "transition-opacity ease-in-out duration-500 opacity-100":
                 togglingParameters,
