@@ -4,7 +4,7 @@ import { Html5QrcodeScanner, Html5QrcodeScanType } from "html5-qrcode";
 
 const qrcodeRegionId = "html5qr-code-full-region";
 
-const createConfig = (props) => {
+const createConfig = (props, isMobile) => {
   let config = {};
   if (props.fps) {
     config.fps = props.fps;
@@ -19,17 +19,28 @@ const createConfig = (props) => {
     config.disableFlip = props.disableFlip;
   }
   config.supportedScanTypes = [Html5QrcodeScanType.SCAN_TYPE_CAMERA];
+  config.videoConstraints = {
+    facingMode: { exact: isMobile ? "environment" : "user" },
+  };
+
   return config;
 };
 
 export default function ScannerTEST(props) {
   useEffect(() => {
     if (!props.scanning) return;
-    const config = createConfig(props);
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
+    console.log("isMobile", isMobile);
+
+    const config = createConfig(props, isMobile);
     const verbose = props.verbose === true;
     if (!props.qrCodeSuccessCallback) {
       throw "qrCodeSuccessCallback is required callback.";
     }
+
     const html5QrcodeScanner = new Html5QrcodeScanner(
       qrcodeRegionId,
       config,
