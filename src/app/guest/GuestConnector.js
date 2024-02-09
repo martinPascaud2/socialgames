@@ -4,7 +4,8 @@ import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { throttle } from "lodash";
 
-import Html5QrcodePlugin from "@/components/Html5QrcodePlugin";
+// import Html5QrcodePlugin from "@/components/Html5QrcodePlugin";
+import ScannerTEST from "@/components/ScannerTEST";
 
 export default function GuestConnector() {
   const router = useRouter();
@@ -53,7 +54,8 @@ export default function GuestConnector() {
       {!scanLocked && (
         <>
           <div className="text-center">Scannez le QrCode d&apos;une partie</div>
-          <Html5QrcodePlugin
+          {/* <Html5QrcodePlugin */}
+          <ScannerTEST
             scanning={scanning}
             fps={10}
             aspectRatio="1.0"
