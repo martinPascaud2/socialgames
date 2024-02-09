@@ -4,8 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { throttle } from "lodash";
 
-// import Html5QrcodePlugin from "@/components/Html5QrcodePlugin";
-import ScannerTEST from "@/components/ScannerTEST";
+import GuestScanner from "./GuestScanner";
 
 export default function GuestConnector() {
   const router = useRouter();
@@ -22,7 +21,6 @@ export default function GuestConnector() {
 
   const onNewScanResult = useCallback(
     throttle(async (decodedText) => {
-      console.log("decodedText", decodedText);
       if (scanLocked) return;
       try {
         setGameUrl(decodedText);
@@ -44,18 +42,12 @@ export default function GuestConnector() {
     }
   };
 
-  console.log("gameUrl", gameUrl);
-  console.log("scanning", scanning);
-  console.log("scanLocked", scanLocked);
-  console.log("serverMessage", serverMessage);
-
   return (
     <div>
       {!scanLocked && (
         <>
           <div className="text-center">Scannez le QrCode d&apos;une partie</div>
-          {/* <Html5QrcodePlugin */}
-          <ScannerTEST
+          <GuestScanner
             scanning={scanning}
             fps={10}
             aspectRatio="1.0"
