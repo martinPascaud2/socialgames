@@ -57,6 +57,7 @@ export default function GuestConnector() {
             scanning={scanning}
             fps={10}
             aspectRatio="1.0"
+            qrbox={500}
             qrCodeSuccessCallback={onNewScanResult}
           />
         </>
