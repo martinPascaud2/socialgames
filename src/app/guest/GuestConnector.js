@@ -21,6 +21,7 @@ export default function GuestConnector() {
 
   const onNewScanResult = useCallback(
     throttle(async (decodedText) => {
+      console.log("decodedText", decodedText);
       if (scanLocked) return;
       try {
         setGameUrl(decodedText);
@@ -41,6 +42,11 @@ export default function GuestConnector() {
       router.push(guestUrl);
     }
   };
+
+  console.log("gameUrl", gameUrl);
+  console.log("scanning", scanning);
+  console.log("scanLocked", scanLocked);
+  console.log("serverMessage", serverMessage);
 
   return (
     <div>
