@@ -28,36 +28,32 @@ const createConfig = (props, isMobile) => {
 
 export default function GuestScanner(props) {
   useEffect(() => {
-    // if (!props.scanning) return;
-    let html5QrcodeScanner;
-    if (props.scanning) {
-      const isMobile =
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent
-        );
+    if (!props.scanning) return;
 
-      const config = createConfig(props, isMobile);
-      const verbose = props.verbose === true;
-      if (!props.qrCodeSuccessCallback) {
-        throw "qrCodeSuccessCallback is required callback.";
-      }
+    const isMobile =
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+        navigator.userAgent
+      );
 
-      // const html5QrcodeScanner = new Html5QrcodeScanner(
-      html5QrcodeScanner = new Html5QrcodeScanner(
-        qrcodeRegionId,
-        config,
-        verbose
-      );
-      html5QrcodeScanner.render(
-        props.qrCodeSuccessCallback,
-        props.qrCodeErrorCallback
-      );
+    const config = createConfig(props, isMobile);
+    const verbose = props.verbose === true;
+    if (!props.qrCodeSuccessCallback) {
+      throw "qrCodeSuccessCallback is required callback.";
     }
+
+    const html5QrcodeScanner = new Html5QrcodeScanner(
+      qrcodeRegionId,
+      config,
+      verbose
+    );
+    html5QrcodeScanner.render(
+      props.qrCodeSuccessCallback,
+      props.qrCodeErrorCallback
+    );
     return () => {
-      html5QrcodeScanner &&
-        html5QrcodeScanner.clear().catch((error) => {
-          console.error("Failed to clear html5QrcodeScanner. ", error);
-        });
+      html5QrcodeScanner.clear().catch((error) => {
+        console.error("Failed to clear html5QrcodeScanner. ", error);
+      });
     };
   }, [props]);
   return <div id={qrcodeRegionId} />;
