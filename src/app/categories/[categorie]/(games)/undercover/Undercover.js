@@ -193,7 +193,14 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
       setIsEnded(true);
 
     const calculateStats = () => {
-      return { stat: "Résultats de fin de partie" }; //to be done
+      const winnerPhrase = {
+        whiteWin: "Mister White remporte la partie !",
+        civilsWin: "Les civils remportent la partie !",
+        undercoversWin: "Les undercovers remportent la partie !",
+        undercoversWinWithWhite:
+          "Les undercovers ainsi que Mister White remportent la partie !",
+      }[gameData.phase];
+      return { winnerPhrase };
     };
     setStats(calculateStats());
   }, [gameData.phase, gameData.ended]);
@@ -310,24 +317,6 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
             </>
           )}
 
-          {gameData.phase === "whiteWin" && (
-            <div>Mister White remporte la partie !</div>
-          )}
-
-          {gameData.phase === "civilsWin" && (
-            <div>Les civils remportent la partie !</div>
-          )}
-
-          {gameData.phase === "undercoversWin" && (
-            <div>Les undercovers remportent la partie !</div>
-          )}
-
-          {gameData.phase === "undercoversWinWithWhite" && (
-            <div>
-              Les undercovers ainsi que Mister White remportent la partie !
-            </div>
-          )}
-
           {!!gamers.length && (
             <div>
               Joueurs restants :
@@ -351,10 +340,12 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
         </>
       ) : (
         <>
-          <div>Statistiques :</div>
-          {Object.values(stats).map((stat, i) => (
-            <div key={i}>{stat}</div>
-          ))}
+          <div className="flex flex-col items-center border-b">
+            <div>Résultats</div>
+            {Object.values(stats).map((stat, i) => (
+              <div key={i}>{stat}</div>
+            ))}
+          </div>
           <EndGame gameData={gameData} user={user} />
         </>
       )}
