@@ -11,8 +11,8 @@ export async function launchGame({
   multiGuests,
   options,
 }) {
-  if (gamers.length + guests.length + multiGuests.length < 2)
-    return { error: "Un plus grand nombre de joueurs est requis." };
+  //   if (gamers.length + guests.length + multiGuests.length < 2)
+  //     return { error: "Un plus grand nombre de joueurs est requis." };
   //max number ???
 
   const startedRoom = await prisma.room.update({
@@ -21,6 +21,7 @@ export async function launchGame({
     },
     data: {
       started: true,
+      gameData: {},
     },
   });
 
@@ -31,6 +32,9 @@ export async function launchGame({
     multiGuests,
   });
 
+  if (gamersAndGuests.some((player) => player.guest))
+    return { error: "Ce jeu est incompatible avec les guests monoscreen." };
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
     gameData: {
@@ -40,4 +44,14 @@ export async function launchGame({
   });
 
   return {};
+}
+
+export async function goFirstRound({
+  roomId,
+  roomToken,
+  gameData,
+  imageNumber,
+}) {
+  const room = await prisma.room.findFirst({ where: { id: roomId } });
+  console.log("room", room);
 }
