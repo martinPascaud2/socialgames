@@ -4,7 +4,6 @@ export const initGamersAndGuests = ({
   guests,
   multiGuests,
 }) => {
-  // const gamersAndGuests = Object.entries(startedRoom.gamers).map((gamer) => ({
   const gamersAndGuests = Object.entries(gamers).map((gamer) => ({
     id: gamer[1],
     name: gamer[0],
