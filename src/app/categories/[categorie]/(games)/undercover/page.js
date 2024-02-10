@@ -2,7 +2,7 @@ import pusher from "@/utils/pusher";
 import getUser from "@/utils/getUser";
 import { getRoomFriendList } from "@/utils/getFriendList";
 
-import Room from "../actionouverite/Room";
+import Room from "@/components/Room/Room";
 import Undercover from "./Undercover";
 import { launchGame } from "./gameActions";
 

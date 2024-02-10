@@ -1,4 +1,4 @@
-import { finishGame } from "@/categories/[categorie]/(games)/actionouverite/actions";
+import { finishGame } from "./Room/actions";
 
 export default function FinishGame({ gameData, roomToken }) {
   return (

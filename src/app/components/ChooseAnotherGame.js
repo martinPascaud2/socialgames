@@ -3,7 +3,7 @@
 import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 
-import { finishGame } from "@/categories/[categorie]/(games)/actionouverite/actions";
+import { finishGame } from "./Room/actions";
 
 export default function ChooseAnotherGame({
   group,

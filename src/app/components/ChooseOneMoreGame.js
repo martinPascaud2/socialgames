@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import getRoomPrivacy from "@/utils/getRoomPrivacy";
-import { finishGame } from "@/categories/[categorie]/(games)/actionouverite/actions";
+import { finishGame } from "./Room/actions";
 
 import DeleteGroup from "./DeleteGroup";
 
