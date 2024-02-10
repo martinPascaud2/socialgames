@@ -3,6 +3,8 @@
 import prisma from "@/utils/prisma";
 import pusher from "@/utils/pusher";
 
+import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
+
 export async function launchGame({
   roomId,
   roomToken,
@@ -24,35 +26,11 @@ export async function launchGame({
     },
   });
 
-  // utils quand 2e jeu
-  const gamersAndGuests = Object.entries(startedRoom.gamers).map((gamer) => ({
-    id: gamer[1],
-    name: gamer[0],
-    guest: false,
-    multiGuest: false,
-  }));
-
-  guests.map((guest) => {
-    gamersAndGuests.push({
-      id: adminId,
-      name: guest,
-      guest: true,
-      multiGuest: false,
-    });
-  });
-
-  let startIndex = 0;
-  gamersAndGuests.map((gamer) => {
-    if (gamer.id >= startIndex) startIndex = gamer.id + 1;
-  });
-  multiGuests.map((multiGuest) => {
-    gamersAndGuests.push({
-      id: startIndex,
-      name: multiGuest,
-      guest: false,
-      multiGuest: true,
-    });
-    startIndex++;
+  const gamersAndGuests = initGamersAndGuests({
+    adminId,
+    gamers: startedRoom.gamers,
+    guests,
+    multiGuests,
   });
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
@@ -80,7 +58,7 @@ const getNextGamer = (gamerList, activePlayer) => {
 const getRandomCard = async (choice, actionRemain, veriteRemain) => {
   const choicedList = choice === "action" ? actionRemain : veriteRemain;
   const randomIndex =
-    choicedList[Math.floor(Math.random() * choicedList.length)] || 0;
+    choicedList[Math.floor(Math.random() * choicedList.length)] || 1;
 
   const randomCard = await prisma.actionouverite.findFirst({
     where: {

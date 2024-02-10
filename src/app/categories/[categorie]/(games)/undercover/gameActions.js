@@ -1,5 +1,7 @@
 "use server";
 
+import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
+
 export async function launchGame({
   roomId,
   roomToken,
@@ -89,35 +91,11 @@ export async function launchGame({
   };
   const words = getWords(theme);
 
-  // utils quand 2e jeu
-  const gamersAndGuests = Object.entries(startedRoom.gamers).map((gamer) => ({
-    id: gamer[1],
-    name: gamer[0],
-    guest: false,
-    multiGuest: false,
-  }));
-
-  guests.map((guest) => {
-    gamersAndGuests.push({
-      id: adminId,
-      name: guest,
-      guest: true,
-      multiGuest: false,
-    });
-  });
-
-  let startIndex = 0;
-  gamersAndGuests.map((gamer) => {
-    if (gamer.id >= startIndex) startIndex = gamer.id + 1;
-  });
-  multiGuests.map((multiGuest) => {
-    gamersAndGuests.push({
-      id: startIndex,
-      name: multiGuest,
-      guest: false,
-      multiGuest: true,
-    });
-    startIndex++;
+  const gamersAndGuests = initGamersAndGuests({
+    adminId,
+    gamers: startedRoom.gamers,
+    guests,
+    multiGuests,
   });
 
   const whiteNumber = gamersAndGuests.length > 3 ? 1 : 0;
