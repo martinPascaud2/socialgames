@@ -1,4 +1,3 @@
-import pusher from "@/utils/pusher";
 import getUser from "@/utils/getUser";
 import { getRoomFriendList } from "@/utils/getFriendList";
 
@@ -17,30 +16,12 @@ export default async function UndercoverPage({ params, searchParams }) {
         categorie={params?.categorie}
         gameName="undercover"
         Game={Undercover}
-        inviteFriend={null}
         launchGame={null}
       />
     );
 
   const { id, name } = user;
   const friendList = await getRoomFriendList({ userId: user.id });
-
-  const inviteFriend = async ({
-    userName,
-    friendMail,
-    categorie,
-    gameName,
-    roomToken,
-  }) => {
-    "use server";
-    await pusher.trigger(`user-${friendMail}`, "user-event", {
-      invitation: {
-        userName,
-        gameName,
-        link: `${process.env.NEXT_PUBLIC_APP_URL}/categories/${categorie}/${gameName}?token=${roomToken}`,
-      },
-    });
-  };
 
   return (
     <Room
@@ -49,7 +30,6 @@ export default async function UndercoverPage({ params, searchParams }) {
       categorie={params?.categorie}
       gameName="undercover"
       Game={Undercover}
-      inviteFriend={inviteFriend}
       launchGame={launchGame}
     />
   );

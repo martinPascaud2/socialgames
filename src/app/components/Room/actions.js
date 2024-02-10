@@ -60,6 +60,22 @@ export async function goOneMoreGame({
   });
 }
 
+export async function inviteFriend({
+  userName,
+  friendMail,
+  categorie,
+  gameName,
+  roomToken,
+}) {
+  await pusher.trigger(`user-${friendMail}`, "user-event", {
+    invitation: {
+      userName,
+      gameName,
+      link: `${process.env.NEXT_PUBLIC_APP_URL}/categories/${categorie}/${gameName}?token=${roomToken}`,
+    },
+  });
+}
+
 export async function serverJoin({ token, user }) {
   const room = await prisma.room.findFirst({
     where: {

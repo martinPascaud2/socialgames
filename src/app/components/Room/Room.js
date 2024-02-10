@@ -18,6 +18,7 @@ var pusher = new Pusher("61853af9f30abf9d5b3d", {
 import {
   serverCreate,
   goOneMoreGame,
+  inviteFriend,
   serverJoin,
   serverDeleteGamer,
   serverAddGuest,
@@ -35,7 +36,6 @@ export default function Room({
   categorie,
   gameName,
   Game,
-  inviteFriend,
   launchGame,
 }) {
   const router = useRouter();
