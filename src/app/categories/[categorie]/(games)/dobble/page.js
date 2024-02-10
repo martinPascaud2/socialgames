@@ -1,0 +1,36 @@
+import getUser from "@/utils/getUser";
+import { getRoomFriendList } from "@/utils/getFriendList";
+
+import Room from "@/components/Room/Room";
+import Dobble from "./Dobble";
+import { launchGame } from "./gameActions";
+
+export default async function DobblePage({ params, searchParams }) {
+  const user = await getUser();
+
+  if (!user)
+    return (
+      <Room
+        user={{ name: searchParams.guestName, multiGuest: true }}
+        friendList={null}
+        categorie={params?.categorie}
+        gameName="dobble"
+        Game={Dobble}
+        launchGame={null}
+      />
+    );
+
+  const { id, name } = user;
+  const friendList = await getRoomFriendList({ userId: user.id });
+
+  return (
+    <Room
+      user={{ id, name }}
+      friendList={friendList}
+      categorie={params?.categorie}
+      gameName="dobble"
+      Game={Dobble}
+      launchGame={launchGame}
+    />
+  );
+}

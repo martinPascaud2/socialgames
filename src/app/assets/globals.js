@@ -12,14 +12,14 @@ export const categories = [
 export const subCategories = {
   grouping: [{ name: "grouping", path: "grouping" }],
   categorie1: [
-    { name: "Uno", path: "uno", img: "/uno.jpeg" },
     {
       name: "Action ou vérité",
       path: "actionouverite",
       img: "/actionouverite.png",
     },
     { name: "Undercover", path: "undercover", img: "/undercover.png" },
-    { name: "game4", path: "uno", img: "/uno.jpeg" },
+    { name: "Dobble", path: "dobble", img: "/dobble.jpg" },
+    { name: "Uno", path: "uno", img: "/uno.jpeg" },
     { name: "game5", path: "uno", img: "/uno.jpeg" },
     { name: "game6", path: "uno", img: "/uno.jpeg" },
     { name: "game7", path: "uno", img: "/uno.jpeg" },
@@ -38,4 +38,5 @@ export const gamesRefs = {
   grouping: { name: "un nouveau groupe", categorie: "grouping" },
   actionouverite: { name: "Action ou Vérité", categorie: "categorie1" },
   undercover: { name: "Undercover", categorie: "categorie1" },
+  dobble: { name: "Dobble", categorie: "categorie1" },
 };
