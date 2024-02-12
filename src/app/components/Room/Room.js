@@ -91,7 +91,7 @@ export default function Room({
   }, []);
 
   const createRoom = async (privacy) => {
-    const newRoomToken = genToken(5);
+    const newRoomToken = genToken(10);
 
     const { error, gamers } = await serverCreate(
       newRoomToken,
