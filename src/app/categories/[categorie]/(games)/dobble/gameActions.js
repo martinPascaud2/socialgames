@@ -1,5 +1,6 @@
 "use server";
 
+import pusher from "@/utils/pusher";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 
 export async function launchGame({
@@ -118,6 +119,13 @@ export async function goFirstRound({
   };
   console.log("newData", newData);
 
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      ...newData,
+    },
+  });
+
   await prisma.room.update({
     where: {
       id: roomId,
@@ -125,13 +133,6 @@ export async function goFirstRound({
     data: {
       started: true,
       gameData: { ...gameData, ...newData },
-    },
-  });
-
-  await pusher.trigger(`room-${roomToken}`, "room-event", {
-    gameData: {
-      ...gameData,
-      ...newData,
     },
   });
 }
@@ -189,17 +190,17 @@ export async function serverSucceed({
   console.log("newData", newData);
   console.log("newRecRounds", newRecRounds);
 
-  await prisma.room.update({
-    where: { id: roomId },
-    data: {
-      gameData: newData,
-    },
-  });
-
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
       ...newData,
+    },
+  });
+
+  await prisma.room.update({
+    where: { id: roomId },
+    data: {
+      gameData: newData,
     },
   });
 }
@@ -224,17 +225,17 @@ const goNewLoosersRound = async ({
 
   console.log("newData goNewLoosersRound", newData);
 
-  await prisma.room.update({
-    where: { id: roomId },
-    data: {
-      gameData: newData,
-    },
-  });
-
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...roomData,
       ...newData,
+    },
+  });
+
+  await prisma.room.update({
+    where: { id: roomId },
+    data: {
+      gameData: newData,
     },
   });
 };
