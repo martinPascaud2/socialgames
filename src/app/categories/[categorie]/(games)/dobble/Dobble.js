@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 
 import { goFirstRound, serverSucceed, serverFail } from "./gameActions";
 
+import { XMarkIcon } from "@heroicons/react/24/outline";
+
 const imageContext = require.context("./icons", false, /\.(png)$/);
 
 const images = {};
@@ -94,12 +96,12 @@ export default function Dobble({ roomId, roomToken, user, gameData }) {
   console.log("locked", locked);
 
   return (
-    <>
+    <div className="flex flex-row flex-wrap justify-center">
       {/* {Object.keys(images).map((imageName, i) => (
         <Image key={i} src={images[imageName]} alt={imageName} width={50} />
       ))}
       <Image src={images["anchor"]} alt="dobble icon" width={50} /> */}
-      <button onClick={() => getTime()}>Date</button>
+      {/* <button onClick={() => getTime()}>Date</button> */}
       {/* <div className="m-4 p-2 border columns-3">
         {randomIcons?.map((icon, index) => (
           <div
@@ -155,24 +157,42 @@ export default function Dobble({ roomId, roomToken, user, gameData }) {
         ))}
       </div> */}
 
-      <div className="m-2 p-0 border h-[45vh] flex flex-cols flex-wrap justify-around content-around">
+      {/* <div className="m-2 p-0 border h-[47vh] flex flex-cols flex-wrap justify-around content-around"> */}
+      <div
+        className={`w-[90vw] m-2 p-2 border flex flex-cols flex-wrap  justify-around content-around ${
+          gameData.rotation?.top ? "rotate-180" : ""
+        }`}
+      >
+        {/* <div className="m-2 p-1 border h-[47vh] w-[96vw] flex flex-cols flex-wrap justify-between content-between rotate-180"> */}
+        {/* <div className="m-2 p-0 border max-h-[47vh] w-[96vw] columns-3 justify-center content-center "> */}
         {randomIcons?.map((icon) => (
-          <div key={icon.key}>
-            <Image
-              src={images[imagesNames[icon.key]]}
-              alt={imagesNames[icon.key]}
-              width={icon.size}
-              height={icon.size}
-              className="p-2"
-              style={{ transform: `rotate(${icon.rotation}deg)` }}
-            />
-          </div>
+          <Image
+            key={icon.key}
+            src={images[imagesNames[icon.key]]}
+            alt={imagesNames[icon.key]}
+            // width={icon.size}
+            // height={icon.size}
+            className=""
+            // style={{ transform: `rotate(${icon.rotation}deg)` }}
+            style={{
+              transform: `rotate(${icon.rotation}deg)`,
+              width: `${icon.size}vw`,
+              height: `${icon.size}vw`,
+            }}
+          />
         ))}
       </div>
 
       {nope && <div>Nope</div>}
 
-      <div className="m-2 p-0 border h-[45vh] flex flex-cols flex-wrap justify-around content-around rotate-180">
+      {/* <div className="m-2 p-0 border h-[47vh] w-[96vw] flex flex-cols flex-wrap justify-around content-around rotate-180"> */}
+      <div
+        className={`w-[90vw] m-2 p-2 border flex flex-cols flex-wrap  justify-around content-around ${
+          gameData.rotation?.bot ? "rotate-180" : ""
+        }`}
+      >
+        {/* <div className="m-2 p-1 border h-[47vh] relative"> */}
+        {/* <div className="m-2 p-0 border h-[47vh] columns-auto  rotate-180"> */}
         {onlyWithOne?.map((icon) => (
           <button
             key={icon.key}
@@ -180,19 +200,45 @@ export default function Dobble({ roomId, roomToken, user, gameData }) {
               !locked &&
                 (sameKey === icon.key
                   ? goSucceed()
-                  : (goFail(), setNope(true)));
-              setLocked(true);
+                  : (goFail(), setLocked(true)));
             }}
+            style={{
+              transform: `rotate(${icon.rotation}deg)`,
+              width: `${icon.size}vw`,
+              height: `${icon.size}vw`,
+            }}
+            className="relative"
           >
-            {sameKey === icon.key && <div>coucou</div>}
+            {/* {sameKey === icon.key && <div>coucou</div>} */}
             <Image
               src={images[imagesNames[icon.key]]}
               alt={imagesNames[icon.key]}
-              width={icon.size}
-              height={icon.size}
-              className="p-2"
-              style={{ transform: `rotate(${icon.rotation}deg)` }}
+              // width={icon.size}
+              // height={icon.size}
+              className="m-2 p-2"
+              // style={{
+              //   transform: `rotate(${icon.rotation}deg)`,
+              //   width: `${icon.size}vh`,
+              //   height: `${icon.size}vh`,
+              // }}
             />
+            {locked && sameKey !== icon.key && (
+              <XMarkIcon
+                // style={{
+                //   position: "absolute",
+                //   top: "4vw",
+                //   left: `4vw`,
+                // }}
+                className="absolute top-[4vw] left-[4vw] text-red-600"
+              />
+            )}
+            {locked && sameKey === icon.key && (
+              <div
+                className={`absolute top-[2vw] left-[2vw] border border-green-600 rounded-full w-full h-full`}
+              />
+            )}
+
+            {/* <div className="absolute top-1/2 left-1/2">X</div> */}
           </button>
         ))}
       </div>
@@ -209,6 +255,6 @@ export default function Dobble({ roomId, roomToken, user, gameData }) {
           Tout le monde est prêt ?
         </button>
       )}
-    </>
+    </div>
   );
 }

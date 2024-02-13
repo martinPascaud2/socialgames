@@ -1,6 +1,7 @@
 "use server";
 
 import pusher from "@/utils/pusher";
+import prisma from "@/utils/prisma";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 
 export async function launchGame({
@@ -50,10 +51,35 @@ export async function launchGame({
 const getIconsKeys = ({ imageLength }) => {
   const randomIcons = [];
   let randomIconsNumber = 0;
-  while (randomIconsNumber <= 8) {
+  const sizesArray = [10, 15, 15, 20, 20, 20, 20, 25, 35, 35];
+  // const sizesArray = [5, 5, 5, 5, 10, 10, 10, 15, 15, 20];
+  let randomSizes = sizesArray.sort(() => Math.random() - 0.5);
+  console.log("randomSizes", randomSizes);
+  while (randomIconsNumber <= 9) {
     const randomKey = Math.floor(Math.random() * imageLength);
     if (randomIcons.some((icon) => icon.key === randomKey)) continue;
-    const randomSize = Math.floor(Math.random() * 65) + 80;
+    // const randomSize = Math.floor(Math.random() * 10) + 6;
+    const randomSize = randomSizes[randomIconsNumber];
+    // let randomSize;
+    // switch (randomIconsNumber) {
+    //   case 4:
+    //   case 5:
+    //     randomSize = Math.floor(Math.random() * 0) + 40;
+    //     break;
+    //   case 0:
+    //   case 1:
+    //   case 2:
+    //   case 7:
+    //   case 3:
+    //     randomSize = Math.floor(Math.random() * 0) + 10;
+    //     break;
+    //   case 8:
+    //   case 6:
+    //     randomSize = Math.floor(Math.random() * 0) + 20;
+    //     break;
+    //   default:
+    //     break;
+    // }
     // const randomSize = Math.floor((0.5 + 0.5 * Math.random()) * 65) + 60;
     const randomRotation = Math.floor(Math.random() * 360);
     randomIcons.push({
@@ -69,7 +95,8 @@ const getIconsKeys = ({ imageLength }) => {
 
   const onlyWithOne = [];
   randomIconsNumber = 0;
-  while (randomIconsNumber <= 7) {
+  randomSizes = sizesArray.sort(() => Math.random() - 0.5);
+  while (randomIconsNumber <= 8) {
     const randomKey = Math.floor(Math.random() * imageLength);
     if (
       onlyWithOne.some((icon) => icon.key === randomKey) ||
@@ -77,7 +104,9 @@ const getIconsKeys = ({ imageLength }) => {
       randomKey === sameKey
     )
       continue;
-    const randomSize = Math.floor(Math.random() * 65) + 80;
+    // const randomSize = Math.floor(Math.random() * 10) + 6;
+    const randomSize = randomSizes[randomIconsNumber];
+
     // const randomSize = Math.floor((0.5 + 0.5 * Math.random()) * 65) + 60;
     const randomRotation = Math.floor(Math.random() * 360);
     onlyWithOne.push({
@@ -90,7 +119,8 @@ const getIconsKeys = ({ imageLength }) => {
   const randomSameIndex = Math.floor(Math.random() * onlyWithOne.length);
   onlyWithOne.splice(randomSameIndex, 0, {
     key: sameKey,
-    size: Math.floor(Math.random() * 65) + 80,
+    // size: Math.floor(Math.random() * 10) + 6,
+    size: randomSizes[9],
     // size: Math.floor((0.5 + 0.5 * Math.random()) * 65) + 60,
     rotation: Math.floor(Math.random() * 360),
   });
@@ -123,6 +153,7 @@ export async function goFirstRound({
     gameData: {
       ...gameData,
       ...newData,
+      rotation: { top: Math.random() < 0.5, bot: Math.random() < 0.5 },
     },
   });
 
@@ -194,6 +225,7 @@ export async function serverSucceed({
     gameData: {
       ...gameData,
       ...newData,
+      rotation: { top: Math.random() < 0.5, bot: Math.random() < 0.5 },
     },
   });
 
@@ -229,6 +261,7 @@ const goNewLoosersRound = async ({
     gameData: {
       ...roomData,
       ...newData,
+      rotation: { top: Math.random() < 0.5, bot: Math.random() < 0.5 },
     },
   });
 
