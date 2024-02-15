@@ -20,6 +20,8 @@ const createConfig = (props) => {
     config.disableFlip = props.disableFlip;
   }
   config.supportedScanTypes = [Html5QrcodeScanType.SCAN_TYPE_CAMERA];
+  //check
+  config.rememberLastUsedCamera = true;
 
   return config;
 };
