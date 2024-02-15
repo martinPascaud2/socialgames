@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useFormState } from "react-dom";
 
 import { connect } from "@/actions";
+import { useEffect, useState } from "react";
 
 const initialState = {
   message: null,
@@ -11,13 +12,49 @@ const initialState = {
   status: 100,
 };
 
-export function LoginForm({ prevUser }) {
+// export function LoginForm({ prevUser }) {
+export function LoginForm({}) {
   const [state, formAction] = useFormState(connect, initialState);
+  const [prevUser, setPrevUser] = useState({ prevMail: "", prevPassword: "" });
+  // const getUserfromLocalStorage = window?.localStorage?.getItem("user")
+  //   ? JSON.parse(localStorage.getItem("user"))
+  //   : null;
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const userFromLocalStorage = localStorage.getItem("prevUser");
+      // ? JSON.parse(localStorage.getItem("prevUser"))
+      // : null;
+      if (userFromLocalStorage) {
+        setPrevUser(JSON.parse(userFromLocalStorage));
+      }
+      console.log(
+        "userFromLocalStorage",
+        userFromLocalStorage,
+        typeof userFromLocalStorage
+      );
+      // const test = JSON.parse(getUserfromLocalStorage);
+      // console.log("test", test);
+    }
+  }, []);
+
+  console.log("prevUser", prevUser);
 
   return (
     <>
       <form
-        action={formAction}
+        action={(FormData) => {
+          formAction(FormData);
+          console.log("FormData", FormData);
+          const prevMail = FormData.get("mail");
+          const prevPassword = FormData.get("password");
+          console.log("prevMail", prevMail);
+          console.log("prevPassword", prevPassword);
+          localStorage.setItem(
+            "prevUser",
+            JSON.stringify({ prevMail, prevPassword })
+          );
+        }}
         className="flex flex-col justify-center items-center"
       >
         <label htmlFor="mail">Adresse mail</label>
@@ -26,7 +63,7 @@ export function LoginForm({ prevUser }) {
           name="mail"
           id="mail"
           autoComplete="email"
-          defaultValue={prevUser?.prevMail || ""}
+          defaultValue={prevUser.prevMail}
           className="border focus:outline-none focus:border-2"
         />
 
@@ -36,7 +73,7 @@ export function LoginForm({ prevUser }) {
           name="password"
           id="password"
           autoComplete="current-password"
-          defaultValue={prevUser?.prevPassword || ""}
+          defaultValue={prevUser.prevPassword}
           className="border focus:outline-none focus:border-2"
         />
 
