@@ -11,7 +11,7 @@ const initialState = {
   status: 100,
 };
 
-export function LoginForm() {
+export function LoginForm({ prevUser }) {
   const [state, formAction] = useFormState(connect, initialState);
 
   return (
@@ -26,6 +26,7 @@ export function LoginForm() {
           name="mail"
           id="mail"
           autoComplete="email"
+          defaultValue={prevUser?.prevMail || ""}
           className="border focus:outline-none focus:border-2"
         />
 
@@ -35,6 +36,7 @@ export function LoginForm() {
           name="password"
           id="password"
           autoComplete="current-password"
+          defaultValue={prevUser?.prevPassword || ""}
           className="border focus:outline-none focus:border-2"
         />
 
