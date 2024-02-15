@@ -25,7 +25,6 @@ export function LoginForm() {
           type="mail"
           name="mail"
           id="mail"
-          autoFocus
           className="border focus:outline-none focus:border-2"
         />
 
