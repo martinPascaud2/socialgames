@@ -75,7 +75,7 @@ export default function Dobble({ roomId, roomToken, user, gameData }) {
   };
 
   useEffect(() => {
-    const winner = scores.find((score) => score.score === 5);
+    const winner = scores.find((score) => score.score === 10);
     if (winner) setIsEnded(true);
   }, [scores]);
   useEffect(() => {
