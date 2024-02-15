@@ -25,6 +25,7 @@ export function LoginForm() {
           type="mail"
           name="mail"
           id="mail"
+          autoComplete="email"
           className="border focus:outline-none focus:border-2"
         />
 
@@ -33,6 +34,7 @@ export function LoginForm() {
           type="password"
           name="password"
           id="password"
+          autoComplete="current-password"
           className="border focus:outline-none focus:border-2"
         />
 
