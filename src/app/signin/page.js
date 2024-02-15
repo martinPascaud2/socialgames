@@ -23,7 +23,6 @@ export default function Signin() {
         type="mail"
         name="mail"
         id="mail"
-        autoFocus
         required
         className="border focus:outline-none focus:border-2"
       />

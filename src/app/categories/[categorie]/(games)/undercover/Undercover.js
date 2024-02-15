@@ -172,7 +172,6 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
         type="text"
         name="guess"
         id="guess"
-        autoFocus
         className="border focus:outline-none focus:border-2"
       />
 
