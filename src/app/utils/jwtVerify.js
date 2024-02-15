@@ -11,7 +11,6 @@ export async function jwtVerify(token) {
   return {
     userStatus: payload.sub,
     userMail: payload.mail,
-    password: payload.password,
     protectedHeader,
   };
 }

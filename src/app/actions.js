@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 const bcrypt = require("bcrypt");
 
 import prisma from "@/utils/prisma";
-import { setCookieToken, setPrevCookie } from "./utils/setCookieToken";
+import { setCookieToken } from "./utils/setCookieToken";
 
 export async function connect(prevState, formData) {
   const mail = formData.get("mail");
@@ -43,7 +43,6 @@ export async function connect(prevState, formData) {
 
   if (isValidPassword) {
     await setCookieToken("User", mail);
-    await setPrevCookie({ mail, password });
     redirect(`/categories`);
   } else {
     return {
