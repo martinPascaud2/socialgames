@@ -13,9 +13,8 @@ export async function launchGame({
   multiGuests,
   options,
 }) {
-  //   if (gamers.length + guests.length + multiGuests.length < 2)
-  //     return { error: "Un plus grand nombre de joueurs est requis." };
-  //max number ???
+  if (gamers.length + guests.length + multiGuests.length < 2)
+    return { error: "Un plus grand nombre de joueurs est requis." };
 
   const startedRoom = await prisma.room.update({
     where: {
@@ -52,35 +51,13 @@ const getIconsKeys = ({ imageLength }) => {
   const randomIcons = [];
   let randomIconsNumber = 0;
   const sizesArray = [10, 15, 15, 20, 20, 20, 20, 25, 35, 35];
-  // const sizesArray = [5, 5, 5, 5, 10, 10, 10, 15, 15, 20];
   let randomSizes = sizesArray.sort(() => Math.random() - 0.5);
-  console.log("randomSizes", randomSizes);
+
   while (randomIconsNumber <= 9) {
     const randomKey = Math.floor(Math.random() * imageLength);
     if (randomIcons.some((icon) => icon.key === randomKey)) continue;
-    // const randomSize = Math.floor(Math.random() * 10) + 6;
+
     const randomSize = randomSizes[randomIconsNumber];
-    // let randomSize;
-    // switch (randomIconsNumber) {
-    //   case 4:
-    //   case 5:
-    //     randomSize = Math.floor(Math.random() * 0) + 40;
-    //     break;
-    //   case 0:
-    //   case 1:
-    //   case 2:
-    //   case 7:
-    //   case 3:
-    //     randomSize = Math.floor(Math.random() * 0) + 10;
-    //     break;
-    //   case 8:
-    //   case 6:
-    //     randomSize = Math.floor(Math.random() * 0) + 20;
-    //     break;
-    //   default:
-    //     break;
-    // }
-    // const randomSize = Math.floor((0.5 + 0.5 * Math.random()) * 65) + 60;
     const randomRotation = Math.floor(Math.random() * 360);
     randomIcons.push({
       key: randomKey,
@@ -104,10 +81,8 @@ const getIconsKeys = ({ imageLength }) => {
       randomKey === sameKey
     )
       continue;
-    // const randomSize = Math.floor(Math.random() * 10) + 6;
-    const randomSize = randomSizes[randomIconsNumber];
 
-    // const randomSize = Math.floor((0.5 + 0.5 * Math.random()) * 65) + 60;
+    const randomSize = randomSizes[randomIconsNumber];
     const randomRotation = Math.floor(Math.random() * 360);
     onlyWithOne.push({
       key: randomKey,
@@ -119,9 +94,7 @@ const getIconsKeys = ({ imageLength }) => {
   const randomSameIndex = Math.floor(Math.random() * onlyWithOne.length);
   onlyWithOne.splice(randomSameIndex, 0, {
     key: sameKey,
-    // size: Math.floor(Math.random() * 10) + 6,
     size: randomSizes[9],
-    // size: Math.floor((0.5 + 0.5 * Math.random()) * 65) + 60,
     rotation: Math.floor(Math.random() * 360),
   });
 
@@ -134,11 +107,7 @@ export async function goFirstRound({
   gameData,
   imageLength,
 }) {
-  //   const room = await prisma.room.findFirst({ where: { id: roomId } });
-  // console.log("imageLength", imageLength);
   const { randomIcons, onlyWithOne, sameKey } = getIconsKeys({ imageLength });
-  console.log("randomIcons", randomIcons);
-  console.log("onlyWithOne", onlyWithOne);
   const newData = {
     round: {
       number: 1,
@@ -147,7 +116,6 @@ export async function goFirstRound({
       sameKey,
     },
   };
-  console.log("newData", newData);
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
@@ -174,21 +142,17 @@ export async function serverSucceed({
   gameData,
   imageLength,
   roundNumber,
-  // userId,
   user,
 }) {
   const roomData = (await prisma.room.findFirst({ where: { id: roomId } }))
     .gameData;
   const { id: userId, name: userName } = user;
 
-  //si le round est déjà passé ou déjà winner
   if (
     (roomData.recRounds && roomData.recRounds[roundNumber]?.winner) ||
     roomData.round?.number > roundNumber
   )
     return;
-
-  console.log("roomData", roomData);
 
   const recRounds = roomData.recRounds || {};
   let newRecRounds = {};
@@ -220,8 +184,6 @@ export async function serverSucceed({
     round: newRound,
     count: { ...count, [userName]: newPlayerCount },
   };
-  console.log("newData", newData);
-  console.log("newRecRounds", newRecRounds);
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
@@ -257,8 +219,6 @@ const goNewLoosersRound = async ({
     },
   };
 
-  console.log("newData goNewLoosersRound", newData);
-
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...roomData,
@@ -278,32 +238,23 @@ const goNewLoosersRound = async ({
 export async function serverFail({
   roomId,
   roomToken,
-  gameData,
   roundNumber,
-  userId,
   imageLength,
 }) {
   const roomData = (await prisma.room.findFirst({ where: { id: roomId } }))
     .gameData;
 
-  console.log("roomData", roomData);
-
   const recRounds = roomData.recRounds || {};
   let newRecRounds = {};
-
   if (!recRounds[roundNumber]) {
-    // const failers = recRounds[roundNumber]?.failers || 0;
     newRecRounds = {
       ...recRounds,
       [roundNumber]: { failers: 1 },
     };
-    // const
-    // newRecRounds = {...recRounds, [roundNumber]: }
   } else {
     const round = recRounds[roundNumber];
     const failers = round.failers || 0;
     const updatedRound = { ...round, failers: failers + 1 };
-    console.log("updatedRound làlàlà", updatedRound);
     if (updatedRound.failers === roomData.gamers.length) {
       await goNewLoosersRound({
         roomId,
@@ -315,7 +266,6 @@ export async function serverFail({
       return;
     }
     newRecRounds = { ...recRounds, [roundNumber]: updatedRound };
-    //si trop de foirages
   }
 
   const newData = { ...roomData, recRounds: newRecRounds };
@@ -326,13 +276,4 @@ export async function serverFail({
       gameData: newData,
     },
   });
-
-  // await pusher.trigger(`room-${roomToken}`, "room-event", {
-  //   gameData: {
-  //     ...gameData,
-  //     ...newData,
-  //   },
-  // });
-
-  console.log("newRecRounds", newRecRounds);
 }
