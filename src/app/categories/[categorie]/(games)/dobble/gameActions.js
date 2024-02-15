@@ -188,6 +188,8 @@ export async function serverSucceed({
   )
     return;
 
+  console.log("roomData", roomData);
+
   const recRounds = roomData.recRounds || {};
   let newRecRounds = {};
   if (!recRounds[roundNumber]) {
