@@ -232,7 +232,7 @@ export default function Room({
   }, [searchToken, joinRoom, addMultiGuest, user.multiGuest]);
 
   useEffect(() => {
-    if (deletedGamer === uniqueName) router.push("/");
+    if (deletedGamer === uniqueName) router.push("/categories?control=true");
   }, [deletedGamer]);
 
   const addGuest = async () => {
@@ -330,7 +330,7 @@ export default function Room({
         <>
           <h1>Le groupe a été supprimé</h1>
           <button
-            onClick={() => router.push("/")}
+            onClick={() => router.push("/categories?control=true")}
             className="border border-blue-300 bg-blue-100"
           >
             Quitter

@@ -27,7 +27,7 @@ export default function EndGame({ gameData, user, isFirst = false }) {
       )}
       {gameData.admin !== user.name && (
         <button
-          onClick={() => router.push("/")}
+          onClick={() => router.push("/categories?control=true")}
           className="border border-blue-300 bg-blue-100"
         >
           Quitter le groupe

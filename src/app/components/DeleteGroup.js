@@ -11,7 +11,7 @@ export default function DeleteGroup({ roomToken }) {
     <button
       onClick={() => {
         deleteGroup({ groupToken: roomToken });
-        router.push("/");
+        router.push("/categories?control=true");
       }}
       className="border border-blue-300 bg-blue-100"
     >

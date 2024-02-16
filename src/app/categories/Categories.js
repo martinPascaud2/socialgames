@@ -42,6 +42,11 @@ export default function Categories({
     }, 500);
   };
 
+  const urlControl = searchParams.get("control") === "true";
+  useEffect(() => {
+    if (urlControl) handleBgClick();
+  }, [urlControl]);
+
   const [topRect, setTopRect] = useState();
   const [bottomRect, setBottomRect] = useState();
   const [topSpace, setTopSpace] = useState();
