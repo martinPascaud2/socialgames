@@ -12,7 +12,7 @@ export default function GuestLink({ setCookieToken }) {
       }}
       className="border border-blue-300 bg-blue-100"
     >
-      Connexion guest
+      J&apos;essaie comme Guest
     </button>
   );
 }

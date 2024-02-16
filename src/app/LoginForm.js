@@ -39,7 +39,7 @@ export function LoginForm({}) {
         }}
         className="flex flex-col justify-center items-center"
       >
-        <label htmlFor="mail">Adresse mail</label>
+        <label htmlFor="mail">Ton adresse mail</label>
         <input
           type="mail"
           name="mail"
@@ -49,7 +49,7 @@ export function LoginForm({}) {
           className="border focus:outline-none focus:border-2"
         />
 
-        <label htmlFor="password">Mot de passe</label>
+        <label htmlFor="password">Ton mot de passe</label>
         <input
           type="password"
           name="password"
@@ -62,14 +62,14 @@ export function LoginForm({}) {
         <div className="text-justify font-bold">{state.message}</div>
 
         <button type="submit" className="border border-blue-300 bg-blue-100">
-          Se connecter
+          Connexion
         </button>
 
         <p aria-live="polite" className="sr-only">
           {state?.srMessage}
         </p>
         <Link href="/signin" className="border border-blue-300 bg-blue-100">
-          Créer un compte
+          Pas encore de compte ?
         </Link>
       </form>
     </>

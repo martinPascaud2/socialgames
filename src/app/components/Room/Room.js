@@ -380,7 +380,7 @@ export default function Room({
               Nouvelle partie privée
             </button>
             <h2 className="text-sm italic">
-              Seuls les amis invités pourront vous rejoindre.
+              Seuls tes invités pourront vous rejoindre.
             </h2>
           </>
         ) : (
@@ -566,9 +566,9 @@ export default function Room({
               !user.multiGuest &&
               (gameName === "grouping" || !group) && (
                 <>
-                  <h1>Invitez vos amis !</h1>
+                  <h1>Invite tes amis !</h1>
                   <h2 className="text-sm italic">
-                    Ils recevront votre invitation via &quot;Invitations aux
+                    Ils recevront ton invitation via &quot;Invitations aux
                     parties&quot;.
                   </h2>
                   <div>
@@ -615,7 +615,7 @@ export default function Room({
                 <hr />
                 {(gameName === "grouping" || !group) && (
                   <>
-                    <h1>Invitez des guests multiscreen !</h1>
+                    <h1>Invite des Guests multi-screen !</h1>
                     <h2 className="text-sm italic">
                       Ils joueront sur leur propre écran.
                     </h2>
@@ -623,7 +623,7 @@ export default function Room({
                       onClick={() => setShowRoomRefs(!showRoomRefs)}
                       className="border border-blue-300 bg-blue-100"
                     >
-                      {!showRoomRefs ? "Montrer" : "Cacher"} le QrCode
+                      {!showRoomRefs ? "Afficher" : "Cacher"} le QrCode
                     </button>
                     {showRoomRefs && (
                       <QRCode
@@ -633,9 +633,9 @@ export default function Room({
 
                     <hr />
 
-                    <h1>Ajoutez des guests monoscreen !</h1>
+                    <h1>Ajoute des Guests mono-screen !</h1>
                     <h2 className="text-sm italic">
-                      Ils utiliseront votre écran à leur tour de jeu.
+                      Ils utiliseront ton écran à leur tour de jeu.
                     </h2>
                     <input
                       ref={refGuest}
@@ -649,7 +649,7 @@ export default function Room({
                       }}
                       className="border border-blue-300 bg-blue-100"
                     >
-                      Ajoutez un guest
+                      Ajouter le Guest
                     </button>
                   </>
                 )}

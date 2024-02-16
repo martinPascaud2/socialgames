@@ -237,7 +237,7 @@ export default function Categories({
                   onClick={async () => setPublicRooms(await getPublicRooms())}
                   className="flex justify-center items-center border text-center text-slate-300"
                 >
-                  Parties de vos amis <ArrowPathIcon className="ml-2 h-4 w-4" />
+                  Parties de tes amis <ArrowPathIcon className="ml-2 h-4 w-4" />
                 </div>
 
                 {!invitations.length && !Object.keys(publicRooms).length && (
@@ -296,13 +296,13 @@ export default function Categories({
                   "outline outline-black": showInvitations,
                 })}
               >
-                Parties en cours
+                Parties de tes amis
               </button>
               <Link
                 href="/categories/grouping/grouping"
                 className="text-center m-1 p-2"
               >
-                Créer un groupe
+                Crée un groupe
               </Link>
             </div>
             <div className="flex flex-row m-3">
@@ -322,7 +322,7 @@ export default function Categories({
                   setShowInvitations(false);
                 }}
               >
-                Générer votre QRCode
+                Génère ton QRCode
               </button>
               <button
                 onClick={() => {
@@ -335,7 +335,7 @@ export default function Categories({
                   "outline outline-black": scanning,
                 })}
               >
-                Ajouter un ami
+                Ajoute un ami
               </button>
             </div>
           </div>

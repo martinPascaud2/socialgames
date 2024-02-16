@@ -46,7 +46,7 @@ export default function GuestConnector() {
     <div>
       {!scanLocked && (
         <>
-          <div className="text-center">Scannez le QrCode d&apos;une partie</div>
+          <div className="text-center">Scanne le QrCode d&apos;une partie</div>
           <GuestScanner
             scanning={scanning}
             fps={10}
@@ -59,7 +59,7 @@ export default function GuestConnector() {
 
       {toggleInput && (
         <div className="flex flex-col justify-center">
-          <div className="text-center">Choisissez votre pseudonyme Guest</div>
+          <div className="text-center">Choisis ton pseudonyme Guest</div>
           <input
             onChange={(event) => setGuestName(event.currentTarget.value)}
             className="outline m-4"

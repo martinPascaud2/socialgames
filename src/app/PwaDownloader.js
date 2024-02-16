@@ -68,7 +68,7 @@ export default function PwaDownloader() {
       onClick={async () => installApp()}
       className="border border-blue-300 bg-blue-100"
     >
-      Télécharger l&apos;application
+      Télécharge l&apos;application !
     </button>
   );
 }
