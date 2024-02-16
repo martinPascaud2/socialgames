@@ -71,7 +71,10 @@ export default function OneCategoriePage({ params }) {
     divNavs.push(
       <div
         key={i}
-        onClick={() => setActiveIndex(i)}
+        onClick={(e) => {
+          e.stopPropagation();
+          setActiveIndex(i);
+        }}
         className={`w-8 h-4 ${
           i === activeIndex ? "bg-yellow-700" : "bg-yellow-300"
         }`}
@@ -80,59 +83,63 @@ export default function OneCategoriePage({ params }) {
   }
 
   return (
-    <main className="bg-slate-300">
-      <Link
-        href={!isGroup ? "/categories" : "/categories?group=true"}
-        className="absolute bottom-5 left-5 border border-blue-300 bg-blue-100"
+    <>
+      <main
+        onClick={() =>
+          router.push(!isGroup ? "/categories" : "/categories?group=true")
+        }
+        className="relative bg-slate-300"
       >
-        {"<-"}Catégories
-      </Link>
-
-      <div className="p-5">
-        <div className="w-full overflow-hidden mx-auto">
-          <div
-            className={"inner whitespace-nowrap duration-300"}
-            style={{
-              transform: `translateX(-${activeIndex * 100}%) translateZ(0)`,
-            }}
-          >
-            {games.map((game) => (
-              <div key={game.name} className="inline-flex">
-                <Image
-                  alt={`Image du jeu ${game.name}`}
-                  src={game.img}
-                  width={1800}
-                  height={1125}
-                  onTouchStart={onTouchStart}
-                  onTouchMove={onTouchMove}
-                  onTouchEnd={onTouchEnd}
-                  onClick={() =>
-                    router.push(`/categories/${categorie}/${game.path}`)
-                  }
-                  priority
-                />
-              </div>
-            ))}
+        <div className="z-10 p-5">
+          <div className="w-full overflow-hidden mx-auto">
+            <div
+              className={"inner whitespace-nowrap duration-300"}
+              style={{
+                transform: `translateX(-${activeIndex * 100}%) translateZ(0)`,
+              }}
+            >
+              {games.map((game) => (
+                <div key={game.name} className="inline-flex">
+                  <Image
+                    alt={`Image du jeu ${game.name}`}
+                    src={game.img}
+                    width={1800}
+                    height={1125}
+                    onTouchStart={onTouchStart}
+                    onTouchMove={onTouchMove}
+                    onTouchEnd={onTouchEnd}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      router.push(`/categories/${categorie}/${game.path}`);
+                    }}
+                    priority
+                  />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-        <div>{games[activeIndex].name}</div>
-        <div className="flex justify-between">{divNavs}</div>
+          <div>{games[activeIndex].name}</div>
+          <div className="flex justify-between">{divNavs}</div>
 
-        <button
-          onClick={() => setShowDescription(!showDescription)}
-          className="border border-blue-300 bg-blue-100 mt-2"
-        >
-          Description du jeu{" "}
-          <span className="inline-flex align-middle">
-            {showDescription ? (
-              <ChevronDownIcon className="h-4 w-4 stroke-2	" />
-            ) : (
-              <ChevronRightIcon className="h-4 w-4 stroke-2	" />
-            )}
-          </span>
-        </button>
-        {showDescription && <div>{games[activeIndex].description}</div>}
-      </div>
-    </main>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowDescription(!showDescription);
+            }}
+            className="z-10 border border-blue-300 bg-blue-100 mt-2"
+          >
+            Description du jeu{" "}
+            <span className="inline-flex align-middle">
+              {showDescription ? (
+                <ChevronDownIcon className="h-4 w-4 stroke-2	" />
+              ) : (
+                <ChevronRightIcon className="h-4 w-4 stroke-2	" />
+              )}
+            </span>
+          </button>
+          {showDescription && <div>{games[activeIndex].description}</div>}
+        </div>
+      </main>
+    </>
   );
 }
