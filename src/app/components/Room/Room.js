@@ -387,6 +387,50 @@ export default function Room({
           <>
             <div>Liste des joueurs</div>
 
+            {group?.gamers &&
+              group.gamers.map((gamer) => {
+                const gamerName = gamer.name;
+                const isHere = gamerList?.includes(gamerName);
+                return (
+                  <div key={gamerName} className="flex">
+                    <div className="flex">
+                      <div
+                        className={
+                          gamerName === uniqueName ? "font-semibold" : ""
+                        }
+                      >
+                        {gamerName}
+                      </div>
+                      {gamerName !== user.name ? (
+                        isHere ? (
+                          <CheckIcon className="block h-6 w-6 " />
+                        ) : (
+                          " ... "
+                        )
+                      ) : null}
+                    </div>
+                    {gameName === "grouping" &&
+                      isHere &&
+                      gamerName !== user.name && (
+                        <button
+                          onClick={() => {
+                            const newGamersGroup = [...group.gamers].filter(
+                              (gamer) => gamer.name !== gamerName
+                            );
+                            setGroup((prevGroup) => ({
+                              ...prevGroup,
+                              gamers: newGamersGroup,
+                            }));
+                            deleteGamer(gamerName);
+                          }}
+                          className="border border-blue-300 bg-blue-100"
+                        >
+                          Retirer
+                        </button>
+                      )}
+                  </div>
+                );
+              })}
             {group?.guests &&
               group.guests.map((guest) => {
                 const guestName = guest.name;
@@ -419,44 +463,6 @@ export default function Room({
                         Retirer
                       </button>
                     )}
-                  </div>
-                );
-              })}
-            {group?.gamers &&
-              group.gamers.map((gamer) => {
-                const gamerName = gamer.name;
-                const isHere = gamerList?.includes(gamerName);
-                return (
-                  <div key={gamerName} className="flex">
-                    <div className="flex">
-                      {gamerName}
-                      {gamerName !== user.name ? (
-                        isHere ? (
-                          <CheckIcon className="block h-6 w-6 " />
-                        ) : (
-                          " ... "
-                        )
-                      ) : null}
-                    </div>
-                    {gameName === "grouping" &&
-                      isHere &&
-                      gamerName !== user.name && (
-                        <button
-                          onClick={() => {
-                            const newGamersGroup = [...group.gamers].filter(
-                              (gamer) => gamer.name !== gamerName
-                            );
-                            setGroup((prevGroup) => ({
-                              ...prevGroup,
-                              gamers: newGamersGroup,
-                            }));
-                            deleteGamer(gamerName);
-                          }}
-                          className="border border-blue-300 bg-blue-100"
-                        >
-                          Retirer
-                        </button>
-                      )}
                   </div>
                 );
               })}
@@ -503,7 +509,11 @@ export default function Room({
                 if (gamerNameList.includes(gamer)) return;
                 return (
                   <div key={gamer} className="flex">
-                    <div>{gamer}</div>
+                    <div
+                      className={gamer === uniqueName ? "font-semibold" : ""}
+                    >
+                      {gamer}
+                    </div>
                     {gameName === "grouping" &&
                       isAdmin &&
                       gamer !== user.name && (
@@ -544,8 +554,16 @@ export default function Room({
                 return (
                   <div key={i} className="flex">
                     <div>
-                      {multiGuest}{" "}
-                      <span className="italic text-sm">(guest externe)</span>
+                      <div
+                        className={
+                          multiGuest === uniqueName ? "font-semibold" : ""
+                        }
+                      >
+                        {multiGuest}
+                        <span className="italic text-sm font-normal">
+                          (guest externe)
+                        </span>
+                      </div>
                     </div>
                     {gameName === "grouping" && isAdmin && (
                       <button
