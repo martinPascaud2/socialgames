@@ -358,30 +358,36 @@ export default function Room({
       <>
         {!isChosen && !group ? (
           <>
-            <button
-              onClick={() => createRoom("public")}
-              className="border border-blue-300 bg-blue-100"
-            >
-              Nouvelle partie publique
-            </button>
-            <h2 className="text-sm italic">
-              Tous les amis pourront vous rejoindre.
-            </h2>
+            {!geoLocation ? (
+              <div>Chargement...</div>
+            ) : (
+              <>
+                <button
+                  onClick={() => createRoom("public")}
+                  className="border border-blue-300 bg-blue-100"
+                >
+                  Nouvelle partie publique
+                </button>
+                <h2 className="text-sm italic">
+                  Tous les amis pourront vous rejoindre.
+                </h2>
 
-            <hr />
+                <hr />
 
-            <button
-              onClick={() => {
-                createRoom("private");
-                setIsPrivate(true);
-              }}
-              className="border border-blue-300 bg-blue-100"
-            >
-              Nouvelle partie privée
-            </button>
-            <h2 className="text-sm italic">
-              Seuls tes invités pourront vous rejoindre.
-            </h2>
+                <button
+                  onClick={() => {
+                    createRoom("private");
+                    setIsPrivate(true);
+                  }}
+                  className="border border-blue-300 bg-blue-100"
+                >
+                  Nouvelle partie privée
+                </button>
+                <h2 className="text-sm italic">
+                  Seuls tes invités pourront vous rejoindre.
+                </h2>
+              </>
+            )}
           </>
         ) : (
           <>
