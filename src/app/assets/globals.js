@@ -16,9 +16,23 @@ export const subCategories = {
       name: "Action ou vérité",
       path: "actionouverite",
       img: "/actionouverite.png",
+      description:
+        "A tour de rôle, chaque joueur choisit entre une Action à réaliser, ou une Vérité à révéler... surprise !",
     },
-    { name: "Undercover", path: "undercover", img: "/undercover.png" },
-    { name: "Dobble", path: "dobble", img: "/dobble.jpg" },
+    {
+      name: "Undercover",
+      path: "undercover",
+      img: "/undercover.png",
+      description:
+        "Au début de la partie, chacun reçoit un mot secret. Les joueurs doivent ensuite révéler petit à petit des informations sur leur mot pour deviner qui a le même mot qu’eux ! Après quelques tours d’élimination, réussiront-ils à découvrir leur identité et à se défaire de leurs ennemis ?",
+    },
+    {
+      name: "Dobble",
+      path: "dobble",
+      img: "/dobble.jpg",
+      description:
+        "Découvrez l’unique symbole identique entre deux cartes... avant les autres !",
+    },
     { name: "Uno", path: "uno", img: "/uno.jpeg" },
     { name: "game5", path: "uno", img: "/uno.jpeg" },
     { name: "game6", path: "uno", img: "/uno.jpeg" },

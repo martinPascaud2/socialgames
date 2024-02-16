@@ -7,6 +7,8 @@ import { useCallback, useState } from "react";
 
 import { subCategories } from "@/assets/globals";
 
+import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
+
 const useSwipe = (activeIndex, updateIndex) => {
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
@@ -45,6 +47,7 @@ export default function OneCategoriePage({ params }) {
   const router = useRouter();
   const [activeIndex, setActiveIndex] = useState(0);
   const games = subCategories[categorie];
+  const [showDescription, setShowDescription] = useState(false);
 
   const updateIndex = useCallback(
     (newIndex) => {
@@ -114,6 +117,21 @@ export default function OneCategoriePage({ params }) {
         </div>
         <div>{games[activeIndex].name}</div>
         <div className="flex justify-between">{divNavs}</div>
+
+        <button
+          onClick={() => setShowDescription(!showDescription)}
+          className="border border-blue-300 bg-blue-100 mt-2"
+        >
+          Description du jeu{" "}
+          <span className="inline-flex align-middle">
+            {showDescription ? (
+              <ChevronDownIcon className="h-4 w-4 stroke-2	" />
+            ) : (
+              <ChevronRightIcon className="h-4 w-4 stroke-2	" />
+            )}
+          </span>
+        </button>
+        {showDescription && <div>{games[activeIndex].description}</div>}
       </div>
     </main>
   );
