@@ -371,15 +371,15 @@ export default function Categories({
               key={index}
               href={`${categorie.href}${isGroup ? "?group=true" : ""}`}
               className={classNames(
-                `z-20 absolute w-1/3 aspect-square p-3 border`,
+                `z-20 absolute w-1/3 min-h-[18dvh] aspect-square border`,
                 {
                   hidden: togglingParameters && toggledParameters,
                 }
               )}
               style={{
-                top: `${Math.floor(index / 2) * 23 + 6.4}vh`,
-                left: index % 2 === 0 && "2rem",
-                right: index % 2 === 1 && "2rem",
+                top: `${Math.floor(index / 2) * 23 + 5.4}dvh`,
+                left: index % 2 === 0 && "8%",
+                right: index % 2 === 1 && "8%",
               }}
             >
               <div className="flex items-center justify-center h-full">
