@@ -6,6 +6,7 @@ import Pusher from "pusher-js";
 import QRCode from "react-qr-code";
 
 import genToken from "@/utils/genToken";
+import { gamesRefs } from "@/assets/globals";
 
 import DeleteGroup from "@/components/DeleteGroup";
 import ChooseAnotherGame from "@/components/ChooseAnotherGame";
@@ -387,6 +388,21 @@ export default function Room({
                 <h2 className="text-sm italic">
                   Seuls tes invités pourront vous rejoindre.
                 </h2>
+
+                <button
+                  onClick={() =>
+                    router.push(
+                      `/categories/${
+                        gameName !== "grouping"
+                          ? gamesRefs[gameName].categorie
+                          : ""
+                      }`
+                    )
+                  }
+                  className="border border-blue-300 bg-blue-100"
+                >
+                  Retour
+                </button>
               </>
             )}
           </>
