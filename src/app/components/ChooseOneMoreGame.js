@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 import getRoomPrivacy from "@/utils/getRoomPrivacy";
 import { finishGame } from "./Room/actions";
@@ -15,6 +15,8 @@ export default function ChooseOneMoreGame({
 }) {
   const router = useRouter();
   const [privacy, setPrivacy] = useState(null);
+  const path = usePathname();
+  const gameName = path.split("/")[3];
 
   const goChooseGame = useCallback(
     (priv) => {
@@ -24,7 +26,14 @@ export default function ChooseOneMoreGame({
       const multiGuests = gameData.gamers.filter((gamer) => gamer.multiGuest);
       const guests = gameData.gamers.filter((gamer) => gamer.guest);
 
-      const group = { roomToken, gamers, multiGuests, guests, privacy: priv };
+      const group = {
+        roomToken,
+        gamers,
+        multiGuests,
+        guests,
+        privacy: priv,
+        lastGame: gameName,
+      };
       localStorage.setItem("group", JSON.stringify(group));
 
       finishGame({ gameData, roomToken });

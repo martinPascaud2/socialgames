@@ -9,6 +9,7 @@ import genToken from "@/utils/genToken";
 
 import DeleteGroup from "@/components/DeleteGroup";
 import ChooseAnotherGame from "@/components/ChooseAnotherGame";
+import ChooseLastGame from "@/components/ChooseLastGame";
 import { CheckIcon } from "@heroicons/react/24/outline";
 
 var pusher = new Pusher("61853af9f30abf9d5b3d", {
@@ -319,7 +320,7 @@ export default function Room({
         pathname,
         oldRoomToken: group.roomToken,
         newRoomToken: roomToken,
-        gameName: "grouping",
+        gameName,
       });
     }
   }, [geoLocation, roomToken]);
@@ -689,6 +690,14 @@ export default function Room({
                     : "Lancer la partie"}
                 </button>
 
+                {group?.lastGame && gameName === "grouping" && (
+                  <ChooseLastGame
+                    lastGame={group.lastGame}
+                    group={group}
+                    roomToken={roomToken}
+                  />
+                )}
+
                 {gameName !== "grouping" && group && (
                   <>
                     <ChooseAnotherGame
@@ -696,12 +705,14 @@ export default function Room({
                       roomToken={roomToken}
                       gameData={gameData}
                       isReturnLobby={false}
+                      lastGame={gameName}
                     />
                     <ChooseAnotherGame
                       group={group}
                       roomToken={roomToken}
                       gameData={gameData}
                       isReturnLobby={true}
+                      lastGame={gameName}
                     />
                   </>
                 )}

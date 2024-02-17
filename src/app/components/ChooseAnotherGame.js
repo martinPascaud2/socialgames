@@ -10,6 +10,7 @@ export default function ChooseAnotherGame({
   roomToken,
   gameData,
   isReturnLobby,
+  lastGame,
 }) {
   const router = useRouter();
 
@@ -24,6 +25,7 @@ export default function ChooseAnotherGame({
       multiGuests,
       guests,
       privacy: group.privacy,
+      lastGame,
     };
     localStorage.setItem("group", JSON.stringify(stored));
 
