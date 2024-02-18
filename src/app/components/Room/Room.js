@@ -392,10 +392,10 @@ export default function Room({
                 <button
                   onClick={() =>
                     router.push(
-                      `/categories/${
+                      `/categories${
                         gameName !== "grouping"
-                          ? gamesRefs[gameName].categorie
-                          : ""
+                          ? `/${gamesRefs[gameName].categorie}`
+                          : "?control=true"
                       }`
                     )
                   }
