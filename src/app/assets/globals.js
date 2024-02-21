@@ -13,6 +13,13 @@ export const subCategories = {
   grouping: [{ name: "grouping", path: "grouping" }],
   categorie1: [
     {
+      name: "Memory",
+      path: "memory",
+      img: "/memory.jpeg",
+      description:
+        "À son tour, chaque joueur retourne deux cartes de son choix. S'il découvre deux cartes identiques, il les ramasse et les conserve, ce qui lui permet de rejouer. Si les cartes ne sont pas identiques, il les retourne faces cachées à leur emplacement de départ. Le jeu se termine quand toutes les paires de cartes ont été découvertes et ramassées. Le gagnant est le joueur qui possède le plus de paires.",
+    },
+    {
       name: "Action ou vérité",
       path: "actionouverite",
       img: "/actionouverite.png",
@@ -34,7 +41,6 @@ export const subCategories = {
         "Découvrez l’unique symbole identique entre deux cartes... avant les autres !",
     },
     { name: "Uno", path: "uno", img: "/uno.jpeg" },
-    { name: "game5", path: "uno", img: "/uno.jpeg" },
     { name: "game6", path: "uno", img: "/uno.jpeg" },
     { name: "game7", path: "uno", img: "/uno.jpeg" },
     { name: "game8", path: "uno", img: "/uno.jpeg" },
@@ -53,4 +59,5 @@ export const gamesRefs = {
   actionouverite: { name: "Action ou Vérité", categorie: "categorie1" },
   undercover: { name: "Undercover", categorie: "categorie1" },
   dobble: { name: "Dobble", categorie: "categorie1" },
+  memory: { name: "Memory", categorie: "categorie1" },
 };
