@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 
-import { getIcons } from "./gameActions";
+import { getIcons, revealCard, hideUndiscovered } from "./gameActions";
 import Card from "./Card";
 
 const imageContext = require.context("./icons", false, /\.(png)$/);
@@ -19,109 +18,65 @@ imageContext.keys().forEach((path) => {
     imageLength++);
 });
 
-console.log("images", images);
-console.log("imagesNames", imagesNames);
-
 export default function Memory({ roomId, roomToken, user, gameData }) {
   console.log("gameData", gameData);
   const [icons, setIcons] = useState([]);
-  const [triggered, setTriggered] = useState({});
-  const [discovered, setDiscovered] = useState([]);
+  const isAdmin = gameData.admin === user.name;
+  const isActive =
+    gameData.activePlayer?.id === user.id ||
+    (gameData.activePlayer?.guest && isAdmin);
+  const [triggeredNumber, setTriggeredNumber] = useState(0);
+
   useEffect(() => {
     async function initialize() {
-      const icons = await getIcons({
+      await getIcons({
         imageLength,
         pairsNumber: 10,
         roomToken,
         gameData,
       });
-      console.log("icons", icons);
     }
-    initialize();
+    isAdmin && !icons.length && initialize();
   }, []);
 
   useEffect(() => {
     gameData.icons && setIcons(gameData.icons);
   }, [gameData.icons]);
-  console.log("icons", icons);
-  console.log("triggered", triggered);
 
   useEffect(() => {
-    console.log("Object.keys(triggered).length", Object.keys(triggered).length);
+    const triggered = gameData.icons?.filter((icon) => icon.triggered).length;
+    if (triggered >= 2) {
+      setTimeout(() => {
+        isActive && hideUndiscovered({ roomToken, gameData });
+        setTriggeredNumber(0);
+      }, 2000);
+    }
+  }, [gameData.icons]);
 
-    console.log(
-      "Object.keys(triggered).reduce((acc, trig) => acc + trig, 0)",
-      Object.keys(triggered).reduce((acc, trig) => acc + parseInt(trig), 0)
-    );
-
-    const trigerredKeys = Object.keys(triggered);
-    if (
-      //   Object.keys(triggered).length === 0 ||
-      trigerredKeys.length === 0 ||
-      //   Object.values(triggered).reduce((acc, trig) => acc + parseInt(trig), 0) <
-      Object.values(triggered).reduce((acc, trig) => acc + trig, 0) < 2
-    )
-      return;
-
-    if (trigerredKeys.length === 1)
-      setDiscovered((prevDisco) => [...prevDisco, parseInt(trigerredKeys[0])]);
-    console.log("triggered", triggered);
-    setTriggered({});
-  }, [triggered]);
-
-  console.log("discovered", discovered);
+  const reveal = async ({ index, iconKey }) => {
+    if (!isActive || triggeredNumber >= 2) return;
+    setTriggeredNumber((prevTrigs) => prevTrigs + 1);
+    await revealCard({ roomToken, gameData, index, iconKey });
+  };
 
   return (
-    <div className="flex flex-wrap justify-center">
-      {icons.map((iconKey, i) => (
-        <Card
-          key={i}
-          iconKey={iconKey}
-          src={images[imagesNames[iconKey]]}
-          setTriggered={setTriggered}
-          triggered={triggered}
-          discovered={discovered.some(
-            // (disco) => parseInt(disco) === parseInt(iconKey)
-            (disco) => disco === iconKey
-          )}
-        />
-      ))}
-      {/* <Card src={images[imagesNames[3]]} setTrigNum={setTrigNum} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} />
-      <Card src={images[imagesNames[0]]} /> */}
-      {/* <div className="transform-style-3d rotate-y-[-180deg]">
-        <div
-          className={`card-front absolute w-full h-full rounded-2xl backface-hidden bg-yellow-500 rotate-y-[180deg]`}
-        >
-          <Image src={images[imagesNames[0]]} />
-        </div>
-        <div className="card-back absolute w-full h-full rounded-2xl backface-hidden bg-red-500"></div>
-      </div> */}
-    </div>
+    <>
+      <div>C'est au tour de {gameData.activePlayer.name}</div>
+      <div className="flex flex-wrap justify-center">
+        {icons.map((icon, i) => {
+          const { triggered, discovered } = icon;
+          return (
+            <Card
+              key={i}
+              index={i}
+              src={images[imagesNames[icon.key]]}
+              triggered={triggered}
+              discovered={discovered}
+              reveal={reveal}
+            />
+          );
+        })}
+      </div>
+    </>
   );
 }

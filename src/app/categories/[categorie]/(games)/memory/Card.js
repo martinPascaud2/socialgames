@@ -1,52 +1,33 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
 
 import classNames from "classnames";
 
 export default function Card({
+  index,
   iconKey,
   src,
-  setTriggered,
   triggered,
   discovered,
+  reveal,
 }) {
-  console.log("iconKey", iconKey);
+  console.log("triggered", triggered);
   console.log("discovered", discovered);
-  //   const [triggerReveal, setTriggerReveal] = useState(false);
-  const [triggerReveal, setTriggerReveal] = useState(discovered);
-
-  const triggeredNumber = Object.values(triggered).reduce(
-    (acc, trig) => acc + trig,
-    0
-  );
-  useEffect(() => {
-    // Object.values(triggered).reduce((acc, trig) => acc + trig, 0) === 2 &&
-    (triggeredNumber === 0 || triggeredNumber === 2) &&
-      setTimeout(() => {
-        console.log("this is the second message");
-        setTriggerReveal(discovered);
-      }, 2000);
-  }, [triggered, discovered]);
-
+  console.log("index", index);
   return (
     <div className="bg-transparent w-[24%] aspect-square inline-block m-[0.5%] perspective-10">
       <div
         onClick={() => {
-          //   !triggerReveal && setTrigNum((prev) => (prev === 0 ? 1 : 0));
-          triggeredNumber < 2 &&
-            !triggerReveal &&
-            setTriggered((trigs) => ({
-              ...trigs,
-              [iconKey]: (trigs[iconKey] || 0) + 1,
-            }));
-          setTriggerReveal(true);
+          console.log("triggered card", triggered);
+          if (triggered || discovered) return;
+          reveal({ index, iconKey });
         }}
         className={classNames(
           "flip-card relative w-full h-full rounded-2xl	border-2",
           `transition-transform duration-1000 transform-style-3d ${
-            triggerReveal ? "rotate-y-[-180deg]" : ""
+            // triggerReveal ? "rotate-y-[-180deg]" : ""
+            triggered || discovered ? "rotate-y-[-180deg]" : ""
           }`
         )}
       >
