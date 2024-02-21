@@ -21,6 +21,7 @@ imageContext.keys().forEach((path) => {
 export default function Memory({ roomId, roomToken, user, gameData }) {
   console.log("gameData", gameData);
   const [icons, setIcons] = useState([]);
+  const { scores } = gameData;
   const isAdmin = gameData.admin === user.name;
   const isActive =
     gameData.activePlayer?.id === user.id ||
@@ -61,6 +62,14 @@ export default function Memory({ roomId, roomToken, user, gameData }) {
 
   return (
     <>
+      <div>
+        Scores
+        {scores.map((score, i) => (
+          <div key={i}>
+            {Object.entries(score)[0][0]} : {Object.entries(score)[0][1]}
+          </div>
+        ))}
+      </div>
       <div>C'est au tour de {gameData.activePlayer.name}</div>
       <div className="flex flex-wrap justify-center">
         {icons.map((icon, i) => {

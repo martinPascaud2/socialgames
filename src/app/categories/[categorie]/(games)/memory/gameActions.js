@@ -30,13 +30,17 @@ export async function launchGame({
     multiGuests,
   });
 
+  const scores = gamersAndGuests.map((gamer) => ({
+    [gamer.name]: 0,
+  }));
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
     gameData: {
       admin: startedRoom.admin,
       activePlayer: gamersAndGuests[0],
       gamers: gamersAndGuests,
-      cards: {},
+      scores,
     },
   });
 
@@ -114,6 +118,17 @@ export async function revealCard({ roomToken, gameData, index, iconKey }) {
   };
   checkDiscovered();
 
+  const newScores = [...gameData.scores];
+  if (success) {
+    const gamerIndex = newScores.findIndex(
+      (score) => Object.entries(score)[0][0] === gameData.activePlayer.name
+    );
+    newScores[gamerIndex] = {
+      [gameData.activePlayer.name]:
+        Object.entries(newScores[gamerIndex])[0][1] + 1,
+    };
+  }
+
   const newActivePlayer = success
     ? gameData.activePlayer
     : getNextGamer(gameData.gamers, gameData.activePlayer, newIcons);
@@ -123,6 +138,7 @@ export async function revealCard({ roomToken, gameData, index, iconKey }) {
       ...gameData,
       icons: newIcons,
       activePlayer: newActivePlayer,
+      scores: newScores,
     },
   });
 }

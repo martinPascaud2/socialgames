@@ -12,21 +12,16 @@ export default function Card({
   discovered,
   reveal,
 }) {
-  console.log("triggered", triggered);
-  console.log("discovered", discovered);
-  console.log("index", index);
   return (
     <div className="bg-transparent w-[24%] aspect-square inline-block m-[0.5%] perspective-10">
       <div
         onClick={() => {
-          console.log("triggered card", triggered);
           if (triggered || discovered) return;
           reveal({ index, iconKey });
         }}
         className={classNames(
           "flip-card relative w-full h-full rounded-2xl	border-2",
           `transition-transform duration-1000 transform-style-3d ${
-            // triggerReveal ? "rotate-y-[-180deg]" : ""
             triggered || discovered ? "rotate-y-[-180deg]" : ""
           }`
         )}
