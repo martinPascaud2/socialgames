@@ -3,6 +3,7 @@ import { getRoomFriendList } from "@/utils/getFriendList";
 
 import Room from "@/components/Room/Room";
 import Memory from "./Memory";
+import MemoryOptions from "./Options";
 import { launchGame } from "./gameActions";
 
 export default async function MemoryPage({ params, searchParams }) {
@@ -30,6 +31,7 @@ export default async function MemoryPage({ params, searchParams }) {
       categorie={params?.categorie}
       gameName="memory"
       Game={Memory}
+      Options={MemoryOptions}
       launchGame={launchGame}
     />
   );

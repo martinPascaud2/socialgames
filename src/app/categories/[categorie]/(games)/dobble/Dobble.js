@@ -6,8 +6,8 @@ import { useEffect, useState } from "react";
 import { goFirstRound, serverSucceed, serverFail } from "./gameActions";
 
 import FinishGame from "@/components/FinishGame";
-import EndGame from "@/components/EndGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
+import EndGame from "@/components/EndGame";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 
 const imageContext = require.context("./icons", false, /\.(png)$/);

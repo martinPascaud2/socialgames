@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 
+import FinishGame from "@/components/FinishGame";
+import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
+import EndGame from "@/components/EndGame";
 import { getIcons, revealCard, hideUndiscovered } from "./gameActions";
 import Card from "./Card";
 
@@ -21,7 +24,7 @@ imageContext.keys().forEach((path) => {
 export default function Memory({ roomId, roomToken, user, gameData }) {
   console.log("gameData", gameData);
   const [icons, setIcons] = useState([]);
-  const { scores } = gameData;
+  const { scores, ended: isEnded } = gameData;
   const isAdmin = gameData.admin === user.name;
   const isActive =
     gameData.activePlayer?.id === user.id ||
@@ -32,7 +35,7 @@ export default function Memory({ roomId, roomToken, user, gameData }) {
     async function initialize() {
       await getIcons({
         imageLength,
-        pairsNumber: 10,
+        pairsNumber: gameData.options.pairsNumber,
         roomToken,
         gameData,
       });
@@ -50,7 +53,7 @@ export default function Memory({ roomId, roomToken, user, gameData }) {
       setTimeout(() => {
         isActive && hideUndiscovered({ roomToken, gameData });
         setTriggeredNumber(0);
-      }, 2000);
+      }, 1400);
     }
   }, [gameData.icons]);
 
@@ -70,7 +73,8 @@ export default function Memory({ roomId, roomToken, user, gameData }) {
           </div>
         ))}
       </div>
-      <div>C'est au tour de {gameData.activePlayer.name}</div>
+      {!isEnded && <div>C'est au tour de {gameData.activePlayer.name}</div>}
+
       <div className="flex flex-wrap justify-center">
         {icons.map((icon, i) => {
           const { triggered, discovered } = icon;
@@ -81,11 +85,30 @@ export default function Memory({ roomId, roomToken, user, gameData }) {
               src={images[imagesNames[icon.key]]}
               triggered={triggered}
               discovered={discovered}
-              reveal={reveal}
+              reveal={
+                !isEnded
+                  ? reveal
+                  : () => {
+                      return;
+                    }
+              }
             />
           );
         })}
       </div>
+
+      {isEnded && (
+        <div className="flex flex-col">
+          <EndGame gameData={gameData} user={user} />
+        </div>
+      )}
+      {isAdmin ? (
+        !isEnded ? (
+          <FinishGame gameData={gameData} roomToken={roomToken} />
+        ) : (
+          <ChooseOneMoreGame gameData={gameData} roomToken={roomToken} />
+        )
+      ) : null}
     </>
   );
 }

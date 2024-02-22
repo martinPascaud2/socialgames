@@ -21,7 +21,7 @@ export default function Card({
         }}
         className={classNames(
           "flip-card relative w-full h-full rounded-2xl	border-2",
-          `transition-transform duration-1000 transform-style-3d ${
+          `transition-transform duration-700 transform-style-3d ${
             triggered || discovered ? "rotate-y-[-180deg]" : ""
           }`
         )}

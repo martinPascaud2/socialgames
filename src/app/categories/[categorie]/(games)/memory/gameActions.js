@@ -41,6 +41,7 @@ export async function launchGame({
       activePlayer: gamersAndGuests[0],
       gamers: gamersAndGuests,
       scores,
+      options,
     },
   });
 
@@ -92,9 +93,7 @@ const getNextGamer = (gamers, activePlayer, newIcons) => {
 
 export async function revealCard({ roomToken, gameData, index, iconKey }) {
   const { icons } = gameData;
-
   const icon = icons[index];
-
   const newIcon = { ...icon, triggered: true };
 
   const newIcons = [...icons];
@@ -133,12 +132,15 @@ export async function revealCard({ roomToken, gameData, index, iconKey }) {
     ? gameData.activePlayer
     : getNextGamer(gameData.gamers, gameData.activePlayer, newIcons);
 
+  const isEnded = newIcons.every((icon) => icon.discovered);
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
       icons: newIcons,
       activePlayer: newActivePlayer,
       scores: newScores,
+      ended: isEnded,
     },
   });
 }

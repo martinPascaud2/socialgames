@@ -38,6 +38,7 @@ export default function Room({
   categorie,
   gameName,
   Game,
+  Options,
   launchGame,
 }) {
   const router = useRouter();
@@ -696,6 +697,8 @@ export default function Room({
                 )}
 
                 <hr />
+
+                {Options && <Options setOptions={setOptions} />}
 
                 <button
                   onClick={() => launchRoom()}
