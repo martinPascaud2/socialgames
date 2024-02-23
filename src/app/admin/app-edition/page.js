@@ -16,15 +16,21 @@ export default function EditionPage() {
       <LogOut signOut={signOut} />
       <Link
         href="/admin/app-edition/actionouverite"
-        className="w-1/3 text-center border"
+        className="w-1/3 text-center border border-blue-300 bg-blue-100"
       >
         Action ou Vérité
       </Link>
       <Link
         href="/admin/app-edition/undercover"
-        className="w-1/3 text-center border"
+        className="w-1/3 text-center border border-blue-300 bg-blue-100"
       >
         Undercover
+      </Link>
+      <Link
+        href="/admin/app-edition/ptitbac"
+        className="w-1/3 text-center border border-blue-300 bg-blue-100"
+      >
+        P'tit bac
       </Link>
     </>
   );

@@ -7,7 +7,7 @@ export default function LogOut({ signOut }) {
     <Link
       href="/"
       onClick={() => signOut()}
-      className="w-1/3 text-center border"
+      className="w-1/3 text-center border border-blue-300 bg-blue-100"
     >
       Déconnexion
     </Link>

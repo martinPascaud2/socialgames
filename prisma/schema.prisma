@@ -22,6 +22,7 @@ model User {
   roomId                 Int?
   alreadyActionouverite  Json?
   alreadyUndercovertheme UndercoverthemesOnUsers[]
+  alreadyPtitbactheme    PtitbacthemesOnUsers[]
 }
 
 model Friend {
@@ -78,4 +79,18 @@ model UndercoverthemesOnUsers {
   undercoverthemeId Int
   user              User            @relation(fields: [userId], references: [id])
   undercovertheme   Undercovertheme @relation(fields: [undercoverthemeId], references: [id])
+}
+
+model Ptitbactheme {
+  id                   Int                    @id @default(autoincrement())
+  theme                String
+  PtitbacthemesOnUsers PtitbacthemesOnUsers[]
+}
+
+model PtitbacthemesOnUsers {
+  id             Int          @id @default(autoincrement())
+  userId         Int
+  ptitbacthemeId Int
+  user           User         @relation(fields: [userId], references: [id])
+  ptitbactheme   Ptitbactheme @relation(fields: [ptitbacthemeId], references: [id])
 }

@@ -36,7 +36,9 @@ export default function AdminLoginForm() {
 
         <div className="text-justify font-bold">{state.message}</div>
 
-        <button type="submit">Se connecter</button>
+        <button type="submit" className="border border-blue-300 bg-blue-100">
+          Se connecter
+        </button>
       </form>
     </>
   );

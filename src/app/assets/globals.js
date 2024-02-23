@@ -13,6 +13,13 @@ export const subCategories = {
   grouping: [{ name: "grouping", path: "grouping" }],
   categorie1: [
     {
+      name: "P'tit bac",
+      path: "ptitbac",
+      img: "/ptitbac.jpg",
+      description:
+        "Le but est de trouver, par écrit et en un temps limité, une série de mots appartenant à une catégorie prédéfinie et commençant par la même lettre.",
+    },
+    {
       name: "Memory",
       path: "memory",
       img: "/memory.jpeg",
@@ -40,7 +47,6 @@ export const subCategories = {
       description:
         "Découvrez l’unique symbole identique entre deux cartes... avant les autres !",
     },
-    { name: "Uno", path: "uno", img: "/uno.jpeg" },
     { name: "game6", path: "uno", img: "/uno.jpeg" },
     { name: "game7", path: "uno", img: "/uno.jpeg" },
     { name: "game8", path: "uno", img: "/uno.jpeg" },
@@ -60,4 +66,5 @@ export const gamesRefs = {
   undercover: { name: "Undercover", categorie: "categorie1" },
   dobble: { name: "Dobble", categorie: "categorie1" },
   memory: { name: "Memory", categorie: "categorie1" },
+  ptitbac: { name: "P'tit bac", categorie: "categorie1" },
 };
