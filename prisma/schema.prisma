@@ -23,6 +23,7 @@ model User {
   alreadyActionouverite  Json?
   alreadyUndercovertheme UndercoverthemesOnUsers[]
   alreadyPtitbactheme    PtitbacthemesOnUsers[]
+  ptitbacResponses       String                    @default("")
 }
 
 model Friend {

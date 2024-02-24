@@ -22,14 +22,18 @@ imageContext.keys().forEach((path) => {
 });
 
 export default function Memory({ roomId, roomToken, user, gameData }) {
-  console.log("gameData", gameData);
   const [icons, setIcons] = useState([]);
-  const { scores, ended: isEnded } = gameData;
+  const { scores } = gameData;
   const isAdmin = gameData.admin === user.name;
   const isActive =
     gameData.activePlayer?.id === user.id ||
     (gameData.activePlayer?.guest && isAdmin);
   const [triggeredNumber, setTriggeredNumber] = useState(0);
+
+  const [isEnded, setIsEnded] = useState(false);
+  useEffect(() => {
+    if (gameData.ended) setIsEnded(true);
+  }, [gameData.ended]);
 
   useEffect(() => {
     async function initialize() {
@@ -67,13 +71,13 @@ export default function Memory({ roomId, roomToken, user, gameData }) {
     <>
       <div>
         Scores
-        {scores.map((score, i) => (
+        {scores?.map((score, i) => (
           <div key={i}>
             {Object.entries(score)[0][0]} : {Object.entries(score)[0][1]}
           </div>
         ))}
       </div>
-      {!isEnded && <div>C'est au tour de {gameData.activePlayer.name}</div>}
+      {!isEnded && <div>C'est au tour de {gameData.activePlayer?.name}</div>}
 
       <div className="flex flex-wrap justify-center">
         {icons.map((icon, i) => {
