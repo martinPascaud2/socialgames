@@ -31,17 +31,18 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
     if (gameData.ended) setIsEnded(true);
   }, [gameData.ended]);
 
-  const [responses, setResponses] = useState(
-    Array.from({ length: 6 }, () => "")
-  );
+  const [responses, setResponses] = useState([]);
 
   const handleChange = (e, i) => {
+    if (e.target.value.length === 0) return;
     const newResponses = [...responses];
     newResponses[i] = e.target.value;
     setResponses(newResponses);
   };
 
   useEffect(() => {
+    setResponses(Array.from({ length: 6 }, () => `${letter}`));
+
     setHasVoted(false);
     const send = async () => {
       if (phase === "sending") {
@@ -98,6 +99,8 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
               >
                 <div>{theme}</div>
                 <input
+                  value={responses[i]}
+                  defaultValue={`${letter}`}
                   onChange={(e) => handleChange(e, i)}
                   className="w-4/5 border focus:outline-none focus:border"
                 />
