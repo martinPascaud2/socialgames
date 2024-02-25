@@ -59,12 +59,14 @@ export async function startCountdown({ time, roomToken, gameData }) {
   const randomLetter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[
     Math.floor(Math.random() * 26)
   ];
+  const finishCountdownDate = Date.now() + time;
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
       phase: "searching",
       themes: themeList,
       letter: randomLetter,
+      finishCountdownDate,
     },
   });
   setTimeout(async () => {

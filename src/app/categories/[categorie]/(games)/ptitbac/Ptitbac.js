@@ -9,6 +9,8 @@ import {
   vote,
 } from "./gameActions";
 
+import CountDown from "./CountDown";
+
 import FinishGame from "@/components/FinishGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import EndGame from "@/components/EndGame";
@@ -16,7 +18,8 @@ import EndGame from "@/components/EndGame";
 export default function Ptitbac({ roomId, roomToken, user, gameData }) {
   console.log("gameData", gameData);
   const isAdmin = gameData.admin === user.name;
-  const { phase, letter, themes, counts, winners } = gameData;
+  const { phase, letter, themes, finishCountdownDate, counts, winners } =
+    gameData;
 
   const [onValidationGamerIndex, setOnValidationGamerIndex] = useState(0);
   const [onValidationResponseIndex, setOnValidationResponseIndex] = useState(0);
@@ -47,7 +50,7 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
         isAdmin &&
           setTimeout(() => {
             goValidation({ gamers: gameData.gamers, roomToken, gameData });
-          }, 1500);
+          }, 500);
       }
     };
     send();
@@ -75,7 +78,7 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
 
       {phase === "waiting" && isAdmin && (
         <button
-          onClick={() => startCountdown({ time: 8000, roomToken, gameData })}
+          onClick={() => startCountdown({ time: 80000, roomToken, gameData })}
           className="border border-blue-300 bg-blue-100"
         >
           Lancer le tour
@@ -101,6 +104,7 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
               </div>
             ))}
           </div>
+          <CountDown finishCountdownDate={finishCountdownDate} />
         </div>
       )}
       {phase?.startsWith("validating") &&
