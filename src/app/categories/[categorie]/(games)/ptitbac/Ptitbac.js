@@ -77,96 +77,100 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
 
       <hr />
 
-      {phase === "waiting" && isAdmin && (
-        <button
-          onClick={() =>
-            startCountdown({
-              time: gameData.options.countDownTime,
-              roomToken,
-              gameData,
-            })
-          }
-          className="border border-blue-300 bg-blue-100"
-        >
-          Lancer le tour
-        </button>
-      )}
-      {phase === "searching" && (
-        <div className="flex flex-col items-center">
-          <div>
-            Cherchez des mots commençants par la lettre{" "}
-            <span className="font-bold">{letter}</span>
-          </div>
-          <div className="flex flex-wrap">
-            {themes.map((theme, i) => (
-              <div
-                key={theme}
-                className="w-1/3 flex flex-col items-center my-2"
-              >
-                <div>{theme}</div>
-                <input
-                  value={responses[i]}
-                  defaultValue={`${letter}`}
-                  onChange={(e) => handleChange(e, i)}
-                  className="w-4/5 border focus:outline-none focus:border"
-                />
-              </div>
-            ))}
-          </div>
-          <CountDown finishCountdownDate={finishCountdownDate} />
-        </div>
-      )}
-      {phase?.startsWith("validating") &&
-        everyoneResponses.length &&
-        everyoneResponses[onValidationGamerIndex].gamer !== user.name && (
-          <>
-            <div className="flex flex-col items-center">
-              <div>Mots validés pour ce tour</div>
-              {counts.map((gamerCount) => (
-                <div>
-                  {gamerCount.name} : {gamerCount.points} mot
-                  {gamerCount.points > 1 ? "s" : ""}
-                </div>
-              ))}
-            </div>
-
-            <hr />
-
+      {!isEnded && (
+        <>
+          {phase === "waiting" && isAdmin && (
+            <button
+              onClick={() =>
+                startCountdown({
+                  time: gameData.options.countDownTime,
+                  roomToken,
+                  gameData,
+                })
+              }
+              className="border border-blue-300 bg-blue-100"
+            >
+              Lancer le tour
+            </button>
+          )}
+          {phase === "searching" && (
             <div className="flex flex-col items-center">
               <div>
-                {everyoneResponses[onValidationGamerIndex].gamer} pour le thème{" "}
-                {themes[onValidationResponseIndex]} :{" "}
-                {
-                  everyoneResponses[onValidationGamerIndex].responses[
-                    onValidationResponseIndex
-                  ]
-                }
+                Cherchez des mots commençants par la lettre{" "}
+                <span className="font-bold">{letter}</span>
               </div>
-              {!hasVoted && (
-                <div className="flex">
-                  <button
-                    onClick={() => {
-                      setHasVoted(true);
-                      vote({ vote: true, roomToken, gameData });
-                    }}
-                    className="border border-blue-300 bg-blue-100 mx-4"
+              <div className="flex flex-wrap">
+                {themes.map((theme, i) => (
+                  <div
+                    key={theme}
+                    className="w-1/3 flex flex-col items-center my-2"
                   >
-                    Validax
-                  </button>
-                  <button
-                    onClick={() => {
-                      setHasVoted(true);
-                      vote({ vote: false, roomToken, gameData });
-                    }}
-                    className="border border-blue-300 bg-blue-100 mx-4"
-                  >
-                    Nope
-                  </button>
-                </div>
-              )}
+                    <div>{theme}</div>
+                    <input
+                      value={responses[i]}
+                      defaultValue={`${letter}`}
+                      onChange={(e) => handleChange(e, i)}
+                      className="w-4/5 border focus:outline-none focus:border"
+                    />
+                  </div>
+                ))}
+              </div>
+              <CountDown finishCountdownDate={finishCountdownDate} />
             </div>
-          </>
-        )}
+          )}
+          {phase?.startsWith("validating") &&
+            everyoneResponses.length &&
+            everyoneResponses[onValidationGamerIndex].gamer !== user.name && (
+              <>
+                <div className="flex flex-col items-center">
+                  <div>Mots validés pour ce tour</div>
+                  {counts.map((gamerCount) => (
+                    <div>
+                      {gamerCount.name} : {gamerCount.points} mot
+                      {gamerCount.points > 1 ? "s" : ""}
+                    </div>
+                  ))}
+                </div>
+
+                <hr />
+
+                <div className="flex flex-col items-center">
+                  <div>
+                    {everyoneResponses[onValidationGamerIndex].gamer} pour le
+                    thème {themes[onValidationResponseIndex]} :{" "}
+                    {
+                      everyoneResponses[onValidationGamerIndex].responses[
+                        onValidationResponseIndex
+                      ]
+                    }
+                  </div>
+                  {!hasVoted && (
+                    <div className="flex">
+                      <button
+                        onClick={() => {
+                          setHasVoted(true);
+                          vote({ vote: true, roomToken, gameData });
+                        }}
+                        className="border border-blue-300 bg-blue-100 mx-4"
+                      >
+                        Validax
+                      </button>
+                      <button
+                        onClick={() => {
+                          setHasVoted(true);
+                          vote({ vote: false, roomToken, gameData });
+                        }}
+                        className="border border-blue-300 bg-blue-100 mx-4"
+                      >
+                        Nope
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+        </>
+      )}
 
       {phase === "ended" && (
         <div className="flex justify-center">
