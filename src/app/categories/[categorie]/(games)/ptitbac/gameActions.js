@@ -9,7 +9,7 @@ export async function launchGame({
   gamers,
   guests,
   multiGuests,
-  //   options,
+  options,
 }) {
   if (gamers.length + guests.length + multiGuests.length < 2)
     return { error: "Un plus grand nombre de joueurs est requis." };
@@ -44,9 +44,8 @@ export async function launchGame({
       gamers: gamersAndGuests,
       phase: "waiting",
       themes: [],
-      //   counts: [],
       counts,
-      //   options,
+      options,
     },
   });
 

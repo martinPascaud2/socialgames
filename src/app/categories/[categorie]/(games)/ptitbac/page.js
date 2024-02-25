@@ -3,7 +3,7 @@ import { getRoomFriendList } from "@/utils/getFriendList";
 
 import Room from "@/components/Room/Room";
 import Ptitbac from "./Ptitbac";
-// import PtitbacOptions from "./Options";
+import PtitbacOptions from "./Options";
 import { launchGame } from "./gameActions";
 
 export default async function PtitbacPage({ params, searchParams }) {
@@ -31,7 +31,7 @@ export default async function PtitbacPage({ params, searchParams }) {
       categorie={params?.categorie}
       gameName="ptitbac"
       Game={Ptitbac}
-      //   Options={MemoryOptions}
+      Options={PtitbacOptions}
       launchGame={launchGame}
     />
   );

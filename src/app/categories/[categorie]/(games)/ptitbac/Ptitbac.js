@@ -79,7 +79,13 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
 
       {phase === "waiting" && isAdmin && (
         <button
-          onClick={() => startCountdown({ time: 80000, roomToken, gameData })}
+          onClick={() =>
+            startCountdown({
+              time: gameData.options.countDownTime,
+              roomToken,
+              gameData,
+            })
+          }
           className="border border-blue-300 bg-blue-100"
         >
           Lancer le tour
