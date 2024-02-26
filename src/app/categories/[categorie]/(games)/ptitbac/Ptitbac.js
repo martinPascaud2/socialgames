@@ -174,10 +174,13 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
 
       {phase === "ended" && (
         <div className="flex justify-center">
-          {winners.map((winner) => (
-            <span>{winner}</span>
+          {winners.map((winner, i) => (
+            <span>
+              {i > 0 ? (i === winners.length - 1 ? "et " : ", ") : ""}
+              {winner}
+              &nbsp;
+            </span>
           ))}
-          &nbsp;
           {winners.length === 1 ? "a" : "ont"} gagné la partie !
         </div>
       )}
