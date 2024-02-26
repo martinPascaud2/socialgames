@@ -52,9 +52,84 @@ export async function launchGame({
   return {};
 }
 
-export async function startCountdown({ time, roomToken, gameData }) {
-  const themes = await prisma.ptitbactheme.findMany({ take: 6 });
+const getFreeThemes = async ({ gamers }) => {
+  const userIds = gamers.map((gamer) => gamer.id);
+
+  const alreadyThemes = await prisma.ptitbacthemesOnUsers.findMany({
+    where: { userId: { in: userIds } },
+    select: { ptitbacthemeId: true },
+  });
+  const alreadyThemesIds = [
+    ...new Set(alreadyThemes.map((theme) => theme.ptitbacthemeId)),
+  ];
+
+  let freeThemes = await prisma.ptitbactheme.findMany({
+    where: {
+      NOT: {
+        id: { in: alreadyThemesIds },
+      },
+    },
+    take: 6,
+  });
+  const freeThemesIds = [...new Set(freeThemes.map((free) => free.id))];
+
+  await Promise.all(
+    userIds.map(async (userId) => {
+      await Promise.all(
+        freeThemesIds.map(async (freeThemeId) => {
+          await prisma.ptitbacthemesOnUsers.create({
+            data: {
+              user: { connect: { id: userId } },
+              ptitbactheme: { connect: { id: freeThemeId } },
+            },
+          });
+        })
+      );
+    })
+  );
+
+  const missingThemes = 6 - freeThemesIds.length;
+  if (missingThemes !== 0) {
+    await prisma.ptitbacthemesOnUsers.deleteMany({
+      where: {
+        userId: { in: userIds },
+      },
+    });
+  }
+
+  const addedThemes = await prisma.ptitbactheme.findMany({
+    where: {
+      NOT: {
+        id: { in: freeThemesIds },
+      },
+    },
+    take: missingThemes,
+  });
+  const addedThemesIds = [...new Set(addedThemes.map((added) => added.id))];
+
+  await Promise.all(
+    userIds.map(async (userId) => {
+      await Promise.all(
+        addedThemesIds.map(async (addedThemeId) => {
+          await prisma.ptitbacthemesOnUsers.create({
+            data: {
+              user: { connect: { id: userId } },
+              ptitbactheme: { connect: { id: addedThemeId } },
+            },
+          });
+        })
+      );
+    })
+  );
+
+  const themes = [...freeThemes, ...addedThemes];
   const themeList = themes.map((theme) => theme.theme);
+  return themeList;
+};
+
+export async function startCountdown({ time, roomToken, gameData }) {
+  const themeList = await getFreeThemes({ gamers: gameData.gamers });
+
   const randomLetter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[
     Math.floor(Math.random() * 26)
   ];
