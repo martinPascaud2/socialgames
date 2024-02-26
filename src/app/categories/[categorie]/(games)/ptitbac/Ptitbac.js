@@ -9,20 +9,19 @@ import {
   vote,
 } from "./gameActions";
 
-import CountDown from "./CountDown";
-
 import FinishGame from "@/components/FinishGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import EndGame from "@/components/EndGame";
+import CountDown from "./CountDown";
 
 export default function Ptitbac({ roomId, roomToken, user, gameData }) {
-  console.log("gameData", gameData);
   const isAdmin = gameData.admin === user.name;
   const { phase, letter, themes, finishCountdownDate, counts, winners } =
     gameData;
 
   const [onValidationGamerIndex, setOnValidationGamerIndex] = useState(0);
   const [onValidationResponseIndex, setOnValidationResponseIndex] = useState(0);
+  const [responses, setResponses] = useState([]);
   const [everyoneResponses, setEveryoneResponses] = useState([]);
   const [hasVoted, setHasVoted] = useState(false);
   const [isEnded, setIsEnded] = useState(false);
@@ -30,8 +29,6 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
   useEffect(() => {
     if (gameData.ended) setIsEnded(true);
   }, [gameData.ended]);
-
-  const [responses, setResponses] = useState([]);
 
   const handleChange = (e, i) => {
     if (e.target.value.length === 0) return;
@@ -42,11 +39,11 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
 
   useEffect(() => {
     setResponses(Array.from({ length: 6 }, () => `${letter}`));
-
     setHasVoted(false);
+
     const send = async () => {
       if (phase === "sending") {
-        await sendResponses({ roomId, responses, userId: user.id });
+        await sendResponses({ responses, userId: user.id });
         setResponses(Array.from({ length: 6 }, () => ""));
         isAdmin &&
           setTimeout(() => {
@@ -93,6 +90,7 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
               Lancer le tour
             </button>
           )}
+
           {phase === "searching" && (
             <div className="flex flex-col items-center">
               <div>
@@ -110,14 +108,21 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
                       value={responses[i]}
                       defaultValue={`${letter}`}
                       onChange={(e) => handleChange(e, i)}
+                      onKeyDown={(e) => {
+                        if (e.key === "/") {
+                          e.preventDefault();
+                        }
+                      }}
                       className="w-4/5 border focus:outline-none focus:border"
                     />
                   </div>
                 ))}
               </div>
+
               <CountDown finishCountdownDate={finishCountdownDate} />
             </div>
           )}
+
           {phase?.startsWith("validating") &&
             everyoneResponses.length &&
             everyoneResponses[onValidationGamerIndex].gamer !== user.name && (

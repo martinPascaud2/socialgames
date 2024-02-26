@@ -129,11 +129,11 @@ const getFreeThemes = async ({ gamers }) => {
 
 export async function startCountdown({ time, roomToken, gameData }) {
   const themeList = await getFreeThemes({ gamers: gameData.gamers });
-
   const randomLetter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[
     Math.floor(Math.random() * 26)
   ];
   const finishCountdownDate = Date.now() + time;
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
@@ -143,6 +143,7 @@ export async function startCountdown({ time, roomToken, gameData }) {
       finishCountdownDate,
     },
   });
+
   setTimeout(async () => {
     await pusher.trigger(`room-${roomToken}`, "room-event", {
       gameData: {
@@ -154,19 +155,18 @@ export async function startCountdown({ time, roomToken, gameData }) {
   }, time);
 }
 
-export async function sendResponses({ roomId, responses, userId }) {
+export async function sendResponses({ responses, userId }) {
   const responsesStr = responses.join("/");
 
   await prisma.user.update({
     where: { id: userId },
     data: { ptitbacResponses: responsesStr },
   });
-
-  //   const responsesArr = responsesStr.split("/");
 }
 
 export async function goValidation({ gamers, roomToken, gameData }) {
   const everyoneResponses = [];
+
   await Promise.all(
     gamers.map(async (gamer) => {
       const responses = (
@@ -178,6 +178,7 @@ export async function goValidation({ gamers, roomToken, gameData }) {
       everyoneResponses.push({ gamer: gamer.name, responses });
     })
   );
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
@@ -189,16 +190,17 @@ export async function goValidation({ gamers, roomToken, gameData }) {
 
 export async function vote({ vote, roomToken, gameData }) {
   const votes = gameData.votes || [];
+  votes.push(vote);
   const counts = gameData.counts || [];
   const { phase, gamers } = gameData;
+
   let gamerIndex = parseInt(phase.split("-")[1]);
   const gamerName = gameData.everyoneResponses[gamerIndex].gamer;
   let responseIndex = parseInt(phase.split("-")[2]);
-
-  votes.push(vote);
   const isLastVote = votes.length === gamers.length - 1;
 
   if (!isLastVote) {
+    // continue votes
     await pusher.trigger(`room-${roomToken}`, "room-event", {
       gameData: {
         ...gameData,
@@ -206,6 +208,7 @@ export async function vote({ vote, roomToken, gameData }) {
       },
     });
   } else {
+    // counting votes
     let countGamerIndex = counts.findIndex((gamer) => gamer.name === gamerName);
     if (countGamerIndex === -1) countGamerIndex = counts.length;
     const countGamer = counts[countGamerIndex] || {
@@ -213,16 +216,20 @@ export async function vote({ vote, roomToken, gameData }) {
       points: 0,
       gold: 0,
     };
+
     const affirmativeVotes = votes.reduce((trues, vote) => {
       return vote ? trues + 1 : trues;
     }, 0);
     const isAccepted = affirmativeVotes > (gamers.length - 1) / 2;
     if (isAccepted) countGamer.points += 1;
+
     const newCounts = [...counts];
     newCounts[countGamerIndex] = countGamer;
+
     responseIndex = responseIndex < 5 ? responseIndex + 1 : 0;
     gamerIndex = responseIndex === 0 ? gamerIndex + 1 : gamerIndex;
     if (gamerIndex !== gamers.length) {
+      // next theme || next gamer
       const nextPhase = `validating-${gamerIndex}-${responseIndex}`;
       await pusher.trigger(`room-${roomToken}`, "room-event", {
         gameData: {
@@ -233,6 +240,7 @@ export async function vote({ vote, roomToken, gameData }) {
         },
       });
     } else {
+      // do the accounts
       const winnersIndexes = [];
       let maxPoints = 0;
       newCounts.map((gamerCount, i) => {
@@ -253,6 +261,7 @@ export async function vote({ vote, roomToken, gameData }) {
         (gamerCount) => gamerCount.gold >= 5
       );
       if (!isFinalWinners) {
+        // new turn
         await pusher.trigger(`room-${roomToken}`, "room-event", {
           gameData: {
             ...gameData,
@@ -262,9 +271,11 @@ export async function vote({ vote, roomToken, gameData }) {
           },
         });
       } else {
+        // endgame
         const finalWinners = newGoldsCount
           .filter((gamerCount) => gamerCount.gold >= 5)
           .map((winnerCount) => winnerCount.name);
+
         await pusher.trigger(`room-${roomToken}`, "room-event", {
           gameData: {
             ...gameData,
