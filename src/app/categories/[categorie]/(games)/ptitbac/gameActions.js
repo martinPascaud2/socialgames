@@ -30,6 +30,9 @@ export async function launchGame({
     multiGuests,
   });
 
+  if (gamersAndGuests.some((player) => player.guest))
+    return { error: "Ce jeu est incompatible avec les guests monoscreen." };
+
   const counts = gamersAndGuests.map((gamer) => ({
     name: gamer.name,
     points: 0,
