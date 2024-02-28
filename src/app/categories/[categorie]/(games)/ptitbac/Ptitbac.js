@@ -22,6 +22,7 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
   const [onValidationGamerIndex, setOnValidationGamerIndex] = useState(0);
   const [onValidationResponseIndex, setOnValidationResponseIndex] = useState(0);
   const [responses, setResponses] = useState([]);
+  const [hasValidated, setHasValidated] = useState(false);
   const [everyoneResponses, setEveryoneResponses] = useState([]);
   const [hasVoted, setHasVoted] = useState(false);
   const [isEnded, setIsEnded] = useState(false);
@@ -31,11 +32,25 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
   }, [gameData.ended]);
 
   const handleChange = (e, i) => {
-    if (e.target.value.length === 0) return;
+    if (e.target.value.length === 0 || hasValidated) return;
     const newResponses = [...responses];
     newResponses[i] = e.target.value;
     setResponses(newResponses);
   };
+
+  useEffect(() => {
+    if (hasValidated) {
+      const send = async () => {
+        await sendResponses({
+          responses,
+          userId: user.id,
+          roomToken,
+          gameData,
+        });
+      };
+      send();
+    }
+  }, [hasValidated]);
 
   useEffect(() => {
     setResponses(Array.from({ length: 6 }, () => `${letter}`));
@@ -43,8 +58,8 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
 
     const send = async () => {
       if (phase === "sending") {
-        await sendResponses({ responses, userId: user.id });
         setResponses(Array.from({ length: 6 }, () => ""));
+        setHasValidated(false);
         isAdmin &&
           setTimeout(() => {
             goValidation({ gamers: gameData.gamers, roomToken, gameData });
@@ -65,7 +80,7 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
       <div className="flex flex-col items-center">
         <div>Pièces d'or (objectif 5 !)</div>
         {counts?.map((gamerCount) => (
-          <div>
+          <div key={gamerCount.name}>
             {gamerCount.name} : {gamerCount.gold} pièce
             {gamerCount.gold > 1 ? "s" : ""} d'or
           </div>
@@ -105,8 +120,8 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
                   >
                     <div>{theme}</div>
                     <input
+                      type="text"
                       value={responses[i]}
-                      defaultValue={`${letter}`}
                       onChange={(e) => handleChange(e, i)}
                       onKeyDown={(e) => {
                         if (e.key === "/") {
@@ -119,7 +134,19 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
                 ))}
               </div>
 
-              <CountDown finishCountdownDate={finishCountdownDate} />
+              {!hasValidated && (
+                <button
+                  onClick={() => setHasValidated(true)}
+                  className="border border-blue-300 bg-blue-100"
+                >
+                  J'ai fini !
+                </button>
+              )}
+
+              <CountDown
+                finishCountdownDate={finishCountdownDate}
+                setHasValidated={setHasValidated}
+              />
             </div>
           )}
 
@@ -130,7 +157,7 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
                 <div className="flex flex-col items-center">
                   <div>Mots validés pour ce tour</div>
                   {counts.map((gamerCount) => (
-                    <div>
+                    <div key={gamerCount.name}>
                       {gamerCount.name} : {gamerCount.points} mot
                       {gamerCount.points > 1 ? "s" : ""}
                     </div>

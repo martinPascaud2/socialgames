@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-export default function CountDown({ finishCountdownDate }) {
-  const [leftSeconds, setLeftSeconds] = useState(0);
-  const [leftMinutes, setLeftMinutes] = useState(0);
+export default function CountDown({ finishCountdownDate, setHasValidated }) {
+  const [leftSeconds, setLeftSeconds] = useState(1);
+  const [leftMinutes, setLeftMinutes] = useState(1);
 
   useEffect(() => {
     let interval = setInterval(() => {
@@ -18,7 +18,11 @@ export default function CountDown({ finishCountdownDate }) {
     };
   }, []);
 
-  if (leftMinutes === 0 && leftSeconds === 0) return;
+  if (leftMinutes <= 0 && leftSeconds <= 0) {
+    setHasValidated(true);
+    return;
+  }
+
   return (
     <div>
       Il vous reste <span className="font-bold">{leftMinutes}</span> minutes et{" "}

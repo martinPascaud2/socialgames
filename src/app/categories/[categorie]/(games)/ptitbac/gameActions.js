@@ -143,24 +143,31 @@ export async function startCountdown({ time, roomToken, gameData }) {
       finishCountdownDate,
     },
   });
-
-  setTimeout(async () => {
-    await pusher.trigger(`room-${roomToken}`, "room-event", {
-      gameData: {
-        ...gameData,
-        phase: "sending",
-        themes: themeList,
-      },
-    });
-  }, time);
 }
 
-export async function sendResponses({ responses, userId }) {
+export async function sendResponses({
+  responses,
+  userId,
+  roomToken,
+  gameData,
+}) {
   const responsesStr = responses.join("/");
 
   await prisma.user.update({
     where: { id: userId },
     data: { ptitbacResponses: responsesStr },
+  });
+
+  const alreadySent = gameData.alreadySent || 0;
+  const newAlreadySent = alreadySent + 1;
+
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      alreadySent: newAlreadySent,
+      phase:
+        newAlreadySent !== gameData.gamers.length ? "searching" : "sending",
+    },
   });
 }
 
@@ -182,6 +189,7 @@ export async function goValidation({ gamers, roomToken, gameData }) {
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
+      alreadySent: 0,
       phase: "validating-0-0",
       everyoneResponses,
     },
