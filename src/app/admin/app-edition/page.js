@@ -32,6 +32,12 @@ export default function EditionPage() {
       >
         P'tit bac
       </Link>
+      <Link
+        href="/admin/app-edition/drawing"
+        className="w-1/3 text-center border border-blue-300 bg-blue-100"
+      >
+        Dessin
+      </Link>
     </>
   );
 }
