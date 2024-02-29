@@ -24,6 +24,7 @@
     "react": "^18",
     "react-dom": "^18",
     "react-qr-code": "^2.0.12",
+    "react-sketch-canvas": "^6.2.0",
     "tailwindcss-3d": "^1.0.4"
   },
   "devDependencies": {

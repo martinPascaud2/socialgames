@@ -13,6 +13,12 @@ export const subCategories = {
   grouping: [{ name: "grouping", path: "grouping" }],
   categorie1: [
     {
+      name: "Dessin",
+      path: "drawing",
+      img: "/esquisse.jpg",
+      description: "Dessin dessin dessin",
+    },
+    {
       name: "P'tit bac",
       path: "ptitbac",
       img: "/ptitbac.jpg",
@@ -47,7 +53,6 @@ export const subCategories = {
       description:
         "Découvrez l’unique symbole identique entre deux cartes... avant les autres !",
     },
-    { name: "game6", path: "uno", img: "/uno.jpeg" },
     { name: "game7", path: "uno", img: "/uno.jpeg" },
     { name: "game8", path: "uno", img: "/uno.jpeg" },
   ],
@@ -67,4 +72,5 @@ export const gamesRefs = {
   dobble: { name: "Dobble", categorie: "categorie1" },
   memory: { name: "Memory", categorie: "categorie1" },
   ptitbac: { name: "P'tit bac", categorie: "categorie1" },
+  drawing: { name: "Dessin", categorie: "categorie1" },
 };
