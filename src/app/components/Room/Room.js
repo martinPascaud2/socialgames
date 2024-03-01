@@ -254,6 +254,13 @@ export default function Room({
     setServerMessage(`Guest ${uniqueGuestName} ajouté`);
     setNewGuest("");
     setGuestList(guests);
+    if (group) {
+      const newGuestsGroup = [
+        ...group.guests,
+        { id: user.id, name: uniqueGuestName, guest: true, multiGuest: false },
+      ];
+      setGroup((prevGroup) => ({ ...prevGroup, guests: newGuestsGroup }));
+    }
   };
 
   const deleteGuest = async (guest) => {
