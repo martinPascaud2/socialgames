@@ -1,6 +1,6 @@
 "use server";
 
-import makeTeams from "@/utils/makeTeams";
+import makeMinimalTeams from "@/utils/makeTeams";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 
 export async function launchGame({
@@ -10,7 +10,7 @@ export async function launchGame({
   //   gamers,
   guests,
   multiGuests,
-  //   options,
+  options,
 }) {
   const startedRoom = await prisma.room.update({
     where: {
@@ -28,8 +28,11 @@ export async function launchGame({
     multiGuests,
   });
 
-  const numberByTeam = 2; // option, minimal number
-  const teams = makeTeams({ gamersList: gamersAndGuests, numberByTeam });
+  const { error, teams } = makeMinimalTeams({
+    gamersList: gamersAndGuests,
+    numberByTeam: options.teamNumber,
+  });
+  if (error) return { error };
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
@@ -38,7 +41,7 @@ export async function launchGame({
       activePlayer: gamersAndGuests[0],
       gamers: gamersAndGuests,
       teams,
-      //   options,
+      options,
     },
   });
 

@@ -3,6 +3,7 @@ import { getRoomFriendList } from "@/utils/getFriendList";
 
 import Room from "@/components/Room/Room";
 import Drawing from "./Drawing";
+import DrawingOptions from "./Options";
 import { launchGame } from "./gameActions";
 
 export default async function DrawingPage({ params, searchParams }) {
@@ -30,6 +31,7 @@ export default async function DrawingPage({ params, searchParams }) {
       categorie={params?.categorie}
       gameName="drawing"
       Game={Drawing}
+      Options={DrawingOptions}
       launchGame={launchGame}
     />
   );

@@ -1,7 +1,11 @@
 import shuffleArray from "./shuffleArray";
 
-export default function makeTeams({ gamersList, numberByTeam }) {
-  const shuffled = shuffleArray(gamersList);
+export default function makeMinimalTeams({ gamersList, numberByTeam }) {
+  if (numberByTeam > gamersList.length)
+    return { error: "Il y a plus de joueurs par équipe que de joueurs" };
+
+  const gamers = [...gamersList];
+  const shuffled = shuffleArray(gamers);
 
   const teams = {};
   let index = 0;
@@ -19,5 +23,5 @@ export default function makeTeams({ gamersList, numberByTeam }) {
     index++;
   }
 
-  return teams;
+  return { teams };
 }

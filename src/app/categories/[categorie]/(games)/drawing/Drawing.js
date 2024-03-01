@@ -21,7 +21,7 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
       setReceivedImage(newReceivedImage);
     };
     newImageFrom && get();
-  }, [gameData]);
+  }, [gameData, newImageFrom, roomId]);
 
   console.log("path", path);
   console.log("svg", svg);
