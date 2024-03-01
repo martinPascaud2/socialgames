@@ -705,9 +705,7 @@ export default function Room({
 
                 <hr />
 
-                {Options && (
-                  <Options setOptions={setOptions} gameData={gameData} />
-                )}
+                {Options && <Options setOptions={setOptions} />}
 
                 <button
                   onClick={() => launchRoom()}
