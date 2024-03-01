@@ -1,7 +1,7 @@
 "use server";
 
+import makeTeams from "@/utils/makeTeams";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
-// import pusher from "@/utils/pusher";
 
 export async function launchGame({
   roomId,
@@ -28,12 +28,16 @@ export async function launchGame({
     multiGuests,
   });
 
+  const numberByTeam = 2; // option, minimal number
+  const teams = makeTeams({ gamersList: gamersAndGuests, numberByTeam });
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
     gameData: {
       admin: startedRoom.admin,
       activePlayer: gamersAndGuests[0],
       gamers: gamersAndGuests,
+      teams,
       //   options,
     },
   });

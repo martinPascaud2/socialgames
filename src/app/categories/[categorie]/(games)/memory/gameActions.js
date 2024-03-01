@@ -1,5 +1,6 @@
 "use server";
 
+import shuffleArray from "@/utils/shuffleArray";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 
 export async function launchGame({
@@ -63,9 +64,10 @@ export async function getIcons({
     alreadySelected.push(randomKey);
     remaining--;
   }
-  alreadySelected.sort(() => Math.random() - 0.5);
 
-  const icons = alreadySelected.map((key) => ({
+  const sortedSelected = shuffleArray(alreadySelected);
+
+  const icons = sortedSelected.map((key) => ({
     key,
     triggered: false,
     discovered: false,
