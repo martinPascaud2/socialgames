@@ -12,7 +12,7 @@ import {
 import FinishGame from "@/components/FinishGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import EndGame from "@/components/EndGame";
-import CountDown from "./CountDown";
+import CountDown from "@/components/CountDown";
 
 export default function Ptitbac({ roomId, roomToken, user, gameData }) {
   const isAdmin = gameData.admin === user.name;
@@ -95,7 +95,7 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
             <button
               onClick={() =>
                 startCountdown({
-                  time: gameData.options.countDownTime,
+                  time: gameData.options.countDownTime, //remove
                   roomToken,
                   gameData,
                 })
@@ -139,7 +139,7 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
                   onClick={() => setHasValidated(true)}
                   className="border border-blue-300 bg-blue-100"
                 >
-                  J'ai fini !
+                  J&apos;ai fini !
                 </button>
               )}
 
@@ -207,7 +207,7 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
       {phase === "ended" && (
         <div className="flex justify-center">
           {winners.map((winner, i) => (
-            <span>
+            <span key={i}>
               {i > 0 ? (i === winners.length - 1 ? "et " : ", ") : ""}
               {winner}
               &nbsp;

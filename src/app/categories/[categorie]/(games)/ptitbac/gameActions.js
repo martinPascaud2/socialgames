@@ -13,6 +13,8 @@ export async function launchGame({
 }) {
   if (gamers.length + guests.length + multiGuests.length < 2)
     return { error: "Un plus grand nombre de joueurs est requis." };
+  if (guests.length)
+    return { error: "Ce jeu est incompatible avec les guests monoscreen." };
 
   const startedRoom = await prisma.room.update({
     where: {
@@ -29,9 +31,6 @@ export async function launchGame({
     guests,
     multiGuests,
   });
-
-  if (gamersAndGuests.some((player) => player.guest))
-    return { error: "Ce jeu est incompatible avec les guests monoscreen." };
 
   const counts = gamersAndGuests.map((gamer) => ({
     name: gamer.name,

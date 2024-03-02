@@ -40,18 +40,35 @@ export async function launchGame({
         });
   if (error) return { error };
 
+  const activePlayers = Object.entries(teams).map((team) => ({
+    ...team[1][0],
+    team: team[0],
+  }));
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
     gameData: {
       admin: startedRoom.admin,
-      activePlayer: gamersAndGuests[0],
-      gamers: gamersAndGuests,
       teams,
+      activePlayers,
+      phase: "waiting",
       options,
     },
   });
 
   return {};
+}
+
+export async function startDrawing({ roomToken, gameData }) {
+  const finishCountdownDate = Date.now() + gameData.options.countDownTime;
+
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      phase: "drawing",
+      finishCountdownDate,
+    },
+  });
 }
 
 export async function sendImage({
