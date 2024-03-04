@@ -7,7 +7,12 @@ import {
   ArrowUturnRightIcon,
 } from "@heroicons/react/24/outline";
 
-export default function Draw({ setImgData, setSvg, setPath }) {
+export default function Draw({
+  setImgData,
+  setSvg,
+  setPath,
+  finishCountdownDate,
+}) {
   const canvasRef = useRef(null);
   const [strokeWidth, setStrokeWidth] = useState(4);
   const colorsRef = useRef(null);
@@ -47,6 +52,16 @@ export default function Draw({ setImgData, setSvg, setPath }) {
     return /iphone|ipad|ipod/.test(userAgent);
   };
   const isIos = getIsIos();
+
+  useEffect(() => {
+    const timeout = finishCountdownDate - Date.now();
+    console.log("timeout", timeout);
+    const set = setTimeout(() => {
+      handleExportImage();
+    }, timeout);
+    return () => clearTimeout(set);
+    // setTimeout(, )
+  }, [finishCountdownDate]);
 
   // useEffect(() => {
   // const testPath = async () => {

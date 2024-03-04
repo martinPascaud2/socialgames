@@ -59,13 +59,68 @@ export async function launchGame({
   return {};
 }
 
-export async function startDrawing({ roomToken, gameData }) {
+const getFreeWord = async ({ roomId }) => {
+  const gamers = (
+    await prisma.room.findFirst({
+      where: { id: roomId },
+      select: { gamers: true },
+    })
+  ).gamers;
+
+  const userIds = Object.values(gamers);
+
+  const alreadyWords = await prisma.drawingWordsOnUsers.findMany({
+    where: { userId: { in: userIds } },
+    select: { drawingWordId: true },
+  });
+  const alreadyWordsIds = [
+    ...new Set(alreadyWords.map((word) => word.drawingWordId)),
+  ];
+
+  let freeWord = await prisma.drawingWord.findFirst({
+    where: {
+      NOT: {
+        id: { in: alreadyWordsIds },
+      },
+    },
+  });
+  if (!freeWord) {
+    await prisma.drawingWordsOnUsers.deleteMany({
+      where: {
+        userId: { in: userIds },
+      },
+    });
+    freeWord = await prisma.drawingWord.findFirst({
+      where: {},
+    });
+  }
+  const freeWordId = freeWord.id;
+
+  await Promise.all(
+    userIds.map(async (userId) => {
+      await prisma.drawingWordsOnUsers.create({
+        data: {
+          user: { connect: { id: userId } },
+          drawingWord: { connect: { id: freeWordId } },
+        },
+      });
+    })
+  );
+
+  return freeWord.word;
+};
+
+export async function startDrawing({ roomId, roomToken, gameData }) {
+  const freeWord = await getFreeWord({ roomId });
+  console.log("freeWord", freeWord);
+
   const finishCountdownDate = Date.now() + gameData.options.countDownTime;
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
       phase: "drawing",
+      word: freeWord,
       finishCountdownDate,
     },
   });
@@ -76,34 +131,58 @@ export async function sendImage({
   roomId,
   roomToken,
   gameData,
-  userName,
+  user,
 }) {
   const roomData =
     (await prisma.room.findFirst({ where: { id: roomId } })).gameData || {};
 
   const pngs = roomData.pngs || {};
-  const newPngs = { ...pngs, [userName]: imgData };
 
-  const newRoomData = { ...roomData, pngs: newPngs };
-
-  await prisma.room.update({
-    where: { id: roomId },
-    data: { gameData: newRoomData },
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { png: imgData },
   });
+
+  const alreadySent = gameData.alreadySent || 0;
+  const newAlreadySent = alreadySent + 1;
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
-      newImageFrom: userName,
+      alreadySent: newAlreadySent,
+      phase:
+        newAlreadySent !== gameData.activePlayers.length
+          ? "drawing"
+          : "sending",
     },
   });
 }
 
-export async function getPng({ userName, roomId }) {
-  const room = await prisma.room.findFirst({ where: { id: roomId } });
-  const { gameData } = room;
-  const { pngs } = gameData;
-  const image = pngs[userName];
+export async function getPng({ activePlayers, userTeam }) {
+  const mate = activePlayers.find((active) => active.team === userTeam);
+  const png = (
+    await prisma.user.findFirst({
+      where: { id: mate.id },
+      select: { png: true },
+    })
+  ).png;
 
-  return image;
+  return png;
+}
+
+export async function goSearch({ roomToken, gameData }) {
+  const { activePlayers } = gameData;
+  const drawings = [];
+  await Promise.all(
+    activePlayers.map(async (active) => {
+      const drawing = (
+        await prisma.user.findFirst({
+          where: { id: active.id },
+          select: { png: true },
+        })
+      ).png;
+      drawings.push({ name: active.name, team: active.team, drawing });
+    })
+  );
+  //reset les alreadysent
 }

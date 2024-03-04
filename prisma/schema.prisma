@@ -24,6 +24,8 @@ model User {
   alreadyUndercovertheme UndercoverthemesOnUsers[]
   alreadyPtitbactheme    PtitbacthemesOnUsers[]
   ptitbacResponses       String                    @default("")
+  png                    String                    @default("") @db.Text
+  alreadyDrawingWords    DrawingWordsOnUsers[]
 }
 
 model Friend {
@@ -97,6 +99,15 @@ model PtitbacthemesOnUsers {
 }
 
 model DrawingWord {
-  id   Int    @id @default(autoincrement())
-  word String
+  id                  Int                   @id @default(autoincrement())
+  word                String
+  DrawingWordsOnUsers DrawingWordsOnUsers[]
+}
+
+model DrawingWordsOnUsers {
+  id            Int         @id @default(autoincrement())
+  userId        Int
+  drawingWordId Int
+  user          User        @relation(fields: [userId], references: [id])
+  drawingWord   DrawingWord @relation(fields: [drawingWordId], references: [id])
 }
