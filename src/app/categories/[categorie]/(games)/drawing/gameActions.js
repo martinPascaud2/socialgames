@@ -151,7 +151,8 @@ export async function sendImage({
       ...gameData,
       alreadySent: newAlreadySent,
       phase:
-        newAlreadySent !== gameData.activePlayers.length
+        newAlreadySent !== gameData.activePlayers.length &&
+        gameData.phase !== "sending"
           ? "drawing"
           : "sending",
     },
@@ -171,18 +172,25 @@ export async function getPng({ activePlayers, userTeam }) {
 }
 
 export async function goSearch({ roomToken, gameData }) {
-  const { activePlayers } = gameData;
-  const drawings = [];
-  await Promise.all(
-    activePlayers.map(async (active) => {
-      const drawing = (
-        await prisma.user.findFirst({
-          where: { id: active.id },
-          select: { png: true },
-        })
-      ).png;
-      drawings.push({ name: active.name, team: active.team, drawing });
-    })
-  );
-  //reset les alreadysent
+  const { activePlayers, teams } = gameData;
+
+  const activeIds = activePlayers.map((active) => active.id);
+  const newActivePlayers = Object.entries(teams)
+    .map((team) => team[1].map((gamer) => ({ ...gamer, team: team[0] })))
+    .flat()
+    .filter((g) => !activeIds.some((id) => g.id === id));
+
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      phase: "searching",
+      activePlayers: newActivePlayers,
+      alreadySent: 0,
+    },
+  });
+}
+
+export async function guessWord(prevState, formData) {
+  const guess = formData.get("guess");
+  console.log("guess", guess);
 }

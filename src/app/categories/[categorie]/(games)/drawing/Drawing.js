@@ -1,10 +1,23 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useFormState } from "react-dom";
+import Image from "next/image";
 import Draw from "./Draw";
 import CountDown from "@/components/CountDown";
 
-import { startDrawing, sendImage, getPng, goSearch } from "./gameActions";
+import {
+  startDrawing,
+  sendImage,
+  getPng,
+  goSearch,
+  guessWord,
+} from "./gameActions";
+
+const initialState = {
+  message: null,
+  status: 100,
+};
 
 export default function Drawing({ roomId, roomToken, user, gameData }) {
   const [hasValidated, setHasValidated] = useState(false);
@@ -18,6 +31,8 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
   const [receivedImage, setReceivedImage] = useState();
   const isAdmin = gameData.admin === user.name;
   const isActive = activePlayers?.some((active) => active.name === user.name);
+
+  const [state, formAction] = useFormState(guessWord, initialState);
 
   useEffect(() => {
     if (!teams) return;
@@ -35,11 +50,14 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
   console.log("userTeam", userTeam);
 
   useEffect(() => {
-    isActive &&
-      imgData &&
-      !hasValidated &&
-      sendImage({ imgData, roomId, roomToken, gameData, user });
-  }, [imgData]);
+    const send = async () => {
+      isActive &&
+        imgData &&
+        hasValidated &&
+        (await sendImage({ imgData, roomId, roomToken, gameData, user }));
+    };
+    send();
+  }, [imgData, hasValidated]);
 
   useEffect(() => {
     // if (!isAdmin) return;
@@ -50,6 +68,8 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
           const png = await getPng({ activePlayers, userTeam });
           // goSearch({ roomToken, gameData });
           setReceivedImage(png);
+          setHasValidated(true);
+          isAdmin && (await goSearch({ roomToken, gameData }));
         }, finishCountdownDate - Date.now() + 1000);
       }
       if (phase === "sending") {
@@ -57,10 +77,20 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
         // goSearch({ roomToken, gameData });
         const png = await getPng({ activePlayers, userTeam });
         setReceivedImage(png);
+        setHasValidated(true);
+        isAdmin && (await goSearch({ roomToken, gameData }));
       }
+      // if (phase === "searching") {
+      //   const png = await getPng({ activePlayers, userTeam });
+      //   setReceivedImage(png);
+      // }
     };
     get();
   }, [phase]);
+
+  console.log("phase", phase);
+  console.log("hasValidated", hasValidated);
+  console.log("imgData", imgData);
 
   return (
     <>
@@ -104,13 +134,21 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
         <>
           {isActive ? (
             <>
-              <div>Mot à dessiner : {word}</div>
-              <Draw
-                setImgData={setImgData}
-                setSvg={setSvg}
-                setPath={setPath}
-                finishCountdownDate={finishCountdownDate}
-              />
+              <div className="flex justify-center">
+                Mot à dessiner :
+                <span className="font-semibold">&nbsp;{word}</span>
+              </div>
+              {!hasValidated ? (
+                <Draw
+                  setImgData={setImgData}
+                  setSvg={setSvg}
+                  setPath={setPath}
+                  setHasValidated={setHasValidated}
+                  finishCountdownDate={finishCountdownDate}
+                />
+              ) : (
+                <div>Hop ! C&apos;est envoyé ! On attend les autres...</div>
+              )}
             </>
           ) : (
             <div className="flex justify-center">
@@ -125,14 +163,61 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
           )}
           <CountDown
             finishCountdownDate={finishCountdownDate}
-            setHasValidated={setHasValidated}
+            // setHasValidated={setHasValidated}
+            onCountdownFinish={() => setHasValidated(true)}
           />
         </>
       )}
 
       {/* <div>Image envoyé de {newImageFrom}</div> */}
 
-      {receivedImage && <img src={receivedImage} />}
+      {phase === "searching" && receivedImage && (
+        <>
+          <div
+            style={{
+              position: "relative",
+              width: "auto",
+              height: "50vh",
+              // left: "5vw",
+            }}
+          >
+            <Image
+              src={receivedImage}
+              alt="drawing-png"
+              // sizes="500px"
+              fill
+              style={{
+                objectFit: "contain",
+              }}
+            />
+          </div>
+          <div className="flex justify-center">
+            {isActive ? (
+              <form
+                action={formAction}
+                className="flex flex-col justify-center items-center"
+              >
+                <label htmlFor="guess">Propose un mot</label>
+                <input
+                  type="text"
+                  name="guess"
+                  id="guess"
+                  className="border focus:outline-none focus:border-2"
+                />
+
+                <button
+                  type="submit"
+                  className="border border-blue-300 bg-blue-100"
+                >
+                  Envoi
+                </button>
+              </form>
+            ) : (
+              <div>Ton équipe cherche le mot</div>
+            )}
+          </div>
+        </>
+      )}
     </>
   );
 }

@@ -11,6 +11,7 @@ export default function Draw({
   setImgData,
   setSvg,
   setPath,
+  setHasValidated,
   finishCountdownDate,
 }) {
   const canvasRef = useRef(null);
@@ -58,6 +59,7 @@ export default function Draw({
     console.log("timeout", timeout);
     const set = setTimeout(() => {
       handleExportImage();
+      setHasValidated(true);
     }, timeout);
     return () => clearTimeout(set);
     // setTimeout(, )
@@ -177,7 +179,14 @@ export default function Draw({
         Envoi paths
       </button>
 
-      <button onClick={() => handleExportImage()}>Envoyer image</button>
+      <button
+        onClick={() => {
+          handleExportImage();
+          setHasValidated(true);
+        }}
+      >
+        Envoyer image
+      </button>
     </>
   );
 }

@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-export default function CountDown({ finishCountdownDate, setHasValidated }) {
+// export default function CountDown({ finishCountdownDate, setHasValidated }) {
+export default function CountDown({ finishCountdownDate, onCountdownFinish }) {
   const [leftSeconds, setLeftSeconds] = useState(1);
   const [leftMinutes, setLeftMinutes] = useState(1);
 
@@ -19,8 +20,10 @@ export default function CountDown({ finishCountdownDate, setHasValidated }) {
   }, []);
 
   if (leftMinutes <= 0 && leftSeconds <= 0) {
-    setHasValidated(true);
-    return;
+    // setHasValidated(true);
+    // onCountdownFinish();
+    // setHasValidated(true);
+    // return;
   }
 
   return (
