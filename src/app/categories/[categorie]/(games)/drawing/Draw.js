@@ -169,7 +169,7 @@ export default function Draw({
         </button>
       </div>
 
-      <button onClick={async () => setSvg(await canvasRef.current.exportSvg())}>
+      {/* <button onClick={async () => setSvg(await canvasRef.current.exportSvg())}>
         Envoyer svg
       </button>
 
@@ -177,16 +177,19 @@ export default function Draw({
         onClick={async () => setPath(await canvasRef.current.exportPaths())}
       >
         Envoi paths
-      </button>
+      </button> */}
 
-      <button
-        onClick={() => {
-          handleExportImage();
-          setHasValidated(true);
-        }}
-      >
-        Envoyer image
-      </button>
+      <div className="flex justify-center mt-2">
+        <button
+          onClick={() => {
+            handleExportImage();
+            setHasValidated(true);
+          }}
+          className="border border-2 border-blue-500 bg-blue-100 p-2"
+        >
+          Envoyer
+        </button>
+      </div>
     </>
   );
 }
