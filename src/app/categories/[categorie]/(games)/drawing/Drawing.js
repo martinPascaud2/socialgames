@@ -5,6 +5,9 @@ import { useFormState } from "react-dom";
 import Image from "next/image";
 import Draw from "./Draw";
 import CountDown from "@/components/CountDown";
+import FinishGame from "@/components/FinishGame";
+import EndGame from "@/components/EndGame";
+import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 
 import {
   startDrawing,
@@ -26,6 +29,12 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
   const [svg, setSvg] = useState();
   const [path, setPath] = useState();
   const [userTeam, setUserTeam] = useState();
+  const [isEnded, setIsEnded] = useState(false);
+
+  useEffect(() => {
+    if (gameData.ended) setIsEnded(true);
+  }, [gameData.ended]);
+
   //setteams
   console.log("gameData", gameData);
   const {
@@ -36,6 +45,7 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
     lastWord,
     word,
     finishCountdownDate,
+    ended,
   } = gameData;
   const [receivedImage, setReceivedImage] = useState();
   const isAdmin = gameData.admin === user.name;
@@ -261,6 +271,16 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
           </div>
         </>
       )}
+
+      {isAdmin ? (
+        !isEnded ? (
+          <FinishGame gameData={gameData} roomToken={roomToken} />
+        ) : (
+          <ChooseOneMoreGame gameData={gameData} roomToken={roomToken} />
+        )
+      ) : isEnded ? (
+        <EndGame gameData={gameData} user={user} />
+      ) : null}
     </>
   );
 }

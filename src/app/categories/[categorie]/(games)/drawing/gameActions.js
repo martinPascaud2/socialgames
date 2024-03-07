@@ -54,6 +54,7 @@ export async function launchGame({
     started: startedRoom.started,
     gameData: {
       admin: startedRoom.admin,
+      gamers: gamersAndGuests,
       teams,
       counts,
       activePlayers,
