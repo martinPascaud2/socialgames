@@ -21,13 +21,22 @@ const initialState = {
 
 export default function Drawing({ roomId, roomToken, user, gameData }) {
   const [hasValidated, setHasValidated] = useState(false);
+  const [hasProposed, setHasProposed] = useState(false);
   const [imgData, setImgData] = useState();
   const [svg, setSvg] = useState();
   const [path, setPath] = useState();
   const [userTeam, setUserTeam] = useState();
   //setteams
   console.log("gameData", gameData);
-  const { teams, activePlayers, phase, word, finishCountdownDate } = gameData;
+  const {
+    teams,
+    counts,
+    activePlayers,
+    phase,
+    lastWord,
+    word,
+    finishCountdownDate,
+  } = gameData;
   const [receivedImage, setReceivedImage] = useState();
   const isAdmin = gameData.admin === user.name;
   const isActive = activePlayers?.some((active) => active.name === user.name);
@@ -62,6 +71,13 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
   }, [imgData, hasValidated]);
 
   useEffect(() => {
+    if (phase === "waiting") {
+      setImgData();
+      setReceivedImage();
+      setHasValidated(false);
+      setHasProposed(false);
+      // setTimeoutId() ??
+    }
     // if (!isAdmin) return;
     const get = async () => {
       let timeout;
@@ -110,6 +126,10 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
           {teams &&
             Object.entries(teams).map((team) => (
               <div key={team[0]} className="flex flex-col">
+                <div className="border-2 border-red-300">
+                  {counts[team[0]].points} point
+                  <span>{counts[team[0]].points >= 2 ? "s" : ""}</span>
+                </div>
                 {team[1].map((gamer) => (
                   <div
                     key={gamer.name}
@@ -132,12 +152,20 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
       <hr />
 
       {phase === "waiting" && isAdmin && (
-        <button
-          onClick={() => startDrawing({ roomId, roomToken, gameData })}
-          className="w-full border border-blue-300 bg-blue-100"
-        >
-          Tout le monde est prêt ?
-        </button>
+        <>
+          {lastWord && (
+            <div className="flex justify-center">
+              Le mot était :{" "}
+              <span className="font-semibold">&nbsp;{lastWord}</span>
+            </div>
+          )}
+          <button
+            onClick={() => startDrawing({ roomId, roomToken, gameData })}
+            className="w-full border border-blue-300 bg-blue-100"
+          >
+            Tout le monde est prêt ?
+          </button>
+        </>
       )}
 
       {phase === "drawing" && (
@@ -171,7 +199,9 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
               dessinent !
             </div>
           )}
-          <CountDown finishCountdownDate={finishCountdownDate} />
+          <div className="flex justify-center">
+            <CountDown finishCountdownDate={finishCountdownDate} />
+          </div>
         </>
       )}
 
@@ -199,25 +229,32 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
           </div>
           <div className="flex justify-center">
             {isActive ? (
-              <form
-                action={formAction}
-                className="flex flex-col justify-center items-center"
-              >
-                <label htmlFor="guess">Propose un mot</label>
-                <input
-                  type="text"
-                  name="guess"
-                  id="guess"
-                  className="border focus:outline-none focus:border-2"
-                />
-
-                <button
-                  type="submit"
-                  className="border border-blue-300 bg-blue-100"
+              !hasProposed ? (
+                <form
+                  action={(FormData) => {
+                    formAction(FormData);
+                    setHasProposed(true);
+                  }}
+                  className="flex flex-col justify-center items-center"
                 >
-                  Envoi
-                </button>
-              </form>
+                  <label htmlFor="guess">Propose un mot</label>
+                  <input
+                    type="text"
+                    name="guess"
+                    id="guess"
+                    className="border focus:outline-none focus:border-2"
+                  />
+
+                  <button
+                    type="submit"
+                    className="border border-blue-300 bg-blue-100"
+                  >
+                    Envoi
+                  </button>
+                </form>
+              ) : (
+                <div>Proposition envoyée, on attend les autres...</div>
+              )
             ) : (
               <div>Ton équipe cherche le mot</div>
             )}

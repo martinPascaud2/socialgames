@@ -215,6 +215,29 @@ const compareWords = (word1, word2) => {
   return false;
 };
 
+const getNextDrawers = ({ teams, activePlayers }) => {
+  const drawers = [];
+  Object.entries(teams).forEach((team) => {
+    const drawerIndex = team[1].findIndex(
+      (mate) => !activePlayers.some((active) => active.id === mate.id)
+    );
+    const drawer = { team: team[0], index: drawerIndex };
+    drawers.push(drawer);
+  });
+
+  const nextDrawers = [];
+  drawers.forEach((drawer) => {
+    const nextDrawerIndex = (drawer.index + 1) % teams[drawer.team].length;
+    const nextDrawer = {
+      ...teams[drawer.team][nextDrawerIndex],
+      team: drawer.team,
+    };
+    nextDrawers.push(nextDrawer);
+  });
+
+  return nextDrawers;
+};
+
 export async function guessWord(
   userTeam,
   gameData,
@@ -254,10 +277,14 @@ export async function guessWord(
 
   console.log("nextPhase", nextPhase);
 
+  let newActivePlayers = [];
   if (nextPhase === "waiting") {
     Object.entries(newCounts).forEach(
       (count) => (newCounts[count[0]].votes = [])
     );
+    newActivePlayers = getNextDrawers({ teams, activePlayers });
+  } else {
+    newActivePlayers = activePlayers;
   }
 
   //activeplayers
@@ -269,7 +296,8 @@ export async function guessWord(
       ...gameData,
       phase: nextPhase,
       counts: newCounts,
-      // activePlayers: "déterminer"//todo
+      activePlayers: newActivePlayers,
+      lastWord: word, //only used in waiting phase
     },
   });
 }
