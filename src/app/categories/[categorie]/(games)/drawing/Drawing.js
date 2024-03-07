@@ -34,6 +34,7 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
 
   const guessWordWithData = guessWord.bind(null, userTeam, gameData, roomToken);
   const [state, formAction] = useFormState(guessWordWithData, initialState);
+  const [timeoutId, setTimeoutId] = useState();
 
   useEffect(() => {
     if (!teams) return;
@@ -65,16 +66,20 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
     const get = async () => {
       let timeout;
       if (phase === "drawing") {
-        timeout = setTimeout(async () => {
-          const png = await getPng({ activePlayers, userTeam });
-          // goSearch({ roomToken, gameData });
-          setReceivedImage(png);
-          setHasValidated(true);
-          isAdmin && (await goSearch({ roomToken, gameData }));
-        }, finishCountdownDate - Date.now() + 1000);
+        // timeout = setTimeout(async () => {
+        setTimeoutId(
+          setTimeout(async () => {
+            const png = await getPng({ activePlayers, userTeam });
+            // goSearch({ roomToken, gameData });
+            setReceivedImage(png);
+            setHasValidated(true);
+            isAdmin && (await goSearch({ roomToken, gameData }));
+          }, finishCountdownDate - Date.now() + 1000)
+        );
       }
       if (phase === "sending") {
-        clearTimeout(timeout);
+        // clearTimeout(timeout);
+        clearTimeout(timeoutId);
         // goSearch({ roomToken, gameData });
         const png = await getPng({ activePlayers, userTeam });
         setReceivedImage(png);
@@ -82,7 +87,8 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
         isAdmin && (await goSearch({ roomToken, gameData }));
       }
       return () => {
-        clearTimeout(timeout);
+        // clearTimeout(timeout);
+        clearTimeout(timeoutId);
       };
       // if (phase === "searching") {
       //   const png = await getPng({ activePlayers, userTeam });
