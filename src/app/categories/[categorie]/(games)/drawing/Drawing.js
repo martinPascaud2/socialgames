@@ -32,7 +32,8 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
   const isAdmin = gameData.admin === user.name;
   const isActive = activePlayers?.some((active) => active.name === user.name);
 
-  const [state, formAction] = useFormState(guessWord, initialState);
+  const guessWordWithData = guessWord.bind(null, userTeam, gameData, roomToken);
+  const [state, formAction] = useFormState(guessWordWithData, initialState);
 
   useEffect(() => {
     if (!teams) return;
@@ -80,6 +81,9 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
         setHasValidated(true);
         isAdmin && (await goSearch({ roomToken, gameData }));
       }
+      return () => {
+        clearTimeout(timeout);
+      };
       // if (phase === "searching") {
       //   const png = await getPng({ activePlayers, userTeam });
       //   setReceivedImage(png);
@@ -161,11 +165,7 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
               dessinent !
             </div>
           )}
-          <CountDown
-            finishCountdownDate={finishCountdownDate}
-            // setHasValidated={setHasValidated}
-            onCountdownFinish={() => setHasValidated(true)}
-          />
+          <CountDown finishCountdownDate={finishCountdownDate} />
         </>
       )}
 

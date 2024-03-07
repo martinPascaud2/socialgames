@@ -45,11 +45,17 @@ export async function launchGame({
     team: team[0],
   }));
 
+  const counts = {};
+  Object.keys(teams).forEach(
+    (teamKey) => (counts[teamKey] = { votes: [], points: 0 })
+  );
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
     gameData: {
       admin: startedRoom.admin,
       teams,
+      counts,
       activePlayers,
       phase: "waiting",
       options,
@@ -190,7 +196,80 @@ export async function goSearch({ roomToken, gameData }) {
   });
 }
 
-export async function guessWord(prevState, formData) {
+const removeAccents = (str) =>
+  str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+const formatWord = (guess) => {
+  const lower = guess.toLowerCase();
+  const trim = lower.trim();
+  const noAccent = removeAccents(trim);
+
+  return noAccent;
+};
+
+const compareWords = (word1, word2) => {
+  const formatted1 = formatWord(word1);
+  const formatted2 = formatWord(word2);
+
+  if (formatted1 === formatted2) return true;
+  return false;
+};
+
+export async function guessWord(
+  userTeam,
+  gameData,
+  roomToken,
+  prevState,
+  formData
+) {
   const guess = formData.get("guess");
-  console.log("guess", guess);
+  const { activePlayers, word, teams, counts } = gameData;
+  const isRightAnswer = compareWords(guess, word);
+  const teamCount = counts[userTeam];
+
+  const newVotes = [...teamCount.votes, isRightAnswer ? true : false];
+  const newTeamCount = { ...teamCount, votes: newVotes };
+
+  let newCounts;
+  if (newVotes.length === gameData.teams[userTeam].length - 1) {
+    const isPoint = newVotes.some((vote) => vote);
+    const newPoints = isPoint ? teamCount.points + 1 : teamCount.points;
+    newTeamCount.points = newPoints;
+  } else {
+    // newCounts = { ...counts, [userTeam]: newTeamCount };
+    // nextPhase = "searching";
+  }
+
+  newCounts = { ...counts, [userTeam]: newTeamCount };
+
+  const nextPhase =
+    Object.values(newCounts).reduce(
+      (total, { votes }) => total + votes.length,
+      0
+    ) ===
+    Object.values(teams).reduce((acc, team) => acc + team.length, 0) -
+      Object.keys(teams).length
+      ? "waiting"
+      : "searching";
+
+  console.log("nextPhase", nextPhase);
+
+  if (nextPhase === "waiting") {
+    Object.entries(newCounts).forEach(
+      (count) => (newCounts[count[0]].votes = [])
+    );
+  }
+
+  //activeplayers
+  //alreadysent ?
+  //counts votes
+
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      phase: nextPhase,
+      counts: newCounts,
+      // activePlayers: "déterminer"//todo
+    },
+  });
 }
