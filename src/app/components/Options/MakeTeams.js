@@ -49,7 +49,7 @@ export default function MakeTeams({ setOptions }) {
             setTeamMode("minimum");
           }}
         >
-          Joueurs minimum
+          Joueurs par équipe
         </button>
       </div>
 

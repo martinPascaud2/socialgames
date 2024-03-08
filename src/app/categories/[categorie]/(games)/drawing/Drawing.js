@@ -46,6 +46,7 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
     word,
     finishCountdownDate,
     ended,
+    winners,
   } = gameData;
   const [receivedImage, setReceivedImage] = useState();
   const isAdmin = gameData.admin === user.name;
@@ -65,10 +66,6 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
       })
     );
   }, [teams]);
-
-  console.log("path", path);
-  console.log("svg", svg);
-  console.log("userTeam", userTeam);
 
   useEffect(() => {
     const send = async () => {
@@ -195,7 +192,9 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
                   finishCountdownDate={finishCountdownDate}
                 />
               ) : (
-                <div>Hop ! C&apos;est envoyé ! On attend les autres...</div>
+                <div className="flex justify-center">
+                  Hop ! C&apos;est envoyé ! On attend les autres...
+                </div>
               )}
             </>
           ) : (
@@ -270,6 +269,21 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
             )}
           </div>
         </>
+      )}
+
+      {phase === "ended" && (
+        <div className="flex flex-col items-center">
+          <div>Fin du jeu !</div>
+          <div>Les vainqueurs sont :</div>
+          <div>
+            {winners.map((winner, i) => (
+              <span key={i}>
+                {i > 0 ? (i === winners.length - 1 ? " et " : ", ") : ""}
+                {winner.name}
+              </span>
+            ))}
+          </div>
+        </div>
       )}
 
       {isAdmin ? (

@@ -119,7 +119,6 @@ const getFreeWord = async ({ roomId }) => {
 
 export async function startDrawing({ roomId, roomToken, gameData }) {
   const freeWord = await getFreeWord({ roomId });
-  console.log("freeWord", freeWord);
 
   const finishCountdownDate = Date.now() + gameData.options.countDownTime;
 
@@ -259,14 +258,11 @@ export async function guessWord(
     const isPoint = newVotes.some((vote) => vote);
     const newPoints = isPoint ? teamCount.points + 1 : teamCount.points;
     newTeamCount.points = newPoints;
-  } else {
-    // newCounts = { ...counts, [userTeam]: newTeamCount };
-    // nextPhase = "searching";
   }
 
   newCounts = { ...counts, [userTeam]: newTeamCount };
 
-  const nextPhase =
+  let nextPhase =
     Object.values(newCounts).reduce(
       (total, { votes }) => total + votes.length,
       0
@@ -276,14 +272,20 @@ export async function guessWord(
       ? "waiting"
       : "searching";
 
-  console.log("nextPhase", nextPhase);
-
   let newActivePlayers = [];
+  let winners = [];
   if (nextPhase === "waiting") {
     Object.entries(newCounts).forEach(
       (count) => (newCounts[count[0]].votes = [])
     );
     newActivePlayers = getNextDrawers({ teams, activePlayers });
+
+    const aimPoints = gameData.options.aimPoints;
+    const winnerTeams = Object.entries(newCounts)
+      .filter((count) => count[1].points === aimPoints)
+      .map((winner) => winner[0]);
+    winners = winnerTeams.map((team) => teams[team]).flat();
+    if (winners.length) nextPhase = "ended";
   } else {
     newActivePlayers = activePlayers;
   }
@@ -299,6 +301,8 @@ export async function guessWord(
       counts: newCounts,
       activePlayers: newActivePlayers,
       lastWord: word, //only used in waiting phase
+      winners,
+      ended: nextPhase === "ended",
     },
   });
 }
