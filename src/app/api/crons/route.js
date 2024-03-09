@@ -1,4 +1,7 @@
-export default async function GET(request) {
+import { NextResponse } from "next/server";
+
+export async function GET() {
   console.log("testeererbrtrth");
-  return new Response();
+
+  return NextResponse.json({ ok: true });
 }
