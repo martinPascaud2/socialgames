@@ -1,7 +1,7 @@
 {
   "crons": [
     {
-      "path": "/app/crons/test",
+      "path": "/crons/test",
       "schedule": "* * * * *"
     }
   ]

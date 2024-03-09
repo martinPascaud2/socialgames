@@ -1,3 +1,3 @@
-export async function GET() {
+export default async function GET() {
   console.log("testeererbrtrth");
 }
