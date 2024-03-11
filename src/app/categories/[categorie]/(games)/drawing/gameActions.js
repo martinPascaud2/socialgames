@@ -101,8 +101,8 @@ const getFreeWord = async ({ roomId }) => {
       where: {},
     });
   }
-  const freeWordId = freeWord.id;
 
+  const freeWordId = freeWord.id;
   await Promise.all(
     userIds.map(async (userId) => {
       await prisma.drawingWordsOnUsers.create({
@@ -119,7 +119,6 @@ const getFreeWord = async ({ roomId }) => {
 
 export async function startDrawing({ roomId, roomToken, gameData }) {
   const freeWord = await getFreeWord({ roomId });
-
   const finishCountdownDate = Date.now() + gameData.options.countDownTime;
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
@@ -132,18 +131,7 @@ export async function startDrawing({ roomId, roomToken, gameData }) {
   });
 }
 
-export async function sendImage({
-  imgData,
-  roomId,
-  roomToken,
-  gameData,
-  user,
-}) {
-  const roomData =
-    (await prisma.room.findFirst({ where: { id: roomId } })).gameData || {};
-
-  const pngs = roomData.pngs || {};
-
+export async function sendImage({ imgData, roomToken, gameData, user }) {
   if (user.multiGuest) {
     await prisma.multiguest.upsert({
       where: { id: user.dataId },
@@ -179,6 +167,7 @@ export async function sendImage({
 export async function getPng({ activePlayers, userTeam }) {
   const mate = activePlayers.find((active) => active.team === userTeam);
   let png;
+
   if (mate.multiGuest) {
     png = (
       await prisma.multiguest.findFirst({
@@ -200,8 +189,8 @@ export async function getPng({ activePlayers, userTeam }) {
 
 export async function goSearch({ roomToken, gameData }) {
   const { activePlayers, teams } = gameData;
-
   const activeIds = activePlayers.map((active) => active.id);
+
   const newActivePlayers = Object.entries(teams)
     .map((team) => team[1].map((gamer) => ({ ...gamer, team: team[0] })))
     .flat()
@@ -268,20 +257,19 @@ export async function guessWord(
 ) {
   const guess = formData.get("guess");
   const { activePlayers, word, teams, counts } = gameData;
-  const isRightAnswer = compareWords(guess, word);
   const teamCount = counts[userTeam];
+  const isRightAnswer = compareWords(guess, word);
 
   const newVotes = [...teamCount.votes, isRightAnswer ? true : false];
   const newTeamCount = { ...teamCount, votes: newVotes };
 
-  let newCounts;
   if (newVotes.length === gameData.teams[userTeam].length - 1) {
     const isPoint = newVotes.some((vote) => vote);
     const newPoints = isPoint ? teamCount.points + 1 : teamCount.points;
     newTeamCount.points = newPoints;
   }
 
-  newCounts = { ...counts, [userTeam]: newTeamCount };
+  let newCounts = { ...counts, [userTeam]: newTeamCount };
 
   let nextPhase =
     Object.values(newCounts).reduce(
@@ -310,10 +298,6 @@ export async function guessWord(
   } else {
     newActivePlayers = activePlayers;
   }
-
-  //activeplayers
-  //alreadysent ?
-  //counts votes
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {

@@ -1,13 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import Image from "next/image";
-import Draw from "./Draw";
-import CountDown from "@/components/CountDown";
-import FinishGame from "@/components/FinishGame";
-import EndGame from "@/components/EndGame";
-import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 
 import {
   startDrawing,
@@ -17,26 +12,32 @@ import {
   guessWord,
 } from "./gameActions";
 
+import Draw from "./Draw";
+import CountDown from "@/components/CountDown";
+import FinishGame from "@/components/FinishGame";
+import EndGame from "@/components/EndGame";
+import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
+
 const initialState = {
   message: null,
   status: 100,
 };
 
 export default function Drawing({ roomId, roomToken, user, gameData }) {
-  const [hasValidated, setHasValidated] = useState(false);
-  const [hasProposed, setHasProposed] = useState(false);
-  const [imgData, setImgData] = useState();
-  const [svg, setSvg] = useState();
-  const [path, setPath] = useState();
   const [userTeam, setUserTeam] = useState();
+  const [timeoutId, setTimeoutId] = useState();
+  const [imgData, setImgData] = useState();
+  const [receivedImage, setReceivedImage] = useState();
+  const [hasValidated, setHasValidated] = useState(false);
+  const guessWordWithData = guessWord.bind(null, userTeam, gameData, roomToken);
+  const [state, formAction] = useFormState(guessWordWithData, initialState);
+  const [hasProposed, setHasProposed] = useState(false);
   const [isEnded, setIsEnded] = useState(false);
 
   useEffect(() => {
     if (gameData.ended) setIsEnded(true);
   }, [gameData.ended]);
 
-  //setteams
-  console.log("gameData", gameData);
   const {
     teams,
     counts,
@@ -45,16 +46,10 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
     lastWord,
     word,
     finishCountdownDate,
-    ended,
     winners,
   } = gameData;
-  const [receivedImage, setReceivedImage] = useState();
   const isAdmin = gameData.admin === user.name;
   const isActive = activePlayers?.some((active) => active.name === user.name);
-
-  const guessWordWithData = guessWord.bind(null, userTeam, gameData, roomToken);
-  const [state, formAction] = useFormState(guessWordWithData, initialState);
-  const [timeoutId, setTimeoutId] = useState();
 
   useEffect(() => {
     if (!teams) return;
@@ -72,7 +67,7 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
       isActive &&
         imgData &&
         hasValidated &&
-        (await sendImage({ imgData, roomId, roomToken, gameData, user }));
+        (await sendImage({ imgData, roomToken, gameData, user }));
     };
     send();
   }, [imgData, hasValidated]);
@@ -83,17 +78,13 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
       setReceivedImage();
       setHasValidated(false);
       setHasProposed(false);
-      // setTimeoutId() ??
     }
-    // if (!isAdmin) return;
+
     const get = async () => {
-      let timeout;
       if (phase === "drawing") {
-        // timeout = setTimeout(async () => {
         setTimeoutId(
           setTimeout(async () => {
             const png = await getPng({ activePlayers, userTeam });
-            // goSearch({ roomToken, gameData });
             setReceivedImage(png);
             setHasValidated(true);
             isAdmin && (await goSearch({ roomToken, gameData }));
@@ -101,29 +92,18 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
         );
       }
       if (phase === "sending") {
-        // clearTimeout(timeout);
         clearTimeout(timeoutId);
-        // goSearch({ roomToken, gameData });
         const png = await getPng({ activePlayers, userTeam });
         setReceivedImage(png);
         setHasValidated(true);
         isAdmin && (await goSearch({ roomToken, gameData }));
       }
       return () => {
-        // clearTimeout(timeout);
         clearTimeout(timeoutId);
       };
-      // if (phase === "searching") {
-      //   const png = await getPng({ activePlayers, userTeam });
-      //   setReceivedImage(png);
-      // }
     };
     get();
   }, [phase]);
-
-  console.log("phase", phase);
-  console.log("hasValidated", hasValidated);
-  console.log("imgData", imgData);
 
   return (
     <>
@@ -185,6 +165,7 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
                 Mot à dessiner :
                 <span className="font-semibold">&nbsp;{word}</span>
               </div>
+
               {!hasValidated ? (
                 <Draw
                   setImgData={setImgData}
@@ -210,13 +191,12 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
               dessinent !
             </div>
           )}
+
           <div className="flex justify-center">
             <CountDown finishCountdownDate={finishCountdownDate} />
           </div>
         </>
       )}
-
-      {/* <div>Image envoyé de {newImageFrom}</div> */}
 
       {phase === "searching" && receivedImage && (
         <>
@@ -238,6 +218,7 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
               }}
             />
           </div>
+
           <div className="flex justify-center">
             {isActive ? (
               !hasProposed ? (

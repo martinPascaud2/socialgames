@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ReactSketchCanvas } from "react-sketch-canvas";
+
 import {
   ArrowUturnLeftIcon,
   ArrowUturnRightIcon,
@@ -19,9 +20,6 @@ export default function Draw({
   const colorsRef = useRef(null);
   const [strokeColor, setStrokeColor] = useState("#000000");
   const [eraseMode, setEraseMode] = useState(false);
-  // const [imgData, setImgData] = useState("");
-  // const [svg, setSvg] = useState();
-  // const [path, setPath] = useState();
 
   const handleStrokeWidthChange = (event) => {
     setStrokeWidth(event.target.value);
@@ -56,24 +54,12 @@ export default function Draw({
 
   useEffect(() => {
     const timeout = finishCountdownDate - Date.now();
-    console.log("timeout", timeout);
     const set = setTimeout(() => {
       handleExportImage();
       setHasValidated(true);
     }, timeout);
     return () => clearTimeout(set);
-    // setTimeout(, )
   }, [finishCountdownDate]);
-
-  // useEffect(() => {
-  // const testPath = async () => {
-  // const interval = setInterval(async () => {
-  //   const pathTEST = await canvasRef.current.exportPaths();
-  // console.log("pathTEST", pathTEST);
-  // }, 1000);
-
-  // testPath();
-  // }, []);
 
   return (
     <>
