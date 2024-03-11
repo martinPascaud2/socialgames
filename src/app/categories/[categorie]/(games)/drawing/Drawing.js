@@ -158,7 +158,7 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
 
       <hr />
 
-      {phase === "waiting" && isAdmin && (
+      {phase === "waiting" && (
         <>
           {lastWord && (
             <div className="flex justify-center">
@@ -166,12 +166,14 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
               <span className="font-semibold">&nbsp;{lastWord}</span>
             </div>
           )}
-          <button
-            onClick={() => startDrawing({ roomId, roomToken, gameData })}
-            className="w-full border border-blue-300 bg-blue-100"
-          >
-            Tout le monde est prêt ?
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => startDrawing({ roomId, roomToken, gameData })}
+              className="w-full border border-blue-300 bg-blue-100"
+            >
+              Tout le monde est prêt ?
+            </button>
+          )}
         </>
       )}
 

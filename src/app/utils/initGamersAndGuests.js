@@ -1,3 +1,5 @@
+import genToken from "@/utils/genToken";
+
 export const initGamersAndGuests = ({
   adminId,
   gamers,
@@ -30,6 +32,7 @@ export const initGamersAndGuests = ({
       name: multiGuest,
       guest: false,
       multiGuest: true,
+      dataId: genToken(5),
     });
     startIndex++;
   });

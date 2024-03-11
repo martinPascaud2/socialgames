@@ -55,6 +55,7 @@ export default function Room({
   const [newGuest, setNewGuest] = useState("");
   const refGuest = useRef();
   const [multiGuestId, setMultiGuestId] = useState();
+  const [multiGuestDataId, setMultiGuestDataId] = useState();
   const [uniqueName, setUniqueName] = useState("");
   const [deletedGamer, setDeletedGamer] = useState(null);
 
@@ -295,9 +296,12 @@ export default function Room({
   useEffect(() => {
     user.multiGuest &&
       gameData.gamers &&
-      setMultiGuestId(
+      (setMultiGuestId(
         gameData.gamers.find((gamer) => gamer.name === uniqueName).id
-      );
+      ),
+      setMultiGuestDataId(
+        gameData.gamers.find((gamer) => gamer.name === uniqueName).dataId
+      ));
   }, [isStarted, gameData, user, uniqueName]);
 
   useEffect(() => {
@@ -761,6 +765,7 @@ export default function Room({
           ...user,
           name: uniqueName,
           ...(!!multiGuestId ? { id: multiGuestId } : {}),
+          ...(!!multiGuestDataId ? { dataId: multiGuestDataId } : {}),
         }}
         gameData={gameData}
       />

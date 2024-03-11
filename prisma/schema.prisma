@@ -28,6 +28,11 @@ model User {
   alreadyDrawingWords    DrawingWordsOnUsers[]
 }
 
+model Multiguest {
+  id  String @id
+  png String @default("") @db.Text
+}
+
 model Friend {
   id         Int     @id @default(autoincrement())
   user       User    @relation("userFriends", fields: [userId], references: [id])

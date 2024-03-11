@@ -144,10 +144,21 @@ export async function sendImage({
 
   const pngs = roomData.pngs || {};
 
-  await prisma.user.update({
-    where: { id: user.id },
-    data: { png: imgData },
-  });
+  if (user.multiGuest) {
+    await prisma.multiguest.upsert({
+      where: { id: user.dataId },
+      update: { png: imgData },
+      create: {
+        id: user.dataId,
+        png: imgData,
+      },
+    });
+  } else {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { png: imgData },
+    });
+  }
 
   const alreadySent = gameData.alreadySent || 0;
   const newAlreadySent = alreadySent + 1;
@@ -167,12 +178,22 @@ export async function sendImage({
 
 export async function getPng({ activePlayers, userTeam }) {
   const mate = activePlayers.find((active) => active.team === userTeam);
-  const png = (
-    await prisma.user.findFirst({
-      where: { id: mate.id },
-      select: { png: true },
-    })
-  ).png;
+  let png;
+  if (mate.multiGuest) {
+    png = (
+      await prisma.multiguest.findFirst({
+        where: { id: mate.dataId },
+        select: { png: true },
+      })
+    ).png;
+  } else {
+    png = (
+      await prisma.user.findFirst({
+        where: { id: mate.id },
+        select: { png: true },
+      })
+    ).png;
+  }
 
   return png;
 }
