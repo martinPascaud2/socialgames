@@ -3,6 +3,81 @@
 import { makeTeams, makeMinimalTeams } from "@/utils/makeTeams";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 
+const getFreeWords = async ({ gamers }) => {
+  const userIds = gamers.map((gamer) => gamer.id);
+
+  const alreadyWords = await prisma.drawingWordsOnUsers.findMany({
+    where: { userId: { in: userIds } },
+    select: { drawingWordId: true },
+  });
+  const alreadyWordsIds = [
+    ...new Set(alreadyWords.map((word) => word.drawingWordId)),
+  ];
+
+  let freeWords = await prisma.drawingWord.findMany({
+    where: {
+      NOT: {
+        id: { in: alreadyWordsIds },
+      },
+    },
+    take: gamers.length,
+  });
+  const freeWordsIds = [...new Set(freeWords.map((free) => free.id))];
+
+  await Promise.all(
+    userIds.map(async (userId) => {
+      await Promise.all(
+        freeWordsIds.map(async (freeWordId) => {
+          await prisma.drawingWordsOnUsers.create({
+            data: {
+              user: { connect: { id: userId } },
+              drawingWord: { connect: { id: freeWordId } },
+            },
+          });
+        })
+      );
+    })
+  );
+
+  const missingWords = gamers.length - freeWordsIds.length;
+  if (missingWords !== 0) {
+    await prisma.drawingWordsOnUsers.deleteMany({
+      where: {
+        userId: { in: userIds },
+      },
+    });
+  }
+
+  const addedWords = await prisma.drawingWord.findMany({
+    where: {
+      NOT: {
+        id: { in: freeWordsIds },
+      },
+    },
+    take: missingWords,
+  });
+  const addedWordsIds = [...new Set(addedWords.map((added) => added.id))];
+
+  await Promise.all(
+    userIds.map(async (userId) => {
+      await Promise.all(
+        addedWordsIds.map(async (addedWordId) => {
+          await prisma.drawingWordsOnUsers.create({
+            data: {
+              user: { connect: { id: userId } },
+              drawingWord: { connect: { id: addedWordId } },
+            },
+          });
+        })
+      );
+    })
+  );
+
+  const words = [...freeWords, ...addedWords];
+  const wordList = words.map((word) => word.word);
+  return wordList;
+};
+
 export async function launchGame({
   roomId,
   roomToken,
@@ -50,6 +125,17 @@ export async function launchGame({
     (teamKey) => (counts[teamKey] = { votes: [], points: 0 })
   );
 
+  let words = [];
+  if (options.mode === "chain") {
+    const wordList = await getFreeWords({ gamers: gamersAndGuests });
+    gamersAndGuests.map((gamer, i) => {
+      words.push({
+        word: wordList[i],
+        DCuserID: gamer.multiGuest ? gamer.dataId : gamer.id,
+      });
+    });
+  }
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
     gameData: {
@@ -59,6 +145,7 @@ export async function launchGame({
       counts,
       activePlayers,
       phase: "waiting",
+      words,
       options,
     },
   });
