@@ -132,9 +132,12 @@ export async function launchGame({
       words.push({
         word: wordList[i],
         DCuserID: gamer.multiGuest ? gamer.dataId : gamer.id,
+        multiGuest: gamer.multiGuest,
       });
     });
   }
+  // const isChainShow =
+  //   options.mode === "chain" && gamersAndGuests.length % 2 === 1;
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
@@ -145,6 +148,10 @@ export async function launchGame({
       counts,
       activePlayers,
       phase: "waiting",
+      // phase: isChainShow ? "showing" : "waiting",
+      // turn:
+      //   options.mode === "chain" && gamersAndGuests.length % 2 === 1 ? 1 : 0,
+      turn: 0,
       words,
       options,
     },
@@ -397,4 +404,126 @@ export async function guessWord(
       ended: nextPhase === "ended",
     },
   });
+}
+
+export async function goNextPhase({ roomToken, gameData, full = false }) {
+  const { phase, gamers, turn } = gameData;
+
+  let nextPhase = "";
+  let validated;
+  let newTurn = turn;
+  switch (phase) {
+    case "waiting":
+      validated = (gameData.validated || 0) + 1;
+      if (validated === gamers.length || full) {
+        nextPhase = "drawing";
+        validated = 0;
+        newTurn += 1;
+      } else {
+        nextPhase = "waiting";
+      }
+      break;
+    case "drawing":
+      nextPhase = "guessing";
+      break;
+    default:
+  }
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      phase: nextPhase,
+      validated,
+      turn: newTurn,
+    },
+  });
+}
+
+export async function initChain({ userName, chainRef }) {
+  const { word, DCuserID, multiGuest } = chainRef;
+
+  if (!multiGuest) {
+    await prisma.user.update({
+      where: { id: DCuserID },
+      data: {
+        drawChain: { deleteMany: {} },
+      },
+    });
+    await prisma.user.update({
+      where: { id: DCuserID },
+      data: {
+        drawChain: {
+          create: [
+            {
+              userName,
+              data: word,
+              type: "word",
+            },
+          ],
+        },
+      },
+    });
+  } else {
+    await prisma.multiguest.update({
+      where: { id: DCuserID },
+      data: {
+        drawChain: { deleteMany: {} },
+      },
+    });
+    await prisma.multiGuest.update({
+      where: { id: DCuserID },
+      data: {
+        drawChain: {
+          create: [
+            {
+              userName,
+              data: word,
+              type: "word",
+            },
+          ],
+        },
+      },
+    });
+  }
+}
+
+export async function addLink({ userName, chainRef, data, type }) {
+  const { word, DCuserID, multiGuest } = chainRef;
+  console.log("userName", userName);
+  console.log("chainRef", chainRef);
+  console.log("data", data);
+  console.log("type", type);
+
+  if (!multiGuest) {
+    const user = await prisma.user.update({
+      where: { id: DCuserID },
+      data: {
+        drawChain: {
+          create: {
+            userName,
+            data,
+            type,
+          },
+        },
+      },
+      include: {
+        drawChain: true,
+      },
+    });
+  } else {
+    const multiguest = await prisma.multiGuest.update({
+      where: { id: DCuserID },
+      data: {
+        drawChain: {
+          create: {
+            userName,
+            data,
+            type,
+          },
+        },
+      },
+      include: {
+        drawChain: true,
+      },
+    });
+  }
 }
