@@ -122,7 +122,7 @@ model DrawingWordsOnUsers {
 model DrawLink {
   id           Int         @id @default(autoincrement())
   userName     String
-  data         String
+  data         String      @default("") @db.Text
   type         String
   User         User?       @relation(fields: [userId], references: [id])
   userId       Int?

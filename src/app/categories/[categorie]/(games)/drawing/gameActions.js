@@ -3,6 +3,8 @@
 import { makeTeams, makeMinimalTeams } from "@/utils/makeTeams";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 
+import prisma from "@/utils/prisma";
+
 const getFreeWords = async ({ gamers }) => {
   const userIds = gamers.map((gamer) => gamer.id);
 
@@ -408,6 +410,7 @@ export async function guessWord(
 
 export async function goNextPhase({ roomToken, gameData, full = false }) {
   const { phase, gamers, turn } = gameData;
+  let newFinishCountdownDate = gameData.finishCountdownDate;
 
   let nextPhase = "";
   let validated;
@@ -419,12 +422,30 @@ export async function goNextPhase({ roomToken, gameData, full = false }) {
         nextPhase = "drawing";
         validated = 0;
         newTurn += 1;
+        newFinishCountdownDate = Date.now() + gameData.options.countDownTime;
       } else {
         nextPhase = "waiting";
       }
       break;
     case "drawing":
-      nextPhase = "guessing";
+      validated = gameData.validated + 1;
+      if (validated === gamers.length || full) {
+        nextPhase = "guessing";
+        validated = 0;
+        newTurn += 1;
+      } else {
+        nextPhase = "drawing";
+      }
+      break;
+    case "guessing":
+      validated = gameData.validated + 1;
+      if (validated === gamers.length || full) {
+        nextPhase = "drawing";
+        validated = 0;
+        newTurn += 1;
+      } else {
+        nextPhase = "guessing";
+      }
       break;
     default:
   }
@@ -434,6 +455,7 @@ export async function goNextPhase({ roomToken, gameData, full = false }) {
       phase: nextPhase,
       validated,
       turn: newTurn,
+      finishCountdownDate: newFinishCountdownDate,
     },
   });
 }
@@ -442,13 +464,14 @@ export async function initChain({ userName, chainRef }) {
   const { word, DCuserID, multiGuest } = chainRef;
 
   if (!multiGuest) {
-    await prisma.user.update({
+    const user = await prisma.user.update({
       where: { id: DCuserID },
       data: {
         drawChain: { deleteMany: {} },
       },
     });
-    await prisma.user.update({
+    console.log("user là", user);
+    const userlala = await prisma.user.update({
       where: { id: DCuserID },
       data: {
         drawChain: {
@@ -462,6 +485,7 @@ export async function initChain({ userName, chainRef }) {
         },
       },
     });
+    console.log("userlala", userlala);
   } else {
     await prisma.multiguest.update({
       where: { id: DCuserID },
@@ -486,12 +510,20 @@ export async function initChain({ userName, chainRef }) {
   }
 }
 
-export async function addLink({ userName, chainRef, data, type }) {
+export async function addLink({
+  userName,
+  chainRef,
+  data,
+  type,
+  roomToken,
+  gameData,
+}) {
   const { word, DCuserID, multiGuest } = chainRef;
   console.log("userName", userName);
   console.log("chainRef", chainRef);
   console.log("data", data);
   console.log("type", type);
+  console.log("gameData addlink", gameData);
 
   if (!multiGuest) {
     const user = await prisma.user.update({
@@ -526,4 +558,21 @@ export async function addLink({ userName, chainRef, data, type }) {
       },
     });
   }
+
+  await goNextPhase({ roomToken, gameData });
+}
+
+export async function getLastLink({ chainRef }) {
+  //manage multiguest
+
+  const lastDrawLink = await prisma.user.findUnique({
+    where: { id: chainRef.DCuserID },
+    select: {
+      drawChain: {
+        orderBy: { id: "desc" },
+        take: 1,
+      },
+    },
+  });
+  return lastDrawLink.drawChain[0];
 }
