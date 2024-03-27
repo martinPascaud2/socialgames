@@ -46,6 +46,7 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
     };
     send();
   }, [data, hasValidated]);
+  // }, [hasValidated]);
 
   useEffect(() => {
     if (turn !== 0 || !chainRef) return;
@@ -67,11 +68,20 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
     setChainIndex(newChainIndex);
     const newChainRef = words[newChainIndex];
     setChainRef(newChainRef);
+
+    setGuess("");
+    setData();
     setHasValidated(false);
   }, [turn]);
 
   useEffect(() => {
-    if (typeof chainIndex === "undefined" || !chainRef || turn === 0) return;
+    if (
+      typeof chainIndex === "undefined" ||
+      !chainRef ||
+      turn === 0 ||
+      hasValidated
+    )
+      return;
     console.log("chiffre 555555");
 
     const getLast = async () => {
@@ -97,19 +107,27 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
       };
     };
     manageDrawing();
+
+    setGuess("");
+    setData();
+    setHasValidated(false);
+
     // }, [turn]);
   }, [chainRef]);
 
-  console.log("user", user);
-  console.log("gameData", gameData);
-  console.log("chainIndex", chainIndex);
-  console.log("chainRef", chainRef);
-  console.log("lastLink", lastLink);
-  console.log("chainIndex", chainIndex);
-  console.log("chainRef", chainRef);
-  console.log("lastLink", lastLink);
+  // console.log("user", user);
+  // console.log("gameData", gameData);
+  // console.log("chainIndex", chainIndex);
+  // console.log("chainRef", chainRef);
+  // console.log("lastLink", lastLink);
+  // console.log("chainIndex", chainIndex);
+  // console.log("chainRef", chainRef);
+  // console.log("lastLink", lastLink);
   console.log("data", data);
   console.log("hasValidated", hasValidated);
+  console.log("turn", turn);
+  console.log("phase", phase);
+  console.log("timeoutId", timeoutId);
 
   return (
     <>
@@ -155,7 +173,7 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
         </>
       )}
 
-      {phase === "drawing" && (
+      {phase === "drawing" && lastLink?.type === "word" && (
         <>
           {!hasValidated ? (
             <>
@@ -185,51 +203,53 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
         </>
       )}
 
-      {phase === "guessing" && lastLink.type === "draw" && (
-        <>
-          <div
-            style={{
-              position: "relative",
-              width: "auto",
-              height: "50vh",
-              // left: "5vw",
-            }}
-          >
-            <Image
-              src={lastLink.data}
-              alt="drawing-png"
-              // sizes="500px"
-              fill
+      {phase === "guessing" &&
+        lastLink?.type === "draw" &&
+        lastLink?.data.startsWith("data:image") && (
+          <>
+            <div
               style={{
-                objectFit: "contain",
+                position: "relative",
+                width: "auto",
+                height: "50vh",
+                // left: "5vw",
               }}
-            />
-          </div>
-          {!hasValidated ? (
-            <>
-              <div>Qu&apos;est-ce que ça représente ???</div>
-              <input
-                type="text"
-                value={guess}
-                onChange={(e) => setGuess(e.target.value)}
-                className="border focus:outline-none focus:border-2"
-              />
-
-              <button
-                onClick={() => {
-                  setData(guess);
-                  setHasValidated(true);
+            >
+              <Image
+                src={lastLink.data}
+                alt="drawing-png"
+                // sizes="500px"
+                fill
+                style={{
+                  objectFit: "contain",
                 }}
-                className="border border-blue-300 bg-blue-100"
-              >
-                Envoi
-              </button>
-            </>
-          ) : (
-            <div>Envoyé ! On attend les autres...</div>
-          )}
-        </>
-      )}
+              />
+            </div>
+            {!hasValidated ? (
+              <>
+                <div>Qu&apos;est-ce que ça représente ???</div>
+                <input
+                  type="text"
+                  value={guess}
+                  onChange={(e) => setGuess(e.target.value)}
+                  className="border focus:outline-none focus:border-2"
+                />
+
+                <button
+                  onClick={() => {
+                    setData(guess);
+                    setHasValidated(true);
+                  }}
+                  className="border border-blue-300 bg-blue-100"
+                >
+                  Envoi
+                </button>
+              </>
+            ) : (
+              <div>Envoyé ! On attend les autres...</div>
+            )}
+          </>
+        )}
     </>
   );
 }

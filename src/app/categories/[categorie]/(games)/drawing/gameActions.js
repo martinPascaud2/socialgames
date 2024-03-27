@@ -443,6 +443,7 @@ export async function goNextPhase({ roomToken, gameData, full = false }) {
         nextPhase = "drawing";
         validated = 0;
         newTurn += 1;
+        newFinishCountdownDate = Date.now() + gameData.options.countDownTime;
       } else {
         nextPhase = "guessing";
       }
@@ -519,11 +520,11 @@ export async function addLink({
   gameData,
 }) {
   const { word, DCuserID, multiGuest } = chainRef;
-  console.log("userName", userName);
-  console.log("chainRef", chainRef);
-  console.log("data", data);
-  console.log("type", type);
-  console.log("gameData addlink", gameData);
+  // console.log("userName", userName);
+  // console.log("chainRef", chainRef);
+  // console.log("data", data);
+  // console.log("type", type);
+  // console.log("gameData addlink", gameData);
 
   if (!multiGuest) {
     const user = await prisma.user.update({
@@ -541,6 +542,7 @@ export async function addLink({
         drawChain: true,
       },
     });
+    console.log("user addLink", user);
   } else {
     const multiguest = await prisma.multiGuest.update({
       where: { id: DCuserID },
