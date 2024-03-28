@@ -13,6 +13,13 @@ export const subCategories = {
   grouping: [{ name: "grouping", path: "grouping" }],
   categorie1: [
     {
+      name: "Uno",
+      path: "uno",
+      img: "/uno.jpeg",
+      description:
+        "Pour gagner une manche de Uno, il faut être le premier joueur à se défausser de la dernière carte de sa main. La manche s'arrête alors (après les pioches de cartes éventuelles), et l'on compte les points. Le jeu continue, manche par manche, jusqu'à ce qu'un joueur atteigne 500 points.",
+    },
+    {
       name: "Dessin",
       path: "drawing",
       img: "/esquisse.jpg",
@@ -53,7 +60,6 @@ export const subCategories = {
       description:
         "Découvrez l’unique symbole identique entre deux cartes... avant les autres !",
     },
-    { name: "game7", path: "uno", img: "/uno.jpeg" },
     { name: "game8", path: "uno", img: "/uno.jpeg" },
   ],
   categorie2: [
@@ -73,4 +79,5 @@ export const gamesRefs = {
   memory: { name: "Memory", categorie: "categorie1" },
   ptitbac: { name: "P'tit bac", categorie: "categorie1" },
   drawing: { name: "Dessin", categorie: "categorie1" },
+  uno: { name: "Uno", categorie: "categorie1" },
 };
