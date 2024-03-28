@@ -3,7 +3,14 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 
-import { goNextPhase, initChain, addLink, getLastLink } from "./gameActions";
+import {
+  goNextPhase,
+  initChain,
+  addLink,
+  getLastLink,
+  goNextShow,
+  getNextLink,
+} from "./gameActions";
 
 import Draw from "./Draw";
 import CountDown from "@/components/CountDown";
@@ -21,19 +28,24 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
   const [hasValidated, setHasValidated] = useState(false);
   const [timeoutId, setTimeoutId] = useState();
 
+  const [showedGamer, setShowedGamer] = useState("");
+  const [showedLinks, setShowedLinks] = useState([]);
+  const [isShower, setIsShower] = useState(false);
+
   useEffect(() => {
     if (turn !== 0) return;
-    console.log("chiffre 11111111", words);
+
     const index = user.multiGuest
       ? words.findIndex((word) => word.DCuserID === user.dataId)
       : words.findIndex((word) => word.DCuserID === user.id);
+
     setChainIndex(index);
     setChainRef(words[index]);
   }, [words, user]);
 
   useEffect(() => {
     if (!data || !hasValidated) return;
-    console.log("chiffre 2222222");
+
     const send = async () => {
       await addLink({
         userName: user.name,
@@ -46,11 +58,10 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
     };
     send();
   }, [data, hasValidated]);
-  // }, [hasValidated]);
 
   useEffect(() => {
     if (turn !== 0 || !chainRef) return;
-    console.log("chiffre 333333");
+
     const addFirstLink = async () => {
       await initChain({
         userName: user.name,
@@ -62,7 +73,7 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
 
   useEffect(() => {
     if (turn === 0) return;
-    console.log("chiffre 44444");
+
     const newChainIndex =
       isEven && turn === 1 ? chainIndex : (chainIndex + 1) % words.length;
     setChainIndex(newChainIndex);
@@ -82,7 +93,6 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
       hasValidated
     )
       return;
-    console.log("chiffre 555555");
 
     const getLast = async () => {
       const newLastLink = await getLastLink({ chainRef });
@@ -98,10 +108,8 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
           }, finishCountdownDate - Date.now() + 2000)
         );
       } else {
-        console.log("clear");
         clearTimeout(timeoutId);
       }
-
       return () => {
         clearTimeout(timeoutId);
       };
@@ -111,27 +119,32 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
     setGuess("");
     setData();
     setHasValidated(false);
-
-    // }, [turn]);
   }, [chainRef]);
 
-  // console.log("user", user);
-  // console.log("gameData", gameData);
-  // console.log("chainIndex", chainIndex);
-  // console.log("chainRef", chainRef);
-  // console.log("lastLink", lastLink);
-  // console.log("chainIndex", chainIndex);
-  // console.log("chainRef", chainRef);
-  // console.log("lastLink", lastLink);
-  console.log("data", data);
-  console.log("hasValidated", hasValidated);
-  console.log("turn", turn);
-  console.log("phase", phase);
-  console.log("timeoutId", timeoutId);
+  useEffect(() => {
+    if (!phase.startsWith("showing")) return;
+
+    const [, showedGamerIndex, showedLinkIndex] = phase
+      .split("-")
+      .map((index) => parseInt(index));
+    setShowedGamer(gamers[showedGamerIndex].name);
+
+    const shower = words[showedGamerIndex];
+    if (shower.DCuserID === user.id) setIsShower(true);
+    else setIsShower(false);
+
+    const get = async () => {
+      const newLink = await getNextLink({ shower, showedLinkIndex });
+      if (showedLinkIndex === 1) setShowedLinks([newLink]);
+      else setShowedLinks([...showedLinks, newLink]);
+    };
+    get();
+  }, [phase]);
 
   return (
     <>
-      <div>mode chaîné</div>
+      <div>Esquissé</div>
+
       {phase === "waiting" && (
         <>
           {!isEven ? (
@@ -250,6 +263,65 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
             )}
           </>
         )}
+
+      {phase.startsWith("showing") && (
+        <>
+          <div>Chaîne de {showedGamer}</div>
+
+          {showedLinks && (
+            <div>
+              {showedLinks.map((link) => (
+                <>
+                  {link.type === "draw" ? (
+                    <>
+                      <div>Dessin de {link.userName}</div>
+                      <div
+                        style={{
+                          position: "relative",
+                          width: "auto",
+                          height: "50vh",
+                          // left: "5vw",
+                        }}
+                      >
+                        <Image
+                          src={link.data}
+                          alt="drawing-png"
+                          // sizes="500px"
+                          fill
+                          style={{
+                            objectFit: "contain",
+                          }}
+                        />
+                      </div>
+                    </>
+                  ) : showedGamer !== link.userName ? (
+                    <div>
+                      {link.userName} pense qu&apos;il s&apos;agit de :{" "}
+                      {link.data}
+                    </div>
+                  ) : (
+                    <div>
+                      Et il s&apos;agissait de :{" "}
+                      <span className="font-semibold">{link.data}</span>
+                    </div>
+                  )}
+                </>
+              ))}
+            </div>
+          )}
+
+          {isShower && (
+            <button
+              onClick={() => {
+                goNextShow({ roomToken, gameData });
+              }}
+              className="border border-blue-300 bg-blue-100"
+            >
+              Afficher la suite
+            </button>
+          )}
+        </>
+      )}
     </>
   );
 }

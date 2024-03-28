@@ -15,8 +15,8 @@ export default function DrawingOptions({ setOptions }) {
     setOptions((options) => ({ ...options, mode }));
 
     setModeList([
-      { mode: "team", text: "Par équipes" },
-      { mode: "chain", text: "Chaîné (esquissé)" },
+      { mode: "team", text: "Pictionary" },
+      { mode: "chain", text: "Esquissé" },
     ]);
   }, [mode, setOptions]);
 

@@ -1,9 +1,9 @@
 "use server";
 
+import prisma from "@/utils/prisma";
+
 import { makeTeams, makeMinimalTeams } from "@/utils/makeTeams";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
-
-import prisma from "@/utils/prisma";
 
 const getFreeWords = async ({ gamers }) => {
   const userIds = gamers.map((gamer) => gamer.id);
@@ -411,10 +411,11 @@ export async function guessWord(
 export async function goNextPhase({ roomToken, gameData, full = false }) {
   const { phase, gamers, turn } = gameData;
   let newFinishCountdownDate = gameData.finishCountdownDate;
-
   let nextPhase = "";
   let validated;
   let newTurn = turn;
+  let nextShowedLink;
+
   switch (phase) {
     case "waiting":
       validated = (gameData.validated || 0) + 1;
@@ -440,16 +441,22 @@ export async function goNextPhase({ roomToken, gameData, full = false }) {
     case "guessing":
       validated = gameData.validated + 1;
       if (validated === gamers.length || full) {
-        nextPhase = "drawing";
-        validated = 0;
+        const even = gamers.length % 2 === 0 ? 1 : 0;
         newTurn += 1;
-        newFinishCountdownDate = Date.now() + gameData.options.countDownTime;
+        if (newTurn === gamers.length + even) {
+          nextPhase = "showing-0-1";
+        } else {
+          nextPhase = "drawing";
+          validated = 0;
+          newFinishCountdownDate = Date.now() + gameData.options.countDownTime;
+        }
       } else {
         nextPhase = "guessing";
       }
       break;
     default:
   }
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
@@ -457,6 +464,7 @@ export async function goNextPhase({ roomToken, gameData, full = false }) {
       validated,
       turn: newTurn,
       finishCountdownDate: newFinishCountdownDate,
+      nextShowedLink,
     },
   });
 }
@@ -465,14 +473,14 @@ export async function initChain({ userName, chainRef }) {
   const { word, DCuserID, multiGuest } = chainRef;
 
   if (!multiGuest) {
-    const user = await prisma.user.update({
+    await prisma.user.update({
       where: { id: DCuserID },
       data: {
         drawChain: { deleteMany: {} },
       },
     });
-    console.log("user là", user);
-    const userlala = await prisma.user.update({
+
+    await prisma.user.update({
       where: { id: DCuserID },
       data: {
         drawChain: {
@@ -486,7 +494,6 @@ export async function initChain({ userName, chainRef }) {
         },
       },
     });
-    console.log("userlala", userlala);
   } else {
     await prisma.multiguest.update({
       where: { id: DCuserID },
@@ -494,6 +501,7 @@ export async function initChain({ userName, chainRef }) {
         drawChain: { deleteMany: {} },
       },
     });
+
     await prisma.multiGuest.update({
       where: { id: DCuserID },
       data: {
@@ -519,15 +527,10 @@ export async function addLink({
   roomToken,
   gameData,
 }) {
-  const { word, DCuserID, multiGuest } = chainRef;
-  // console.log("userName", userName);
-  // console.log("chainRef", chainRef);
-  // console.log("data", data);
-  // console.log("type", type);
-  // console.log("gameData addlink", gameData);
+  const { DCuserID, multiGuest } = chainRef;
 
   if (!multiGuest) {
-    const user = await prisma.user.update({
+    await prisma.user.update({
       where: { id: DCuserID },
       data: {
         drawChain: {
@@ -537,14 +540,10 @@ export async function addLink({
             type,
           },
         },
-      },
-      include: {
-        drawChain: true,
       },
     });
-    console.log("user addLink", user);
   } else {
-    const multiguest = await prisma.multiGuest.update({
+    await prisma.multiGuest.update({
       where: { id: DCuserID },
       data: {
         drawChain: {
@@ -554,9 +553,6 @@ export async function addLink({
             type,
           },
         },
-      },
-      include: {
-        drawChain: true,
       },
     });
   }
@@ -565,16 +561,98 @@ export async function addLink({
 }
 
 export async function getLastLink({ chainRef }) {
-  //manage multiguest
+  let lastDrawLink;
 
-  const lastDrawLink = await prisma.user.findUnique({
-    where: { id: chainRef.DCuserID },
-    select: {
-      drawChain: {
-        orderBy: { id: "desc" },
-        take: 1,
+  if (!chainRef.multiGuest) {
+    lastDrawLink = await prisma.user.findUnique({
+      where: { id: chainRef.DCuserID },
+      select: {
+        drawChain: {
+          orderBy: { id: "desc" },
+          take: 1,
+        },
       },
+    });
+  } else {
+    lastDrawLink = await prisma.multiguest.findUnique({
+      where: { id: chainRef.DCuserID },
+      select: {
+        drawChain: {
+          orderBy: { id: "desc" },
+          take: 1,
+        },
+      },
+    });
+  }
+
+  return lastDrawLink.drawChain[0];
+}
+
+export async function goNextShow({ roomToken, gameData }) {
+  const { phase, gamers } = gameData;
+  let nextPhase;
+  let [, gamerIndex, showedIndex] = phase
+    .split("-")
+    .map((index) => parseInt(index));
+  const even = gamers.length % 2 === 0 ? 1 : 0;
+
+  if (showedIndex === 0) {
+    gamerIndex += 1;
+    showedIndex = 1;
+  } else {
+    showedIndex += 1;
+    if (showedIndex === gamers.length + even) {
+      showedIndex = 0;
+    }
+  }
+
+  if (gamerIndex > gamers.length - 1) {
+    nextPhase = "ended";
+  } else {
+    nextPhase = `showing-${gamerIndex}-${showedIndex}`;
+  }
+
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      phase: nextPhase,
+      ended: nextPhase === "ended",
     },
   });
-  return lastDrawLink.drawChain[0];
+}
+
+export async function getNextLink({ shower, showedLinkIndex }) {
+  let newLink;
+
+  if (!shower.multiGuest) {
+    newLink = (
+      await prisma.user.findUnique({
+        where: {
+          id: shower.DCuserID,
+        },
+        select: {
+          drawChain: {
+            skip: showedLinkIndex,
+            take: 1,
+          },
+        },
+      })
+    ).drawChain[0];
+  } else {
+    newLink = (
+      await prisma.multiguest.findUnique({
+        where: {
+          id: shower.DCuserID,
+        },
+        select: {
+          drawChain: {
+            skip: showedLinkIndex,
+            take: 1,
+          },
+        },
+      })
+    ).drawChain[0];
+  }
+
+  return newLink;
 }
