@@ -26,6 +26,33 @@ const ITEM_TYPES = {
   BOIS: "BOIS",
 };
 
+const data = {
+  FEU: {
+    type: "FEU",
+    text: "C'est du feu",
+  },
+  TERRE: {
+    type: "TERRE",
+    text: "C'est de la terre",
+  },
+  AIR: {
+    type: "AIR",
+    text: "C'est de l'air",
+  },
+  EAU: {
+    type: "EAU",
+    text: "C'est de l'eau",
+  },
+  METAL: {
+    type: "METAL",
+    text: "C'est du métal",
+  },
+  BOIS: {
+    type: "BOIS",
+    text: "C'est du bois",
+  },
+};
+
 const HTML5toTouch = {
   backends: [
     {
@@ -47,6 +74,7 @@ const StageItem = ({
   type,
   id,
   index,
+  text,
   moveItem,
   isNewItemAdding,
   onNewAddingItemProps,
@@ -140,6 +168,7 @@ const StageItem = ({
       onClick={onClick}
     >
       {type}
+      {text}
     </div>
   );
 };
@@ -157,10 +186,10 @@ const generatePreview = (props) => {
   );
 };
 
-const HandCard = ({ itemType, onClick, onNewItemAdding }) => {
+const HandCard = ({ itemType, text, onClick, onNewItemAdding }) => {
   const [{ isDragging }, dragRef] = useDrag({
     type: itemType,
-    item: { type: itemType },
+    item: { type: itemType, text },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -185,29 +214,37 @@ const HandCard = ({ itemType, onClick, onNewItemAdding }) => {
           border: "none",
         }}
       >
-        {itemType}
+        <div>{itemType}</div>
+        <div>{text}</div>
       </div>
     </div>
   );
 };
 
-const Hand = ({ addNewItem, onNewItemAdding, selectedItem }) => {
+const Hand = ({ addNewItem, onNewItemAdding, selectedItem, gamerItems }) => {
   const HandCards = useMemo(
     () =>
-      Object.keys(ITEM_TYPES).map((itemType) => {
+      //   Object.keys(ITEM_TYPES).map((itemType) => {
+
+      Object.values(gamerItems).map((item) => {
         return (
           <HandCard
-            key={itemType}
+            // key={itemType}
+            key={item.type}
             type="button"
-            itemType={itemType}
-            onClick={() => addNewItem(itemType, selectedItem?.index, true)}
+            itemType={item.type}
+            text={item.text}
+            // onClick={() => addNewItem(itemType, selectedItem?.index, true)}
+            onClick={() =>
+              addNewItem(item.type, item.text, selectedItem?.index, true)
+            }
             onNewItemAdding={onNewItemAdding}
             style={{
               display: "flex",
               margin: "10px",
             }}
           >
-            {itemType}
+            {item.text}
           </HandCard>
         );
       }),
@@ -274,13 +311,15 @@ const Stage = ({
 
   const memoItems = useMemo(() => {
     return stageItems?.map((item, index) => {
-      const { id, type } = item;
+      const { id, type, text } = item;
       return (
         <StageItem
           //   key={`id_${index}`}
-          key={id}
+          //   key={id}
+          key={index}
           index={index}
           type={type}
+          text={text}
           id={id}
           moveItem={moveItem}
           isNewItemAdding={isNewItemAdding}
@@ -301,10 +340,10 @@ const Stage = ({
   const [{ isOver, draggingItemType }, dropRef] = useDrop({
     accept: Object.keys(ITEM_TYPES),
     drop: (droppedItem) => {
-      const { type, id } = droppedItem;
+      const { id, type, text } = droppedItem;
       if (!id) {
         // a new item added
-        addNewItem(type, hoveredIndex, shouldAddBelow);
+        addNewItem(type, text, hoveredIndex, shouldAddBelow);
       } else {
         // the result of sorting is applying the mock data
         setItems(stageItems);
@@ -358,18 +397,18 @@ const Stage = ({
   );
 };
 
-const DND = () => {
+const DND = ({ gamerItems }) => {
   const [items, setItems] = useState([]);
 
   const [isNewItemAdding, setNewItemAdding] = useState(false);
   const [selectedItem, setSelectedItem] = useState({});
 
   const handleAddNewItem = useCallback(
-    (type, hoveredIndex = items.length, shouldAddBelow = true) => {
+    (type, text, hoveredIndex = items.length, shouldAddBelow = true) => {
       const startIndex = shouldAddBelow ? hoveredIndex + 1 : hoveredIndex;
       setItems([
         ...items.slice(0, startIndex),
-        { id: items.length + 1, type: type },
+        { id: items.length + 1, type: type, text },
         ...items.slice(startIndex),
       ]);
 
@@ -387,9 +426,10 @@ const DND = () => {
         addNewItem={handleAddNewItem}
         onNewItemAdding={setNewItemAdding}
         selectedItem={selectedItem}
+        gamerItems={gamerItems}
       />
     ),
-    [handleAddNewItem, selectedItem]
+    [handleAddNewItem, selectedItem, gamerItems]
   );
 
   return (
@@ -409,11 +449,13 @@ const DND = () => {
 };
 
 export default function Uno({ roomId, roomToken, user, gameData }) {
+  const [gamerItems, setGamerItems] = useState(data);
+  console.log("gamerItems", gamerItems);
   return (
     <>
       <DndProvider backend={MultiBackend} options={HTML5toTouch}>
         <Preview>{generatePreview}</Preview>
-        <DND />
+        <DND gamerItems={gamerItems} />
       </DndProvider>
     </>
   );
