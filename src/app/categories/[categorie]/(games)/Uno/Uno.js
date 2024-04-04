@@ -26,32 +26,32 @@ const ITEM_TYPES = {
   BOIS: "BOIS",
 };
 
-const data = {
-  FEU: {
+const data = [
+  {
     type: "FEU",
     text: "C'est du feu",
   },
-  TERRE: {
+  {
     type: "TERRE",
     text: "C'est de la terre",
   },
-  AIR: {
+  {
     type: "AIR",
     text: "C'est de l'air",
   },
-  EAU: {
+  {
     type: "EAU",
     text: "C'est de l'eau",
   },
-  METAL: {
+  {
     type: "METAL",
     text: "C'est du métal",
   },
-  BOIS: {
+  {
     type: "BOIS",
     text: "C'est du bois",
   },
-};
+];
 
 const HTML5toTouch = {
   backends: [
@@ -92,6 +92,8 @@ const StageItem = ({
     },
     hover(item, monitor) {
       console.log("itemRef", itemRef);
+      console.log("item", item);
+
       if (!itemRef.current && !itemRef.current?.getBoundingClientRect) {
         return;
       }
@@ -186,10 +188,46 @@ const generatePreview = (props) => {
   );
 };
 
-const HandCard = ({ itemType, text, onClick, onNewItemAdding }) => {
+const HandCard = ({
+  index,
+  itemType,
+  text,
+  onClick,
+  onNewItemAdding,
+  moveCard,
+}) => {
+  const cardRef = useRef(null);
+
+  const [collected, drop] = useDrop({
+    accept: Object.keys(ITEM_TYPES),
+    collect(monitor) {
+      return {
+        handlerId: monitor.getHandlerId(),
+      };
+    },
+    hover(item, monitor) {
+      if (!cardRef.current && !cardRef.current?.getBoundingClientRect) {
+        return;
+      }
+
+      const { top, bottom, height } = cardRef.current.getBoundingClientRect();
+      const { y } = monitor.getClientOffset();
+      const hoverIndex = index;
+      const dragIndex = item.index;
+
+      const hoverMiddleY = (bottom - top) / 2;
+      const hoverClientY = y - top;
+
+      moveCard(dragIndex, hoverIndex);
+      item.index = hoverIndex;
+    },
+  });
+  //   console.log("handlerId", handlerId);
+  console.log("collected", collected);
+
   const [{ isDragging }, dragRef] = useDrag({
     type: itemType,
-    item: { type: itemType, text },
+    item: { type: itemType, text, index },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -199,37 +237,61 @@ const HandCard = ({ itemType, text, onClick, onNewItemAdding }) => {
     onNewItemAdding(isDragging);
   }, [isDragging, onNewItemAdding]);
 
+  dragRef(drop(cardRef));
+
   console.log("isDragging", isDragging);
 
   return (
-    <div ref={dragRef}>
-      <div
-        type="button"
-        onClick={onClick}
-        style={{
-          background: "blue",
-          color: "#fff",
-          padding: "20px",
-          margin: "10px",
-          border: "none",
-        }}
-      >
-        <div>{itemType}</div>
-        <div>{text}</div>
-      </div>
+    <div
+      //   ref={dragRef}
+      ref={cardRef}
+      index={index}
+      data-handler-id={collected.handlerId}
+      type="button"
+      onClick={onClick}
+      style={{
+        background: "blue",
+        color: "#fff",
+        padding: "20px",
+        margin: "10px",
+        border: "none",
+      }}
+    >
+      <div>{itemType}</div>
+      <div>{text}</div>
     </div>
   );
 };
 
 const Hand = ({ addNewItem, onNewItemAdding, selectedItem, gamerItems }) => {
+  const [handCards, setHandCards] = useState(gamerItems);
+  const moveCard = useCallback(
+    (dragIndex, hoverIndex) => {
+      console.log("222 dragIndex", dragIndex);
+      console.log("222 hoverIndex", hoverIndex);
+      const dragItem = handCards[dragIndex];
+      //   setStageItems(
+      setHandCards(
+        update(handCards, {
+          $splice: [
+            [dragIndex, 1],
+            [hoverIndex, 0, dragItem],
+          ],
+        })
+      );
+    },
+    [handCards, setHandCards]
+  );
   const HandCards = useMemo(
     () =>
       //   Object.keys(ITEM_TYPES).map((itemType) => {
 
-      Object.values(gamerItems).map((item) => {
+      //   Object.values(gamerItems).map((item, index) => {
+      handCards.map((item, index) => {
         return (
           <HandCard
             // key={itemType}
+            index={index}
             key={item.type}
             type="button"
             itemType={item.type}
@@ -239,6 +301,7 @@ const Hand = ({ addNewItem, onNewItemAdding, selectedItem, gamerItems }) => {
               addNewItem(item.type, item.text, selectedItem?.index, true)
             }
             onNewItemAdding={onNewItemAdding}
+            moveCard={moveCard}
             style={{
               display: "flex",
               margin: "10px",
@@ -248,8 +311,9 @@ const Hand = ({ addNewItem, onNewItemAdding, selectedItem, gamerItems }) => {
           </HandCard>
         );
       }),
-    [addNewItem, onNewItemAdding, selectedItem]
+    [addNewItem, onNewItemAdding, selectedItem, handCards, moveCard]
   );
+  console.log("Object.values(gamerItems)", Object.values(gamerItems));
   return <div>{HandCards}</div>;
 };
 
@@ -440,7 +504,7 @@ const DND = ({ gamerItems }) => {
         setItems={setItems}
         addNewItem={handleAddNewItem}
         isNewItemAdding={isNewItemAdding}
-        onNewItemAdding={setNewItemAdding}
+        // onNewItemAdding={setNewItemAdding}
         setSelectedItem={setSelectedItem}
         selectedItem={selectedItem}
       />
