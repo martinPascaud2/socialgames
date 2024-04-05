@@ -263,8 +263,19 @@ const HandCard = ({
   );
 };
 
-const Hand = ({ addNewItem, onNewItemAdding, selectedItem, gamerItems }) => {
+const Hand = ({
+  addNewItem,
+  onNewItemAdding,
+  selectedItem,
+  gamerItems,
+  setHandItems,
+}) => {
   const [handCards, setHandCards] = useState(gamerItems);
+
+  useEffect(() => {
+    setHandItems(handCards);
+  }, [handCards]);
+
   const moveCard = useCallback(
     (dragIndex, hoverIndex) => {
       console.log("222 dragIndex", dragIndex);
@@ -282,6 +293,7 @@ const Hand = ({ addNewItem, onNewItemAdding, selectedItem, gamerItems }) => {
     },
     [handCards, setHandCards]
   );
+
   const HandCards = useMemo(
     () =>
       //   Object.keys(ITEM_TYPES).map((itemType) => {
@@ -463,6 +475,7 @@ const Stage = ({
 
 const DND = ({ gamerItems }) => {
   const [items, setItems] = useState([]);
+  const [handItems, setHandItems] = useState(gamerItems);
 
   const [isNewItemAdding, setNewItemAdding] = useState(false);
   const [selectedItem, setSelectedItem] = useState({});
@@ -470,6 +483,7 @@ const DND = ({ gamerItems }) => {
   const handleAddNewItem = useCallback(
     (type, text, hoveredIndex = items.length, shouldAddBelow = true) => {
       const startIndex = shouldAddBelow ? hoveredIndex + 1 : hoveredIndex;
+
       setItems([
         ...items.slice(0, startIndex),
         { id: items.length + 1, type: type, text },
@@ -490,7 +504,9 @@ const DND = ({ gamerItems }) => {
         addNewItem={handleAddNewItem}
         onNewItemAdding={setNewItemAdding}
         selectedItem={selectedItem}
-        gamerItems={gamerItems}
+        // gamerItems={gamerItems}
+        gamerItems={handItems}
+        setHandItems={setHandItems}
       />
     ),
     [handleAddNewItem, selectedItem, gamerItems]
