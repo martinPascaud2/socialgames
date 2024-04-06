@@ -310,7 +310,7 @@ const Hand = ({
             text={item.text}
             // onClick={() => addNewItem(itemType, selectedItem?.index, true)}
             onClick={() =>
-              addNewItem(item.type, item.text, selectedItem?.index, true)
+              addNewItem(item.type, item.text, selectedItem?.index, true, index)
             }
             onNewItemAdding={onNewItemAdding}
             moveCard={moveCard}
@@ -416,12 +416,10 @@ const Stage = ({
   const [{ isOver, draggingItemType }, dropRef] = useDrop({
     accept: Object.keys(ITEM_TYPES),
     drop: (droppedItem) => {
-      const { id, type, text } = droppedItem;
+      const { id, type, text, index } = droppedItem;
       if (!id) {
-        // a new item added
-        addNewItem(type, text, hoveredIndex, shouldAddBelow);
+        addNewItem(type, text, hoveredIndex, shouldAddBelow, index);
       } else {
-        // the result of sorting is applying the mock data
         setItems(stageItems);
       }
       //   console.log(
@@ -473,7 +471,7 @@ const Stage = ({
   );
 };
 
-const DND = ({ gamerItems }) => {
+const DND = ({ gamerItems, oneShot = true }) => {
   const [items, setItems] = useState([]);
   const [handItems, setHandItems] = useState(gamerItems);
 
@@ -481,7 +479,13 @@ const DND = ({ gamerItems }) => {
   const [selectedItem, setSelectedItem] = useState({});
 
   const handleAddNewItem = useCallback(
-    (type, text, hoveredIndex = items.length, shouldAddBelow = true) => {
+    (
+      type,
+      text,
+      hoveredIndex = items.length,
+      shouldAddBelow = true,
+      dragIndex
+    ) => {
       const startIndex = shouldAddBelow ? hoveredIndex + 1 : hoveredIndex;
 
       setItems([
@@ -494,6 +498,11 @@ const DND = ({ gamerItems }) => {
         id: items.length + 1,
         index: startIndex,
       });
+
+      oneShot &&
+        setHandItems((prevHandItems) =>
+          prevHandItems.filter((_, index) => index !== dragIndex)
+        );
     },
     [items]
   );
@@ -509,7 +518,7 @@ const DND = ({ gamerItems }) => {
         setHandItems={setHandItems}
       />
     ),
-    [handleAddNewItem, selectedItem, gamerItems]
+    [handleAddNewItem, selectedItem]
   );
 
   return (
@@ -535,7 +544,7 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
     <>
       <DndProvider backend={MultiBackend} options={HTML5toTouch}>
         <Preview>{generatePreview}</Preview>
-        <DND gamerItems={gamerItems} />
+        <DND gamerItems={gamerItems} oneShot={true} />
       </DndProvider>
     </>
   );
