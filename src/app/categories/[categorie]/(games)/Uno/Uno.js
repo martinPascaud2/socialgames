@@ -304,7 +304,8 @@ const Hand = ({
           <HandCard
             // key={itemType}
             index={index}
-            key={item.type}
+            // key={item.type}
+            key={index}
             type="button"
             itemType={item.type}
             text={item.text}
@@ -471,7 +472,7 @@ const Stage = ({
   );
 };
 
-const DND = ({ gamerItems, oneShot = true }) => {
+const DND = ({ gamerItems, oneShot = true, newHC, setNewHC }) => {
   const [items, setItems] = useState([]);
   const [handItems, setHandItems] = useState(gamerItems);
 
@@ -507,19 +508,26 @@ const DND = ({ gamerItems, oneShot = true }) => {
     [items]
   );
 
-  const MemoHand = useCallback(
-    () => (
+  const MemoHand = useCallback(() => {
+    let HI;
+    if (newHC) {
+      HI = [...handItems, newHC];
+      setNewHC(null);
+    } else {
+      HI = handItems;
+    }
+    return (
       <Hand
         addNewItem={handleAddNewItem}
         onNewItemAdding={setNewItemAdding}
         selectedItem={selectedItem}
         // gamerItems={gamerItems}
-        gamerItems={handItems}
+        // gamerItems={handItems}
+        gamerItems={HI}
         setHandItems={setHandItems}
       />
-    ),
-    [handleAddNewItem, selectedItem]
-  );
+    );
+  }, [handleAddNewItem, selectedItem, newHC]);
 
   return (
     <div style={{ display: "flex", justifyContent: "space-around" }}>
@@ -539,12 +547,22 @@ const DND = ({ gamerItems, oneShot = true }) => {
 
 export default function Uno({ roomId, roomToken, user, gameData }) {
   const [gamerItems, setGamerItems] = useState(data);
+  const [newHC, setNewHC] = useState(null);
   console.log("gamerItems", gamerItems);
   return (
     <>
       <DndProvider backend={MultiBackend} options={HTML5toTouch}>
         <Preview>{generatePreview}</Preview>
-        <DND gamerItems={gamerItems} oneShot={true} />
+        <DND
+          gamerItems={gamerItems}
+          //   setGamerItems={setGamerItems}
+          oneShot={true}
+          newHC={newHC}
+          setNewHC={setNewHC}
+        />
+        <button onClick={() => setNewHC({ type: "EAU", text: "youpilala" })}>
+          svzsef
+        </button>
       </DndProvider>
     </>
   );
