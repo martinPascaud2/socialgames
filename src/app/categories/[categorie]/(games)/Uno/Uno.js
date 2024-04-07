@@ -472,7 +472,13 @@ const Stage = ({
   );
 };
 
-const DND = ({ gamerItems, oneShot = true, newHC, setNewHC }) => {
+const DND = ({
+  gamerItems,
+  oneShot = true,
+  newHC,
+  setNewHC,
+  maxStageCards,
+}) => {
   const [items, setItems] = useState([]);
   const [handItems, setHandItems] = useState(gamerItems);
 
@@ -489,14 +495,26 @@ const DND = ({ gamerItems, oneShot = true, newHC, setNewHC }) => {
     ) => {
       const startIndex = shouldAddBelow ? hoveredIndex + 1 : hoveredIndex;
 
-      setItems([
+      const maxId = items.reduce(
+        (max, obj) => (obj.id > max ? obj.id : max),
+        0
+      );
+      let newItems = [
         ...items.slice(0, startIndex),
-        { id: items.length + 1, type: type, text },
+        // { id: items.length + 1, type: type, text },
+        { id: maxId + 1, type: type, text },
         ...items.slice(startIndex),
-      ]);
+      ];
+      if (maxStageCards) {
+        newItems = newItems.sort((a, b) => b.id - a.id).slice(0, maxStageCards);
+      }
+
+      setItems(newItems);
 
       setSelectedItem({
-        id: items.length + 1,
+        // id: items.length + 1,
+        // id: newItems.length + 1,
+        id: maxId + 1,
         index: startIndex,
       });
 
@@ -559,6 +577,7 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
           oneShot={true}
           newHC={newHC}
           setNewHC={setNewHC}
+          maxStageCards={1}
         />
         <button onClick={() => setNewHC({ type: "EAU", text: "youpilala" })}>
           svzsef
