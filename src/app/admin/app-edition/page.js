@@ -30,7 +30,7 @@ export default function EditionPage() {
         href="/admin/app-edition/ptitbac"
         className="w-1/3 text-center border border-blue-300 bg-blue-100"
       >
-        P'tit bac
+        P&apos;tit bac
       </Link>
       <Link
         href="/admin/app-edition/drawing"

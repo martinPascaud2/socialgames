@@ -17,41 +17,173 @@ import { useDrag, useDrop } from "react-dnd";
 import update from "immutability-helper";
 import isEqual from "lodash.isequal";
 
-const ITEM_TYPES = {
-  FEU: "FEU",
-  TERRE: "TERRE",
-  AIR: "AIR",
-  EAU: "EAU",
-  METAL: "METAL",
-  BOIS: "BOIS",
-};
+// const ITEM_TYPES = {
+//   FEU: "FEU",
+//   TERRE: "TERRE",
+//   AIR: "AIR",
+//   EAU: "EAU",
+//   METAL: "METAL",
+//   BOIS: "BOIS",
+// };
+
+const ITEM_TYPES = ["number", "+2", "reverse", "skip", "joker", "+4"];
+
+// const data = [
+//   {
+//     type: "FEU",
+//     text: "C'est du feu",
+//   },
+//   {
+//     type: "TERRE",
+//     text: "C'est de la terre",
+//   },
+//   {
+//     type: "AIR",
+//     text: "C'est de l'air",
+//   },
+//   {
+//     type: "EAU",
+//     text: "C'est de l'eau",
+//   },
+//   {
+//     type: "METAL",
+//     text: "C'est du métal",
+//   },
+//   {
+//     type: "BOIS",
+//     text: "C'est du bois",
+//   },
+// ];
 
 const data = [
   {
-    type: "FEU",
-    text: "C'est du feu",
+    type: "number",
+    data: {
+      color: "red",
+      text: "0",
+    },
   },
   {
-    type: "TERRE",
-    text: "C'est de la terre",
+    type: "number",
+    data: {
+      color: "blue",
+      text: "1",
+    },
   },
   {
-    type: "AIR",
-    text: "C'est de l'air",
+    type: "number",
+    data: {
+      color: "yellow",
+      text: "1",
+    },
   },
   {
-    type: "EAU",
-    text: "C'est de l'eau",
+    type: "number",
+    data: {
+      color: "green",
+      text: "2",
+    },
   },
   {
-    type: "METAL",
-    text: "C'est du métal",
-  },
-  {
-    type: "BOIS",
-    text: "C'est du bois",
+    type: "joker",
+    data: {
+      color: "custom",
+      text: "",
+    },
   },
 ];
+
+const StyledCards = {
+  uno: {
+    joker: ({ ref, index, handlerId, onClick, data }) => (
+      <div
+        ref={ref}
+        index={index}
+        data-handler-id={handlerId}
+        type="button"
+        onClick={onClick}
+        style={{
+          backgroundImage:
+            "linear-gradient(to top left, red, red), " +
+            "linear-gradient(to top right, blue, blue), " +
+            "linear-gradient(to bottom left, green, green), " +
+            "linear-gradient(to bottom right, yellow, yellow)",
+          backgroundSize: "50% 50%",
+          backgroundPosition: "top left, top right, bottom left, bottom right",
+          backgroundRepeat: "no-repeat",
+          width: "50px",
+          height: "50px",
+          padding: "20px",
+          margin: "10px",
+        }}
+      />
+    ),
+    number: ({ ref, index, handlerId, onClick, data }) => (
+      <div
+        ref={ref}
+        index={index}
+        data-handler-id={handlerId}
+        type="button"
+        onClick={onClick}
+        style={{
+          background: data?.color,
+          color: "#fff",
+          width: "50px",
+          height: "50px",
+          padding: "20px",
+          margin: "10px",
+        }}
+      >
+        <div>{data?.text}</div>
+      </div>
+    ),
+  },
+};
+
+const UnoStyledCards = {
+  joker: ({ ref, index, handlerId, onClick, data }) => (
+    <div
+      ref={ref}
+      index={index}
+      data-handler-id={handlerId}
+      type="button"
+      onClick={onClick}
+      style={{
+        backgroundImage:
+          "linear-gradient(to top left, red, red), " +
+          "linear-gradient(to top right, blue, blue), " +
+          "linear-gradient(to bottom left, green, green), " +
+          "linear-gradient(to bottom right, yellow, yellow)",
+        backgroundSize: "50% 50%",
+        backgroundPosition: "top left, top right, bottom left, bottom right",
+        backgroundRepeat: "no-repeat",
+        width: "50px",
+        height: "50px",
+        padding: "20px",
+        margin: "10px",
+      }}
+    />
+  ),
+  number: ({ ref, index, handlerId, onClick, data }) => (
+    <div
+      ref={ref}
+      index={index}
+      data-handler-id={handlerId}
+      type="button"
+      onClick={onClick}
+      style={{
+        background: data?.color,
+        color: "#fff",
+        width: "50px",
+        height: "50px",
+        padding: "20px",
+        margin: "10px",
+      }}
+    >
+      <div>{data?.text}</div>
+    </div>
+  ),
+};
 
 const HTML5toTouch = {
   backends: [
@@ -74,17 +206,21 @@ const StageItem = ({
   type,
   id,
   index,
-  text,
+  //   text,
+  data,
   moveItem,
   isNewItemAdding,
   onNewAddingItemProps,
   onClick,
   isSelected,
+  StyledCard,
+  //   gameName,
 }) => {
   const itemRef = useRef(null);
 
   const [{ handlerId }, drop] = useDrop({
-    accept: Object.keys(ITEM_TYPES),
+    // accept: Object.keys(ITEM_TYPES),
+    accept: ITEM_TYPES,
     collect(monitor) {
       return {
         handlerId: monitor.getHandlerId(),
@@ -92,7 +228,7 @@ const StageItem = ({
     },
     hover(item, monitor) {
       console.log("itemRef", itemRef);
-      console.log("item", item);
+      console.log("item lààààà", item);
 
       if (!itemRef.current && !itemRef.current?.getBoundingClientRect) {
         return;
@@ -157,25 +293,60 @@ const StageItem = ({
 
   const opacity = isNewItemAdding && !id ? "0.3" : "1";
   const border = isSelected ? "3px dashed blue" : "1px solid silver";
+
+  //   console.log("aszded StyledCards", StyledCards);
+  console.log("aszded UnoStyledCards", UnoStyledCards);
+  return (
+    <div>
+      {StyledCards.uno[type]({
+        //   {StyledCard({
+        handlerId: handlerId,
+        ref: itemRef,
+        // index,
+        onClick,
+        data,
+      })}
+    </div>
+  );
+  return (
+    <div>
+      {StyledCard({
+        ref: cardRef,
+        index,
+        handlerId: collected.handlerId,
+        onClick,
+        data,
+      })}
+    </div>
+  );
   return (
     <div
       data-handler-id={handlerId}
       ref={itemRef}
       style={{
-        padding: "10px",
+        ...data?.style,
+        width: "200px",
+        height: "200px",
+        padding: "20px",
         margin: "10px",
-        opacity,
-        border,
       }}
+      //   style={{
+      //     padding: "10px",
+      //     margin: "10px",
+      //     opacity,
+      //     border,
+      //   }}
+      //   style={data?.style}
       onClick={onClick}
     >
-      {type}
-      {text}
+      {/* {type} */}
+      {data?.text}
     </div>
   );
 };
 
 const generatePreview = (props) => {
+  console.log("generatePreview props", props);
   const { item, style } = props;
   const newStyle = {
     ...style,
@@ -191,15 +362,21 @@ const generatePreview = (props) => {
 const HandCard = ({
   index,
   itemType,
-  text,
+  //   text,
+  data,
   onClick,
   onNewItemAdding,
   moveCard,
+  //   StyledCard,
+  gameName,
 }) => {
   const cardRef = useRef(null);
 
+  console.log("data là", data);
+
   const [collected, drop] = useDrop({
-    accept: Object.keys(ITEM_TYPES),
+    // accept: Object.keys(ITEM_TYPES),
+    accept: ITEM_TYPES,
     collect(monitor) {
       return {
         handlerId: monitor.getHandlerId(),
@@ -227,7 +404,8 @@ const HandCard = ({
 
   const [{ isDragging }, dragRef] = useDrag({
     type: itemType,
-    item: { type: itemType, text, index },
+    // item: { type: itemType, text, index },
+    item: { type: itemType, data, index },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
@@ -240,6 +418,24 @@ const HandCard = ({
   dragRef(drop(cardRef));
 
   console.log("isDragging", isDragging);
+  return (
+    <div>
+      {StyledCards[gameName][itemType]({
+        ref: cardRef,
+        index,
+        handlerId: collected.handlerId,
+        onClick,
+        data,
+      })}
+      {/* {StyledCard({
+        ref: cardRef,
+        index,
+        handlerId: collected.handlerId,
+        onClick,
+        data,
+      })} */}
+    </div>
+  );
 
   return (
     <div
@@ -250,15 +446,16 @@ const HandCard = ({
       type="button"
       onClick={onClick}
       style={{
-        background: "blue",
-        color: "#fff",
+        ...data.style,
+        width: "50px",
+        height: "50px",
         padding: "20px",
         margin: "10px",
-        border: "none",
       }}
     >
-      <div>{itemType}</div>
-      <div>{text}</div>
+      {/* <div>{itemType}</div> */}
+      {/* <div>{text}</div> */}
+      <div>{data?.text}</div>
     </div>
   );
 };
@@ -269,6 +466,8 @@ const Hand = ({
   selectedItem,
   gamerItems,
   setHandItems,
+  //   StyledCards,
+  gameName,
 }) => {
   const [handCards, setHandCards] = useState(gamerItems);
 
@@ -308,10 +507,12 @@ const Hand = ({
             key={index}
             type="button"
             itemType={item.type}
-            text={item.text}
+            // text={item.text}
+            data={item.data}
             // onClick={() => addNewItem(itemType, selectedItem?.index, true)}
             onClick={() =>
-              addNewItem(item.type, item.text, selectedItem?.index, true, index)
+              //   addNewItem(item.type, item.text, selectedItem?.index, true, index)
+              addNewItem(item.type, item.data, selectedItem?.index, true, index)
             }
             onNewItemAdding={onNewItemAdding}
             moveCard={moveCard}
@@ -319,15 +520,25 @@ const Hand = ({
               display: "flex",
               margin: "10px",
             }}
+            // StyledCard={StyledCards[item.type]}
+            gameName={gameName}
           >
-            {item.text}
+            {/* {item.text} */}
+            {item.data.text}
           </HandCard>
         );
       }),
-    [addNewItem, onNewItemAdding, selectedItem, handCards, moveCard]
+    [
+      addNewItem,
+      onNewItemAdding,
+      selectedItem,
+      handCards,
+      moveCard,
+      StyledCards,
+    ]
   );
   console.log("Object.values(gamerItems)", Object.values(gamerItems));
-  return <div>{HandCards}</div>;
+  return <div className="flex">{HandCards}</div>;
 };
 
 const Stage = ({
@@ -337,6 +548,8 @@ const Stage = ({
   isNewItemAdding,
   setSelectedItem,
   selectedItem,
+  //   StyledCards,
+  gameName,
 }) => {
   const [stageItems, setStageItems] = useState(items);
 
@@ -388,7 +601,8 @@ const Stage = ({
 
   const memoItems = useMemo(() => {
     return stageItems?.map((item, index) => {
-      const { id, type, text } = item;
+      //   const { id, type, text } = item;
+      const { id, type, data } = item;
       return (
         <StageItem
           //   key={`id_${index}`}
@@ -396,13 +610,16 @@ const Stage = ({
           key={index}
           index={index}
           type={type}
-          text={text}
+          //   text={text}
+          data={data}
           id={id}
           moveItem={moveItem}
           isNewItemAdding={isNewItemAdding}
           onNewAddingItemProps={handleNewAddingItemPropsChange}
           onClick={() => setSelectedItem({ id: id, index: index })}
           isSelected={!!id && id === selectedItem?.id}
+          StyledCard={StyledCards[gameName][type]}
+          //   gameName={gameName}
         />
       );
     });
@@ -412,14 +629,19 @@ const Stage = ({
     selectedItem,
     isNewItemAdding,
     handleNewAddingItemPropsChange,
+    StyledCards,
   ]);
 
   const [{ isOver, draggingItemType }, dropRef] = useDrop({
-    accept: Object.keys(ITEM_TYPES),
+    // accept: Object.keys(ITEM_TYPES),
+    accept: ITEM_TYPES,
     drop: (droppedItem) => {
-      const { id, type, text, index } = droppedItem;
+      //   const { id, type, text, index } = droppedItem;
+      const { id, type, data, index } = droppedItem;
+      console.log("droppedItem iciii", droppedItem);
       if (!id) {
-        addNewItem(type, text, hoveredIndex, shouldAddBelow, index);
+        // addNewItem(type, text, hoveredIndex, shouldAddBelow, index);
+        addNewItem(type, data, hoveredIndex, shouldAddBelow, index);
       } else {
         setItems(stageItems);
       }
@@ -465,6 +687,8 @@ const Stage = ({
         overflowY: "auto",
         padding: "10px",
         border: "1px solid silver",
+        display: "flex",
+        justifyContent: "center",
       }}
     >
       {memoItems}
@@ -473,13 +697,17 @@ const Stage = ({
 };
 
 const DND = ({
+  items,
+  setItems,
   gamerItems,
   oneShot = true,
   newHC,
   setNewHC,
   maxStageCards,
+  //   StyledCards,
+  gameName,
 }) => {
-  const [items, setItems] = useState([]);
+  //   const [items, setItems] = useState([]);
   const [handItems, setHandItems] = useState(gamerItems);
 
   const [isNewItemAdding, setNewItemAdding] = useState(false);
@@ -488,7 +716,8 @@ const DND = ({
   const handleAddNewItem = useCallback(
     (
       type,
-      text,
+      //   text,
+      data,
       hoveredIndex = items.length,
       shouldAddBelow = true,
       dragIndex
@@ -502,7 +731,8 @@ const DND = ({
       let newItems = [
         ...items.slice(0, startIndex),
         // { id: items.length + 1, type: type, text },
-        { id: maxId + 1, type: type, text },
+        // { id: maxId + 1, type: type, text },
+        { id: maxId + 1, type: type, data },
         ...items.slice(startIndex),
       ];
       if (maxStageCards) {
@@ -543,13 +773,14 @@ const DND = ({
         // gamerItems={handItems}
         gamerItems={HI}
         setHandItems={setHandItems}
+        // StyledCards={StyledCards}
+        gameName={gameName}
       />
     );
   }, [handleAddNewItem, selectedItem, newHC]);
 
   return (
-    <div style={{ display: "flex", justifyContent: "space-around" }}>
-      <MemoHand />
+    <div style={{ display: "flex flex-col", justifyContent: "space-around" }}>
       <Stage
         items={items}
         setItems={setItems}
@@ -558,12 +789,17 @@ const DND = ({
         // onNewItemAdding={setNewItemAdding}
         setSelectedItem={setSelectedItem}
         selectedItem={selectedItem}
+        // StyledCards={StyledCards}
+        gameName={gameName}
       />
+      <MemoHand />
     </div>
   );
 };
 
 export default function Uno({ roomId, roomToken, user, gameData }) {
+  const [items, setItems] = useState([]);
+
   const [gamerItems, setGamerItems] = useState(data);
   const [newHC, setNewHC] = useState(null);
   console.log("gamerItems", gamerItems);
@@ -572,16 +808,21 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
       <DndProvider backend={MultiBackend} options={HTML5toTouch}>
         <Preview>{generatePreview}</Preview>
         <DND
+          items={items}
+          setItems={setItems}
           gamerItems={gamerItems}
           //   setGamerItems={setGamerItems}
           oneShot={true}
           newHC={newHC}
           setNewHC={setNewHC}
           maxStageCards={1}
+          //   StyledCards={UnoStyledCards}
+          gameName="uno"
         />
         <button onClick={() => setNewHC({ type: "EAU", text: "youpilala" })}>
           svzsef
         </button>
+        <button onClick={() => setItems([])}>reset</button>
       </DndProvider>
     </>
   );
