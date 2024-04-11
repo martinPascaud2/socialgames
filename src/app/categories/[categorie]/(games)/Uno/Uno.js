@@ -17,6 +17,8 @@ import { useDrag, useDrop } from "react-dnd";
 import update from "immutability-helper";
 import isEqual from "lodash.isequal";
 
+import { playCard } from "./gameActions";
+
 const ITEM_TYPES = ["number", "+2", "reverse", "skip", "joker", "+4"];
 
 const StyledCards = {
@@ -539,6 +541,7 @@ const DND = ({
   setNewHCs,
   maxStageCards,
   isLocked,
+  onNewItems,
 }) => {
   const [handItems, setHandItems] = useState(gamerItems);
 
@@ -574,6 +577,7 @@ const DND = ({
       }
 
       setItems(newItems);
+      onNewItems(newItems);
 
       setSelectedItem({
         // id: items.length + 1,
@@ -660,6 +664,10 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
     setItems([{ id: 0, ...gameData.card }]);
   }, [gameData.card]);
 
+  const onNewCard = async (card) => {
+    await playCard({ card, gameData, roomToken });
+  };
+
   return (
     <>
       <DndProvider backend={MultiBackend} options={HTML5toTouch}>
@@ -674,6 +682,7 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
           maxStageCards={1}
           gameName="uno"
           isLocked={!isActive}
+          onNewItems={onNewCard}
         />
 
         <button
@@ -694,6 +703,7 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
           onClick={() =>
             setItems([
               {
+                id: 0,
                 data: { color: "yellow", text: "1" },
                 gameName: "uno",
                 type: "number",

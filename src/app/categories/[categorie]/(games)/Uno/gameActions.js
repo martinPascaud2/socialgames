@@ -1,5 +1,7 @@
 "use server";
 
+import pusher from "@/utils/pusher";
+
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 
 import { unoCards } from "./cardsData";
@@ -94,4 +96,14 @@ export async function launchGame({
   });
 
   return {};
+}
+
+export async function playCard({ card, gameData, roomToken }) {
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      card: card[0],
+      phase: "gaming",
+    },
+  });
 }
