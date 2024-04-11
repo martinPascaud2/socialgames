@@ -17,86 +17,7 @@ import { useDrag, useDrop } from "react-dnd";
 import update from "immutability-helper";
 import isEqual from "lodash.isequal";
 
-// const ITEM_TYPES = {
-//   FEU: "FEU",
-//   TERRE: "TERRE",
-//   AIR: "AIR",
-//   EAU: "EAU",
-//   METAL: "METAL",
-//   BOIS: "BOIS",
-// };
-
 const ITEM_TYPES = ["number", "+2", "reverse", "skip", "joker", "+4"];
-
-// const data = [
-//   {
-//     type: "FEU",
-//     text: "C'est du feu",
-//   },
-//   {
-//     type: "TERRE",
-//     text: "C'est de la terre",
-//   },
-//   {
-//     type: "AIR",
-//     text: "C'est de l'air",
-//   },
-//   {
-//     type: "EAU",
-//     text: "C'est de l'eau",
-//   },
-//   {
-//     type: "METAL",
-//     text: "C'est du métal",
-//   },
-//   {
-//     type: "BOIS",
-//     text: "C'est du bois",
-//   },
-// ];
-
-const data = [
-  {
-    gameName: "uno",
-    type: "number",
-    data: {
-      color: "red",
-      text: "0",
-    },
-  },
-  {
-    gameName: "uno",
-    type: "number",
-    data: {
-      color: "blue",
-      text: "1",
-    },
-  },
-  {
-    gameName: "uno",
-    type: "number",
-    data: {
-      color: "yellow",
-      text: "1",
-    },
-  },
-  {
-    gameName: "uno",
-    type: "number",
-    data: {
-      color: "green",
-      text: "2",
-    },
-  },
-  {
-    gameName: "uno",
-    type: "joker",
-    data: {
-      color: "custom",
-      text: "",
-    },
-  },
-];
 
 const StyledCards = {
   uno: {
@@ -142,6 +63,83 @@ const StyledCards = {
         <div>{data?.text}</div>
       </div>
     ),
+    skip: ({ ref, index, handlerId, onClick, data }) => (
+      <div
+        ref={ref}
+        index={index}
+        data-handler-id={handlerId}
+        type="button"
+        onClick={onClick}
+        style={{
+          background: data?.color,
+          color: "#fff",
+          width: "50px",
+          height: "50px",
+          padding: "20px",
+          margin: "10px",
+        }}
+      >
+        <div>skip</div>
+      </div>
+    ),
+    "+2": ({ ref, index, handlerId, onClick, data }) => (
+      <div
+        ref={ref}
+        index={index}
+        data-handler-id={handlerId}
+        type="button"
+        onClick={onClick}
+        style={{
+          background: data?.color,
+          color: "#fff",
+          width: "50px",
+          height: "50px",
+          padding: "20px",
+          margin: "10px",
+        }}
+      >
+        <div>+2</div>
+      </div>
+    ),
+    "+4": ({ ref, index, handlerId, onClick, data }) => (
+      <div
+        ref={ref}
+        index={index}
+        data-handler-id={handlerId}
+        type="button"
+        onClick={onClick}
+        style={{
+          // background: data?.color,
+          background: "#000",
+          color: "#fff",
+          width: "50px",
+          height: "50px",
+          padding: "20px",
+          margin: "10px",
+        }}
+      >
+        <div>+4</div>
+      </div>
+    ),
+    reverse: ({ ref, index, handlerId, onClick, data }) => (
+      <div
+        ref={ref}
+        index={index}
+        data-handler-id={handlerId}
+        type="button"
+        onClick={onClick}
+        style={{
+          background: data?.color,
+          color: "#fff",
+          width: "50px",
+          height: "50px",
+          padding: "20px",
+          margin: "10px",
+        }}
+      >
+        <div>reverse</div>
+      </div>
+    ),
   },
 };
 
@@ -166,7 +164,6 @@ const StageItem = ({
   type,
   id,
   index,
-  //   text,
   data,
   moveItem,
   isNewItemAdding,
@@ -186,9 +183,6 @@ const StageItem = ({
       };
     },
     hover(item, monitor) {
-      console.log("itemRef", itemRef);
-      console.log("item lààààà", item);
-
       if (!itemRef.current && !itemRef.current?.getBoundingClientRect) {
         return;
       }
@@ -201,9 +195,6 @@ const StageItem = ({
       const hoverMiddleY = (bottom - top) / 2;
       const hoverClientY = y - top;
 
-      //   console.log("id", id);
-      //   console.log("dragIndex", dragIndex);
-      //   console.log("hoverIndex", hoverIndex);
       if (!id || dragIndex === hoverIndex) {
         return;
       }
@@ -215,13 +206,6 @@ const StageItem = ({
         return;
       }
       if (!isNewItemAdding) {
-        // console.log(
-        //   "passé là",
-        //   "hoverIndex",
-        //   hoverIndex,
-        //   "dragIndex",
-        //   dragIndex
-        // );
         onNewAddingItemProps({ hoveredIndex: hoverIndex });
         moveItem(dragIndex, hoverIndex);
         item.index = hoverIndex;
@@ -238,15 +222,11 @@ const StageItem = ({
 
   const [{ isDragging }, drag] = useDrag({
     type: type,
-    // item: { type: type, id, index },
     item: { type: type, id, index },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
   });
-
-  console.log("isDragging", isDragging);
-  console.log("id", id, typeof id);
 
   drag(drop(itemRef));
 
@@ -257,10 +237,8 @@ const StageItem = ({
   return (
     <div>
       {StyledCards[gameName][type]({
-        //   {StyledCard({
         handlerId: handlerId,
         ref: itemRef,
-        // index,
         onClick,
         data,
       })}
@@ -269,7 +247,6 @@ const StageItem = ({
 };
 
 const generatePreview = (props) => {
-  console.log("generatePreview props", props);
   const { item, style } = props;
   const newStyle = {
     ...style,
@@ -285,20 +262,15 @@ const generatePreview = (props) => {
 const HandCard = ({
   index,
   itemType,
-  //   text,
   data,
   onClick,
   onNewItemAdding,
   moveCard,
-  //   StyledCard,
   gameName,
 }) => {
   const cardRef = useRef(null);
 
-  console.log("data là", data);
-
   const [collected, drop] = useDrop({
-    // accept: Object.keys(ITEM_TYPES),
     accept: ITEM_TYPES,
     collect(monitor) {
       return {
@@ -322,12 +294,9 @@ const HandCard = ({
       item.index = hoverIndex;
     },
   });
-  //   console.log("handlerId", handlerId);
-  console.log("collected", collected);
 
   const [{ isDragging }, dragRef] = useDrag({
     type: itemType,
-    // item: { type: itemType, text, index },
     item: { type: itemType, data, gameName, index },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
@@ -340,7 +309,6 @@ const HandCard = ({
 
   dragRef(drop(cardRef));
 
-  console.log("isDragging", isDragging);
   return (
     <div>
       {StyledCards[gameName][itemType]({
@@ -350,35 +318,6 @@ const HandCard = ({
         onClick,
         data,
       })}
-      {/* {StyledCard({
-        ref: cardRef,
-        index,
-        handlerId: collected.handlerId,
-        onClick,
-        data,
-      })} */}
-    </div>
-  );
-
-  return (
-    <div
-      //   ref={dragRef}
-      ref={cardRef}
-      index={index}
-      data-handler-id={collected.handlerId}
-      type="button"
-      onClick={onClick}
-      style={{
-        ...data.style,
-        width: "50px",
-        height: "50px",
-        padding: "20px",
-        margin: "10px",
-      }}
-    >
-      {/* <div>{itemType}</div> */}
-      {/* <div>{text}</div> */}
-      <div>{data?.text}</div>
     </div>
   );
 };
@@ -398,10 +337,7 @@ const Hand = ({
 
   const moveCard = useCallback(
     (dragIndex, hoverIndex) => {
-      console.log("222 dragIndex", dragIndex);
-      console.log("222 hoverIndex", hoverIndex);
       const dragItem = handCards[dragIndex];
-      //   setStageItems(
       setHandCards(
         update(handCards, {
           $splice: [
@@ -416,9 +352,6 @@ const Hand = ({
 
   const HandCards = useMemo(
     () =>
-      //   Object.keys(ITEM_TYPES).map((itemType) => {
-
-      //   Object.values(gamerItems).map((item, index) => {
       handCards.map((item, index) => {
         const { type, data, gameName } = item;
         return (
@@ -433,7 +366,6 @@ const Hand = ({
             data={item.data}
             // onClick={() => addNewItem(itemType, selectedItem?.index, true)}
             onClick={() =>
-              //   addNewItem(item.type, item.text, selectedItem?.index, true, index)
               addNewItem(type, data, gameName, selectedItem?.index, true, index)
             }
             onNewItemAdding={onNewItemAdding}
@@ -446,7 +378,7 @@ const Hand = ({
             gameName={gameName}
           >
             {/* {item.text} */}
-            {data.text}
+            {data?.text}
           </HandCard>
         );
       }),
@@ -459,7 +391,7 @@ const Hand = ({
       StyledCards,
     ]
   );
-  console.log("Object.values(gamerItems)", Object.values(gamerItems));
+
   return <div className="flex">{HandCards}</div>;
 };
 
@@ -473,9 +405,6 @@ const Stage = ({
 }) => {
   const [stageItems, setStageItems] = useState(items);
 
-  console.log("items", items);
-  console.log("stageItems", stageItems);
-
   const [newAddingItemProps, setNewAddingItemProps] = useState({
     hoveredIndex: 0,
     shouldAddBelow: false,
@@ -485,7 +414,6 @@ const Stage = ({
 
   const handleNewAddingItemPropsChange = useCallback(
     (updatedProps) => {
-      console.log("updatedProps", updatedProps);
       setNewAddingItemProps({
         ...newAddingItemProps,
         ...updatedProps,
@@ -503,8 +431,6 @@ const Stage = ({
 
   const moveItem = useCallback(
     (dragIndex, hoverIndex) => {
-      console.log("dragIndex", dragIndex);
-      console.log("hoverIndex", hoverIndex);
       const dragItem = stageItems[dragIndex];
       //   setStageItems(
       setItems(
@@ -556,19 +482,11 @@ const Stage = ({
     accept: ITEM_TYPES,
     drop: (droppedItem) => {
       const { id, type, data, gameName, index } = droppedItem;
-      console.log("droppedItem iciii", droppedItem);
       if (!id) {
         addNewItem(type, data, gameName, hoveredIndex, shouldAddBelow, index);
       } else {
         setItems(stageItems);
       }
-      //   console.log(
-      //     "droppedItem: ",
-      //     type,
-      //     "order: ",
-      //     hoveredIndex,
-      //     isNewItemAdding ? "new item added!" : ""
-      //   );
     },
     collect: (monitor) => ({
       isOver: monitor.isOver(),
@@ -580,7 +498,6 @@ const Stage = ({
     if (isNewItemAdding) {
       const _stageItems = stageItems.filter(({ id }) => !!id);
       const startIndex = shouldAddBelow ? hoveredIndex + 1 : hoveredIndex;
-      console.log("startIndex", startIndex);
       if (isOver && isNewItemAdding) {
         setStageItems([
           ..._stageItems.slice(0, startIndex),
@@ -618,12 +535,11 @@ const DND = ({
   setItems,
   gamerItems,
   oneShot = true,
-  newHC,
-  setNewHC,
+  newHCs,
+  setNewHCs,
   maxStageCards,
-  //   StyledCards,
+  isLocked,
 }) => {
-  //   const [items, setItems] = useState([]);
   const [handItems, setHandItems] = useState(gamerItems);
 
   const [isNewItemAdding, setNewItemAdding] = useState(false);
@@ -639,6 +555,7 @@ const DND = ({
       shouldAddBelow = true,
       dragIndex
     ) => {
+      if (isLocked) return;
       const startIndex = shouldAddBelow ? hoveredIndex + 1 : hoveredIndex;
 
       const maxId = items.reduce(
@@ -675,12 +592,18 @@ const DND = ({
 
   const MemoHand = useCallback(() => {
     let HI;
-    if (newHC) {
-      HI = [...handItems, newHC];
-      setNewHC(null);
+    if (newHCs) {
+      HI = [...handItems, ...newHCs];
+      //   setNewHCs(null);
     } else {
       HI = handItems;
     }
+    // if (newItems) {
+    //   HI = [...handItems, ...newItems];
+    //   setNewItems(null);
+    // } else {
+    //   HI = handItems;
+    // }
     return (
       <Hand
         addNewItem={handleAddNewItem}
@@ -694,7 +617,11 @@ const DND = ({
         // gameName={gameName}
       />
     );
-  }, [handleAddNewItem, selectedItem, newHC]);
+  }, [handleAddNewItem, selectedItem, newHCs]);
+
+  useEffect(() => {
+    if (MemoHand) setNewHCs(null);
+  }, [MemoHand]);
 
   return (
     <div style={{ display: "flex flex-col", justifyContent: "space-around" }}>
@@ -716,9 +643,23 @@ const DND = ({
 export default function Uno({ roomId, roomToken, user, gameData }) {
   const [items, setItems] = useState([]);
 
-  const [gamerItems, setGamerItems] = useState(data);
-  const [newHC, setNewHC] = useState(null);
-  console.log("gamerItems", gamerItems);
+  const [gamerItems, setGamerItems] = useState([]);
+  const [newHCs, setNewHCs] = useState(null);
+  console.log("gamerItems uno", gamerItems);
+  console.log("items", items);
+  console.log("gameData", gameData);
+
+  const isActive = gameData.activePlayer?.id === user.id;
+  const isLocked = false;
+
+  useEffect(() => {
+    gameData.phase === "start" && setNewHCs(gameData.startedCards[user.name]);
+  }, [gameData.phase]);
+
+  useEffect(() => {
+    setItems([{ id: 0, ...gameData.card }]);
+  }, [gameData.card]);
+
   return (
     <>
       <DndProvider backend={MultiBackend} options={HTML5toTouch}>
@@ -727,18 +668,41 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
           items={items}
           setItems={setItems}
           gamerItems={gamerItems}
-          //   setGamerItems={setGamerItems}
           oneShot={true}
-          newHC={newHC}
-          setNewHC={setNewHC}
+          newHCs={newHCs}
+          setNewHCs={setNewHCs}
           maxStageCards={1}
-          //   StyledCards={UnoStyledCards}
           gameName="uno"
+          isLocked={!isActive}
         />
-        <button onClick={() => setNewHC({ type: "EAU", text: "youpilala" })}>
-          svzsef
+
+        <button
+          onClick={() =>
+            setNewHCs([
+              {
+                data: { color: "yellow", text: "1" },
+                gameName: "uno",
+                type: "number",
+              },
+            ])
+          }
+        >
+          +1 carte
         </button>
-        <button onClick={() => setItems([])}>reset</button>
+
+        <button
+          onClick={() =>
+            setItems([
+              {
+                data: { color: "yellow", text: "1" },
+                gameName: "uno",
+                type: "number",
+              },
+            ])
+          }
+        >
+          arrivée
+        </button>
       </DndProvider>
     </>
   );
