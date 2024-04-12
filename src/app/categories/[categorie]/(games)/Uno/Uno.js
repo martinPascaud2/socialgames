@@ -43,6 +43,7 @@ const StyledCards = {
           height: "50px",
           padding: "20px",
           margin: "10px",
+          border: `2px solid ${data.color}`,
         }}
       />
     ),
@@ -111,13 +112,13 @@ const StyledCards = {
         type="button"
         onClick={onClick}
         style={{
-          // background: data?.color,
           background: "#000",
           color: "#fff",
           width: "50px",
           height: "50px",
           padding: "20px",
           margin: "10px",
+          border: `2px solid ${data.color}`,
         }}
       >
         <div>+4</div>
@@ -657,8 +658,14 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
   console.log("items", items);
   console.log("gameData", gameData);
 
-  const isActive = gameData.activePlayer?.id === user.id;
-  const isLocked = false;
+  const [isLocked, setIsLocked] = useState(false);
+
+  useEffect(() => {
+    const isActive = gameData.activePlayer?.id === user.id;
+    setIsLocked(!isActive);
+  }, [gameData.activePlayer]);
+
+  const [choosingColor, setChoosingColor] = useState(false);
 
   useEffect(() => {
     gameData.phase === "start" && setNewHCs(gameData.startedCards[user.name]);
@@ -710,7 +717,19 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
   };
 
   const onNewCard = async (card) => {
-    await playCard({ card, gameData, roomToken });
+    if (card[0].data.color === "custom") {
+      setIsLocked(true);
+      setChoosingColor(true);
+    } else {
+      await playCard({ card, gameData, roomToken });
+    }
+  };
+
+  const chooseColor = async (color) => {
+    const dataSpecial = items[0].data;
+    const coloredSpecial = [{ ...items[0], data: { ...dataSpecial, color } }];
+    setChoosingColor(false);
+    await playCard({ card: coloredSpecial, gameData, roomToken });
   };
 
   return (
@@ -726,18 +745,47 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
           setNewHCs={setNewHCs}
           maxStageCards={1}
           gameName="uno"
-          isLocked={!isActive}
+          isLocked={isLocked}
           checkIsAllowed={checkIsAllowed}
           onNewItems={onNewCard}
         />
+
+        {choosingColor && (
+          <div className="flex justify-around">
+            <div
+              onClick={() => chooseColor("red")}
+              className="border-2 border-red-300 p-2"
+            >
+              Rouge
+            </div>
+            <div
+              onClick={() => chooseColor("green")}
+              className="border-2 border-green-300 p-2"
+            >
+              Vert
+            </div>
+            <div
+              onClick={() => chooseColor("yellow")}
+              className="border-2 border-yellow-300 p-2"
+            >
+              Jaune
+            </div>
+            <div
+              onClick={() => chooseColor("blue")}
+              className="border-2 border-blue-300 p-2"
+            >
+              Bleu
+            </div>
+          </div>
+        )}
 
         <button
           onClick={() =>
             setNewHCs([
               {
-                data: { color: "yellow", text: "1" },
                 gameName: "uno",
-                type: "number",
+                type: "joker",
+                data: { color: "custom", text: "joker" },
               },
             ])
           }
