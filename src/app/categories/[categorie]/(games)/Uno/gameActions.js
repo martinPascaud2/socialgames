@@ -115,18 +115,34 @@ const getNextGamer = ({ gameData, card }) => {
       : index === 0
       ? gamers.length - 1
       : index - 1;
-  const nextGamer = gamers[nextIndex];
-  return nextGamer;
+
+  const skip = card.type === "skip" ? 1 : 0;
+  const nextSkippedIndex =
+    rotation === "clock"
+      ? (nextIndex + skip) % gamers.length
+      : skip
+      ? nextIndex === 0
+        ? gamers.length - 1
+        : nextIndex - 1
+      : nextIndex;
+
+  const nextGamer = gamers[nextSkippedIndex];
+
+  return { newActivePlayer: nextGamer, newRotation: rotation };
 };
 
 export async function playCard({ card, gameData, roomToken }) {
-  const newActivePlayer = getNextGamer({ gameData, card: card[0] });
+  const { newActivePlayer, newRotation } = getNextGamer({
+    gameData,
+    card: card[0],
+  });
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
       activePlayer: newActivePlayer,
       card: card[0],
+      rotation: newRotation,
       phase: "gaming",
     },
   });

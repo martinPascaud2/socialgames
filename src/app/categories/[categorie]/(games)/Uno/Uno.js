@@ -450,8 +450,9 @@ const Stage = ({
 
   const memoItems = useMemo(() => {
     return stageItems?.map((item, index) => {
+      if (!item) return; //check
       const { id, type, data, gameName } = item;
-      if (!type) return;
+      if (!type) return; //check
       return (
         <StageItem
           //   key={`id_${index}`}
@@ -783,6 +784,7 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
           onClick={() =>
             setNewHCs([
               {
+                id: 0,
                 gameName: "uno",
                 type: "joker",
                 data: { color: "custom", text: "joker" },
@@ -790,7 +792,37 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
             ])
           }
         >
-          +1 carte
+          +1 joker
+        </button>
+
+        <button
+          onClick={() =>
+            setNewHCs([
+              {
+                id: 0,
+                gameName: "uno",
+                type: "reverse",
+                data: { color: "red", text: "reverse" },
+              },
+            ])
+          }
+        >
+          +1 reverse
+        </button>
+
+        <button
+          onClick={() =>
+            setNewHCs([
+              {
+                id: 0,
+                gameName: "uno",
+                type: "skip",
+                data: { color: "green", text: "skip" },
+              },
+            ])
+          }
+        >
+          +1 skip
         </button>
 
         <button
