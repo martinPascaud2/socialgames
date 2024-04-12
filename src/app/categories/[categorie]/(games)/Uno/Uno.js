@@ -541,6 +541,7 @@ const DND = ({
   setNewHCs,
   maxStageCards,
   isLocked,
+  checkIsAllowed,
   onNewItems,
 }) => {
   const [handItems, setHandItems] = useState(gamerItems);
@@ -551,14 +552,17 @@ const DND = ({
   const handleAddNewItem = useCallback(
     (
       type,
-      //   text,
       data,
       gameName,
       hoveredIndex = items.length,
       shouldAddBelow = true,
       dragIndex
     ) => {
-      if (isLocked) return;
+      if (
+        isLocked ||
+        !checkIsAllowed({ itemType: type, itemData: data, handItems })
+      )
+        return;
       const startIndex = shouldAddBelow ? hoveredIndex + 1 : hoveredIndex;
 
       const maxId = items.reduce(
@@ -664,6 +668,47 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
     setItems([{ id: 0, ...gameData.card }]);
   }, [gameData.card]);
 
+  const checkIsAllowed = ({
+    itemType: newItemType,
+    itemData: newItemData,
+    handItems,
+  }) => {
+    const { type: currItemType, data: currItemData } = items[0];
+    const { color: currItemColor, text: currItemText } = currItemData;
+    const { color: newItemColor, text: newItemText } = newItemData;
+
+    const differentColor = newItemColor !== currItemColor;
+    const differentText = newItemText !== currItemText;
+
+    switch (newItemType) {
+      case "number":
+        if (differentColor && differentText) return false;
+        break;
+      case "+2":
+        if (differentColor && differentText) return false;
+        break;
+      case "reverse":
+        if (differentColor && differentText) return false;
+        break;
+      case "skip":
+        if (differentColor && differentText) return false;
+        break;
+      case "joker":
+        //always possible
+        break;
+      case "+4":
+        for (let handItem of handItems) {
+          const { data } = handItem;
+          if (data.color === currItemColor || data.text === currItemText) {
+            return false;
+          }
+        }
+        break;
+      default:
+    }
+    return true;
+  };
+
   const onNewCard = async (card) => {
     await playCard({ card, gameData, roomToken });
   };
@@ -682,6 +727,7 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
           maxStageCards={1}
           gameName="uno"
           isLocked={!isActive}
+          checkIsAllowed={checkIsAllowed}
           onNewItems={onNewCard}
         />
 
