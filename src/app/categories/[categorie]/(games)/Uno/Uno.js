@@ -451,7 +451,7 @@ const Stage = ({
   const memoItems = useMemo(() => {
     return stageItems?.map((item, index) => {
       const { id, type, data, gameName } = item;
-
+      if (!type) return;
       return (
         <StageItem
           //   key={`id_${index}`}
@@ -807,6 +807,8 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
         >
           arrivée
         </button>
+
+        {!isLocked && <div>Joue</div>}
       </DndProvider>
     </>
   );

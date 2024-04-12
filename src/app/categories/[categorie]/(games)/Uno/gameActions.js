@@ -98,10 +98,34 @@ export async function launchGame({
   return {};
 }
 
+const getNextGamer = ({ gameData, card }) => {
+  let { rotation } = gameData;
+  if (card.type === "reverse") {
+    rotation = rotation === "clock" ? "trigo" : "clock";
+  }
+
+  const { gamers, activePlayer } = gameData;
+
+  const index = gamers.findIndex(
+    (gamer) => gamer.id === activePlayer.id && gamer.name === activePlayer.name
+  );
+  const nextIndex =
+    rotation === "clock"
+      ? (index + 1) % gamers.length
+      : index === 0
+      ? gamers.length - 1
+      : index - 1;
+  const nextGamer = gamers[nextIndex];
+  return nextGamer;
+};
+
 export async function playCard({ card, gameData, roomToken }) {
+  const newActivePlayer = getNextGamer({ gameData, card: card[0] });
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
+      activePlayer: newActivePlayer,
       card: card[0],
       phase: "gaming",
     },
