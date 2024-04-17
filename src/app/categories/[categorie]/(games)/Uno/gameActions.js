@@ -65,6 +65,7 @@ export async function launchGame({
   console.log("remainCards", remainCards);
 
   const { randomCard, newRemainCards } = getRandomCard(remainCards);
+  const usedCards = [randomCard.id];
   console.log("randomCard", randomCard);
   console.log("newRemainCards", newRemainCards);
 
@@ -89,6 +90,7 @@ export async function launchGame({
       rotation: "clock",
       card: randomCard,
       remainCards: startedRemains,
+      usedCards,
       startedCards,
       mustDraw: false,
       toDraw: 0,
@@ -156,11 +158,16 @@ export async function playCard({ card, gameData, roomToken }) {
     toDraw = parseInt(card[0].data.text);
   }
 
+  const { usedCards } = gameData;
+  const newUsedCards = usedCards;
+  newUsedCards.push(card[0].id);
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
       activePlayer: newActivePlayer,
       card: card[0],
+      usedCards: newUsedCards,
       rotation: newRotation,
       phase: "gaming",
       mustDraw,
@@ -171,9 +178,15 @@ export async function playCard({ card, gameData, roomToken }) {
 }
 
 export async function drawCard({ roomToken, gameData }) {
-  const { remainCards, mustDraw, toDraw } = gameData;
+  const { remainCards, mustDraw, toDraw, usedCards } = gameData;
 
-  const { randomCard, newRemainCards } = getRandomCard(remainCards);
+  let { randomCard, newRemainCards } = getRandomCard(remainCards);
+
+  let newUsedCards = usedCards;
+  if (newRemainCards.length === 0) {
+    newRemainCards = usedCards;
+    newUsedCards = [];
+  }
 
   const newToDraw = toDraw !== 0 ? toDraw - 1 : 0;
   let newMustDraw = mustDraw;
@@ -191,6 +204,7 @@ export async function drawCard({ roomToken, gameData }) {
     gameData: {
       ...gameData,
       remainCards: newRemainCards,
+      usedCards: newUsedCards,
       activePlayer: newActivePlayer,
       mustDraw: newMustDraw,
       toDraw: newToDraw,

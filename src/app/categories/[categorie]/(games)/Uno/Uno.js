@@ -658,7 +658,7 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
   console.log("gamerItems uno", gamerItems);
   console.log("items", items);
   console.log("gameData", gameData);
-  const { mustDraw, hasFreelyDrawn } = gameData;
+  const { gamers, mustDraw, hasFreelyDrawn } = gameData;
   const [toDraw, setToDraw] = useState(0);
 
   const [isLocked, setIsLocked] = useState(false);
@@ -816,7 +816,20 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
           </div>
         )}
 
-        {!isLocked && <div>Joue</div>}
+        {!isLocked && <div className="flex justify-center">C'est à vous !</div>}
+        <div className="flex flex-wrap w-full justify-around">
+          {gamers?.map((gamer) => (
+            <div
+              className={`${
+                gameData.activePlayer.name === gamer.name
+                  ? "border-2 border-slate-300"
+                  : ""
+              }`}
+            >
+              {gamer.name}
+            </div>
+          ))}
+        </div>
       </DndProvider>
     </>
   );
