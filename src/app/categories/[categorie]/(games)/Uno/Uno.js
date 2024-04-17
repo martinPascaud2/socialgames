@@ -17,7 +17,7 @@ import { useDrag, useDrop } from "react-dnd";
 import update from "immutability-helper";
 import isEqual from "lodash.isequal";
 
-import { playCard } from "./gameActions";
+import { playCard, drawCard, skipTurn } from "./gameActions";
 
 const ITEM_TYPES = ["number", "+2", "reverse", "skip", "joker", "+4"];
 
@@ -395,7 +395,7 @@ const Hand = ({
     ]
   );
 
-  return <div className="flex">{HandCards}</div>;
+  return <div className="flex flex-wrap">{HandCards}</div>;
 };
 
 const Stage = ({
@@ -658,15 +658,14 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
   console.log("gamerItems uno", gamerItems);
   console.log("items", items);
   console.log("gameData", gameData);
+  const { mustDraw, hasFreelyDrawn } = gameData;
+  const [toDraw, setToDraw] = useState(0);
 
   const [isLocked, setIsLocked] = useState(false);
 
-  useEffect(() => {
-    const isActive = gameData.activePlayer?.id === user.id;
-    setIsLocked(!isActive);
-  }, [gameData.activePlayer]);
-
   const [choosingColor, setChoosingColor] = useState(false);
+
+  const isActive = gameData.activePlayer?.id === user.id;
 
   useEffect(() => {
     gameData.phase === "start" && setNewHCs(gameData.startedCards[user.name]);
@@ -674,7 +673,9 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
 
   useEffect(() => {
     setItems([{ id: 0, ...gameData.card }]);
-  }, [gameData.card]);
+    setIsLocked(!isActive || mustDraw);
+    setToDraw(gameData.toDraw);
+  }, [gameData.card, gameData.activePlayer]);
 
   const checkIsAllowed = ({
     itemType: newItemType,
@@ -751,6 +752,41 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
           onNewItems={onNewCard}
         />
 
+        {isActive && (
+          <>
+            {!!toDraw && (
+              <div>
+                Vous devez piocher {toDraw} carte{toDraw >= 2 ? "s" : ""}
+              </div>
+            )}
+            {!hasFreelyDrawn && (
+              <button
+                onClick={async () => {
+                  if (hasFreelyDrawn) return;
+                  const newCard = await drawCard({ roomToken, gameData });
+                  setNewHCs([
+                    {
+                      ...newCard,
+                      id: 0,
+                    },
+                  ]);
+                }}
+                className="p-2 border border-blue-300 bg-blue-100"
+              >
+                Piocher
+              </button>
+            )}
+            {hasFreelyDrawn && (
+              <button
+                onClick={() => skipTurn({ roomToken, gameData })}
+                className="p-2 border border-blue-300 bg-blue-100"
+              >
+                Passer votre tour
+              </button>
+            )}
+          </>
+        )}
+
         {choosingColor && (
           <div className="flex justify-around">
             <div
@@ -779,66 +815,6 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
             </div>
           </div>
         )}
-
-        <button
-          onClick={() =>
-            setNewHCs([
-              {
-                id: 0,
-                gameName: "uno",
-                type: "joker",
-                data: { color: "custom", text: "joker" },
-              },
-            ])
-          }
-        >
-          +1 joker
-        </button>
-
-        <button
-          onClick={() =>
-            setNewHCs([
-              {
-                id: 0,
-                gameName: "uno",
-                type: "reverse",
-                data: { color: "red", text: "reverse" },
-              },
-            ])
-          }
-        >
-          +1 reverse
-        </button>
-
-        <button
-          onClick={() =>
-            setNewHCs([
-              {
-                id: 0,
-                gameName: "uno",
-                type: "skip",
-                data: { color: "green", text: "skip" },
-              },
-            ])
-          }
-        >
-          +1 skip
-        </button>
-
-        <button
-          onClick={() =>
-            setItems([
-              {
-                id: 0,
-                data: { color: "yellow", text: "1" },
-                gameName: "uno",
-                type: "number",
-              },
-            ])
-          }
-        >
-          arrivée
-        </button>
 
         {!isLocked && <div>Joue</div>}
       </DndProvider>

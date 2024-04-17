@@ -90,6 +90,8 @@ export async function launchGame({
       card: randomCard,
       remainCards: startedRemains,
       startedCards,
+      mustDraw: false,
+      toDraw: 0,
 
       // options,
     },
@@ -100,7 +102,7 @@ export async function launchGame({
 
 const getNextGamer = ({ gameData, card }) => {
   let { rotation } = gameData;
-  if (card.type === "reverse") {
+  if (card?.type === "reverse") {
     rotation = rotation === "clock" ? "trigo" : "clock";
   }
 
@@ -116,7 +118,7 @@ const getNextGamer = ({ gameData, card }) => {
       ? gamers.length - 1
       : index - 1;
 
-  const skip = card.type === "skip" ? 1 : 0;
+  const skip = card?.type === "skip" ? 1 : 0;
   const nextSkippedIndex =
     rotation === "clock"
       ? (nextIndex + skip) % gamers.length
@@ -131,11 +133,28 @@ const getNextGamer = ({ gameData, card }) => {
   return { newActivePlayer: nextGamer, newRotation: rotation };
 };
 
+export async function skipTurn({ roomToken, gameData }) {
+  const { newActivePlayer } = getNextGamer({ gameData, card: null });
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      activePlayer: newActivePlayer,
+      hasFreelyDrawn: false,
+    },
+  });
+}
+
 export async function playCard({ card, gameData, roomToken }) {
   const { newActivePlayer, newRotation } = getNextGamer({
     gameData,
     card: card[0],
   });
+
+  const mustDraw = ["+2", "+4"].some((str) => str === card[0].data.text);
+  let toDraw = 0;
+  if (mustDraw) {
+    toDraw = parseInt(card[0].data.text);
+  }
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
@@ -144,6 +163,40 @@ export async function playCard({ card, gameData, roomToken }) {
       card: card[0],
       rotation: newRotation,
       phase: "gaming",
+      mustDraw,
+      toDraw,
+      hasFreelyDrawn: false,
     },
   });
+}
+
+export async function drawCard({ roomToken, gameData }) {
+  const { remainCards, mustDraw, toDraw } = gameData;
+
+  const { randomCard, newRemainCards } = getRandomCard(remainCards);
+
+  const newToDraw = toDraw !== 0 ? toDraw - 1 : 0;
+  let newMustDraw = mustDraw;
+  let newActivePlayer = gameData.activePlayer;
+  let hasFreelyDrawn = false;
+
+  if (mustDraw && newToDraw === 0) {
+    newActivePlayer = getNextGamer({ gameData, card: null }).newActivePlayer;
+    newMustDraw = false;
+  } else if (!mustDraw) {
+    hasFreelyDrawn = true;
+  }
+
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      remainCards: newRemainCards,
+      activePlayer: newActivePlayer,
+      mustDraw: newMustDraw,
+      toDraw: newToDraw,
+      hasFreelyDrawn,
+    },
+  });
+
+  return randomCard;
 }
