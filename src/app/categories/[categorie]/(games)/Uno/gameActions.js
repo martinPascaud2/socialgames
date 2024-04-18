@@ -146,7 +146,7 @@ export async function skipTurn({ roomToken, gameData }) {
   });
 }
 
-export async function playCard({ card, gameData, roomToken }) {
+export async function playCard({ card, gameData, roomToken, unoPlayerName }) {
   const { newActivePlayer, newRotation } = getNextGamer({
     gameData,
     card: card[0],
@@ -169,7 +169,8 @@ export async function playCard({ card, gameData, roomToken }) {
       card: card[0],
       usedCards: newUsedCards,
       rotation: newRotation,
-      phase: "gaming",
+      phase: unoPlayerName ? "uno" : "gaming",
+      unoPlayerName,
       mustDraw,
       toDraw,
       hasFreelyDrawn: false,
@@ -209,8 +210,35 @@ export async function drawCard({ roomToken, gameData }) {
       mustDraw: newMustDraw,
       toDraw: newToDraw,
       hasFreelyDrawn,
+      phase: "gaming",
     },
   });
 
   return randomCard;
+}
+
+export async function untriggerUnoPhase({ roomToken, gameData }) {
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      phase: "gaming",
+    },
+  });
+}
+
+export async function triggerUnoFail({ roomToken, gameData }) {
+  const { unoPlayerName } = gameData;
+  const newActivePlayer = gameData.gamers.find(
+    (gamer) => gamer.name === unoPlayerName
+  );
+
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      activePlayer: newActivePlayer,
+      mustDraw: true,
+      toDraw: 2,
+      phase: "gaming",
+    },
+  });
 }

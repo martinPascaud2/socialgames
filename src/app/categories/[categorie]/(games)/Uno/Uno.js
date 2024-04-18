@@ -17,7 +17,13 @@ import { useDrag, useDrop } from "react-dnd";
 import update from "immutability-helper";
 import isEqual from "lodash.isequal";
 
-import { playCard, drawCard, skipTurn } from "./gameActions";
+import {
+  playCard,
+  drawCard,
+  skipTurn,
+  untriggerUnoPhase,
+  triggerUnoFail,
+} from "./gameActions";
 
 const ITEM_TYPES = ["number", "+2", "reverse", "skip", "joker", "+4"];
 
@@ -537,7 +543,7 @@ const Stage = ({
 const DND = ({
   items,
   setItems,
-  gamerItems,
+  setGamerItems,
   oneShot = true,
   newHCs,
   setNewHCs,
@@ -546,7 +552,7 @@ const DND = ({
   checkIsAllowed,
   onNewItems,
 }) => {
-  const [handItems, setHandItems] = useState(gamerItems);
+  const [handItems, setHandItems] = useState([]);
 
   const [isNewItemAdding, setNewItemAdding] = useState(false);
   const [selectedItem, setSelectedItem] = useState({});
@@ -597,7 +603,7 @@ const DND = ({
           prevHandItems.filter((_, index) => index !== dragIndex)
         );
     },
-    [items]
+    [items, onNewItems]
   );
 
   const MemoHand = useCallback(() => {
@@ -608,6 +614,7 @@ const DND = ({
     } else {
       HI = handItems;
     }
+    setGamerItems(HI);
     // if (newItems) {
     //   HI = [...handItems, ...newItems];
     //   setNewItems(null);
@@ -658,7 +665,7 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
   console.log("gamerItems uno", gamerItems);
   console.log("items", items);
   console.log("gameData", gameData);
-  const { gamers, mustDraw, hasFreelyDrawn } = gameData;
+  const { gamers, phase, mustDraw, hasFreelyDrawn, unoPlayerName } = gameData;
   const [toDraw, setToDraw] = useState(0);
 
   const [isLocked, setIsLocked] = useState(false);
@@ -666,6 +673,10 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
   const [choosingColor, setChoosingColor] = useState(false);
 
   const isActive = gameData.activePlayer?.id === user.id;
+
+  const [isUno, setIsUno] = useState(false);
+  const [availableCounter, setAvailableCounter] = useState(false);
+  const [counterTimeout, setCounterTimeout] = useState(null);
 
   useEffect(() => {
     gameData.phase === "start" && setNewHCs(gameData.startedCards[user.name]);
@@ -723,7 +734,10 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
       setIsLocked(true);
       setChoosingColor(true);
     } else {
-      await playCard({ card, gameData, roomToken });
+      let unoPlayerName;
+      if (gamerItems.length === 2) unoPlayerName = user.name;
+
+      await playCard({ card, gameData, roomToken, unoPlayerName });
     }
   };
 
@@ -731,8 +745,40 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
     const dataSpecial = items[0].data;
     const coloredSpecial = [{ ...items[0], data: { ...dataSpecial, color } }];
     setChoosingColor(false);
-    await playCard({ card: coloredSpecial, gameData, roomToken });
+
+    let unoPlayerName;
+    if (gamerItems.length === 1) unoPlayerName = user.name;
+
+    await playCard({
+      card: coloredSpecial,
+      gameData,
+      roomToken,
+      unoPlayerName,
+    });
   };
+
+  useEffect(() => {
+    if (phase === "uno") {
+      if (unoPlayerName === user.name) {
+        setIsUno(true);
+      } else {
+        setCounterTimeout(
+          setTimeout(() => {
+            setAvailableCounter(true);
+          }, 3000)
+        );
+        setIsUno(false);
+      }
+    } else {
+      setIsUno(false);
+      clearTimeout(counterTimeout);
+      setCounterTimeout(null);
+      setAvailableCounter(false);
+    }
+    return () => {
+      clearTimeout(counterTimeout);
+    };
+  }, [phase]);
 
   return (
     <>
@@ -741,7 +787,7 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
         <DND
           items={items}
           setItems={setItems}
-          gamerItems={gamerItems}
+          setGamerItems={setGamerItems}
           oneShot={true}
           newHCs={newHCs}
           setNewHCs={setNewHCs}
@@ -818,8 +864,9 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
 
         {!isLocked && <div className="flex justify-center">C'est à vous !</div>}
         <div className="flex flex-wrap w-full justify-around">
-          {gamers?.map((gamer) => (
+          {gamers?.map((gamer, i) => (
             <div
+              key={i}
               className={`${
                 gameData.activePlayer.name === gamer.name
                   ? "border-2 border-slate-300"
@@ -830,6 +877,27 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
             </div>
           ))}
         </div>
+
+        {phase === "uno" && (
+          <>
+            {isUno && (
+              <div
+                onClick={() => untriggerUnoPhase({ roomToken, gameData })}
+                className="border border-blue-300 bg-blue-100"
+              >
+                Uno !
+              </div>
+            )}
+            {availableCounter && (
+              <div
+                onClick={() => triggerUnoFail({ roomToken, gameData })}
+                className="border border-blue-300 bg-blue-100"
+              >
+                Contre Uno !
+              </div>
+            )}
+          </>
+        )}
       </DndProvider>
     </>
   );
