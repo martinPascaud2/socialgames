@@ -17,12 +17,18 @@ import { useDrag, useDrop } from "react-dnd";
 import update from "immutability-helper";
 import isEqual from "lodash.isequal";
 
+import FinishGame from "@/components/FinishGame";
+import EndGame from "@/components/EndGame";
+import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
+
 import {
   playCard,
   drawCard,
   skipTurn,
   untriggerUnoPhase,
   triggerUnoFail,
+  goEnd,
+  addCount,
 } from "./gameActions";
 
 const ITEM_TYPES = ["number", "+2", "reverse", "skip", "joker", "+4"];
@@ -614,7 +620,7 @@ const DND = ({
     } else {
       HI = handItems;
     }
-    setGamerItems(HI);
+    // setGamerItems(HI);
     // if (newItems) {
     //   HI = [...handItems, ...newItems];
     //   setNewItems(null);
@@ -637,7 +643,11 @@ const DND = ({
   }, [handleAddNewItem, selectedItem, newHCs]);
 
   useEffect(() => {
-    if (MemoHand) setNewHCs(null);
+    // if (MemoHand) setNewHCs(null);
+    if (MemoHand) {
+      setNewHCs(null);
+      setGamerItems(handItems);
+    }
   }, [MemoHand]);
 
   return (
@@ -665,7 +675,10 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
   console.log("gamerItems uno", gamerItems);
   console.log("items", items);
   console.log("gameData", gameData);
-  const { gamers, phase, mustDraw, hasFreelyDrawn, unoPlayerName } = gameData;
+  const { gamers, phase, mustDraw, hasFreelyDrawn, unoPlayerName, counts } =
+    gameData;
+  const isAdmin = gameData.admin === user.name;
+
   const [toDraw, setToDraw] = useState(0);
 
   const [isLocked, setIsLocked] = useState(false);
@@ -696,6 +709,8 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
     const { type: currItemType, data: currItemData } = items[0];
     const { color: currItemColor, text: currItemText } = currItemData;
     const { color: newItemColor, text: newItemText } = newItemData;
+
+    if (phase === "start" && currItemColor === "custom") return true;
 
     const differentColor = newItemColor !== currItemColor;
     const differentText = newItemText !== currItemText;
@@ -778,6 +793,24 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
     return () => {
       clearTimeout(counterTimeout);
     };
+  }, [phase]);
+
+  useEffect(() => {
+    if (gamerItems.length === 0 && phase !== "start") {
+      goEnd({ roomToken, gameData });
+    }
+  }, [gamerItems]);
+
+  useEffect(() => {
+    if (phase === "ended") {
+      let count = 0;
+      gamerItems.forEach((item) => {
+        if (item.type === "number") count += parseInt(item.data.text);
+        else if (item.type === "+4") count += 50;
+        else count += 20;
+      });
+      addCount({ user, count });
+    }
   }, [phase]);
 
   return (
@@ -868,7 +901,7 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
             <div
               key={i}
               className={`${
-                gameData.activePlayer.name === gamer.name
+                gameData.activePlayer?.name === gamer.name
                   ? "border-2 border-slate-300"
                   : ""
               }`}
@@ -898,7 +931,27 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
             )}
           </>
         )}
+
+        {phase === "ended" && counts && (
+          <div>
+            {Object.entries(counts).map((count, i) => (
+              <div key={i}>
+                {count[0]} : {count[1]} point{count[1] >= 2 ? "s" : ""}
+              </div>
+            ))}
+          </div>
+        )}
       </DndProvider>
+
+      {isAdmin ? (
+        !gameData.ended ? (
+          <FinishGame gameData={gameData} roomToken={roomToken} />
+        ) : (
+          <ChooseOneMoreGame gameData={gameData} roomToken={roomToken} />
+        )
+      ) : gameData.ended ? (
+        <EndGame gameData={gameData} user={user} />
+      ) : null}
     </>
   );
 }

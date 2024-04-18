@@ -27,12 +27,14 @@ model User {
   png                    String                    @default("") @db.Text
   drawChain              DrawLink[]
   alreadyDrawingWords    DrawingWordsOnUsers[]
+  unoCount               Int?
 }
 
 model Multiguest {
   id        String     @id
   png       String     @default("") @db.Text
   drawChain DrawLink[]
+  unoCount  Int?
 }
 
 model Friend {

@@ -79,6 +79,29 @@ export async function launchGame({
   console.log("startedCards", startedCards);
   console.log("startedRemains", startedRemains, startedRemains.length);
 
+  const initCounts = async () => {
+    await Promise.all(
+      gamersAndGuests.map(async (gamer) => {
+        if (!gamer.multiGuest) {
+          await prisma.user.update({
+            where: { id: gamer.id },
+            data: { unoCount: 0 },
+          });
+        } else {
+          await prisma.multiguest.upsert({
+            where: { id: gamer.dataId },
+            update: { unoCount: 0 },
+            create: {
+              id: gamer.dataId,
+              unoCount: 0,
+            },
+          });
+        }
+      })
+    );
+  };
+  await initCounts();
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
     gameData: {
@@ -86,7 +109,7 @@ export async function launchGame({
       activePlayer: gamersAndGuests[0],
       lastPlayer: null,
       gamers: gamersAndGuests,
-      phase: "start", // check
+      phase: "start",
       rotation: "clock",
       card: randomCard,
       remainCards: startedRemains,
@@ -94,7 +117,6 @@ export async function launchGame({
       startedCards,
       mustDraw: false,
       toDraw: 0,
-
       // options,
     },
   });
@@ -241,4 +263,68 @@ export async function triggerUnoFail({ roomToken, gameData }) {
       phase: "gaming",
     },
   });
+}
+
+export async function goEnd({ roomToken, gameData }) {
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      phase: "ended",
+    },
+  });
+
+  let counts = {};
+  setTimeout(async () => {
+    await Promise.all(
+      gameData.gamers.map(async (gamer) => {
+        if (gamer.multiGuest) {
+          const count = (
+            await prisma.multiguest.findFirst({ where: { id: gamer.dataId } })
+          ).unoCount;
+          counts[gamer.name] = count;
+        } else {
+          const count = (
+            await prisma.user.findFirst({ where: { id: gamer.id } })
+          ).unoCount;
+          counts[gamer.name] = count;
+        }
+      })
+    );
+    await pusher.trigger(`room-${roomToken}`, "room-event", {
+      gameData: {
+        ...gameData,
+        phase: "ended",
+        ended: true,
+        counts,
+        activePlayer: null,
+      },
+    });
+  }, 3000);
+}
+
+export async function addCount({ user, count }) {
+  if (user.multiGuest) {
+    const oldCount = (
+      await prisma.multiGuest.findFirst({ where: { id: user.dataId } })
+    ).unoCount;
+    const newCount = oldCount + count;
+
+    await prisma.multiguest.upsert({
+      where: { id: user.dataId },
+      update: { unoCount: newCount },
+      create: {
+        id: user.dataId,
+        unoCount: newCount,
+      },
+    });
+  } else {
+    const oldCount = (await prisma.user.findFirst({ where: { id: user.id } }))
+      .unoCount;
+    const newCount = oldCount + count;
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { unoCount: newCount },
+    });
+  }
 }
