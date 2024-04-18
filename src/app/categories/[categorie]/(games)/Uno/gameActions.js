@@ -107,7 +107,6 @@ export async function launchGame({
     gameData: {
       admin: startedRoom.admin,
       activePlayer: gamersAndGuests[0],
-      lastPlayer: null,
       gamers: gamersAndGuests,
       phase: "start",
       rotation: "clock",
@@ -327,4 +326,33 @@ export async function addCount({ user, count }) {
       data: { unoCount: newCount },
     });
   }
+}
+
+export async function goNewUnoGame({ roomToken, gameData }) {
+  const { gamers } = gameData;
+  let remainCards = Object.keys(unoCards).map((string) => parseInt(string));
+  const { randomCard, newRemainCards } = getRandomCard(remainCards);
+  const usedCards = [randomCard.id];
+  remainCards = newRemainCards;
+  const { startedCards, startedRemains } = getStartedCards({
+    remainCards,
+    gamersAndGuests: gamers,
+  });
+
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      activePlayer: gamers[0],
+      phase: "start",
+      rotation: "clock",
+      card: randomCard,
+      remainCards: startedRemains,
+      usedCards,
+      startedCards,
+      mustDraw: false,
+      toDraw: 0,
+      ended: false,
+      // options,
+    },
+  });
 }

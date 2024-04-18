@@ -29,6 +29,7 @@ import {
   triggerUnoFail,
   goEnd,
   addCount,
+  goNewUnoGame,
 } from "./gameActions";
 
 const ITEM_TYPES = ["number", "+2", "reverse", "skip", "joker", "+4"];
@@ -557,6 +558,8 @@ const DND = ({
   isLocked,
   checkIsAllowed,
   onNewItems,
+  newHand,
+  setNewHand,
 }) => {
   const [handItems, setHandItems] = useState([]);
 
@@ -614,19 +617,21 @@ const DND = ({
 
   const MemoHand = useCallback(() => {
     let HI;
-    if (newHCs) {
-      HI = [...handItems, ...newHCs];
-      //   setNewHCs(null);
+    if (newHand) {
+      HI = [];
     } else {
       HI = handItems;
     }
-    // setGamerItems(HI);
-    // if (newItems) {
-    //   HI = [...handItems, ...newItems];
-    //   setNewItems(null);
+    if (newHCs) {
+      HI = [...HI, ...newHCs];
+    }
+
+    // if (newHCs) {
+    //   HI = [...handItems, ...newHCs];
     // } else {
     //   HI = handItems;
     // }
+
     return (
       <Hand
         addNewItem={handleAddNewItem}
@@ -646,6 +651,7 @@ const DND = ({
     // if (MemoHand) setNewHCs(null);
     if (MemoHand) {
       setNewHCs(null);
+      setNewHand(null);
       setGamerItems(handItems);
     }
   }, [MemoHand]);
@@ -690,6 +696,8 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
   const [isUno, setIsUno] = useState(false);
   const [availableCounter, setAvailableCounter] = useState(false);
   const [counterTimeout, setCounterTimeout] = useState(null);
+
+  const [newHand, setNewHand] = useState(null);
 
   useEffect(() => {
     gameData.phase === "start" && setNewHCs(gameData.startedCards[user.name]);
@@ -810,6 +818,7 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
         else count += 20;
       });
       addCount({ user, count });
+      setNewHand([]);
     }
   }, [phase]);
 
@@ -829,6 +838,8 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
           isLocked={isLocked}
           checkIsAllowed={checkIsAllowed}
           onNewItems={onNewCard}
+          newHand={newHand}
+          setNewHand={setNewHand}
         />
 
         {isActive && (
@@ -947,7 +958,15 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
         !gameData.ended ? (
           <FinishGame gameData={gameData} roomToken={roomToken} />
         ) : (
-          <ChooseOneMoreGame gameData={gameData} roomToken={roomToken} />
+          <>
+            <div
+              onClick={() => goNewUnoGame({ roomToken, gameData })}
+              className="border border-blue-300 bg-blue-100"
+            >
+              Nouvelle manche
+            </div>
+            <ChooseOneMoreGame gameData={gameData} roomToken={roomToken} />
+          </>
         )
       ) : gameData.ended ? (
         <EndGame gameData={gameData} user={user} />
