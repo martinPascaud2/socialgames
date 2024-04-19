@@ -440,7 +440,7 @@ const Stage = ({
 
   useEffect(() => {
     if (!isEqual(stageItems, items)) {
-      setStageItems(items);
+      setStageItems(items.filter((item) => item !== undefined));
     }
   }, [items, stageItems]);
   //   }, [items]);
@@ -513,7 +513,8 @@ const Stage = ({
 
   useEffect(() => {
     if (isNewItemAdding) {
-      const _stageItems = stageItems.filter(({ id }) => !!id);
+      //   const _stageItems = stageItems.filter(({ id }) => !!id);
+      const _stageItems = stageItems.filter((item) => item && item.id);
       const startIndex = shouldAddBelow ? hoveredIndex + 1 : hoveredIndex;
       if (isOver && isNewItemAdding) {
         setStageItems([
@@ -577,7 +578,8 @@ const DND = ({
     ) => {
       if (
         isLocked ||
-        !checkIsAllowed({ itemType: type, itemData: data, handItems })
+        !checkIsAllowed({ itemType: type, itemData: data, handItems }) ||
+        !items //check
       )
         return;
       const startIndex = shouldAddBelow ? hoveredIndex + 1 : hoveredIndex;
@@ -714,6 +716,7 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
     itemData: newItemData,
     handItems,
   }) => {
+    if (!items[0]) return false;
     const { type: currItemType, data: currItemData } = items[0];
     const { color: currItemColor, text: currItemText } = currItemData;
     const { color: newItemColor, text: newItemText } = newItemData;

@@ -304,7 +304,7 @@ export async function goEnd({ roomToken, gameData }) {
 export async function addCount({ user, count }) {
   if (user.multiGuest) {
     const oldCount = (
-      await prisma.multiGuest.findFirst({ where: { id: user.dataId } })
+      await prisma.multiguest.findFirst({ where: { id: user.dataId } })
     ).unoCount;
     const newCount = oldCount + count;
 
