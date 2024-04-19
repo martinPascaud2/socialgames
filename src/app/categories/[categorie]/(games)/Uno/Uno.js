@@ -22,6 +22,12 @@ import EndGame from "@/components/EndGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 
 import {
+  ArrowUturnLeftIcon,
+  ArrowUturnRightIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
+
+import {
   playCard,
   drawCard,
   skipTurn,
@@ -76,7 +82,9 @@ const StyledCards = {
           margin: "10px",
         }}
       >
-        <div>{data?.text}</div>
+        <div className={`text-${data?.color === "yellow" ? "black" : "white"}`}>
+          {data?.text}
+        </div>
       </div>
     ),
     skip: ({ ref, index, handlerId, onClick, data }) => (
@@ -91,11 +99,18 @@ const StyledCards = {
           color: "#fff",
           width: "50px",
           height: "50px",
-          padding: "20px",
+          padding: "5px",
           margin: "10px",
         }}
       >
-        <div>skip</div>
+        <div
+          className={`text-${
+            data?.color === "yellow" ? "black" : "white"
+          } flex flex-col justify-center items-center`}
+        >
+          <XMarkIcon className="h-3/5 w-3/4" />
+          <div className="text-xs mb-2">SKIP !</div>
+        </div>
       </div>
     ),
     "+2": ({ ref, index, handlerId, onClick, data }) => (
@@ -146,14 +161,17 @@ const StyledCards = {
         onClick={onClick}
         style={{
           background: data?.color,
-          color: "#fff",
+          color: data?.color === "yellow" ? "black" : "white",
           width: "50px",
           height: "50px",
-          padding: "20px",
+          padding: "5px",
           margin: "10px",
         }}
       >
-        <div>reverse</div>
+        <div className="w-full h-full flex flex-col justify-center align-center">
+          <ArrowUturnRightIcon className="h-full w-full" />
+          <ArrowUturnLeftIcon className="h-full w-full" />
+        </div>
       </div>
     ),
   },
@@ -185,13 +203,11 @@ const StageItem = ({
   isNewItemAdding,
   onNewAddingItemProps,
   onClick,
-  isSelected,
   gameName,
 }) => {
   const itemRef = useRef(null);
 
   const [{ handlerId }, drop] = useDrop({
-    // accept: Object.keys(ITEM_TYPES),
     accept: ITEM_TYPES,
     collect(monitor) {
       return {
@@ -207,20 +223,19 @@ const StageItem = ({
       const { y } = monitor.getClientOffset();
       const hoverIndex = index;
       const dragIndex = item.index;
-
       const hoverMiddleY = (bottom - top) / 2;
       const hoverClientY = y - top;
 
       if (!id || dragIndex === hoverIndex) {
         return;
       }
-
       if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
         return;
       }
       if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
         return;
       }
+
       if (!isNewItemAdding) {
         onNewAddingItemProps({ hoveredIndex: hoverIndex });
         moveItem(dragIndex, hoverIndex);
@@ -246,8 +261,9 @@ const StageItem = ({
 
   drag(drop(itemRef));
 
-  const opacity = isNewItemAdding && !id ? "0.3" : "1";
-  const border = isSelected ? "3px dashed blue" : "1px solid silver";
+  // can be used
+  // const opacity = isNewItemAdding && !id ? "0.3" : "1";
+  // const border = isSelected ? "3px dashed blue" : "1px solid silver";
 
   if (!gameName) return;
   return (
@@ -298,13 +314,13 @@ const HandCard = ({
         return;
       }
 
-      const { top, bottom, height } = cardRef.current.getBoundingClientRect();
-      const { y } = monitor.getClientOffset();
+      //   const { top, bottom, height } = cardRef.current.getBoundingClientRect();
+      //   const { y } = monitor.getClientOffset();
+      //   const hoverMiddleY = (bottom - top) / 2;
+      //   const hoverClientY = y - top;
+
       const hoverIndex = index;
       const dragIndex = item.index;
-
-      const hoverMiddleY = (bottom - top) / 2;
-      const hoverClientY = y - top;
 
       moveCard(dragIndex, hoverIndex);
       item.index = hoverIndex;
@@ -372,15 +388,11 @@ const Hand = ({
         const { type, data, gameName } = item;
         return (
           <HandCard
-            // key={itemType}
             index={index}
-            // key={item.type}
             key={index}
             type="button"
             itemType={type}
-            // text={item.text}
             data={item.data}
-            // onClick={() => addNewItem(itemType, selectedItem?.index, true)}
             onClick={() =>
               addNewItem(type, data, gameName, selectedItem?.index, true, index)
             }
@@ -390,10 +402,8 @@ const Hand = ({
               display: "flex",
               margin: "10px",
             }}
-            // StyledCard={StyledCards[item.type]}
             gameName={gameName}
           >
-            {/* {item.text} */}
             {data?.text}
           </HandCard>
         );
@@ -420,12 +430,10 @@ const Stage = ({
   selectedItem,
 }) => {
   const [stageItems, setStageItems] = useState(items);
-
   const [newAddingItemProps, setNewAddingItemProps] = useState({
     hoveredIndex: 0,
     shouldAddBelow: false,
   });
-
   const { hoveredIndex, shouldAddBelow } = newAddingItemProps;
 
   const handleNewAddingItemPropsChange = useCallback(
@@ -443,12 +451,10 @@ const Stage = ({
       setStageItems(items.filter((item) => item !== undefined));
     }
   }, [items, stageItems]);
-  //   }, [items]);
 
   const moveItem = useCallback(
     (dragIndex, hoverIndex) => {
       const dragItem = stageItems[dragIndex];
-      //   setStageItems(
       setItems(
         update(stageItems, {
           $splice: [
@@ -468,20 +474,17 @@ const Stage = ({
       if (!type) return; //check
       return (
         <StageItem
-          //   key={`id_${index}`}
-          //   key={id}
+          id={id}
           key={index}
           index={index}
           type={type}
-          //   text={text}
           data={data}
-          id={id}
           moveItem={moveItem}
           isNewItemAdding={isNewItemAdding}
           onNewAddingItemProps={handleNewAddingItemPropsChange}
           onClick={() => setSelectedItem({ id: id, index: index })}
-          isSelected={!!id && id === selectedItem?.id}
           gameName={gameName}
+          // isSelected={!!id && id === selectedItem?.id} //can be used
         />
       );
     });
@@ -495,7 +498,6 @@ const Stage = ({
   ]);
 
   const [{ isOver, draggingItemType }, dropRef] = useDrop({
-    // accept: Object.keys(ITEM_TYPES),
     accept: ITEM_TYPES,
     drop: (droppedItem) => {
       const { id, type, data, gameName, index } = droppedItem;
@@ -513,7 +515,6 @@ const Stage = ({
 
   useEffect(() => {
     if (isNewItemAdding) {
-      //   const _stageItems = stageItems.filter(({ id }) => !!id);
       const _stageItems = stageItems.filter((item) => item && item.id);
       const startIndex = shouldAddBelow ? hoveredIndex + 1 : hoveredIndex;
       if (isOver && isNewItemAdding) {
@@ -563,7 +564,6 @@ const DND = ({
   setNewHand,
 }) => {
   const [handItems, setHandItems] = useState([]);
-
   const [isNewItemAdding, setNewItemAdding] = useState(false);
   const [selectedItem, setSelectedItem] = useState({});
 
@@ -590,8 +590,6 @@ const DND = ({
       );
       let newItems = [
         ...items.slice(0, startIndex),
-        // { id: items.length + 1, type: type, text },
-        // { id: maxId + 1, type: type, text },
         { id: maxId + 1, type: type, data, gameName },
         ...items.slice(startIndex),
       ];
@@ -601,10 +599,7 @@ const DND = ({
 
       setItems(newItems);
       onNewItems(newItems);
-
       setSelectedItem({
-        // id: items.length + 1,
-        // id: newItems.length + 1,
         id: maxId + 1,
         index: startIndex,
       });
@@ -628,29 +623,18 @@ const DND = ({
       HI = [...HI, ...newHCs];
     }
 
-    // if (newHCs) {
-    //   HI = [...handItems, ...newHCs];
-    // } else {
-    //   HI = handItems;
-    // }
-
     return (
       <Hand
         addNewItem={handleAddNewItem}
         onNewItemAdding={setNewItemAdding}
         selectedItem={selectedItem}
-        // gamerItems={gamerItems}
-        // gamerItems={handItems}
         gamerItems={HI}
         setHandItems={setHandItems}
-        // StyledCards={StyledCards}
-        // gameName={gameName}
       />
     );
   }, [handleAddNewItem, selectedItem, newHCs]);
 
   useEffect(() => {
-    // if (MemoHand) setNewHCs(null);
     if (MemoHand) {
       setNewHCs(null);
       setNewHand(null);
@@ -665,10 +649,8 @@ const DND = ({
         setItems={setItems}
         addNewItem={handleAddNewItem}
         isNewItemAdding={isNewItemAdding}
-        // onNewItemAdding={setNewItemAdding}
         setSelectedItem={setSelectedItem}
         selectedItem={selectedItem}
-        // StyledCards={StyledCards}
       />
       <MemoHand />
     </div>
@@ -676,40 +658,20 @@ const DND = ({
 };
 
 export default function Uno({ roomId, roomToken, user, gameData }) {
-  const [items, setItems] = useState([]);
-
-  const [gamerItems, setGamerItems] = useState([]);
-  const [newHCs, setNewHCs] = useState(null);
-  console.log("gamerItems uno", gamerItems);
-  console.log("items", items);
-  console.log("gameData", gameData);
   const { gamers, phase, mustDraw, hasFreelyDrawn, unoPlayerName, counts } =
     gameData;
   const isAdmin = gameData.admin === user.name;
-
-  const [toDraw, setToDraw] = useState(0);
-
-  const [isLocked, setIsLocked] = useState(false);
-
-  const [choosingColor, setChoosingColor] = useState(false);
-
   const isActive = gameData.activePlayer?.id === user.id;
-
+  const [items, setItems] = useState([]);
+  const [gamerItems, setGamerItems] = useState([]);
+  const [newHCs, setNewHCs] = useState(null);
+  const [toDraw, setToDraw] = useState(0);
+  const [isLocked, setIsLocked] = useState(false);
+  const [choosingColor, setChoosingColor] = useState(false);
   const [isUno, setIsUno] = useState(false);
   const [availableCounter, setAvailableCounter] = useState(false);
   const [counterTimeout, setCounterTimeout] = useState(null);
-
   const [newHand, setNewHand] = useState(null);
-
-  useEffect(() => {
-    gameData.phase === "start" && setNewHCs(gameData.startedCards[user.name]);
-  }, [gameData.phase]);
-
-  useEffect(() => {
-    setItems([{ id: 0, ...gameData.card }]);
-    setIsLocked(!isActive || mustDraw);
-    setToDraw(gameData.toDraw);
-  }, [gameData.card, gameData.activePlayer]);
 
   const checkIsAllowed = ({
     itemType: newItemType,
@@ -782,6 +744,16 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
       unoPlayerName,
     });
   };
+
+  useEffect(() => {
+    phase === "start" && setNewHCs(gameData.startedCards[user.name]);
+  }, [phase]);
+
+  useEffect(() => {
+    setItems([{ id: 0, ...gameData.card }]);
+    setIsLocked(!isActive || mustDraw);
+    setToDraw(gameData.toDraw);
+  }, [gameData.card, gameData.activePlayer]);
 
   useEffect(() => {
     if (phase === "uno") {

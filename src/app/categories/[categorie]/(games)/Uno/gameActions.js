@@ -19,6 +19,7 @@ const getRandomCard = (remainCards) => {
 const getStartedCards = ({ remainCards, gamersAndGuests }) => {
   let startedCards = {};
   let startedRemains = remainCards;
+
   gamersAndGuests.forEach((gamer) => {
     const gamerCards = [];
     for (let i = 7; i > 0; i--) {
@@ -42,7 +43,9 @@ export async function launchGame({
   multiGuests,
   // options,
 }) {
-  if (gamers.length + guests.length + multiGuests.length < 2)
+  if (guests.length)
+    return { error: "Ce jeu est incompatible avec les guests monoscreen." };
+  if (gamers.length + multiGuests.length < 2)
     return { error: "Un plus grand nombre de joueurs est requis." };
 
   const startedRoom = await prisma.room.update({
@@ -62,22 +65,15 @@ export async function launchGame({
   });
 
   let remainCards = Object.keys(unoCards).map((string) => parseInt(string));
-  console.log("remainCards", remainCards);
 
   const { randomCard, newRemainCards } = getRandomCard(remainCards);
   const usedCards = [randomCard.id];
-  console.log("randomCard", randomCard);
-  console.log("newRemainCards", newRemainCards);
-
   remainCards = newRemainCards;
-  console.log("remainCards 2e", remainCards);
 
   const { startedCards, startedRemains } = getStartedCards({
     remainCards,
     gamersAndGuests,
   });
-  console.log("startedCards", startedCards);
-  console.log("startedRemains", startedRemains, startedRemains.length);
 
   const initCounts = async () => {
     await Promise.all(
@@ -158,6 +154,7 @@ const getNextGamer = ({ gameData, card }) => {
 
 export async function skipTurn({ roomToken, gameData }) {
   const { newActivePlayer } = getNextGamer({ gameData, card: null });
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
@@ -289,6 +286,7 @@ export async function goEnd({ roomToken, gameData }) {
         }
       })
     );
+
     await pusher.trigger(`room-${roomToken}`, "room-event", {
       gameData: {
         ...gameData,
