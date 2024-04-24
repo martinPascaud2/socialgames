@@ -131,3 +131,8 @@ model DrawLink {
   Multiguest   Multiguest? @relation(fields: [multiguestId], references: [id])
   multiguestId String?
 }
+
+model triactionAction {
+  id     Int    @id @default(autoincrement())
+  action String
+}

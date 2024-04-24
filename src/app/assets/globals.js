@@ -60,7 +60,12 @@ export const subCategories = {
       description:
         "Découvrez l’unique symbole identique entre deux cartes... avant les autres !",
     },
-    { name: "game8", path: "uno", img: "/uno.jpeg" },
+    {
+      name: "Triaction ",
+      path: "triaction",
+      img: "/triathlon.jpeg",
+      description: "Blablabla eojrnvenrvlejrv ervedv dfvdvf",
+    },
   ],
   categorie2: [
     { name: "game6", path: "uno", img: "/uno.jpeg" },
@@ -80,4 +85,5 @@ export const gamesRefs = {
   ptitbac: { name: "P'tit bac", categorie: "categorie1" },
   drawing: { name: "Dessin", categorie: "categorie1" },
   uno: { name: "Uno", categorie: "categorie1" },
+  triaction: { name: "Triaction", categorie: "categorie1" },
 };
