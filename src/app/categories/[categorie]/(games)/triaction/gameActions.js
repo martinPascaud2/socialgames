@@ -33,7 +33,19 @@ export async function launchGame({
     multiGuests,
   });
 
-  gamersAndGuests[0].place = 1;
+  if (options.mode === "peek") {
+    gamersAndGuests[0].place = 1;
+  } else {
+    const places = gamersAndGuests.map((_, i) => i + 1);
+    gamersAndGuests.forEach((_, index) => {
+      const randomPlaceIndex = Math.floor(Math.random() * places.length);
+      const randomPlace = places[randomPlaceIndex];
+      gamersAndGuests[index].place = randomPlace;
+      places.splice(randomPlaceIndex, 1);
+    });
+  }
+
+  const phase = options.mode === "peek" ? "peek" : "write";
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
@@ -41,7 +53,8 @@ export async function launchGame({
       admin: startedRoom.admin,
       activePlayer: gamersAndGuests[0],
       gamers: gamersAndGuests,
-      phase: "peek",
+      phase,
+      options,
     },
   });
 
@@ -53,15 +66,11 @@ export async function aimPlayer({ aimerPlace, aimed, roomToken, gameData }) {
   const newGamers = [...gamers];
   const aimedIndex = newGamers.findIndex((gamer) => gamer.name === aimed.name);
 
-  let maxPlace = 0;
-  newGamers.forEach((gamer) => {
-    if (gamer.place > maxPlace) maxPlace = gamer.place;
-  });
-  newGamers[aimedIndex].place = maxPlace + 1;
+  newGamers[aimedIndex].place = aimerPlace + 1;
 
   const newActivePlayer = newGamers[aimedIndex];
 
-  const newPhase = maxPlace + 1 === newGamers.length ? "write" : "peek";
+  const newPhase = aimerPlace + 1 === newGamers.length ? "write" : "peek";
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {

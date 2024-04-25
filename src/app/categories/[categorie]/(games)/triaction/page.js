@@ -3,6 +3,7 @@ import { getRoomFriendList } from "@/utils/getFriendList";
 
 import Room from "@/components/Room/Room";
 import Triaction from "./Triaction";
+import TriactionOptions from "./Options";
 import { launchGame } from "./gameActions";
 
 export default async function TriactionPage({ params, searchParams }) {
@@ -30,6 +31,7 @@ export default async function TriactionPage({ params, searchParams }) {
       categorie={params?.categorie}
       gameName="triaction"
       Game={Triaction}
+      Options={TriactionOptions}
       launchGame={launchGame}
     />
   );

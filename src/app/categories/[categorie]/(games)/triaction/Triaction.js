@@ -137,7 +137,9 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
               return (
                 <button
                   key={i}
-                  onClick={() => aim({ aimerPlace: place, aimed: gamer })}
+                  onClick={() =>
+                    isActive && aim({ aimerPlace: place, aimed: gamer })
+                  }
                   className={`rounded-md m-2 px-4 py-2 border text-center ${
                     gamer.place
                       ? "bg-red-300 border-red-600"
