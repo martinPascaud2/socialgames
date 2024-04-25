@@ -33,15 +33,42 @@ export async function launchGame({
     multiGuests,
   });
 
+  gamersAndGuests[0].place = 1;
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
     gameData: {
       admin: startedRoom.admin,
       activePlayer: gamersAndGuests[0],
       gamers: gamersAndGuests,
-      phase: "start",
+      phase: "peek",
     },
   });
 
   return {};
+}
+
+export async function aimPlayer({ aimerPlace, aimed, roomToken, gameData }) {
+  const { gamers } = gameData;
+  const newGamers = [...gamers];
+  const aimedIndex = newGamers.findIndex((gamer) => gamer.name === aimed.name);
+
+  let maxPlace = 0;
+  newGamers.forEach((gamer) => {
+    if (gamer.place > maxPlace) maxPlace = gamer.place;
+  });
+  newGamers[aimedIndex].place = maxPlace + 1;
+
+  const newActivePlayer = newGamers[aimedIndex];
+
+  const newPhase = maxPlace + 1 === newGamers.length ? "write" : "peek";
+
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      activePlayer: newActivePlayer,
+      gamers: newGamers,
+      phase: newPhase,
+    },
+  });
 }
