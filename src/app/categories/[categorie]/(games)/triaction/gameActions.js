@@ -55,6 +55,8 @@ export async function launchGame({
       gamers: gamersAndGuests,
       phase,
       options,
+      actions: {},
+      senders: [],
     },
   });
 
@@ -80,4 +82,37 @@ export async function aimPlayer({ aimerPlace, aimed, roomToken, gameData }) {
       phase: newPhase,
     },
   });
+}
+
+export async function sendActions({
+  sender,
+  aimed,
+  sentActions,
+  roomToken,
+  gameData,
+}) {
+  const { actions, senders } = gameData;
+  const newActions = { ...actions, [aimed.name]: sentActions };
+  const newSenders = [...senders, sender];
+
+  const phase =
+    newSenders.length === gameData.gamers.length ? "exchange" : "write";
+
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      actions: newActions,
+      senders: newSenders,
+      phase,
+    },
+  });
+
+  await Promise.all(
+    Object.values(sentActions).map(async (a) => {
+      const action = await prisma.triactionAction.create({
+        data: { action: a },
+      });
+      return action;
+    })
+  );
 }

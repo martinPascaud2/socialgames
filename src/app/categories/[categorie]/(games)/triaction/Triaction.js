@@ -4,9 +4,16 @@ import { useState, useEffect, useCallback } from "react";
 import "./ripple.css";
 
 import { useLongPress, LongPressEventType } from "use-long-press";
-import { aimPlayer } from "./gameActions";
+import { aimPlayer, sendActions } from "./gameActions";
 
-const RipplingButton = ({ onLongPress, isValidated, setIsValidated }) => {
+import { vampiro } from "@/assets/fonts";
+
+const RipplingButton = ({
+  onLongPress,
+  isValidated,
+  setIsValidated,
+  isActive,
+}) => {
   const [longPressed, setLongPressed] = useState(false);
   const [coords, setCoords] = useState({ x: -1, y: -1 });
   const [isRippling, setIsRippling] = useState(false);
@@ -35,7 +42,7 @@ const RipplingButton = ({ onLongPress, isValidated, setIsValidated }) => {
     if (!isValidated) cancel();
   }, [isValidated]);
 
-  const bind = useLongPress(callback, {
+  const bind = useLongPress(isActive ? callback : null, {
     onStart: (e, meta) => {
       const rect = e.target.getBoundingClientRect();
       setCoords({ x: e.clientX - rect.left, y: e.clientY - rect.top });
@@ -59,8 +66,12 @@ const RipplingButton = ({ onLongPress, isValidated, setIsValidated }) => {
   return (
     <button
       {...bind()}
-      className={`hold-button rounded-md border-0 w-[90%] px-6 py-4 ${
-        !longPressed ? "bg-red-600" : "bg-green-600"
+      className={`hold-button rounded-md border-0 w-full px-6 py-4 ${
+        !longPressed
+          ? !isActive
+            ? "bg-gray-300"
+            : "bg-red-600"
+          : "bg-green-600"
       }  text-white overflow-hidden relative cursor-pointer`}
       onContextMenu={(e) => e.preventDefault()}
     >
@@ -91,12 +102,17 @@ const RipplingButton = ({ onLongPress, isValidated, setIsValidated }) => {
 
 export default function Triaction({ roomId, roomToken, user, gameData }) {
   console.log("gameData", gameData);
-  const { phase, gamers, activePlayer } = gameData;
+  const { phase, gamers, activePlayer, senders } = gameData;
   const isActive = gameData.activePlayer?.id === user.id;
   const [isValidated, setIsValidated] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
+  const [aimed, setAimed] = useState();
   const place = gamers.find((gamer) => gamer.name === user.name).place;
+
+  const [actions, setActions] = useState({});
+  const [readyActions, setReadyActions] = useState(false);
+  const [waiting, setWaiting] = useState(false);
 
   const aim = async ({ aimerPlace, aimed }) => {
     if (aimed.place) return;
@@ -107,15 +123,47 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
     setShowConfirm(true);
   };
 
-  const confirm = () => {};
+  const confirm = async () => {
+    setWaiting(true);
+    await sendActions({
+      sender: gamers.find((gamer) => gamer.name === user.name),
+      aimed,
+      sentActions: actions,
+      roomToken,
+      gameData,
+    });
+  };
 
   const cancel = () => {
     setIsValidated(false);
     setShowConfirm(false);
   };
 
+  useEffect(() => {
+    if (phase === "write") {
+      const userPlace = gamers.find((gamer) => gamer.name === user.name).place;
+      const aimed = gamers.find(
+        (gamer) => gamer.place === (userPlace % gamers.length) + 1
+      );
+      setAimed(aimed);
+    }
+  }, [phase]);
+
+  useEffect(() => {
+    if (phase !== "write") return;
+    let ready = true;
+    if (Object.keys(actions).length < 3) ready = false;
+    Object.values(actions).forEach((action) => {
+      if (action.length < 5) {
+        ready = false;
+        return;
+      }
+    });
+    setReadyActions(ready);
+  }, [actions]);
+
   return (
-    <div className="flex flex-col items-center justify-center py-2 h-[80vh]">
+    <div className="flex flex-col items-center justify-center py-2 h-[80vh] w-full">
       {phase === "peek" && (
         <>
           <div className="mx-3 text-center">
@@ -153,40 +201,118 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
           </div>
         </>
       )}
-      {phase === "write" && (
-        <>
-          <RipplingButton
-            onLongPress={validate}
-            isValidated={isValidated}
-            setIsValidated={setIsValidated}
-          />
 
-          {!showConfirm ? (
-            <div className="flex justify-center m-2">
-              Envoyer les trois actions à X .
-            </div>
+      {phase === "write" && (
+        <div className="w-[90%] m-2 flex flex-col items-center">
+          {!waiting ? (
+            <>
+              <RipplingButton
+                onLongPress={validate}
+                isValidated={isValidated}
+                setIsValidated={setIsValidated}
+                isActive={readyActions}
+              />
+
+              {!showConfirm ? (
+                <div className="flex justify-center m-2">
+                  {!readyActions ? (
+                    <div>
+                      <span className="font-semibold">Ecris</span> tes trois
+                      actions pour{" "}
+                      <span className="font-semibold">{aimed?.name} </span>.
+                    </div>
+                  ) : (
+                    <div>
+                      <span className="font-semibold">Envoyer</span> les trois
+                      actions à{" "}
+                      <span className="font-semibold">{aimed?.name} </span>.
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div className="flex flex-col w-[90%]">
+                  <div className="flex justify-center text-center m-2">
+                    Ces trois gages ne seront plus modifiables, tu confirmes ?
+                  </div>
+                  <div className="flex justify-evenly w-full">
+                    <button
+                      onClick={() => confirm()}
+                      className="rounded-md border border-green-300 bg-green-100 px-4 py-2"
+                    >
+                      Confirmer
+                    </button>
+                    <button
+                      onClick={() => cancel()}
+                      className="rounded-md border border-red-300 bg-red-100 px-4 py-2"
+                    >
+                      Modifier
+                    </button>
+                  </div>
+                </div>
+              )}
+              {[1, 2, 3].map((number) => (
+                <div
+                  key={number}
+                  className="w-full rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center"
+                >
+                  <label>Action {number}</label>
+                  {!showConfirm ? (
+                    <textarea
+                      rows={2}
+                      value={actions[number]}
+                      onChange={(e) =>
+                        setActions((prevActions) => ({
+                          ...prevActions,
+                          [number]: e.target.value,
+                        }))
+                      }
+                      className={`${vampiro.className} border focus:outline-none focus:border-2 w-full p-2 m-2 text-center`}
+                    />
+                  ) : (
+                    <div
+                      className={`${vampiro.className} w-full p-2 m-2 text-center`}
+                    >
+                      {actions[number]}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </>
           ) : (
-            <div className="flex flex-col w-[90%]">
-              <div className="flex justify-center text-center m-2">
-                Ces trois gages ne seront plus modifiables, tu confirmes ?
+            <>
+              <div>
+                {[...gamers.map((gamer) => gamer.name)]
+                  .sort()
+                  .map((gamer, i) => {
+                    const hasSent =
+                      senders.find((sender) => sender.name === gamer) !==
+                      undefined;
+                    return (
+                      <div key={i} className="flex justify-center items-center">
+                        <div
+                          className={`w-20 m-2 py-4 px-2 text-center rounded-md border ${
+                            hasSent
+                              ? "border-green-300 bg-green-100"
+                              : "border-red-300 bg-red-100"
+                          }`}
+                        >
+                          {gamer}
+                        </div>
+                        <div
+                          className={`w-20 m-2 ${
+                            hasSent ? "text-green-300" : "text-red-300"
+                          }`}
+                        >
+                          {hasSent ? "Validé" : "En attente"}
+                        </div>
+                      </div>
+                    );
+                  })}
               </div>
-              <div className="flex justify-evenly w-full">
-                <button
-                  onClick={() => confirm()}
-                  className="rounded-md border border-green-300 bg-green-100 px-4 py-2"
-                >
-                  Confirmer
-                </button>
-                <button
-                  onClick={() => cancel()}
-                  className="rounded-md border border-red-300 bg-red-100 px-4 py-2"
-                >
-                  Modifier
-                </button>
-              </div>
-            </div>
+              <div className="m-4">Les joueurs rédigent les actions</div>
+            </>
           )}
-        </>
+        </div>
       )}
     </div>
   );
