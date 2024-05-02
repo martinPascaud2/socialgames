@@ -95,15 +95,11 @@ export async function sendActions({
   const newActions = { ...actions, [aimed.name]: sentActions };
   const newSenders = [...senders, sender];
 
-  const phase =
-    newSenders.length === gameData.gamers.length ? "exchange" : "write";
-
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
       actions: newActions,
       senders: newSenders,
-      phase,
     },
   });
 
@@ -115,4 +111,33 @@ export async function sendActions({
       return action;
     })
   );
+
+  if (newSenders.length === gameData.gamers.length) {
+    setTimeout(async () => {
+      await pusher.trigger(`room-${roomToken}`, "room-event", {
+        gameData: {
+          ...gameData,
+          phase: "exchange",
+          actions: newActions,
+          senders: newSenders,
+        },
+      });
+    }, 2000);
+  }
+}
+
+export async function sendActionBack({ backed, roomToken, gameData }) {
+  const { actions } = gameData;
+  const { aimed, action } = backed;
+
+  const gamerActions = actions[aimed.name];
+  const newGamerActions = { ...gamerActions, backed: action };
+  const newActions = { ...actions, [aimed.name]: newGamerActions };
+
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      actions: newActions,
+    },
+  });
 }
