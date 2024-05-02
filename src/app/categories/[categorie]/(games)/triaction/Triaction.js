@@ -4,7 +4,12 @@ import { useState, useEffect, useCallback } from "react";
 import "./ripple.css";
 
 import { useLongPress, LongPressEventType } from "use-long-press";
-import { aimPlayer, sendActions, sendActionBack } from "./gameActions";
+import {
+  aimPlayer,
+  sendActions,
+  sendActionBack,
+  proposeAction,
+} from "./gameActions";
 
 import { vampiro } from "@/assets/fonts";
 
@@ -101,6 +106,37 @@ const RipplingButton = ({
   );
 };
 
+const PendingGamerList = ({ gamers, senders }) => {
+  return (
+    <div>
+      {[...gamers.map((gamer) => gamer.name)].sort().map((gamer, i) => {
+        const hasSent =
+          senders.find((sender) => sender.name === gamer) !== undefined;
+        return (
+          <div key={i} className="flex justify-center items-center">
+            <div
+              className={`w-20 m-2 py-4 px-2 text-center rounded-md border ${
+                hasSent
+                  ? "border-green-300 bg-green-100"
+                  : "border-red-300 bg-red-100"
+              }`}
+            >
+              {gamer}
+            </div>
+            <div
+              className={`w-20 m-2 ${
+                hasSent ? "text-green-300" : "text-red-300"
+              }`}
+            >
+              {hasSent ? "Validé" : "En attente"}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 export default function Triaction({ roomId, roomToken, user, gameData }) {
   console.log("gameData", gameData);
   const { phase, gamers, activePlayer, senders } = gameData;
@@ -118,7 +154,10 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
   const [previous, setPrevious] = useState();
   const [selected, setSelected] = useState({});
   const [sentBack, setSentBack] = useState({});
-  const [isProposed, setIsProposed] = useState(false); // { aimer, aimed, proposed: {id, action}, hidden: {id, action} }
+  const [isProposed, setIsProposed] = useState(false);
+
+  const [showChoose, setShowChoose] = useState("backed");
+  const [chooseTimeout, setChooseTimeout] = useState();
 
   const aim = async ({ aimerPlace, aimed }) => {
     if (aimed.place) return;
@@ -188,16 +227,38 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
     setSelected({});
   };
 
-  useEffect(() => {
-    if (phase !== "exchange") return;
-  }, [actions]);
-
   const propose = async () => {
-    console.log("propose");
+    let hidden;
+    for (let key in actions) {
+      if (key !== "backed" && key !== sentBack.id && key !== selected.id)
+        hidden = { id: key, action: actions[key] };
+    }
+    setIsProposed(true);
+    await proposeAction({
+      sender: gamers.find((gamer) => gamer.name === user.name),
+      aimedName: aimed.name,
+      proposed: selected,
+      hidden,
+      roomToken,
+      gameData,
+    });
   };
 
+  useEffect(() => {
+    if (phase !== "choose") return;
+    setChooseTimeout(
+      setTimeout(() => {
+        setShowChoose("long");
+      }, 5000)
+    );
+
+    return () => {
+      clearTimeout(chooseTimeout);
+    };
+  }, [phase]);
+
   return (
-    <div className="flex flex-col items-center justify-center py-2 h-[80vh] w-full">
+    <div className="flex flex-col items-center justify-center py-2 h-full w-full relative">
       {phase === "peek" && (
         <>
           <div className="mx-3 text-center">
@@ -314,35 +375,8 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
             </>
           ) : (
             <>
-              <div>
-                {[...gamers.map((gamer) => gamer.name)]
-                  .sort()
-                  .map((gamer, i) => {
-                    const hasSent =
-                      senders.find((sender) => sender.name === gamer) !==
-                      undefined;
-                    return (
-                      <div key={i} className="flex justify-center items-center">
-                        <div
-                          className={`w-20 m-2 py-4 px-2 text-center rounded-md border ${
-                            hasSent
-                              ? "border-green-300 bg-green-100"
-                              : "border-red-300 bg-red-100"
-                          }`}
-                        >
-                          {gamer}
-                        </div>
-                        <div
-                          className={`w-20 m-2 ${
-                            hasSent ? "text-green-300" : "text-red-300"
-                          }`}
-                        >
-                          {hasSent ? "Validé" : "En attente"}
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
+              <PendingGamerList gamers={gamers} senders={senders} />
+
               <div className="m-4">Les joueurs rédigent les actions</div>
             </>
           )}
@@ -351,120 +385,171 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
 
       {phase === "exchange" && (
         <>
-          {!Object.keys(sentBack).length ? (
-            <div className="w-[90%] flex flex-col items-center">
-              <RipplingButton
-                onLongPress={sendBack}
-                isValidated={isValidated}
-                setIsValidated={setIsValidated}
-                isActive={!!selected.id}
-              />
-              <div className="w-full flex text-center justify-center m-2">
-                {!selected.id ? (
-                  <div>
-                    <span className="font-semibold">Sélectionne</span> une
-                    action à rendre à
+          {!isProposed ? (
+            <>
+              {!Object.keys(sentBack).length ? (
+                <div className="w-[90%] flex flex-col items-center">
+                  <RipplingButton
+                    onLongPress={sendBack}
+                    isValidated={isValidated}
+                    setIsValidated={setIsValidated}
+                    isActive={!!selected.id}
+                  />
+                  <div className="w-full flex text-center justify-center m-2">
+                    {!selected.id ? (
+                      <div>
+                        <span className="font-semibold">Sélectionne</span> une
+                        action à <span className="font-semibold">rendre</span> à
+                      </div>
+                    ) : (
+                      <div>
+                        <span className="font-semibold">Rendre</span> cette
+                        action à
+                      </div>
+                    )}
+                    <span className="font-semibold">
+                      &nbsp;{previous?.name}&nbsp;.
+                    </span>
                   </div>
-                ) : (
-                  <div>
-                    <span className="font-semibold">Rendre</span> cette action à
-                  </div>
-                )}
-                <span className="font-semibold">
-                  &nbsp;{previous?.name}&nbsp;.
-                </span>
-              </div>
-              {Object.entries(actions).map((action) => (
-                <div
-                  key={action[0]}
-                  onClick={() => {
-                    if (
-                      Object.keys(selected)?.length &&
-                      selected.id === action[0]
-                    )
-                      setSelected({});
-                    else if (!Object.keys(selected)?.length)
-                      setSelected({
-                        id: action[0],
-                        aimed: previous,
-                        action: action[1],
-                      });
-                  }}
-                  className={`${
-                    selected?.id === action[0] && "bg-green-100"
-                  } w-full rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center`}
-                >
-                  <label>Action {action[0]}</label>
-                  <div
-                    className={`${vampiro.className} w-full p-2 m-2 text-center`}
-                  >
-                    {action[1]}
-                  </div>
+                  {Object.entries(actions).map((action) => (
+                    <div
+                      key={action[0]}
+                      onClick={() => {
+                        if (
+                          Object.keys(selected)?.length &&
+                          selected.id === action[0]
+                        )
+                          setSelected({});
+                        else if (!Object.keys(selected)?.length)
+                          setSelected({
+                            id: action[0],
+                            aimed: previous,
+                            action: action[1],
+                          });
+                      }}
+                      className={`${
+                        selected?.id === action[0] && "bg-green-100"
+                      } w-full rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center`}
+                    >
+                      <label>Action {action[0]}</label>
+                      <div
+                        className={`${vampiro.className} w-full p-2 m-2 text-center`}
+                      >
+                        {action[1]}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              ) : (
+                <div className="w-[90%] flex flex-col items-center">
+                  <RipplingButton
+                    onLongPress={propose}
+                    isValidated={isValidated}
+                    setIsValidated={setIsValidated}
+                    isActive={!!selected.id}
+                  />
+                  <div className="w-full flex text-center justify-center flex-wrap m-2">
+                    {!selected.id ? (
+                      <div>
+                        <span className="font-semibold">Sélectionne</span> une
+                        action à <span className="font-semibold">proposer</span>{" "}
+                        à
+                      </div>
+                    ) : (
+                      <div>
+                        <span className="font-semibold">Proposer</span> à
+                      </div>
+                    )}
+                    <span className="font-semibold">
+                      &nbsp;{aimed?.name}&nbsp;.
+                    </span>
+                  </div>
+                  {Object.entries(actions).map((action) => {
+                    if (action[0] === "backed") return;
+                    const isBacked = action[0] === sentBack.id;
+                    return (
+                      <div
+                        key={action[0]}
+                        onClick={() => {
+                          if (isBacked) return;
+                          if (
+                            Object.keys(selected)?.length &&
+                            selected.id === action[0]
+                          )
+                            setSelected({});
+                          else if (!Object.keys(selected)?.length)
+                            setSelected({
+                              //check
+                              id: action[0],
+                              action: action[1],
+                            });
+                        }}
+                        className={`${
+                          isBacked
+                            ? "bg-gray-300"
+                            : selected?.id === action[0] && "bg-green-100"
+                        } w-full rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center`}
+                      >
+                        <label>Action {action[0]}</label>
+                        <div
+                          className={`${vampiro.className} w-full p-2 m-2 text-center`}
+                        >
+                          {action[1]}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </>
           ) : (
-            <div className="w-[90%] flex flex-col items-center">
-              <RipplingButton
-                onLongPress={propose}
-                isValidated={isValidated}
-                setIsValidated={setIsValidated}
-                isActive={!!selected.id}
-              />
-              <div className="w-full flex text-center justify-center flex-wrap m-2">
-                {!selected.id ? (
-                  <div>
-                    <span className="font-semibold">Sélectionne</span> une
-                    action à proposer à
-                  </div>
-                ) : (
-                  <div>
-                    <span className="font-semibold">Proposer</span> à
-                  </div>
-                )}
-                <span className="font-semibold">
-                  &nbsp;{aimed?.name}&nbsp;.
-                </span>
+            <>
+              <PendingGamerList gamers={gamers} senders={senders} />
+              <div className="m-4 text-center">
+                Les joueurs renvoient et proposent leurs actions
               </div>
-              {Object.entries(actions).map((action) => {
-                if (action[0] === "backed") return;
-                const isBacked = action[0] === sentBack.id;
+            </>
+          )}
+        </>
+      )}
+
+      {phase === "choose" && (
+        <div
+          className="w-full h-full flex flex-col justify-center items-center bg-gray-300"
+          onClick={() => {
+            clearTimeout(chooseTimeout);
+            setShowChoose("proposition");
+          }}
+        >
+          {showChoose !== "proposition" &&
+            (() => {
+              const backed = gameData.actions[user.name].backed;
+              const Press = () => {
+                if (showChoose === "backed") return null;
                 return (
-                  <div
-                    key={action[0]}
-                    onClick={() => {
-                      if (isBacked) return;
-                      if (
-                        Object.keys(selected)?.length &&
-                        selected.id === action[0]
-                      )
-                        setSelected({});
-                      else if (!Object.keys(selected)?.length)
-                        setSelected({
-                          //check
-                          id: action[0],
-                          aimed,
-                          action: action[1],
-                        });
-                    }}
-                    className={`${
-                      isBacked
-                        ? "bg-gray-300"
-                        : selected?.id === action[0] && "bg-green-100"
-                    } w-full rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center`}
-                  >
-                    <label>Action {action[0]}</label>
+                  <div className="text-white font-bold animate-bounce">
+                    APPUIE
+                  </div>
+                );
+              };
+              return (
+                <>
+                  <Press />
+                  <div className="w-[90%] rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center bg-white">
+                    <label>Action rendue par {aimed.name}</label>
                     <div
                       className={`${vampiro.className} w-full p-2 m-2 text-center`}
                     >
-                      {action[1]}
+                      {backed}
                     </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </>
+                  <Press />
+                </>
+              );
+            })()}
+
+          {showChoose === "proposition" && <div>corneille</div>}
+        </div>
       )}
     </div>
   );

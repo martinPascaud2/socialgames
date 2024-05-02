@@ -119,7 +119,7 @@ export async function sendActions({
           ...gameData,
           phase: "exchange",
           actions: newActions,
-          senders: newSenders,
+          senders: [],
         },
       });
     }, 2000);
@@ -140,4 +140,43 @@ export async function sendActionBack({ backed, roomToken, gameData }) {
       actions: newActions,
     },
   });
+}
+
+export async function proposeAction({
+  sender,
+  aimedName,
+  proposed,
+  hidden,
+  roomToken,
+  gameData,
+}) {
+  const propositions = gameData.propositions || {};
+  const newPropositions = {
+    ...propositions,
+    [aimedName]: { sender: sender.name, proposed, hidden },
+  };
+
+  const { senders } = gameData;
+  const newSenders = [...senders, sender];
+
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      propositions: newPropositions,
+      senders: newSenders,
+    },
+  });
+
+  if (newSenders.length === gameData.gamers.length) {
+    setTimeout(async () => {
+      await pusher.trigger(`room-${roomToken}`, "room-event", {
+        gameData: {
+          ...gameData,
+          phase: "choose",
+          propositions: newPropositions,
+          senders: [],
+        },
+      });
+    }, 2000);
+  }
 }
