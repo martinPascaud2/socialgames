@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import "./ripple.css";
 
 import { useLongPress, LongPressEventType } from "use-long-press";
@@ -137,6 +137,106 @@ const PendingGamerList = ({ gamers, senders }) => {
   );
 };
 
+const SlidingCard = ({ onDecision, sender, action }) => {
+  const containerRef = useRef(null);
+  const [startX, setStartX] = useState(null);
+  const [translateX, setTranslateX] = useState(0);
+
+  const windowWidth = Math.floor(window.innerWidth);
+
+  const handleTouchStart = (e) => {
+    setStartX(e.touches[0].clientX);
+    setTranslateX(0);
+  };
+
+  const handleTouchMove = (e) => {
+    if (!startX) return;
+    const currentX = e.touches[0].clientX * 1.2;
+    const deltaX = currentX - startX;
+    setTranslateX(deltaX);
+  };
+
+  const handleTouchEnd = () => {
+    if (Math.abs(acceptation) < 100) {
+      setTranslateX(0);
+    } else {
+      onDecision({ decision: acceptation < 0 ? "accept" : "refuse" });
+    }
+  };
+
+  const acceptation = ((translateX * 100) / windowWidth) * 1.5;
+
+  const AcceptText = useCallback(() => {
+    return (
+      <div className="text-2xl">
+        <span
+          style={{
+            background:
+              acceptation >= 0
+                ? `linear-gradient(to right, transparent ${acceptation}%, white 0%, white ${
+                    100 - acceptation
+                  }%)`
+                : `linear-gradient(to left, green ${-acceptation}%, white 0%, white ${
+                    100 + acceptation
+                  }%)`,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            color: "transparent",
+          }}
+        >
+          {"<< "}ACCEPTER{" <<"}
+        </span>
+      </div>
+    );
+  }, [translateX]);
+
+  const RefuseText = useCallback(() => {
+    return (
+      <div className="text-2xl">
+        <span
+          style={{
+            background:
+              acceptation >= 0
+                ? `linear-gradient(to right, red ${acceptation}%, white 0%, white ${
+                    100 - acceptation
+                  }%)`
+                : `linear-gradient(to left, transparent ${-acceptation}%, white 0%, white ${
+                    100 + acceptation
+                  }%)`,
+            WebkitBackgroundClip: "text",
+            WebkitTextFillColor: "transparent",
+            color: "transparent",
+          }}
+        >
+          {">> "}REFUSER{" >>"}
+        </span>
+      </div>
+    );
+  }, [translateX]);
+
+  return (
+    <div className="w-[90%] flex flex-col items-center justify-center">
+      <AcceptText />
+      <div
+        ref={containerRef}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onClick={(e) => e.preventDefault()}
+        className={`touch-none p-4 bg-white w-full rounded-md border border-slate-300 my-2 flex flex-col items-center`}
+        style={{ transform: `translateX(${translateX}px)` }}
+      >
+        <label>Action proposée par {sender.name}</label>
+
+        <div className={`${vampiro.className} w-full p-2 m-2 text-center`}>
+          {action}
+        </div>
+      </div>
+      <RefuseText />
+    </div>
+  );
+};
+
 export default function Triaction({ roomId, roomToken, user, gameData }) {
   console.log("gameData", gameData);
   const { phase, gamers, activePlayer, senders } = gameData;
@@ -256,6 +356,10 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
       clearTimeout(chooseTimeout);
     };
   }, [phase]);
+
+  const onDecision = ({ decision }) => {
+    console.log("decision", decision);
+  };
 
   return (
     <div className="flex flex-col items-center justify-center py-2 h-full w-full relative">
@@ -515,7 +619,7 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
 
       {phase === "choose" && (
         <div
-          className="w-full h-full flex flex-col justify-center items-center bg-gray-300"
+          className="w-full h-full flex flex-col justify-center items-center bg-gray-400"
           onClick={() => {
             clearTimeout(chooseTimeout);
             setShowChoose("proposition");
@@ -527,7 +631,7 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
               const Press = () => {
                 if (showChoose === "backed") return null;
                 return (
-                  <div className="text-white font-bold animate-bounce">
+                  <div className="text-white font-bold animate-bounce m-4">
                     APPUIE
                   </div>
                 );
@@ -548,7 +652,13 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
               );
             })()}
 
-          {showChoose === "proposition" && <div>corneille</div>}
+          {showChoose === "proposition" && (
+            <SlidingCard
+              onDecision={onDecision}
+              sender={previous}
+              action={gameData.propositions[user.name].proposed.action}
+            />
+          )}
         </div>
       )}
     </div>
