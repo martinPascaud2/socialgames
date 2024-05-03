@@ -9,6 +9,7 @@ import {
   sendActions,
   sendActionBack,
   proposeAction,
+  sendPropositionBack,
 } from "./gameActions";
 
 import { vampiro } from "@/assets/fonts";
@@ -161,6 +162,7 @@ const SlidingCard = ({ onDecision, sender, action }) => {
       setTranslateX(0);
     } else {
       onDecision({ decision: acceptation < 0 ? "accept" : "refuse" });
+      //   setTranslateX(0);
     }
   };
 
@@ -259,6 +261,8 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
   const [showChoose, setShowChoose] = useState("backed");
   const [chooseTimeout, setChooseTimeout] = useState();
 
+  const [keptOne, setKeptOne] = useState();
+
   const aim = async ({ aimerPlace, aimed }) => {
     if (aimed.place) return;
     await aimPlayer({ aimerPlace, aimed, roomToken, gameData });
@@ -313,13 +317,6 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
     setReadyActions(ready);
   }, [actions]);
 
-  console.log("actions", actions);
-  console.log("aimed", aimed);
-  console.log("previous", previous);
-  console.log("selected", selected);
-  console.log("isProposed", isProposed);
-  console.log("isValidated", isValidated);
-
   const sendBack = async () => {
     setSentBack(selected);
     setIsValidated(false);
@@ -359,7 +356,41 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
 
   const onDecision = ({ decision }) => {
     console.log("decision", decision);
+    const proposer = gameData.propositions[user.name].sender;
+    let kept;
+    let backed;
+    if (decision === "accept") {
+      kept = gameData.propositions[user.name].proposed;
+      backed = gameData.propositions[user.name].hidden;
+      setShowChoose("waiting");
+    } else {
+      kept = gameData.propositions[user.name].hidden;
+      backed = gameData.propositions[user.name].proposed;
+      setShowChoose("hiddenReveal");
+    }
+
+    sendPropositionBack({
+      proposer,
+      keeper: gamers.find((gamer) => gamer.name === user.name),
+      kept,
+      backed,
+      roomToken,
+      gameData,
+    });
   };
+
+  useEffect(() => {
+    if (showChoose !== "hiddenReveal") return;
+    setChooseTimeout(
+      setTimeout(() => {
+        setShowChoose("hiddenLong");
+      }, 5000)
+    );
+
+    return () => {
+      clearTimeout(chooseTimeout);
+    };
+  }, [showChoose]);
 
   return (
     <div className="flex flex-col items-center justify-center py-2 h-full w-full relative">
@@ -622,10 +653,20 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
           className="w-full h-full flex flex-col justify-center items-center bg-gray-400"
           onClick={() => {
             clearTimeout(chooseTimeout);
-            setShowChoose("proposition");
+            let newChoose;
+            if (["backed", "long"].some((moment) => moment === showChoose))
+              newChoose = "proposition";
+            else if (
+              ["hiddenReveal", "hiddenLong"].some(
+                (moment) => moment === showChoose
+              )
+            )
+              newChoose = "waiting";
+            newChoose && setShowChoose(newChoose);
+            // setShowChoose("proposition");
           }}
         >
-          {showChoose !== "proposition" &&
+          {(showChoose === "long" || showChoose === "backed") &&
             (() => {
               const backed = gameData.actions[user.name].backed;
               const Press = () => {
@@ -659,8 +700,81 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
               action={gameData.propositions[user.name].proposed.action}
             />
           )}
+
+          {(showChoose === "hiddenReveal" || showChoose === "hiddenLong") &&
+            (() => {
+              const hidden = gameData.actions[user.name].kept?.action;
+              const Press = () => {
+                if (showChoose === "hiddenReveal") return null;
+                return (
+                  <div className="text-white font-bold animate-bounce m-4">
+                    APPUIE
+                  </div>
+                );
+              };
+
+              return (
+                <>
+                  <Press />
+                  <div className="w-[90%] rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center bg-white">
+                    <label>Action cachée de {previous.name}</label>
+                    <div
+                      className={`${vampiro.className} w-full p-2 m-2 text-center`}
+                    >
+                      {hidden}
+                    </div>
+                  </div>
+                  <Press />
+                </>
+              );
+            })()}
+
+          {showChoose === "waiting" && (
+            <>
+              <PendingGamerList gamers={gamers} senders={senders} />
+              <div className="m-4 text-center">
+                Les joueurs choissent : l'action visible ou cachée ?
+              </div>
+            </>
+          )}
         </div>
       )}
+
+      {phase === "finalReveal" &&
+        (() => {
+          const actions = gameData.actions[user.name];
+          const backed = {
+            label: `Action renvoyée par ${aimed.name}`,
+            action: actions.backed,
+          };
+          const kept = {
+            label: `Proposition de ${previous.name} acceptée`,
+            action: actions.kept.action,
+          };
+          const proposedBack = {
+            label: `Proposition non acceptée par ${aimed.name}`,
+            action: actions.proposedBack.action,
+          };
+
+          const FinalCard = ({ data }) => (
+            <div className="w-[90%] rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center bg-white">
+              <label>{data.label}</label>
+              <div
+                className={`${vampiro.className} w-full p-2 m-2 text-center`}
+              >
+                {data.action}
+              </div>
+            </div>
+          );
+
+          return (
+            <>
+              <FinalCard data={backed} />
+              <FinalCard data={kept} />
+              <FinalCard data={proposedBack} />
+            </>
+          );
+        })()}
     </div>
   );
 }

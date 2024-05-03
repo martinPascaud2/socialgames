@@ -180,3 +180,48 @@ export async function proposeAction({
     }, 2000);
   }
 }
+
+export async function sendPropositionBack({
+  proposer,
+  keeper,
+  kept,
+  backed,
+  roomToken,
+  gameData,
+}) {
+  const { actions, senders } = gameData;
+
+  const proposerActions = actions[proposer];
+  const keeperActions = actions[keeper.name];
+
+  const newProposerActions = { ...proposerActions, proposedBack: backed };
+  const newKeeperActions = { ...keeperActions, kept };
+  const newActions = {
+    ...actions,
+    [proposer]: newProposerActions,
+    [keeper.name]: newKeeperActions,
+  };
+
+  const newSenders = [...senders, keeper];
+
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      actions: newActions,
+      senders: newSenders,
+    },
+  });
+
+  if (newSenders.length === gameData.gamers.length) {
+    setTimeout(async () => {
+      await pusher.trigger(`room-${roomToken}`, "room-event", {
+        gameData: {
+          ...gameData,
+          phase: "finalReveal",
+          actions: newActions,
+          senders: newSenders,
+        },
+      });
+    }, 2000);
+  }
+}
