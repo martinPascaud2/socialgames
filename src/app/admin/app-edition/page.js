@@ -38,6 +38,12 @@ export default function EditionPage() {
       >
         Dessin
       </Link>
+      <Link
+        href="/admin/app-edition/triaction"
+        className="w-1/3 text-center border border-blue-300 bg-blue-100"
+      >
+        Triaction
+      </Link>
     </>
   );
 }
