@@ -76,10 +76,10 @@ const RipplingButton = ({
       className={`hold-button rounded-md border-0 w-full px-6 py-4 ${
         !longPressed
           ? !isActive
-            ? "bg-gray-300"
-            : "bg-red-600"
-          : "bg-green-600"
-      }  text-white overflow-hidden relative cursor-pointer`}
+            ? "bg-slate-400"
+            : "bg-red-800"
+          : "bg-lime-800"
+      }  text-slate-100 overflow-hidden relative cursor-pointer`}
       onContextMenu={(e) => e.preventDefault()}
     >
       {isRippling && !longPressed ? (
@@ -261,8 +261,6 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
   const [showChoose, setShowChoose] = useState("backed");
   const [chooseTimeout, setChooseTimeout] = useState();
 
-  const [keptOne, setKeptOne] = useState();
-
   const aim = async ({ aimerPlace, aimed }) => {
     if (aimed.place) return;
     await aimPlayer({ aimerPlace, aimed, roomToken, gameData });
@@ -393,7 +391,7 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
   }, [showChoose]);
 
   return (
-    <div className="flex flex-col items-center justify-center py-2 h-full w-full relative">
+    <div className="flex flex-col items-center justify-center py-2 h-full w-full relative bg-gradient-to-b from-slate-300 to-amber-300">
       {phase === "peek" && (
         <>
           <div className="mx-3 text-center">
@@ -444,7 +442,7 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
               />
 
               {!showConfirm ? (
-                <div className="flex justify-center m-2">
+                <div className="flex justify-center m-2 text-slate-900">
                   {!readyActions ? (
                     <div>
                       <span className="font-semibold">Ecris</span> tes trois
@@ -467,13 +465,13 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
                   <div className="flex justify-evenly w-full">
                     <button
                       onClick={() => confirm()}
-                      className="rounded-md border border-green-300 bg-green-100 px-4 py-2"
+                      className="rounded-md border border-lime-800 bg-lime-600 text-slate-100 font-bold tracking-wide px-4 py-2"
                     >
                       Confirmer
                     </button>
                     <button
                       onClick={() => cancel()}
-                      className="rounded-md border border-red-300 bg-red-100 px-4 py-2"
+                      className="rounded-md border border-red-800 bg-red-600 text-slate-100 font-bold tracking-wide px-4 py-2"
                     >
                       Modifier
                     </button>
@@ -483,9 +481,11 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
               {[1, 2, 3].map((number) => (
                 <div
                   key={number}
-                  className="w-full rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center"
+                  className="w-full rounded-md border border-lime-800 my-3 py-2 px-4 flex flex-col items-center shadow-lg shadow-lime-900 bg-lime-700"
                 >
-                  <label>Action {number}</label>
+                  <label className="font-bold text-slate-100 tracking-wide">
+                    Action {number}
+                  </label>
                   {!showConfirm ? (
                     <textarea
                       rows={2}
@@ -496,11 +496,11 @@ export default function Triaction({ roomId, roomToken, user, gameData }) {
                           [number]: e.target.value,
                         }))
                       }
-                      className={`${vampiro.className} border focus:outline-none focus:border-2 w-full p-2 m-2 text-center`}
+                      className={`${vampiro.className} border border-lime-800 focus:outline-none focus:border-lime-800 focus:ring-1 focus:ring-inset focus:ring-lime-800 w-full p-2 m-2 text-center text-lg bg-slate-100 text-slate-900`}
                     />
                   ) : (
                     <div
-                      className={`${vampiro.className} w-full p-2 m-2 text-center`}
+                      className={`${vampiro.className} w-full p-2 m-2 text-center text-red-900 text-lg bg-lime-100 border-4 border-double border-lime-800`}
                     >
                       {actions[number]}
                     </div>
