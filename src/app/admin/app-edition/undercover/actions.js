@@ -46,3 +46,15 @@ export async function addWord(themeId, prevState, formData) {
     };
   }
 }
+
+export async function deleteWord({ word }) {
+  await prisma.undercoverword.delete({ where: { id: word.id } });
+}
+
+export async function deleteTheme({ theme }) {
+  await prisma.undercoverword.deleteMany({ where: { themeId: theme.id } });
+  await prisma.undercoverthemesOnUsers.deleteMany({
+    where: { undercoverthemeId: theme.id },
+  });
+  await prisma.undercovertheme.delete({ where: { id: theme.id } });
+}
