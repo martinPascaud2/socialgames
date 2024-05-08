@@ -26,6 +26,9 @@ export async function addTheme(prevState, formData) {
 
 export async function deleteTheme({ id }) {
   try {
+    await prisma.ptitbacthemesOnUsers.deleteMany({
+      where: { ptitbacthemeId: id },
+    });
     await prisma.ptitbactheme.delete({ where: { id: id } });
   } catch (error) {
     console.error("deleteTheme error:", error);
