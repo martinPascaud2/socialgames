@@ -1,12 +1,11 @@
 export const categories = [
-  { name: "Catégorie 1", href: "/categories/categorie1" },
-  { name: "Catégorie 2", href: "/categories/categorie2" },
-  { name: "Catégorie 3", href: "/" },
-  { name: "Catégorie 4", href: "/" },
-  { name: "Catégorie 5", href: "/" },
-  { name: "Catégorie 6", href: "/" },
-  { name: "Catégorie 7", href: "/" },
-  { name: "Catégorie 8", href: "/" },
+  { name: "CEREBRAL", href: "/categories/categorie1" },
+  { name: "CULTURE", href: "/categories/categorie2" },
+  { name: "FAMILLE", href: "/" },
+  { name: "CARTES", href: "/" },
+  { name: "SOCIAL", href: "/" },
+  { name: "AUTRE", href: "/" },
+  { name: "CHALLENGE", href: "/" },
 ];
 
 export const subCategories = {

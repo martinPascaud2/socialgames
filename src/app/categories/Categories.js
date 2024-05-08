@@ -370,27 +370,33 @@ export default function Categories({
               }
             )}
           >
-            {categories.map((categorie, index) => (
-              <Link
-                key={index}
-                href={`${categorie.href}${isGroup ? "?group=true" : ""}`}
-                className={classNames(
-                  `z-20 absolute w-1/3 min-h-[18dvh] aspect-square border`,
-                  {
+            {categories.map((categorie, index) => {
+              const isLast = index === 6;
+              return (
+                <Link
+                  key={index}
+                  href={`${categorie.href}${isGroup ? "?group=true" : ""}`}
+                  className={classNames(`z-20 absolute  min-h-[18dvh] border`, {
                     hidden: togglingParameters && toggledParameters,
-                  }
-                )}
-                style={{
-                  top: `${Math.floor(index / 2) * 23 + 5.4}dvh`,
-                  left: index % 2 === 0 && "8%",
-                  right: index % 2 === 1 && "8%",
-                }}
-              >
-                <div className="flex items-center justify-center h-full">
-                  {categorie.name}
-                </div>
-              </Link>
-            ))}
+                  })}
+                  style={{
+                    top: `${Math.floor(index / 2) * 23 + 5.4}dvh`,
+                    left: index % 2 === 0 && "8%",
+                    right: index % 2 === 1 && "8%",
+                    width: !isLast ? "33.333333%" : "84%",
+                    aspectRatio: !isLast ? "1 / 1" : "auto",
+                  }}
+                >
+                  <div
+                    className={`flex items-center justify-center h-full ${
+                      isLast && "m-[9dvh]"
+                    }`}
+                  >
+                    {categorie.name}
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
       </main>
