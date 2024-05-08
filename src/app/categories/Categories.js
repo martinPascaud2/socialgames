@@ -34,15 +34,18 @@ export default function Categories({
   const [toggledParameters, setToggledParameters] = useState(false);
 
   const searchParams = useSearchParams();
+  const urlControl = searchParams.get("control") === "true";
+  const [hasLoaded, setHadLoaded] = useState(!urlControl);
+
   const isGroup = searchParams.get("group") === "true";
   const handleBgClick = () => {
     setTogglingParameters(!togglingParameters);
     setTimeout(() => {
       setToggledParameters(!toggledParameters);
     }, 500);
+    setHadLoaded(true);
   };
 
-  const urlControl = searchParams.get("control") === "true";
   useEffect(() => {
     if (urlControl) handleBgClick();
   }, [urlControl]);
@@ -354,40 +357,42 @@ export default function Categories({
           />
         </div>
 
-        <div
-          className={classNames(
-            {
-              "m-auto transition-opacity ease-in-out duration-500 opacity-100":
-                !togglingParameters,
-            },
-            {
-              "m-auto transition-opacity ease-in-out duration-500 opacity-0":
-                togglingParameters,
-            }
-          )}
-        >
-          {categories.map((categorie, index) => (
-            <Link
-              key={index}
-              href={`${categorie.href}${isGroup ? "?group=true" : ""}`}
-              className={classNames(
-                `z-20 absolute w-1/3 min-h-[18dvh] aspect-square border`,
-                {
-                  hidden: togglingParameters && toggledParameters,
-                }
-              )}
-              style={{
-                top: `${Math.floor(index / 2) * 23 + 5.4}dvh`,
-                left: index % 2 === 0 && "8%",
-                right: index % 2 === 1 && "8%",
-              }}
-            >
-              <div className="flex items-center justify-center h-full">
-                {categorie.name}
-              </div>
-            </Link>
-          ))}
-        </div>
+        {hasLoaded && (
+          <div
+            className={classNames(
+              {
+                "m-auto transition-opacity ease-in-out duration-500 opacity-100":
+                  !togglingParameters,
+              },
+              {
+                "m-auto transition-opacity ease-in-out duration-500 opacity-0":
+                  togglingParameters,
+              }
+            )}
+          >
+            {categories.map((categorie, index) => (
+              <Link
+                key={index}
+                href={`${categorie.href}${isGroup ? "?group=true" : ""}`}
+                className={classNames(
+                  `z-20 absolute w-1/3 min-h-[18dvh] aspect-square border`,
+                  {
+                    hidden: togglingParameters && toggledParameters,
+                  }
+                )}
+                style={{
+                  top: `${Math.floor(index / 2) * 23 + 5.4}dvh`,
+                  left: index % 2 === 0 && "8%",
+                  right: index % 2 === 1 && "8%",
+                }}
+              >
+                <div className="flex items-center justify-center h-full">
+                  {categorie.name}
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </main>
     </>
   );
