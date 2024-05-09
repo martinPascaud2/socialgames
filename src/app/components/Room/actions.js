@@ -5,7 +5,7 @@ import pusher from "@/utils/pusher";
 import getDistance from "@/utils/getDistance";
 
 export async function serverCreate(token, privacy, user, game, geoLocation) {
-  if (!geoLocation) return { error: "Chargement..." };
+  // if (!geoLocation) return { error: "Chargement..." };
 
   const roomId = (
     await prisma.room.create({
@@ -334,4 +334,15 @@ export async function getRoomRefs(token) {
     },
   });
   return { id: room?.id, priv: room?.private };
+}
+
+export async function togglePrivacy({ roomId, roomToken, privacy }) {
+  const updatedRoom = await prisma.room.update({
+    where: { id: roomId },
+    data: { private: !privacy },
+  });
+
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    privacy: updatedRoom.private,
+  });
 }

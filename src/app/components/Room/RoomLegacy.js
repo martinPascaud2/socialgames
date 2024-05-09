@@ -6,9 +6,8 @@ import Pusher from "pusher-js";
 import QRCode from "react-qr-code";
 
 import genToken from "@/utils/genToken";
-import { gamesRefs } from "@/assets/globals"; //check
+import { gamesRefs } from "@/assets/globals";
 
-import ToggleCheckbox from "./ToggleCheckbox";
 import DeleteGroup from "@/components/DeleteGroup";
 import ChooseAnotherGame from "@/components/ChooseAnotherGame";
 import ChooseLastGame from "@/components/ChooseLastGame";
@@ -31,7 +30,6 @@ import {
   getUniqueName,
   getRoomId,
   getRoomRefs,
-  togglePrivacy,
 } from "./actions";
 
 export default function Room({
@@ -115,7 +113,6 @@ export default function Room({
         data.clientGamerList && setGamerList(data.clientGamerList);
         data.multiGuestList && setMultiGuestList(data.multiGuestList);
         data.gameData && setGameData(data.gameData);
-        data.privacy !== undefined && setIsPrivate(data.privacy);
       });
 
       setRoomToken(newRoomToken);
@@ -156,7 +153,6 @@ export default function Room({
         data.started && setIsStarted(true);
         data.gameData && setGameData(data.gameData);
         data.deleted && setDeletedGamer(data.deleted);
-        data.privacy !== undefined && setIsPrivate(data.privacy);
       });
 
       setRoomToken(token);
@@ -371,25 +367,40 @@ export default function Room({
     }
   }
 
-  useEffect(() => {
-    const init = async () => {
-      await createRoom("private");
-    };
-    !searchToken && init();
-  }, []);
-
-  const togglePriv = useCallback(async () => {
-    await togglePrivacy({ roomId, roomToken, privacy: isPrivate });
-  }, [isPrivate]);
-
   if (!isStarted) {
     return (
       <>
         {!isChosen && !group ? (
           <>
-            <div>Chargement...</div>
+            {!geoLocation ? (
+              <div>Chargement...</div>
+            ) : (
+              <>
+                <button
+                  onClick={() => createRoom("public")}
+                  className="border border-blue-300 bg-blue-100"
+                >
+                  Nouvelle partie publique
+                </button>
+                <h2 className="text-sm italic">
+                  Tous les amis pourront vous rejoindre.
+                </h2>
 
-            {/*
+                <hr />
+
+                <button
+                  onClick={() => {
+                    createRoom("private");
+                    setIsPrivate(true);
+                  }}
+                  className="border border-blue-300 bg-blue-100"
+                >
+                  Nouvelle partie privée
+                </button>
+                <h2 className="text-sm italic">
+                  Seuls tes invités pourront vous rejoindre.
+                </h2>
+
                 <button
                   onClick={() =>
                     router.push(
@@ -405,24 +416,10 @@ export default function Room({
                   Retour
                 </button>
               </>
-            )} */}
+            )}
           </>
         ) : (
           <>
-            {isAdmin && (
-              <div className="flex justify-center items-center">
-                <div
-                  style={{
-                    color: isPrivate ? "rgb(147 197 253)" : "rgb(134 239 172)", //blue-300, green-300
-                  }}
-                >
-                  Partie {isPrivate ? "privée" : "publique"}
-                </div>
-                <div className="pl-4">
-                  <ToggleCheckbox checked={isPrivate} onChange={togglePriv} />
-                </div>
-              </div>
-            )}
             <div>Liste des joueurs</div>
 
             {group?.gamers &&
@@ -669,7 +666,6 @@ export default function Room({
             {isAdmin && (
               <>
                 <hr />
-
                 {(gameName === "grouping" || !group) && (
                   <>
                     <h1>Invite des Guests multi-screen !</h1>
