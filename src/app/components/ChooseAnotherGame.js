@@ -14,7 +14,7 @@ export default function ChooseAnotherGame({
 }) {
   const router = useRouter();
 
-  const returnLobby = useCallback(() => {
+  const returnLobby = useCallback(async () => {
     const gamers = [...group.gamers];
     const multiGuests = [...group.multiGuests];
     const guests = [...group.guests];
@@ -29,7 +29,7 @@ export default function ChooseAnotherGame({
     };
     localStorage.setItem("group", JSON.stringify(stored));
 
-    finishGame({ gameData, roomToken });
+    await finishGame({ gameData, roomToken });
 
     router.push(
       `${
@@ -38,11 +38,11 @@ export default function ChooseAnotherGame({
           : "/categories?group=true"
       }`
     );
-  }, [gameData, roomToken, router]);
+  }, [gameData, roomToken, router, group, isReturnLobby, lastGame]);
 
   return (
     <button
-      onClick={() => returnLobby()}
+      onClick={async () => await returnLobby()}
       className="border border-blue-300 bg-blue-100"
     >
       {isReturnLobby ? "Retour au lobby" : "Choisir un autre jeu"}

@@ -37,6 +37,19 @@ export default function Categories({
   const urlControl = searchParams.get("control") === "true";
   const [hasLoaded, setHadLoaded] = useState(!urlControl);
 
+  const [topRect, setTopRect] = useState();
+  const [bottomRect, setBottomRect] = useState();
+  const [topSpace, setTopSpace] = useState();
+  const [bottomSpace, setBottomSpace] = useState();
+
+  const [showQrCode, setShowQrCode] = useState(false);
+  const [scanning, setScanning] = useState(false);
+  const [scanLocked, setScanLocked] = useState(false);
+  const [showInvitations, setShowInvitations] = useState(true);
+  const [invitations, setInvitations] = useState([]);
+
+  const [publicRooms, setPublicRooms] = useState({});
+
   const isGroup = searchParams.get("group") === "true";
   const handleBgClick = () => {
     setTogglingParameters(!togglingParameters);
@@ -49,11 +62,6 @@ export default function Categories({
   useEffect(() => {
     if (urlControl) handleBgClick();
   }, [urlControl]);
-
-  const [topRect, setTopRect] = useState();
-  const [bottomRect, setBottomRect] = useState();
-  const [topSpace, setTopSpace] = useState();
-  const [bottomSpace, setBottomSpace] = useState();
 
   useEffect(() => {
     const qrZone =
@@ -76,12 +84,6 @@ export default function Categories({
     const bottomSideRect = bottomSide?.getBoundingClientRect();
     setBottomSpace((window.innerHeight - bottomSideRect.bottom + 1).toString());
   }, [bottomRect]);
-
-  const [showQrCode, setShowQrCode] = useState(false);
-  const [scanning, setScanning] = useState(false);
-  const [scanLocked, setScanLocked] = useState(false);
-  const [showInvitations, setShowInvitations] = useState(true);
-  const [invitations, setInvitations] = useState([]);
 
   const onNewScanResult = useCallback(
     throttle(async (decodedText) => {
@@ -135,7 +137,6 @@ export default function Categories({
     };
   }, [user.email]);
 
-  const [publicRooms, setPublicRooms] = useState({});
   useEffect(() => {
     const getRooms = async () => {
       setPublicRooms(await getPublicRooms());

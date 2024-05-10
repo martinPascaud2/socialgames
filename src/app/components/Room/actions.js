@@ -5,7 +5,7 @@ import pusher from "@/utils/pusher";
 import getDistance from "@/utils/getDistance";
 
 export async function serverCreate(token, privacy, user, game, geoLocation) {
-  // if (!geoLocation) return { error: "Chargement..." };
+  // if (!geoLocation) return { error: "Chargement..." }; //check
 
   const roomId = (
     await prisma.room.create({

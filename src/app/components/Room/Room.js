@@ -309,13 +309,16 @@ export default function Room({
   }, [isStarted, gameData, user, uniqueName]);
 
   useEffect(() => {
-    const group = JSON.parse(localStorage.getItem("group"));
-    if (!roomToken && group) {
-      setGroup(group);
-      group.privacy === "public" ? createRoom("public") : createRoom("private");
-    } else if (group && geoLocation && roomToken) {
-      localStorage.removeItem("group");
-
+    const storedGroup = JSON.parse(localStorage.getItem("group"));
+    if (!roomToken && storedGroup) {
+      setGroup(storedGroup);
+      const create = async () => {
+        storedGroup.privacy === "public"
+          ? await createRoom("public")
+          : await createRoom("private");
+      };
+      create();
+    } else if (group && geoLocation && roomToken && gameName) {
       const addElderGuests = async () => {
         let elderGuests = [];
         await Promise.all(
@@ -331,16 +334,31 @@ export default function Room({
       };
       addElderGuests();
 
-      setGameData({});
+      const go = async () => {
+        await goOneMoreGame({
+          pathname,
+          oldRoomToken: group.roomToken,
+          newRoomToken: roomToken,
+          gameName,
+        });
+      };
+      go();
 
-      goOneMoreGame({
-        pathname,
-        oldRoomToken: group.roomToken,
-        newRoomToken: roomToken,
-        gameName,
-      });
+      localStorage.removeItem("group");
+      setGameData({});
     }
-  }, [geoLocation, roomToken]);
+  }, [geoLocation, roomToken, gameName]);
+
+  useEffect(() => {
+    const init = async () => {
+      await createRoom("private");
+    };
+    !searchToken && init();
+  }, []);
+
+  const togglePriv = useCallback(async () => {
+    await togglePrivacy({ roomId, roomToken, privacy: isPrivate });
+  }, [isPrivate]);
 
   if (gameData.nextGame && user) {
     if (gameData.nextGame === "deleted group") {
@@ -357,30 +375,14 @@ export default function Room({
       );
     } else {
       const goNewGame = () => {
-        setGameData({});
-        setRoomToken("");
-        setInputToken("");
-        setIsStarted(false);
-        router.push(
-          `${gameData.nextGame.path}${
-            user.multiGuest ? `&guestName=${user.name}` : ""
-          }`
-        );
+        // check router.push
+        window.location.href = `${gameData.nextGame.path}${
+          user.multiGuest ? `&guestName=${user.name}` : ""
+        }`;
       };
       if (gameName === "grouping" || !isStarted) goNewGame();
     }
   }
-
-  useEffect(() => {
-    const init = async () => {
-      await createRoom("private");
-    };
-    !searchToken && init();
-  }, []);
-
-  const togglePriv = useCallback(async () => {
-    await togglePrivacy({ roomId, roomToken, privacy: isPrivate });
-  }, [isPrivate]);
 
   if (!isStarted) {
     return (
@@ -618,36 +620,34 @@ export default function Room({
 
             <hr />
 
-            {isPrivate &&
-              !user.multiGuest &&
-              (gameName === "grouping" || !group) && (
-                <>
-                  <h1>Invite tes amis !</h1>
-                  <h2 className="text-sm italic">
-                    Ils recevront ton invitation via &quot;Invitations aux
-                    parties&quot;.
-                  </h2>
-                  <div>
-                    {friendList.map((friend) => (
-                      <button
-                        key={friend.id}
-                        onClick={() =>
-                          inviteFriend({
-                            userName: user.name,
-                            friendMail: friend.email,
-                            categorie,
-                            gameName,
-                            roomToken,
-                          })
-                        }
-                        className="border border-blue-300 bg-blue-100"
-                      >
-                        {friend.customName}
-                      </button>
-                    ))}
-                  </div>
-                </>
-              )}
+            {isPrivate && !user.multiGuest && (
+              <>
+                <h1>Invite tes amis !</h1>
+                <h2 className="text-sm italic">
+                  Ils recevront ton invitation via &quot;Invitations aux
+                  parties&quot;.
+                </h2>
+                <div>
+                  {friendList.map((friend) => (
+                    <button
+                      key={friend.id}
+                      onClick={() =>
+                        inviteFriend({
+                          userName: user.name,
+                          friendMail: friend.email,
+                          categorie,
+                          gameName,
+                          roomToken,
+                        })
+                      }
+                      className="border border-blue-300 bg-blue-100"
+                    >
+                      {friend.customName}
+                    </button>
+                  ))}
+                </div>
+              </>
+            )}
 
             {!user.multiGuest && !isAdmin && (
               <button
@@ -670,46 +670,44 @@ export default function Room({
               <>
                 <hr />
 
-                {(gameName === "grouping" || !group) && (
-                  <>
-                    <h1>Invite des Guests multi-screen !</h1>
-                    <h2 className="text-sm italic">
-                      Ils joueront sur leur propre écran.
-                    </h2>
-                    <button
-                      onClick={() => setShowRoomRefs(!showRoomRefs)}
-                      className="border border-blue-300 bg-blue-100"
-                    >
-                      {!showRoomRefs ? "Afficher" : "Cacher"} le QrCode
-                    </button>
-                    {showRoomRefs && (
-                      <QRCode
-                        value={`/categories/${categorie}/${gameName}?token=${roomToken}`}
-                      />
-                    )}
-
-                    <hr />
-
-                    <h1>Ajoute des Guests mono-screen !</h1>
-                    <h2 className="text-sm italic">
-                      Ils utiliseront ton écran à leur tour de jeu.
-                    </h2>
-                    <input
-                      ref={refGuest}
-                      placeholder="Nom du guest"
-                      onChange={(event) => setNewGuest(event.target.value)}
-                      className="outline-none focus:outline-black mr-2"
+                <>
+                  <h1>Invite des Guests multi-screen !</h1>
+                  <h2 className="text-sm italic">
+                    Ils joueront sur leur propre écran.
+                  </h2>
+                  <button
+                    onClick={() => setShowRoomRefs(!showRoomRefs)}
+                    className="border border-blue-300 bg-blue-100"
+                  >
+                    {!showRoomRefs ? "Afficher" : "Cacher"} le QrCode
+                  </button>
+                  {showRoomRefs && (
+                    <QRCode
+                      value={`/categories/${categorie}/${gameName}?token=${roomToken}`}
                     />
-                    <button
-                      onClick={async () => {
-                        await addGuest();
-                      }}
-                      className="border border-blue-300 bg-blue-100"
-                    >
-                      Ajouter le Guest
-                    </button>
-                  </>
-                )}
+                  )}
+
+                  <hr />
+
+                  <h1>Ajoute des Guests mono-screen !</h1>
+                  <h2 className="text-sm italic">
+                    Ils utiliseront ton écran à leur tour de jeu.
+                  </h2>
+                  <input
+                    ref={refGuest}
+                    placeholder="Nom du guest"
+                    onChange={(event) => setNewGuest(event.target.value)}
+                    className="outline-none focus:outline-black mr-2"
+                  />
+                  <button
+                    onClick={async () => {
+                      await addGuest();
+                    }}
+                    className="border border-blue-300 bg-blue-100"
+                  >
+                    Ajouter le Guest
+                  </button>
+                </>
 
                 <hr />
 
