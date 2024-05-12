@@ -71,14 +71,24 @@ export default function Room({
   const [geoLocation, setGeoLocation] = useState(null);
 
   const [roomId, setRoomId] = useState(0);
-  const [isPrivate, setIsPrivate] = useState(false);
+  const [isPrivate, setIsPrivate] = useState();
   const [gameData, setGameData] = useState({});
 
   useEffect(() => {
+    if (!roomToken) return;
     async function get() {
+      const storedGroupPrivacy = JSON.parse(
+        localStorage.getItem("group")
+      )?.privacy;
       const { id, priv } = await getRoomRefs(roomToken);
+
       setRoomId(id);
-      priv && setIsPrivate(true);
+
+      if (isAdmin && !!storedGroupPrivacy) {
+        setIsPrivate(storedGroupPrivacy === "private");
+      } else {
+        setIsPrivate(priv);
+      }
     }
     get();
 
@@ -350,15 +360,24 @@ export default function Room({
   }, [geoLocation, roomToken, gameName]);
 
   useEffect(() => {
+    const storedGroupPrivacy = JSON.parse(
+      localStorage.getItem("group")
+    )?.privacy;
+
     const init = async () => {
-      await createRoom("private");
+      await createRoom(storedGroupPrivacy || "private");
     };
     !searchToken && init();
   }, []);
 
   const togglePriv = useCallback(async () => {
     await togglePrivacy({ roomId, roomToken, privacy: isPrivate });
-  }, [isPrivate]);
+    group &&
+      setGroup((prevGroup) => ({
+        ...prevGroup,
+        privacy: !isPrivate ? "private" : "public",
+      }));
+  }, [isPrivate, roomId]);
 
   if (gameData.nextGame && user) {
     if (gameData.nextGame === "deleted group") {
@@ -387,7 +406,7 @@ export default function Room({
   if (!isStarted) {
     return (
       <>
-        {!isChosen && !group ? (
+        {(!isChosen && !group) || isPrivate === undefined ? (
           <>
             <div>Chargement...</div>
 

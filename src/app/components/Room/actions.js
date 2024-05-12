@@ -333,6 +333,7 @@ export async function getRoomRefs(token) {
       private: true,
     },
   });
+
   return { id: room?.id, priv: room?.private };
 }
 
