@@ -741,13 +741,15 @@ export default function Room({
                     : "Lancer la partie"}
                 </button>
 
-                {group?.lastGame && gameName === "grouping" && (
-                  <ChooseLastGame
-                    lastGame={group.lastGame}
-                    group={group}
-                    roomToken={roomToken}
-                  />
-                )}
+                {group?.lastGame &&
+                  group.lastGame !== "grouping" &&
+                  gameName === "grouping" && (
+                    <ChooseLastGame
+                      lastGame={group.lastGame}
+                      group={group}
+                      roomToken={roomToken}
+                    />
+                  )}
 
                 {gameName !== "grouping" && group && (
                   <>
@@ -756,14 +758,14 @@ export default function Room({
                       roomToken={roomToken}
                       gameData={gameData}
                       isReturnLobby={false}
-                      lastGame={gameName}
+                      lastGame={group.lastGame}
                     />
                     <ChooseAnotherGame
                       group={group}
                       roomToken={roomToken}
                       gameData={gameData}
                       isReturnLobby={true}
-                      lastGame={gameName}
+                      lastGame={group.lastGame}
                     />
                   </>
                 )}
