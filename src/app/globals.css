@@ -35,3 +35,10 @@ body {
   overflow-x: hidden;
 }
 /*----------fixed mobile screen----------*/
+
+/*----------disabling pull-to-refresh----------*/
+html,
+body {
+  overscroll-behavior: none;
+}
+/*----------disabling pull-to-refresh----------*/
