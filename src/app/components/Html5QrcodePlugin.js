@@ -27,6 +27,7 @@ const createConfig = (props) => {
 
 export default function Html5QrcodePlugin(props) {
   const [reader, setReader] = useState();
+  const [scan, setScan] = useState();
 
   useEffect(() => {
     const rea = document.getElementById("reader");
@@ -43,8 +44,15 @@ export default function Html5QrcodePlugin(props) {
         config,
         props.qrCodeSuccessCallback
       );
+
+      setScan(html5QrCode);
     }
   }, [props, reader]);
+
+  useEffect(() => {
+    const stop = () => scan?.stop();
+    stop && props.setStopScan(() => stop);
+  }, [scan]);
 
   return <div id="reader" />;
 }

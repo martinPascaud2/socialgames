@@ -45,6 +45,8 @@ export default function Categories({
   const [showQrCode, setShowQrCode] = useState(false);
   const [scanning, setScanning] = useState(false);
   const [scanLocked, setScanLocked] = useState(false);
+  const [stopScan, setStopScan] = useState();
+
   const [showInvitations, setShowInvitations] = useState(true);
   const [invitations, setInvitations] = useState([]);
 
@@ -112,10 +114,16 @@ export default function Categories({
           fps={10}
           aspectRatio="1.0"
           qrCodeSuccessCallback={onNewScanResult}
+          setStopScan={setStopScan}
         />
       </>
     );
   }, [scanning]);
+
+  const resetPermissions = useCallback(() => {
+    stopScan && stopScan();
+    setStopScan();
+  }, [stopScan]);
 
   useEffect(() => {
     const channel = pusher.subscribe(`user-${user.email}`);
@@ -255,7 +263,11 @@ export default function Categories({
                   </div>
                 )}
                 {invitations.map((invitation, i) => (
-                  <Link key={i} href={invitation.link}>
+                  <Link
+                    key={i}
+                    onClick={() => resetPermissions()}
+                    href={invitation.link}
+                  >
                     <div className="border border-slate-700 bg-slate-300 text-center">
                       {invitation.userName} pour{" "}
                       {`${gamesRefs[invitation.gameName].name}`}
@@ -296,6 +308,7 @@ export default function Categories({
             <div className="flex flex-row m-3">
               <button
                 onClick={() => {
+                  resetPermissions();
                   setShowQrCode(false);
                   setScanning(false);
                   setShowInvitations(true);
@@ -308,6 +321,7 @@ export default function Categories({
                 Parties de tes amis
               </button>
               <Link
+                onClick={() => resetPermissions()}
                 href="/categories/grouping/grouping"
                 className="text-center m-1 p-2"
               >
@@ -320,6 +334,7 @@ export default function Categories({
                   "outline outline-black": showQrCode,
                 })}
                 onClick={async () => {
+                  resetPermissions();
                   try {
                     setLocation(await getLocation());
                     setServerMessage("QR code généré !");
@@ -335,8 +350,9 @@ export default function Categories({
               </button>
               <button
                 onClick={() => {
+                  resetPermissions();
                   setShowQrCode(false);
-                  setScanning(true);
+                  setScanning(!scanning);
                   setShowInvitations(false);
                   setServerMessage("");
                 }}
@@ -376,6 +392,7 @@ export default function Categories({
               return (
                 <Link
                   key={index}
+                  onClick={() => resetPermissions()}
                   href={`${categorie.href}${isGroup ? "?group=true" : ""}`}
                   className={classNames(`z-20 absolute  min-h-[18dvh] border`, {
                     hidden: togglingParameters && toggledParameters,

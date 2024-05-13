@@ -20,7 +20,7 @@ const createConfig = (props, isMobile) => {
   }
   config.supportedScanTypes = [Html5QrcodeScanType.SCAN_TYPE_CAMERA];
   config.videoConstraints = {
-    facingMode: { exact: isMobile ? "environment" : "user" },
+    facingMode: { ideal: isMobile ? "environment" : "user" },
   };
 
   return config;
