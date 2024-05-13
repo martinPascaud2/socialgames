@@ -406,6 +406,12 @@ export default function Room({
   if (!isStarted) {
     return (
       <>
+        <div className="flex justify-center border-b">
+          {gamesRefs[gameName].categorie === "grouping"
+            ? "Lobby"
+            : gamesRefs[gameName].name}
+        </div>
+
         {(!isChosen && !group) || isPrivate === undefined ? (
           <>
             <div>Chargement...</div>
@@ -444,7 +450,7 @@ export default function Room({
                 </div>
               </div>
             )}
-            <div>Liste des joueurs</div>
+            <div>Liste des joueurs ({gamerList.length})</div>
 
             {group?.gamers &&
               group.gamers.map((gamer) => {
@@ -781,17 +787,22 @@ export default function Room({
     );
   } else {
     return (
-      <Game
-        roomId={roomId}
-        roomToken={roomToken}
-        user={{
-          ...user,
-          name: uniqueName,
-          ...(!!multiGuestId ? { id: multiGuestId } : {}),
-          ...(!!multiGuestDataId ? { dataId: multiGuestDataId } : {}),
-        }}
-        gameData={gameData}
-      />
+      <>
+        <div className="flex justify-center border-b">
+          {gamesRefs[gameName].name} ({gameData.gamers?.length} joueurs)
+        </div>
+        <Game
+          roomId={roomId}
+          roomToken={roomToken}
+          user={{
+            ...user,
+            name: uniqueName,
+            ...(!!multiGuestId ? { id: multiGuestId } : {}),
+            ...(!!multiGuestDataId ? { dataId: multiGuestDataId } : {}),
+          }}
+          gameData={gameData}
+        />
+      </>
     );
   }
 }
