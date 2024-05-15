@@ -813,8 +813,12 @@ export default function Room({
     return (
       <>
         <div className="flex justify-center border-b">
-          {gamesRefs[gameName].name} ({gameData.gamers?.length} joueurs)
+          {gamesRefs[gameName].categorie === "grouping"
+            ? "Lobby"
+            : gamesRefs[gameName].name}{" "}
+          ({gameData.gamers?.length} joueurs)
         </div>
+
         <Game
           roomId={roomId}
           roomToken={roomToken}
