@@ -83,7 +83,9 @@ export default function Memory({
           </div>
         ))}
       </div>
-      {!isEnded && <div>C'est au tour de {gameData.activePlayer?.name}</div>}
+      {!isEnded && (
+        <div>C&apos;est au tour de {gameData.activePlayer?.name}</div>
+      )}
 
       <div className="flex flex-wrap justify-center">
         {icons.map((icon, i) => {

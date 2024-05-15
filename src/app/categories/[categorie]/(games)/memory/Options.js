@@ -6,8 +6,10 @@ export default function MemoryOptions({ setOptions }) {
   const [pairsNumber, setPairsNumber] = useState(12);
 
   useEffect(() => {
+    // if (pairsNumber < 8) setPairsNumber(8);
     if (pairsNumber < 8) setPairsNumber(8);
-    if (pairsNumber > 20) setPairsNumber(20);
+    // if (pairsNumber > 20) setPairsNumber(20);
+    if (pairsNumber > 12) setPairsNumber(12);
     setOptions((options) => ({ ...options, pairsNumber }));
   }, [pairsNumber]);
 
