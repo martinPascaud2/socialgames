@@ -14,7 +14,13 @@ import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import EndGame from "@/components/EndGame";
 import CountDown from "@/components/CountDown";
 
-export default function Ptitbac({ roomId, roomToken, user, gameData }) {
+export default function Ptitbac({
+  roomId,
+  roomToken,
+  user,
+  gameData,
+  storedLocation,
+}) {
   const isAdmin = gameData.admin === user.name;
   const { phase, letter, themes, finishCountdownDate, counts, winners } =
     gameData;
@@ -226,7 +232,11 @@ export default function Ptitbac({ roomId, roomToken, user, gameData }) {
         !isEnded ? (
           <FinishGame gameData={gameData} roomToken={roomToken} />
         ) : (
-          <ChooseOneMoreGame gameData={gameData} roomToken={roomToken} />
+          <ChooseOneMoreGame
+            gameData={gameData}
+            roomToken={roomToken}
+            storedLocation={storedLocation}
+          />
         )
       ) : null}
     </>

@@ -22,7 +22,13 @@ import FinishGame from "@/components/FinishGame";
 import EndGame from "@/components/EndGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 
-export default function Uno({ roomId, roomToken, user, gameData }) {
+export default function Uno({
+  roomId,
+  roomToken,
+  user,
+  gameData,
+  storedLocation,
+}) {
   const { gamers, phase, mustDraw, hasFreelyDrawn, unoPlayerName, counts } =
     gameData;
   const isAdmin = gameData.admin === user.name;
@@ -37,6 +43,11 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
   const [availableCounter, setAvailableCounter] = useState(false);
   const [counterTimeout, setCounterTimeout] = useState(null);
   const [newHand, setNewHand] = useState(null);
+
+  const [isEnded, setIsEnded] = useState(false);
+  useEffect(() => {
+    if (gameData.ended) setIsEnded(true);
+  }, [gameData.ended]);
 
   const checkIsAllowed = ({
     itemType: newItemType,
@@ -295,7 +306,7 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
       </DndProvider>
 
       {isAdmin ? (
-        !gameData.ended ? (
+        !isEnded ? (
           <FinishGame gameData={gameData} roomToken={roomToken} />
         ) : (
           <>
@@ -305,10 +316,14 @@ export default function Uno({ roomId, roomToken, user, gameData }) {
             >
               Nouvelle manche
             </div>
-            <ChooseOneMoreGame gameData={gameData} roomToken={roomToken} />
+            <ChooseOneMoreGame
+              gameData={gameData}
+              roomToken={roomToken}
+              storedLocation={storedLocation}
+            />
           </>
         )
-      ) : gameData.ended ? (
+      ) : isEnded ? (
         <EndGame gameData={gameData} user={user} />
       ) : null}
     </>

@@ -21,7 +21,13 @@ imageContext.keys().forEach((path) => {
     imageLength++);
 });
 
-export default function Memory({ roomId, roomToken, user, gameData }) {
+export default function Memory({
+  roomId,
+  roomToken,
+  user,
+  gameData,
+  storedLocation,
+}) {
   const [icons, setIcons] = useState([]);
   const { scores } = gameData;
   const isAdmin = gameData.admin === user.name;
@@ -110,7 +116,11 @@ export default function Memory({ roomId, roomToken, user, gameData }) {
         !isEnded ? (
           <FinishGame gameData={gameData} roomToken={roomToken} />
         ) : (
-          <ChooseOneMoreGame gameData={gameData} roomToken={roomToken} />
+          <ChooseOneMoreGame
+            gameData={gameData}
+            roomToken={roomToken}
+            storedLocation={storedLocation}
+          />
         )
       ) : null}
     </>

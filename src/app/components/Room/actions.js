@@ -5,8 +5,6 @@ import pusher from "@/utils/pusher";
 import getDistance from "@/utils/getDistance";
 
 export async function serverCreate(token, privacy, user, game, geoLocation) {
-  // if (!geoLocation) return { error: "Chargement..." }; //check
-
   const roomId = (
     await prisma.room.create({
       data: {
@@ -33,6 +31,17 @@ export async function serverCreate(token, privacy, user, game, geoLocation) {
   });
 
   return { gamers: [user.name] };
+}
+
+export async function saveLocation({ geoLocation, roomId }) {
+  await prisma.room.update({
+    where: {
+      id: roomId,
+    },
+    data: {
+      adminLocation: geoLocation,
+    },
+  });
 }
 
 export async function finishGame({ roomToken, gameData }) {

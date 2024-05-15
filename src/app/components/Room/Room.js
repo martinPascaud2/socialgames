@@ -6,7 +6,8 @@ import Pusher from "pusher-js";
 import QRCode from "react-qr-code";
 
 import genToken from "@/utils/genToken";
-import { gamesRefs } from "@/assets/globals"; //check
+import getLocation from "@/utils/getLocation";
+import { gamesRefs } from "@/assets/globals";
 
 import ToggleCheckbox from "./ToggleCheckbox";
 import DeleteGroup from "@/components/DeleteGroup";
@@ -32,6 +33,7 @@ import {
   getRoomId,
   getRoomRefs,
   togglePrivacy,
+  saveLocation,
 } from "./actions";
 
 export default function Room({
@@ -98,15 +100,15 @@ export default function Room({
   }, [roomToken]);
 
   useEffect(() => {
-    if ("geolocation" in navigator) {
+    if (user.multiGuest && "geolocation" in navigator) {
       navigator.geolocation.getCurrentPosition(({ coords }) => {
         const { latitude, longitude } = coords;
         setGeoLocation({ latitude, longitude });
       });
     }
-  }, []);
+  }, [user]);
 
-  const createRoom = async (privacy) => {
+  const createRoom = async (privacy, storedLocation) => {
     const newRoomToken = genToken(10);
 
     const { error, gamers } = await serverCreate(
@@ -114,7 +116,7 @@ export default function Room({
       privacy,
       user,
       gameName,
-      geoLocation
+      storedLocation
     );
 
     if (error) {
@@ -190,7 +192,7 @@ export default function Room({
   };
 
   const addMultiGuest = useCallback(async () => {
-    if (!isChosen || !inputToken) {
+    if (!isChosen || !inputToken || !geoLocation) {
       setIsChosen(true);
       return;
     }
@@ -323,12 +325,14 @@ export default function Room({
     if (!roomToken && storedGroup) {
       setGroup(storedGroup);
       const create = async () => {
+        const storedLocation = storedGroup.lastPosition;
         storedGroup.privacy === "public"
-          ? await createRoom("public")
-          : await createRoom("private");
+          ? await createRoom("public", storedLocation)
+          : await createRoom("private", storedLocation);
+        storedLocation && setGeoLocation(storedLocation);
       };
       create();
-    } else if (group && geoLocation && roomToken && gameName) {
+    } else if (group && roomToken && gameName) {
       const addElderGuests = async () => {
         let elderGuests = [];
         await Promise.all(
@@ -357,15 +361,16 @@ export default function Room({
       localStorage.removeItem("group");
       setGameData({});
     }
-  }, [geoLocation, roomToken, gameName]);
+  }, [roomToken, gameName]);
 
   useEffect(() => {
-    const storedGroupPrivacy = JSON.parse(
-      localStorage.getItem("group")
-    )?.privacy;
+    const storedGroup = JSON.parse(localStorage.getItem("group"));
+    const storedGroupPrivacy = storedGroup?.privacy;
+    const storedLocation = storedGroup?.lastPosition;
 
     const init = async () => {
-      await createRoom(storedGroupPrivacy || "private");
+      await createRoom(storedGroupPrivacy || "private", storedLocation);
+      storedLocation && setGeoLocation(storedLocation);
     };
     !searchToken && init();
   }, []);
@@ -450,7 +455,10 @@ export default function Room({
                 </div>
               </div>
             )}
-            <div>Liste des joueurs ({gamerList.length})</div>
+            <div>
+              Liste des joueurs (
+              {gamerList.length + guestList.length + multiGuestList.length})
+            </div>
 
             {group?.gamers &&
               group.gamers.map((gamer) => {
@@ -701,12 +709,25 @@ export default function Room({
                     Ils joueront sur leur propre écran.
                   </h2>
                   <button
-                    onClick={() => setShowRoomRefs(!showRoomRefs)}
+                    onClick={async () => {
+                      try {
+                        if (!geoLocation) {
+                          const loc = await getLocation();
+                          await saveLocation({ geoLocation: loc, roomId });
+                          setGeoLocation(loc);
+                          setShowRoomRefs(true);
+                        } else {
+                          setShowRoomRefs(!showRoomRefs);
+                        }
+                      } catch (error) {
+                        setServerMessage(error.message);
+                      }
+                    }}
                     className="border border-blue-300 bg-blue-100"
                   >
                     {!showRoomRefs ? "Afficher" : "Cacher"} le QrCode
                   </button>
-                  {showRoomRefs && (
+                  {showRoomRefs && geoLocation && (
                     <QRCode
                       value={`/categories/${categorie}/${gameName}?token=${roomToken}`}
                     />
@@ -752,6 +773,7 @@ export default function Room({
                   gameName === "grouping" && (
                     <ChooseLastGame
                       lastGame={group.lastGame}
+                      lastPosition={geoLocation}
                       group={group}
                       roomToken={roomToken}
                     />
@@ -765,6 +787,7 @@ export default function Room({
                       gameData={gameData}
                       isReturnLobby={false}
                       lastGame={group.lastGame}
+                      lastPosition={geoLocation}
                     />
                     <ChooseAnotherGame
                       group={group}
@@ -772,6 +795,7 @@ export default function Room({
                       gameData={gameData}
                       isReturnLobby={true}
                       lastGame={group.lastGame}
+                      lastPosition={geoLocation}
                     />
                   </>
                 )}
@@ -801,6 +825,7 @@ export default function Room({
             ...(!!multiGuestDataId ? { dataId: multiGuestDataId } : {}),
           }}
           gameData={gameData}
+          storedLocation={geoLocation} //searching game only
         />
       </>
     );

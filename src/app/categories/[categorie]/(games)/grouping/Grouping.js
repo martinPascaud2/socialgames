@@ -4,7 +4,12 @@ import EndGame from "@/components/EndGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import { useEffect, useState } from "react";
 
-export default function Grouping({ roomToken, user, gameData }) {
+export default function Grouping({
+  roomToken,
+  user,
+  gameData,
+  storedLocation,
+}) {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -23,6 +28,7 @@ export default function Grouping({ roomToken, user, gameData }) {
           gameData={gameData}
           roomToken={roomToken}
           isFirst={true}
+          storedLocation={storedLocation}
         />
       )}
     </>

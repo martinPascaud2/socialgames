@@ -20,7 +20,13 @@ import {
   whiteGuess,
 } from "./gameActions";
 
-export default function Undercover({ roomId, roomToken, user, gameData }) {
+export default function Undercover({
+  roomId,
+  roomToken,
+  user,
+  gameData,
+  storedLocation,
+}) {
   const [deviceGamers, setDeviceGamers] = useState([]);
 
   const [reveals, setReveals] = useState({});
@@ -353,7 +359,11 @@ export default function Undercover({ roomId, roomToken, user, gameData }) {
         !isEnded ? (
           <FinishGame gameData={gameData} roomToken={roomToken} />
         ) : (
-          <ChooseOneMoreGame gameData={gameData} roomToken={roomToken} />
+          <ChooseOneMoreGame
+            gameData={gameData}
+            roomToken={roomToken}
+            storedLocation={storedLocation}
+          />
         )
       ) : null}
     </>

@@ -23,7 +23,13 @@ imageContext.keys().forEach((path) => {
     imageLength++);
 });
 
-export default function Dobble({ roomId, roomToken, user, gameData }) {
+export default function Dobble({
+  roomId,
+  roomToken,
+  user,
+  gameData,
+  storedLocation,
+}) {
   const isAdmin = gameData.admin === user.name;
   const [roundNumber, setRoundNumber] = useState(0);
   const [scores, setScores] = useState([]);
@@ -177,7 +183,11 @@ export default function Dobble({ roomId, roomToken, user, gameData }) {
         !isEnded ? (
           <FinishGame gameData={gameData} roomToken={roomToken} />
         ) : (
-          <ChooseOneMoreGame gameData={gameData} roomToken={roomToken} />
+          <ChooseOneMoreGame
+            gameData={gameData}
+            roomToken={roomToken}
+            storedLocation={storedLocation}
+          />
         )
       ) : null}
     </div>

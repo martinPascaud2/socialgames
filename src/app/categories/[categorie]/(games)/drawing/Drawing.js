@@ -9,7 +9,13 @@ import FinishGame from "@/components/FinishGame";
 import EndGame from "@/components/EndGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 
-export default function Drawing({ roomId, roomToken, user, gameData }) {
+export default function Drawing({
+  roomId,
+  roomToken,
+  user,
+  gameData,
+  storedLocation,
+}) {
   const mode = gameData.options?.mode;
   const isAdmin = gameData.admin === user.name;
 
@@ -42,7 +48,11 @@ export default function Drawing({ roomId, roomToken, user, gameData }) {
         !isEnded ? (
           <FinishGame gameData={gameData} roomToken={roomToken} />
         ) : (
-          <ChooseOneMoreGame gameData={gameData} roomToken={roomToken} />
+          <ChooseOneMoreGame
+            gameData={gameData}
+            roomToken={roomToken}
+            storedLocation={storedLocation}
+          />
         )
       ) : isEnded ? (
         <EndGame gameData={gameData} user={user} />

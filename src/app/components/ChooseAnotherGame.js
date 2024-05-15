@@ -11,6 +11,7 @@ export default function ChooseAnotherGame({
   gameData,
   isReturnLobby,
   lastGame,
+  lastPosition,
 }) {
   const router = useRouter();
 
@@ -26,6 +27,7 @@ export default function ChooseAnotherGame({
       guests,
       privacy: group.privacy,
       lastGame,
+      lastPosition,
     };
     localStorage.setItem("group", JSON.stringify(stored));
 
@@ -38,7 +40,15 @@ export default function ChooseAnotherGame({
           : "/categories?group=true"
       }`
     );
-  }, [gameData, roomToken, router, group, isReturnLobby, lastGame]);
+  }, [
+    gameData,
+    roomToken,
+    router,
+    group,
+    isReturnLobby,
+    lastGame,
+    lastPosition,
+  ]);
 
   return (
     <button

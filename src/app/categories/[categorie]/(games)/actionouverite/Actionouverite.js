@@ -9,7 +9,13 @@ import FinishGame from "@/components/FinishGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import EndGame from "@/components/EndGame";
 
-export default function Actionouverite({ roomId, roomToken, user, gameData }) {
+export default function Actionouverite({
+  roomId,
+  roomToken,
+  user,
+  gameData,
+  storedLocation,
+}) {
   const [isFirstRender, setIsFirstRender] = useState(true);
   const [isEnded, setIsEnded] = useState(false);
   const [stats, setStats] = useState({});
@@ -145,7 +151,11 @@ export default function Actionouverite({ roomId, roomToken, user, gameData }) {
             <FinishGame gameData={gameData} roomToken={roomToken} />
           </div>
         ) : (
-          <ChooseOneMoreGame gameData={gameData} roomToken={roomToken} />
+          <ChooseOneMoreGame
+            gameData={gameData}
+            roomToken={roomToken}
+            storedLocation={storedLocation}
+          />
         )
       ) : null}
     </>

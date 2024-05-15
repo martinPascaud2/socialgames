@@ -16,7 +16,7 @@ export default async function MemoryPage({ params, searchParams }) {
         friendList={null}
         categorie={params?.categorie}
         gameName="memory"
-        Game={Undercover}
+        Game={Memory}
         launchGame={null}
       />
     );

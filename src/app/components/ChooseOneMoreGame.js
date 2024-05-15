@@ -12,6 +12,7 @@ export default function ChooseOneMoreGame({
   gameData,
   roomToken,
   isFirst = false,
+  storedLocation,
 }) {
   const router = useRouter();
   const [privacy, setPrivacy] = useState(null);
@@ -33,6 +34,7 @@ export default function ChooseOneMoreGame({
         guests,
         privacy: priv,
         lastGame: gameName,
+        lastPosition: storedLocation,
       };
       localStorage.setItem("group", JSON.stringify(group));
 

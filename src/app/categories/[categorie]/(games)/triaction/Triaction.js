@@ -239,7 +239,13 @@ const SlidingCard = ({ onDecision, sender, action }) => {
   );
 };
 
-export default function Triaction({ roomId, roomToken, user, gameData }) {
+export default function Triaction({
+  roomId,
+  roomToken,
+  user,
+  gameData,
+  storedLocation,
+}) {
   console.log("gameData", gameData);
   const { phase, gamers, activePlayer, senders } = gameData;
   const isActive = gameData.activePlayer?.id === user.id;
