@@ -122,7 +122,7 @@ export default function Dobble({
           </div>
 
           <div
-            className={`w-[90vw] m-2 p-2 border flex flex-cols flex-wrap  justify-around content-around ${
+            className={`w-[90vw] m-2 p-2 border flex flex-cols flex-wrap justify-around content-around ${
               gameData.rotation?.bot ? "rotate-180" : ""
             }`}
           >
