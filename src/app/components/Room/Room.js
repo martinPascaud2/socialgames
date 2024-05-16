@@ -100,12 +100,15 @@ export default function Room({
   }, [roomToken]);
 
   useEffect(() => {
-    if (user.multiGuest && "geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(({ coords }) => {
-        const { latitude, longitude } = coords;
-        setGeoLocation({ latitude, longitude });
-      });
-    }
+    const getMultiLoc = async () => {
+      try {
+        const loc = await getLocation();
+        setGeoLocation(loc);
+      } catch (error) {
+        setServerMessage(error.message);
+      }
+    };
+    user.multiGuest && getMultiLoc();
   }, [user]);
 
   const createRoom = async (privacy, storedLocation) => {
