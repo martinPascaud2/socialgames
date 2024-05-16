@@ -456,8 +456,11 @@ export default function Room({
               </div>
             )}
             <div>
-              Liste des joueurs (
-              {gamerList.length + guestList.length + multiGuestList.length})
+              Liste des joueurs [
+              {gamerList.length + guestList.length + multiGuestList.length}
+              {gamesRefs[gameName].limits &&
+                ` / ${gamesRefs[gameName].limits.max}`}
+              ]
             </div>
 
             {group?.gamers &&

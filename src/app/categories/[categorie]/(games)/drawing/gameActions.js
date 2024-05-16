@@ -4,6 +4,7 @@ import prisma from "@/utils/prisma";
 
 import { makeTeams, makeMinimalTeams } from "@/utils/makeTeams";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
+import checkPlayers from "@/utils/checkPlayers";
 
 const getFreeWords = async ({ gamers }) => {
   const userIds = gamers.map((gamer) => gamer.id);
@@ -84,11 +85,19 @@ export async function launchGame({
   roomId,
   roomToken,
   adminId,
-  //   gamers,
+  gamers,
   guests,
   multiGuests,
   options,
 }) {
+  const { error: playersError } = checkPlayers({
+    gameName: "drawing",
+    gamers,
+    guests,
+    multiGuests,
+  });
+  if (playersError) return { error: playersError };
+
   const startedRoom = await prisma.room.update({
     where: {
       id: roomId,

@@ -77,12 +77,52 @@ export const subCategories = {
 
 export const gamesRefs = {
   grouping: { name: "un nouveau groupe", categorie: "grouping" },
-  actionouverite: { name: "Action ou Vérité", categorie: "categorie1" },
-  undercover: { name: "Undercover", categorie: "categorie1" },
-  dobble: { name: "Dobble", categorie: "categorie1" },
-  memory: { name: "Memory", categorie: "categorie1" },
-  ptitbac: { name: "P'tit bac", categorie: "categorie1" },
-  drawing: { name: "Dessin", categorie: "categorie1" },
-  uno: { name: "Uno", categorie: "categorie1" },
-  triaction: { name: "Triaction", categorie: "categorie1" },
+  actionouverite: {
+    name: "Action ou Vérité",
+    categorie: "categorie1",
+    limits: { min: 2, max: 15 },
+    isGuestsAllowed: true,
+  },
+  undercover: {
+    name: "Undercover",
+    categorie: "categorie1",
+    limits: { min: 3, max: 15 },
+    isGuestsAllowed: true,
+  },
+  dobble: {
+    name: "Dobble",
+    categorie: "categorie1",
+    limits: { min: 2, max: 15 },
+    isGuestsAllowed: false,
+  },
+  memory: {
+    name: "Memory",
+    categorie: "categorie1",
+    limits: { min: 2, max: 6 },
+    isGuestsAllowed: true,
+  },
+  ptitbac: {
+    name: "P'tit bac",
+    categorie: "categorie1",
+    limits: { min: 2, max: 15 },
+    isGuestsAllowed: false,
+  },
+  drawing: {
+    name: "Dessin",
+    categorie: "categorie1",
+    limits: { min: 4, max: 10 },
+    isGuestsAllowed: false,
+  },
+  uno: {
+    name: "Uno",
+    categorie: "categorie1",
+    limits: { min: 2, max: 10 },
+    isGuestsAllowed: false,
+  },
+  triaction: {
+    name: "Triaction",
+    categorie: "categorie1",
+    limits: { min: 3, max: 8 },
+    isGuestsAllowed: false,
+  },
 };

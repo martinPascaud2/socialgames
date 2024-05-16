@@ -3,6 +3,7 @@
 import pusher from "@/utils/pusher";
 
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
+import checkPlayers from "@/utils/checkPlayers";
 
 import { unoCards } from "./cardsData";
 
@@ -43,10 +44,13 @@ export async function launchGame({
   multiGuests,
   // options,
 }) {
-  if (guests.length)
-    return { error: "Ce jeu est incompatible avec les guests monoscreen." };
-  if (gamers.length + multiGuests.length < 2)
-    return { error: "Un plus grand nombre de joueurs est requis." };
+  const { error: playersError } = checkPlayers({
+    gameName: "uno",
+    gamers,
+    guests,
+    multiGuests,
+  });
+  if (playersError) return { error: playersError };
 
   const startedRoom = await prisma.room.update({
     where: {
