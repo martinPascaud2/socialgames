@@ -4,6 +4,8 @@ import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { throttle } from "lodash";
 
+import getLocation from "@/utils/getLocation";
+
 import GuestScanner from "./GuestScanner";
 
 export default function GuestConnector() {
@@ -33,7 +35,14 @@ export default function GuestConnector() {
     []
   );
 
-  const joinGame = () => {
+  const joinGame = async () => {
+    try {
+      await getLocation();
+    } catch (error) {
+      setServerMessage(error.message);
+      return;
+    }
+
     if (guestName.length < 3) {
       setServerMessage("Nom trop court");
     } else {
