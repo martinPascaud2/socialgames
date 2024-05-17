@@ -101,7 +101,7 @@ export default function getErrorInformations({ window, fail }) {
               [
                 "aA (à gauche de l'adresse de ce site)",
                 "Réglages du site web",
-                "Position",
+                "Appareil photo",
               ].map((info) => response.push(info));
               break;
             default:
