@@ -11,6 +11,7 @@ import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
 import Html5QrcodePlugin from "@/components/Html5QrcodePlugin";
 import getLocation from "@/utils/getLocation";
+import getErrorInformations from "@/utils/getErrorInformations";
 
 import { categories, gamesRefs } from "@/assets/globals";
 var pusher = new Pusher("61853af9f30abf9d5b3d", {
@@ -288,6 +289,11 @@ export default function Categories({
                 })}
               </>
             )}
+            <div className="flex justify-center w-full">
+              <div className="flex flex-col w-full text-white">
+                {serverMessage}
+              </div>
+            </div>
           </div>
 
           <div
@@ -304,7 +310,6 @@ export default function Categories({
             className="z-30 absolute bg-red-100 w-[75vw] h-36 translate-x-[12.5vw] flex flex-col justify-between items-center"
             style={{ top: `${bottomRect}px` }}
           >
-            <div className="z-30 w-full text-center">{serverMessage}</div>
             <div className="flex flex-row m-3">
               <button
                 onClick={() => {
@@ -339,7 +344,18 @@ export default function Categories({
                     setLocation(await getLocation());
                     setServerMessage("QR code généré !");
                   } catch (error) {
-                    setServerMessage(error.message);
+                    console.error(error.message);
+                    const errorInformations = getErrorInformations({
+                      window,
+                      fail: "location_permission",
+                    }).map((info, i) => (
+                      <div key={i} className={`${i === 0 && "font-bold"}`}>
+                        {i !== 0 && "=>"}
+                        {info}
+                      </div>
+                    ));
+                    setServerMessage(errorInformations);
+                    setLocation();
                   }
                   setShowQrCode(true);
                   setScanning(false);
