@@ -489,25 +489,23 @@ export default function Room({
                         )
                       ) : null}
                     </div>
-                    {gameName === "grouping" &&
-                      isHere &&
-                      gamerName !== user.name && (
-                        <button
-                          onClick={() => {
-                            const newGamersGroup = [...group.gamers].filter(
-                              (gamer) => gamer.name !== gamerName
-                            );
-                            setGroup((prevGroup) => ({
-                              ...prevGroup,
-                              gamers: newGamersGroup,
-                            }));
-                            deleteGamer(gamerName);
-                          }}
-                          className="border border-blue-300 bg-blue-100"
-                        >
-                          Retirer
-                        </button>
-                      )}
+                    {isHere && gamerName !== user.name && (
+                      <button
+                        onClick={() => {
+                          const newGamersGroup = [...group.gamers].filter(
+                            (gamer) => gamer.name !== gamerName
+                          );
+                          setGroup((prevGroup) => ({
+                            ...prevGroup,
+                            gamers: newGamersGroup,
+                          }));
+                          deleteGamer(gamerName);
+                        }}
+                        className="border border-blue-300 bg-blue-100"
+                      >
+                        Retirer
+                      </button>
+                    )}
                   </div>
                 );
               })}
@@ -526,7 +524,7 @@ export default function Room({
                         " ... "
                       )}
                     </div>
-                    {gameName === "grouping" && isHere && (
+                    {isHere && (
                       <button
                         onClick={() => {
                           const newGuestsGroup = [...group.guests].filter(
@@ -561,7 +559,7 @@ export default function Room({
                         " ... "
                       )}
                     </div>
-                    {gameName === "grouping" && isHere && (
+                    {isHere && (
                       <button
                         onClick={() => {
                           const newMultiGroup = [...group.multiGuests].filter(
@@ -594,16 +592,14 @@ export default function Room({
                     >
                       {gamer}
                     </div>
-                    {gameName === "grouping" &&
-                      isAdmin &&
-                      gamer !== user.name && (
-                        <button
-                          onClick={() => deleteGamer(gamer)}
-                          className="border border-blue-300 bg-blue-100"
-                        >
-                          Retirer
-                        </button>
-                      )}
+                    {isAdmin && gamer !== user.name && (
+                      <button
+                        onClick={() => deleteGamer(gamer)}
+                        className="border border-blue-300 bg-blue-100"
+                      >
+                        Retirer
+                      </button>
+                    )}
                   </div>
                 );
               })}
@@ -616,7 +612,7 @@ export default function Room({
                     <div>
                       {guest} <span className="italic text-sm">(guest)</span>
                     </div>
-                    {gameName === "grouping" && isAdmin && (
+                    {isAdmin && (
                       <button
                         onClick={() => deleteGuest(guest)}
                         className="border border-blue-300 bg-blue-100"
@@ -645,7 +641,7 @@ export default function Room({
                         </span>
                       </div>
                     </div>
-                    {gameName === "grouping" && isAdmin && (
+                    {isAdmin && (
                       <button
                         onClick={() => deleteMultiGuest(multiGuest)}
                         className="border border-blue-300 bg-blue-100"
