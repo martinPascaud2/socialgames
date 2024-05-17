@@ -7,6 +7,7 @@ import QRCode from "react-qr-code";
 
 import genToken from "@/utils/genToken";
 import getLocation from "@/utils/getLocation";
+import getErrorInformations from "@/utils/getErrorInformations";
 import { gamesRefs } from "@/assets/globals";
 
 import ToggleCheckbox from "./ToggleCheckbox";
@@ -726,7 +727,17 @@ export default function Room({
                           setShowRoomRefs(!showRoomRefs);
                         }
                       } catch (error) {
-                        setServerMessage(error.message);
+                        console.error(error.message);
+                        const errorInformations = getErrorInformations({
+                          window,
+                          fail: "location_permission",
+                        }).map((info, i) => (
+                          <div key={i} className={`${i === 0 && "font-bold"}`}>
+                            {i !== 0 && "=>"}
+                            {info}
+                          </div>
+                        ));
+                        setServerMessage(errorInformations);
                       }
                     }}
                     className="border border-blue-300 bg-blue-100"
@@ -811,8 +822,9 @@ export default function Room({
             )}
           </>
         )}
-
-        <div>{serverMessage}</div>
+        <div className="flex justify-center">
+          <div className="flex flex-col">{serverMessage}</div>
+        </div>
       </>
     );
   } else {
