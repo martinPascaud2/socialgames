@@ -108,6 +108,26 @@ export default function Categories({
 
   const QrCodeScanner = useMemo(() => {
     if (!scanning) return;
+    const requestCameraAccess = async () => {
+      try {
+        await navigator.mediaDevices.getUserMedia({ video: true });
+      } catch (error) {
+        console.error("Erreur lors de l'accès à la caméra :", error);
+        const errorInformations = getErrorInformations({
+          window,
+          fail: "camera_permission",
+        }).map((info, i) => (
+          <div key={i} className={`${i === 0 && "font-bold"}`}>
+            {i !== 0 && "=>"}
+            {info}
+          </div>
+        ));
+        setServerMessage(errorInformations);
+        setScanning(false);
+      }
+    };
+    requestCameraAccess();
+
     return (
       <>
         <Html5QrcodePlugin
