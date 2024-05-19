@@ -250,10 +250,23 @@ export default function Room({
   useEffect(() => {
     if (searchToken) {
       setInputToken(searchToken);
-      if (!user.multiGuest) joinRoom();
-      else addMultiGuest();
+
+      const join = async () => {
+        if (!user.multiGuest) await joinRoom();
+        else if (!multiGuestList.some((multiName) => multiName === uniqueName))
+          await addMultiGuest();
+      };
+      join();
     }
-  }, [searchToken, joinRoom, addMultiGuest, user.multiGuest]);
+  }, [
+    searchToken,
+    joinRoom,
+    addMultiGuest,
+    user.multiGuest,
+    gamerList,
+    multiGuestList,
+    uniqueName,
+  ]);
 
   useEffect(() => {
     if (deletedGamer === uniqueName) router.push("/categories?control=true");

@@ -274,6 +274,7 @@ export async function serverDeleteMultiGuest({ token, multiGuestName }) {
       token,
     },
   });
+
   const { id: roomId, multiGuests } = room;
 
   delete multiGuests[multiGuestName];
