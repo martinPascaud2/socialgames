@@ -25,7 +25,7 @@ export const subCategories = {
       description: "Dessin dessin dessin",
     },
     {
-      name: "P'tit bac",
+      name: "Quel mot ?",
       path: "ptitbac",
       img: "/ptitbac.jpg",
       description:
@@ -102,7 +102,7 @@ export const gamesRefs = {
     isGuestsAllowed: true,
   },
   ptitbac: {
-    name: "P'tit bac",
+    name: "Quel mot ?",
     categorie: "categorie1",
     limits: { min: 2, max: 15 },
     isGuestsAllowed: false,
