@@ -28,6 +28,7 @@ export default function Ptitbac({
   const [onValidationGamerIndex, setOnValidationGamerIndex] = useState(0);
   const [onValidationResponseIndex, setOnValidationResponseIndex] = useState(0);
   const [responses, setResponses] = useState([]);
+  const [isCompleted, setIsCompleted] = useState(false);
   const [hasValidated, setHasValidated] = useState(false);
   const [everyoneResponses, setEveryoneResponses] = useState([]);
   const [hasVoted, setHasVoted] = useState(false);
@@ -42,6 +43,7 @@ export default function Ptitbac({
     const newResponses = [...responses];
     newResponses[i] = e.target.value;
     setResponses(newResponses);
+    setIsCompleted(newResponses.every((res) => res.length >= 3));
   };
 
   useEffect(() => {
@@ -66,6 +68,7 @@ export default function Ptitbac({
       if (phase === "sending") {
         setResponses(Array.from({ length: 6 }, () => ""));
         setHasValidated(false);
+        setIsCompleted(false);
         isAdmin &&
           setTimeout(() => {
             goValidation({ gamers: gameData.gamers, roomToken, gameData });
@@ -84,11 +87,11 @@ export default function Ptitbac({
   return (
     <>
       <div className="flex flex-col items-center">
-        <div>Pièces d'or (objectif 5 !)</div>
+        <div>Pièces d&apos;or (objectif 5 !)</div>
         {counts?.map((gamerCount) => (
           <div key={gamerCount.name}>
             {gamerCount.name} : {gamerCount.gold} pièce
-            {gamerCount.gold > 1 ? "s" : ""} d'or
+            {gamerCount.gold > 1 ? "s" : ""} d&apos;or
           </div>
         ))}
       </div>
@@ -140,7 +143,7 @@ export default function Ptitbac({
                 ))}
               </div>
 
-              {!hasValidated && (
+              {!hasValidated && isCompleted && (
                 <button
                   onClick={() => setHasValidated(true)}
                   className="border border-blue-300 bg-blue-100"
