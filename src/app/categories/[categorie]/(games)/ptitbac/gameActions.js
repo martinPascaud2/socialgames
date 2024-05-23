@@ -350,7 +350,7 @@ export async function validate({ group, validation, roomToken, gameData }) {
             phase: nextPhase,
           },
         });
-      }, 1000);
+      }, 3000);
     } else {
       const { aimPoints } = options;
       const finalWinners = newCounts.filter(
@@ -365,7 +365,7 @@ export async function validate({ group, validation, roomToken, gameData }) {
               phase: "waiting",
             },
           });
-        }, 1000);
+        }, 3000);
       } else {
         await pusher.trigger(`room-${roomToken}`, "room-event", {
           gameData: {
