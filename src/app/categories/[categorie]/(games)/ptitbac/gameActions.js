@@ -342,17 +342,27 @@ export async function validate({ group, validation, roomToken, gameData }) {
     console.log("isLastTheme", isLastTheme);
     if (!isLastTheme) {
       const nextPhase = `validating-${valThemeIndex + 1}`;
-      setTimeout(async () => {
-        console.log("passé là");
-        await pusher.trigger(`room-${roomToken}`, "room-event", {
-          gameData: {
-            ...gameData,
-            themesResponses: newThemesResponses,
-            counts: newCounts,
-            phase: nextPhase,
-          },
-        });
-      }, 3000);
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      console.log("passé là");
+      await pusher.trigger(`room-${roomToken}`, "room-event", {
+        gameData: {
+          ...gameData,
+          themesResponses: newThemesResponses,
+          counts: newCounts,
+          phase: nextPhase,
+        },
+      });
+      // setTimeout(async () => {
+      //   console.log("passé là");
+      //   await pusher.trigger(`room-${roomToken}`, "room-event", {
+      //     gameData: {
+      //       ...gameData,
+      //       themesResponses: newThemesResponses,
+      //       counts: newCounts,
+      //       phase: nextPhase,
+      //     },
+      //   });
+      // }, 3000);
     } else {
       const { aimPoints } = options;
       const finalWinners = newCounts.filter(
