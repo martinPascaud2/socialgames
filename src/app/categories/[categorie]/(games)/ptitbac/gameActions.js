@@ -343,7 +343,6 @@ export async function validate({ group, validation, roomToken, gameData }) {
     if (!isLastTheme) {
       const nextPhase = `validating-${valThemeIndex + 1}`;
       await new Promise((resolve) => setTimeout(resolve, 3000));
-      console.log("passé là");
       await pusher.trigger(`room-${roomToken}`, "room-event", {
         gameData: {
           ...gameData,
@@ -352,32 +351,20 @@ export async function validate({ group, validation, roomToken, gameData }) {
           phase: nextPhase,
         },
       });
-      // setTimeout(async () => {
-      //   console.log("passé là");
-      //   await pusher.trigger(`room-${roomToken}`, "room-event", {
-      //     gameData: {
-      //       ...gameData,
-      //       themesResponses: newThemesResponses,
-      //       counts: newCounts,
-      //       phase: nextPhase,
-      //     },
-      //   });
-      // }, 3000);
     } else {
       const { aimPoints } = options;
       const finalWinners = newCounts.filter(
         (gamerCount) => gamerCount.gold >= aimPoints
       );
       if (!finalWinners.length || aimPoints === 0) {
-        setTimeout(async () => {
-          await pusher.trigger(`room-${roomToken}`, "room-event", {
-            gameData: {
-              ...gameData,
-              counts: newCounts,
-              phase: "waiting",
-            },
-          });
-        }, 3000);
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        await pusher.trigger(`room-${roomToken}`, "room-event", {
+          gameData: {
+            ...gameData,
+            counts: newCounts,
+            phase: "waiting",
+          },
+        });
       } else {
         await pusher.trigger(`room-${roomToken}`, "room-event", {
           gameData: {
