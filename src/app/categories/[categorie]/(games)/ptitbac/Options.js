@@ -22,7 +22,7 @@ export default function PtitbacOptions({ setOptions }) {
         setMode={setMode}
         setOptions={setOptions}
       />
-      <Countdown setOptions={setOptions} min={2} max={7} />
+      <Countdown setOptions={setOptions} min={1} max={7} />
     </>
   );
 }

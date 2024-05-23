@@ -257,7 +257,9 @@ export default function Uno({
           </div>
         )}
 
-        {!isLocked && <div className="flex justify-center">C'est à vous !</div>}
+        {!isLocked && (
+          <div className="flex justify-center">C&apos;est à vous !</div>
+        )}
         <div className="flex flex-wrap w-full justify-around">
           {gamers?.map((gamer, i) => (
             <div

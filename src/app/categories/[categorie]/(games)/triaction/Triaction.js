@@ -739,7 +739,7 @@ export default function Triaction({
             <>
               <PendingGamerList gamers={gamers} senders={senders} />
               <div className="m-4 text-center">
-                Les joueurs choissent : l'action visible ou cachée ?
+                Les joueurs choissent : l&apos;action visible ou cachée ?
               </div>
             </>
           )}

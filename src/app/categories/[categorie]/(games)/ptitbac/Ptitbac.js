@@ -1,13 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 import {
   startCountdown,
   sendResponses,
   goValidation,
-  vote,
+  // vote,
+  validate,
+  manageEmptyTheme,
 } from "./gameActions";
+
+import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import FinishGame from "@/components/FinishGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
@@ -22,17 +26,17 @@ export default function Ptitbac({
   storedLocation,
 }) {
   const isAdmin = gameData.admin === user.name;
+  const isReferee = isAdmin; //check
   const { phase, letter, themes, finishCountdownDate, counts, winners } =
     gameData;
 
-  const [onValidationGamerIndex, setOnValidationGamerIndex] = useState(0);
-  const [onValidationResponseIndex, setOnValidationResponseIndex] = useState(0);
   const [responses, setResponses] = useState([]);
   const [isCompleted, setIsCompleted] = useState(false);
   const [hasValidated, setHasValidated] = useState(false);
-  const [everyoneResponses, setEveryoneResponses] = useState([]);
-  const [hasVoted, setHasVoted] = useState(false);
   const [isEnded, setIsEnded] = useState(false);
+
+  const [valTheme, setValTheme] = useState("");
+  const [themesResponses, setThemesResponses] = useState({});
 
   useEffect(() => {
     if (gameData.ended) setIsEnded(true);
@@ -47,53 +51,161 @@ export default function Ptitbac({
   };
 
   useEffect(() => {
-    if (hasValidated) {
+    if (hasValidated && phase === "searching") {
+      console.log("passé par là");
       const send = async () => {
         await sendResponses({
           responses,
           userId: user.id,
+          roomId,
           roomToken,
           gameData,
         });
       };
       send();
     }
-  }, [hasValidated]);
+  }, [hasValidated, phase]);
 
   useEffect(() => {
     setResponses(Array.from({ length: 6 }, () => `${letter}`));
-    setHasVoted(false);
 
     const send = async () => {
       if (phase === "sending") {
         setResponses(Array.from({ length: 6 }, () => ""));
-        setHasValidated(false);
         setIsCompleted(false);
         isAdmin &&
-          setTimeout(() => {
-            goValidation({ gamers: gameData.gamers, roomToken, gameData });
+          setTimeout(async () => {
+            await goValidation({
+              gamers: gameData.gamers,
+              roomToken,
+              gameData,
+            });
           }, 500);
       }
     };
     send();
 
     if (phase?.startsWith("validating")) {
-      setOnValidationGamerIndex(phase.split("-")[1]);
-      setOnValidationResponseIndex(phase.split("-")[2]);
-      setEveryoneResponses(gameData.everyoneResponses);
+      setValTheme(themes[phase.split("-")[1]]);
+      setHasValidated(false);
     }
   }, [phase]);
+
+  console.log("gameData", gameData);
+  console.log("phase", phase);
+  console.log("themesResponses", themesResponses);
+  console.log("valTheme", valTheme);
+  console.log("hasValidated", hasValidated);
+
+  useEffect(() => {
+    setThemesResponses(gameData.themesResponses);
+  }, [gameData.themesResponses]);
+  const validationList = useCallback(() => {
+    if (
+      !valTheme ||
+      !themesResponses[valTheme] ||
+      !phase.startsWith("validating")
+    ) {
+      return null;
+    }
+    const invResponses = {};
+    const pendsAndVals = {};
+    Object.entries({ ...themesResponses[valTheme] })
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .forEach((res) => {
+        if (res[1].validated === false) invResponses[res[0]] = res[1];
+        else pendsAndVals[res[0]] = res[1];
+      });
+
+    return (
+      <div>
+        {Object.entries(pendsAndVals).map((res, i) => (
+          <div key={i} className="flex justify-center gap-4">
+            <div>{res[0]}</div>
+            <div>{res[1].word}</div>
+            <div>
+              {res[1].validated ? (
+                <CheckIcon className="block h-6 w-6 " />
+              ) : isReferee ? (
+                <div className="flex">
+                  <button
+                    onClick={() => {
+                      validate({
+                        gamerName: res[0],
+                        validation: true,
+                        roomToken,
+                        gameData,
+                      });
+                    }}
+                    className="border border-blue-300 bg-blue-100 mx-4"
+                  >
+                    Validax
+                  </button>
+                  <button
+                    onClick={() => {
+                      validate({
+                        gamerName: res[0],
+                        validation: false,
+                        roomToken,
+                        gameData,
+                      });
+                    }}
+                    className="border border-blue-300 bg-blue-100 mx-4"
+                  >
+                    Nope
+                  </button>
+                </div>
+              ) : (
+                "..."
+              )}
+            </div>
+          </div>
+        ))}
+        {Object.entries(invResponses).map((res, i) => (
+          <div key={i} className="flex justify-center gap-4">
+            <div>{res[0]}</div>
+            <div>{res[1].word}</div>
+            <div>
+              <XMarkIcon className="block h-6 w-6 " />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }, [gameData, isReferee, roomToken, themesResponses, valTheme]);
+
+  const handleTimeUp = () => {
+    setTimeout(() => {
+      setHasValidated(true);
+    }, [1000]);
+  };
+
+  useEffect(() => {
+    const manEmpty = async () => {
+      if (
+        phase.startsWith("validating") &&
+        Object.values(themesResponses[valTheme]).every(
+          (res) => res.validated === false
+        )
+      ) {
+        await manageEmptyTheme({ roomToken, gameData });
+      }
+    };
+    manEmpty();
+  }, [themesResponses, valTheme]);
 
   return (
     <>
       <div className="flex flex-col items-center">
         <div>Pièces d&apos;or (objectif 5 !)</div>
-        {counts?.map((gamerCount) => (
-          <div key={gamerCount.name}>
-            {gamerCount.name} : {gamerCount.gold} pièce
-            {gamerCount.gold > 1 ? "s" : ""} d&apos;or
-          </div>
-        ))}
+        {counts
+          ?.sort((a, b) => a.name.localeCompare(b.name))
+          .map((gamerCount) => (
+            <div key={gamerCount.name}>
+              {gamerCount.name} : {gamerCount.gold} pièce
+              {gamerCount.gold > 1 ? "s" : ""} d&apos;or
+            </div>
+          ))}
       </div>
 
       <hr />
@@ -154,60 +266,17 @@ export default function Ptitbac({
 
               <CountDown
                 finishCountdownDate={finishCountdownDate}
-                setHasValidated={setHasValidated}
+                onTimeUp={handleTimeUp}
               />
             </div>
           )}
 
           {phase?.startsWith("validating") &&
-            everyoneResponses.length &&
-            everyoneResponses[onValidationGamerIndex].gamer !== user.name && (
+            themesResponses &&
+            Object.keys(themesResponses).length && (
               <>
-                <div className="flex flex-col items-center">
-                  <div>Mots validés pour ce tour</div>
-                  {counts.map((gamerCount) => (
-                    <div key={gamerCount.name}>
-                      {gamerCount.name} : {gamerCount.points} mot
-                      {gamerCount.points > 1 ? "s" : ""}
-                    </div>
-                  ))}
-                </div>
-
-                <hr />
-
-                <div className="flex flex-col items-center">
-                  <div>
-                    {everyoneResponses[onValidationGamerIndex].gamer} pour le
-                    thème {themes[onValidationResponseIndex]} :{" "}
-                    {
-                      everyoneResponses[onValidationGamerIndex].responses[
-                        onValidationResponseIndex
-                      ]
-                    }
-                  </div>
-                  {!hasVoted && (
-                    <div className="flex">
-                      <button
-                        onClick={() => {
-                          setHasVoted(true);
-                          vote({ vote: true, roomToken, gameData });
-                        }}
-                        className="border border-blue-300 bg-blue-100 mx-4"
-                      >
-                        Validax
-                      </button>
-                      <button
-                        onClick={() => {
-                          setHasVoted(true);
-                          vote({ vote: false, roomToken, gameData });
-                        }}
-                        className="border border-blue-300 bg-blue-100 mx-4"
-                      >
-                        Nope
-                      </button>
-                    </div>
-                  )}
-                </div>
+                <div>Validation pour le thème : {valTheme}</div>
+                <div>{validationList()}</div>
               </>
             )}
         </>
