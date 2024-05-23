@@ -339,9 +339,11 @@ export async function validate({ group, validation, roomToken, gameData }) {
         counts: newCounts,
       },
     });
+    console.log("isLastTheme", isLastTheme);
     if (!isLastTheme) {
       const nextPhase = `validating-${valThemeIndex + 1}`;
       setTimeout(async () => {
+        console.log("passé là");
         await pusher.trigger(`room-${roomToken}`, "room-event", {
           gameData: {
             ...gameData,
