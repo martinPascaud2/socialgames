@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import Countdown from "@/components/Options/Countdown";
 import ModeSelector from "@/components/Options/ModeSelector";
+import AimPoints from "@/components/Options/AimPoints";
 
 export default function PtitbacOptions({ setOptions }) {
   const [mode, setMode] = useState("default");
@@ -23,6 +24,7 @@ export default function PtitbacOptions({ setOptions }) {
         setOptions={setOptions}
       />
       <Countdown setOptions={setOptions} min={1} max={7} />
+      <AimPoints setOptions={setOptions} min={0} max={30} defaultValue={0} />
     </>
   );
 }

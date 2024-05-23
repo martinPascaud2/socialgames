@@ -4,12 +4,13 @@ import { useEffect, useState } from "react";
 
 export default function AimPoints({ setOptions, min, max, defaultValue }) {
   const [aimPoints, setAimPoints] = useState(
-    defaultValue ? defaultValue : Math.floor((min + max) / 2)
+    defaultValue !== undefined ? defaultValue : Math.floor((min + max) / 2)
   );
 
   useEffect(() => {
     if (aimPoints < min) setAimPoints(min);
     if (aimPoints > max) setAimPoints(max);
+
     setOptions((options) => ({
       ...options,
       aimPoints,
@@ -26,7 +27,11 @@ export default function AimPoints({ setOptions, min, max, defaultValue }) {
         >
           -
         </button>
-        <div className="flex items-center">{aimPoints} points</div>
+        <div className="flex items-center">
+          {aimPoints === 0
+            ? "Illimité"
+            : `${aimPoints} point${aimPoints >= 2 ? "s" : ""}`}
+        </div>
         <button
           onClick={() => setAimPoints((points) => points + 1)}
           className="ml-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center"

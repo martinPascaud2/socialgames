@@ -266,7 +266,7 @@ export async function goValidation({ gamers, roomToken, gameData }) {
 }
 
 export async function validate({ group, validation, roomToken, gameData }) {
-  const { counts, phase, gamers, themesResponses, themes } = gameData;
+  const { counts, phase, gamers, themesResponses, themes, options } = gameData;
   const valThemeIndex = parseInt(phase.split("-")[1]);
   const theme = themes[valThemeIndex];
   console.log("group", group);
@@ -304,6 +304,7 @@ export async function validate({ group, validation, roomToken, gameData }) {
   //     };
   //   else return count;
   // });
+  console.log("options", options);
 
   const newCounts = counts.map((count) => {
     if (group.some((gamerRes) => gamerRes.gamer === count.name))
@@ -351,35 +352,47 @@ export async function validate({ group, validation, roomToken, gameData }) {
         });
       }, [1000]);
     } else {
-      setTimeout(async () => {
+      const { aimPoints } = options;
+      const finalWinners = newCounts.filter(
+        (gamerCount) => gamerCount.gold >= aimPoints
+      );
+      if (!finalWinners.length || aimPoints === 0) {
+        setTimeout(async () => {
+          await pusher.trigger(`room-${roomToken}`, "room-event", {
+            gameData: {
+              ...gameData,
+              counts: newCounts,
+              phase: "waiting",
+            },
+          });
+        }, [1000]);
+      } else {
         await pusher.trigger(`room-${roomToken}`, "room-event", {
           gameData: {
             ...gameData,
             counts: newCounts,
-            phase: "waiting",
+            winners: finalWinners,
+            phase: "ended",
+            ended: true,
           },
         });
-      }, [1000]);
+      }
     }
   }
 }
 
 export async function manageEmptyTheme({ roomToken, gameData }) {
-  console.log("empty gameData", gameData);
   const { counts, phase, gamers, themesResponses, themes } = gameData;
   const valThemeIndex = parseInt(phase.split("-")[1]);
-  // const theme = themes[valThemeIndex];
   const isLastTheme = valThemeIndex === themes.length - 1;
   const nextPhase = isLastTheme ? "waiting" : `validating-${valThemeIndex + 1}`;
 
-  setTimeout(async () => {
-    await pusher.trigger(`room-${roomToken}`, "room-event", {
-      gameData: {
-        ...gameData,
-        phase: nextPhase,
-      },
-    });
-  }, [3000]);
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      phase: nextPhase,
+    },
+  });
 }
 
 export async function vote({ vote, roomToken, gameData }) {
