@@ -325,7 +325,7 @@ export default function Ptitbac({
   const handleTimeUp = () => {
     setTimeout(() => {
       setHasValidated(true);
-    }, [1000]);
+    }, 1000);
   };
 
   return (
