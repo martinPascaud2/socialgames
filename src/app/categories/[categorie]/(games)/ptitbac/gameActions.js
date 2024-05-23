@@ -160,6 +160,11 @@ export async function sendResponses({
   roomToken,
   gameData,
 }) {
+  console.log("responses", responses);
+  console.log("userId", userId);
+  console.log("roomId", roomId);
+  console.log("roomToken", roomToken);
+  console.log("gameData", gameData);
   try {
     await prisma.$transaction(async () => {
       const responsesStr = responses.join("/");
@@ -175,8 +180,12 @@ export async function sendResponses({
             select: { gameData: true },
           })
         ).gameData || {};
+      console.log("roomGameData", roomGameData);
       const alreadySent =
-        roomGameData?.alreadySent < gameData.gamers.length || 0;
+        roomGameData?.alreadySent < gameData.gamers.length
+          ? roomGameData.alreadySent
+          : 0;
+      console.log("alreadySent", alreadySent);
       const newAlreadySent = alreadySent + 1;
       const newRoomGameData = { ...roomGameData, alreadySent: newAlreadySent };
 
@@ -186,6 +195,8 @@ export async function sendResponses({
       });
 
       console.log("TEST", TEST);
+
+      console.log("newAlreadySent", newAlreadySent);
 
       await pusher.trigger(`room-${roomToken}`, "room-event", {
         gameData: {
@@ -254,31 +265,62 @@ export async function goValidation({ gamers, roomToken, gameData }) {
   });
 }
 
-export async function validate({ gamerName, validation, roomToken, gameData }) {
+export async function validate({ group, validation, roomToken, gameData }) {
   const { counts, phase, gamers, themesResponses, themes } = gameData;
   const valThemeIndex = parseInt(phase.split("-")[1]);
   const theme = themes[valThemeIndex];
-  const newThemesResponses = {
-    ...themesResponses,
-    [theme]: {
-      ...themesResponses[theme],
-      [gamerName]: {
-        ...themesResponses[theme][gamerName],
-        validated: validation,
+  console.log("group", group);
+  console.log("themesResponses", themesResponses);
+  let newThemesResponses = { ...themesResponses };
+  group.forEach((gamerRes) => {
+    newThemesResponses = {
+      ...newThemesResponses,
+      [theme]: {
+        ...newThemesResponses[theme],
+        [gamerRes.gamer]: {
+          ...newThemesResponses[theme][gamerRes.gamer],
+          validated: validation,
+        },
       },
-    },
-  };
-  const isLastWord = !Object.entries(newThemesResponses[theme]).some(
-    (res) => res[1].validated === null
-  );
+    };
+  });
+  console.log("newThemesResponses", newThemesResponses);
+  // const newThemesResponses = {
+  //   ...themesResponses,
+  //   [theme]: {
+  //     ...themesResponses[theme],
+  //     [gamerName]: {
+  //       ...themesResponses[theme][gamerName],
+  //       validated: validation,
+  //     },
+  //   },
+  // };
+  console.log("counts", counts);
+  // const newCounts = counts.map((count) => {
+  //   if (count.name === gamerName)
+  //     return {
+  //       name: gamerName,
+  //       gold: validation ? count.gold + 1 : count.gold,
+  //     };
+  //   else return count;
+  // });
+
   const newCounts = counts.map((count) => {
-    if (count.name === gamerName)
+    if (group.some((gamerRes) => gamerRes.gamer === count.name))
       return {
-        name: gamerName,
-        gold: validation ? count.gold + 1 : count.gold,
+        name: count.name,
+        gold: validation
+          ? count.gold + (group.length === 1 ? 2 : 1)
+          : count.gold,
       };
     else return count;
   });
+  console.log("newCounts", newCounts);
+
+  const isLastWord = !Object.entries(newThemesResponses[theme]).some(
+    (res) => res[1].validated === null
+  );
+  console.log("isLastWord", isLastWord);
   if (!isLastWord) {
     await pusher.trigger(`room-${roomToken}`, "room-event", {
       gameData: {

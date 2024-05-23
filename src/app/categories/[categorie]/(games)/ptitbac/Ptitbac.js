@@ -18,6 +18,92 @@ import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import EndGame from "@/components/EndGame";
 import CountDown from "@/components/CountDown";
 
+function levenshtein(a, b) {
+  const matrix = [];
+
+  for (let i = 0; i <= b.length; i++) {
+    matrix[i] = [i];
+  }
+
+  for (let j = 0; j <= a.length; j++) {
+    matrix[0][j] = j;
+  }
+
+  for (let i = 1; i <= b.length; i++) {
+    for (let j = 1; j <= a.length; j++) {
+      if (b.charAt(i - 1) === a.charAt(j - 1)) {
+        matrix[i][j] = matrix[i - 1][j - 1];
+      } else {
+        matrix[i][j] = Math.min(
+          matrix[i - 1][j - 1] + 1, // substitution
+          matrix[i][j - 1] + 1, // insertion
+          matrix[i - 1][j] + 1 // deletion
+        );
+      }
+    }
+  }
+
+  return matrix[b.length][a.length];
+}
+
+// function groupSimilarWords(words, threshold = 1) {
+//   const groups = [];
+//   const visited = new Set();
+
+//   words.forEach((word) => {
+//     if (!visited.has(word)) {
+//       const group = [word];
+//       visited.add(word);
+
+//       words.forEach((otherWord) => {
+//         if (
+//           !visited.has(otherWord) &&
+//           levenshtein(word, otherWord) <= threshold
+//         ) {
+//           group.push(otherWord);
+//           visited.add(otherWord);
+//         }
+//       });
+
+//       groups.push(group);
+//     }
+//   });
+
+//   return groups;
+// }
+function groupSimilarWords(responses, threshold = 1) {
+  const groups = [];
+  const visited = new Set();
+  console.log("responses", responses);
+
+  Object.entries(responses).forEach((res) => {
+    // if (!visited.has(res[1].word)) {
+    if (!visited.has(res[0])) {
+      const group = [{ gamer: res[0], response: res[1] }];
+      // visited.add(res[1].word);
+      visited.add(res[0]);
+
+      Object.entries(responses).forEach((otherRes) => {
+        console.log("otherRes[1]", otherRes[1]);
+        if (
+          // !visited.has(otherRes[1].word) &&
+          !visited.has(otherRes[0]) &&
+          levenshtein(res[1].word, otherRes[1].word) <= threshold
+        ) {
+          // group.push(otherRes.word);
+          group.push({ gamer: otherRes[0], response: otherRes[1] });
+          // visited.add(otherRes[1].word);
+          visited.add(otherRes[0]);
+        }
+      });
+
+      groups.push(group);
+    }
+  });
+
+  return groups;
+}
+
 export default function Ptitbac({
   roomId,
   roomToken,
@@ -96,6 +182,19 @@ export default function Ptitbac({
   console.log("themesResponses", themesResponses);
   console.log("valTheme", valTheme);
   console.log("hasValidated", hasValidated);
+  // const words = [
+  //   "chat",
+  //   "chats",
+  //   "chien",
+  //   "chiens",
+  //   "voiture",
+  //   "voitures",
+  //   "bateau",
+  //   "bateaux",
+  //   "dvzef",
+  // ];
+  // const groupedWords = groupSimilarWords(words, 1);
+  // console.log("groupedWords", groupedWords);
 
   useEffect(() => {
     setThemesResponses(gameData.themesResponses);
@@ -117,9 +216,60 @@ export default function Ptitbac({
         else pendsAndVals[res[0]] = res[1];
       });
 
+    console.log("pendsAndVals", pendsAndVals);
+    const groupedRes = groupSimilarWords(pendsAndVals, 1);
+    console.log("groupedRes", groupedRes);
+
     return (
       <div>
-        {Object.entries(pendsAndVals).map((res, i) => (
+        {groupedRes.map((group, i) => {
+          if (group[0].response.validated === null)
+            return (
+              <div key={i} className="flex items-center justify-center gap-4">
+                <div className="flex flex-col items-center my-2">
+                  {group.map((gamerRes, j) => {
+                    return (
+                      <div key={j} className="flex flex-col my-1">
+                        <div className="flex gap-2">
+                          <div>{gamerRes.gamer}</div>
+                          <div>{gamerRes.response.word}</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div>
+                  <button
+                    onClick={() => {
+                      validate({
+                        group,
+                        validation: true,
+                        roomToken,
+                        gameData,
+                      });
+                    }}
+                    className="border border-blue-300 bg-blue-100 mx-4"
+                  >
+                    Validax
+                  </button>
+                  <button
+                    onClick={() => {
+                      validate({
+                        group,
+                        validation: false,
+                        roomToken,
+                        gameData,
+                      });
+                    }}
+                    className="border border-blue-300 bg-blue-100 mx-4"
+                  >
+                    Nope
+                  </button>
+                </div>
+              </div>
+            );
+        })}
+        {/* {Object.entries(pendsAndVals).map((res, i) => (
           <div key={i} className="flex justify-center gap-4">
             <div>{res[0]}</div>
             <div>{res[1].word}</div>
@@ -160,16 +310,30 @@ export default function Ptitbac({
               )}
             </div>
           </div>
-        ))}
-        {Object.entries(invResponses).map((res, i) => (
-          <div key={i} className="flex justify-center gap-4">
-            <div>{res[0]}</div>
-            <div>{res[1].word}</div>
-            <div>
-              <XMarkIcon className="block h-6 w-6 " />
+        ))} */}
+        {Object.entries(pendsAndVals).map((res, i) => {
+          if (res[1].validated)
+            return (
+              <div key={i} className="flex justify-center gap-4">
+                <div>{res[0]}</div>
+                <div>{res[1].word}</div>
+                <div>
+                  <CheckIcon className="block h-6 w-6 " />
+                </div>
+              </div>
+            );
+        })}
+        {Object.entries(invResponses).map((res, i) => {
+          return (
+            <div key={i} className="flex justify-center gap-4">
+              <div>{res[0]}</div>
+              <div>{res[1].word}</div>
+              <div>
+                <XMarkIcon className="block h-6 w-6 " />
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     );
   }, [gameData, isReferee, roomToken, themesResponses, valTheme]);
@@ -183,7 +347,7 @@ export default function Ptitbac({
   useEffect(() => {
     const manEmpty = async () => {
       if (
-        phase.startsWith("validating") &&
+        phase?.startsWith("validating") &&
         Object.values(themesResponses[valTheme]).every(
           (res) => res.validated === false
         )
