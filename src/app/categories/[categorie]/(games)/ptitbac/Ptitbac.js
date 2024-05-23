@@ -243,8 +243,8 @@ export default function Ptitbac({
                 {isReferee ? (
                   <div>
                     <button
-                      onClick={() => {
-                        validate({
+                      onClick={async () => {
+                        await validate({
                           group,
                           validation: true,
                           roomToken,
@@ -256,8 +256,8 @@ export default function Ptitbac({
                       Validax
                     </button>
                     <button
-                      onClick={() => {
-                        validate({
+                      onClick={async () => {
+                        await validate({
                           group,
                           validation: false,
                           roomToken,
