@@ -372,9 +372,9 @@ export default function Ptitbac({
                 {themes.map((theme, i) => (
                   <div
                     key={theme}
-                    className="w-1/3 flex flex-col items-center my-2"
+                    className="w-full flex flex-col items-center my-2"
                   >
-                    <div>{theme}</div>
+                    <div className="m-1">{theme}</div>
                     <input
                       type="text"
                       value={responses[i]}
