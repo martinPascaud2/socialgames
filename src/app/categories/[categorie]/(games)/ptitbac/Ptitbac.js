@@ -138,7 +138,7 @@ export default function Ptitbac({
   };
 
   useEffect(() => {
-    if (hasValidated && phase === "searching") {
+    if ((hasValidated && phase === "searching") || phase === "sending") {
       console.log("passé par là");
       const send = async () => {
         await sendResponses({
@@ -195,6 +195,7 @@ export default function Ptitbac({
   console.log("themesResponses", themesResponses);
   console.log("valTheme", valTheme);
   console.log("hasValidated", hasValidated);
+  console.log("responses", responses);
 
   useEffect(() => {
     setThemesResponses(gameData.themesResponses);

@@ -173,37 +173,31 @@ export async function sendResponses({
         where: { id: userId },
         data: { ptitbacResponses: responsesStr },
       });
-      const roomGameData =
-        (
-          await prisma.room.findUnique({
-            where: { id: roomId },
-            select: { gameData: true },
-          })
-        ).gameData || {};
-      console.log("roomGameData", roomGameData);
-      const alreadySent =
-        roomGameData?.alreadySent < gameData.gamers.length
-          ? roomGameData.alreadySent
-          : 0;
-      console.log("alreadySent", alreadySent);
-      const newAlreadySent = alreadySent + 1;
-      const newRoomGameData = { ...roomGameData, alreadySent: newAlreadySent };
 
-      const TEST = await prisma.room.update({
-        where: { id: roomId },
-        data: { gameData: newRoomGameData },
-      });
-
-      console.log("TEST", TEST);
-
-      console.log("newAlreadySent", newAlreadySent);
+      // Legacy transaction example
+      // const roomGameData =
+      //   (
+      //     await prisma.room.findUnique({
+      //       where: { id: roomId },
+      //       select: { gameData: true },
+      //     })
+      //   ).gameData || {};
+      // const alreadySent =
+      //   roomGameData?.alreadySent < gameData.gamers.length
+      //     ? roomGameData.alreadySent
+      //     : 0;
+      // const newAlreadySent = alreadySent + 1;
+      // const newRoomGameData = { ...roomGameData, alreadySent: newAlreadySent };
+      // const TEST = await prisma.room.update({
+      //   where: { id: roomId },
+      //   data: { gameData: newRoomGameData },
+      // });
 
       await pusher.trigger(`room-${roomToken}`, "room-event", {
         gameData: {
           ...gameData,
-          alreadySent: newAlreadySent,
-          phase:
-            newAlreadySent !== gameData.gamers.length ? "searching" : "sending",
+          // alreadySent: newAlreadySent,
+          phase: "sending",
         },
       });
     });
