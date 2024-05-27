@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-export default function Countdown({ setOptions, min, max }) {
+export default function Countdown({ setOptions, min, max, last }) {
   const [countDownTime, setCountDownTime] = useState(
-    Math.floor((min + max) / 2)
+    (last && last / 60 / 1000) || Math.floor((min + max) / 2)
   );
 
   useEffect(() => {

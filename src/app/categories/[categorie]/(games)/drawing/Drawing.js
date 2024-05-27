@@ -26,7 +26,7 @@ export default function Drawing({
 
   return (
     <>
-      {mode === "team" && (
+      {mode === "Pictionary" && (
         <TeamDrawing
           roomId={roomId}
           roomToken={roomToken}
@@ -35,7 +35,7 @@ export default function Drawing({
         />
       )}
 
-      {mode === "chain" && (
+      {mode === "Esquissé" && (
         <ChainDrawing
           roomId={roomId}
           roomToken={roomToken}

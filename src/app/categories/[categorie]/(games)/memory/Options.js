@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from "react";
 
-export default function MemoryOptions({ setOptions }) {
-  const [pairsNumber, setPairsNumber] = useState(12);
+export default function MemoryOptions({ setOptions, lastMode }) {
+  const [pairsNumber, setPairsNumber] = useState(
+    lastMode?.options?.pairsNumber || 12
+  );
 
   useEffect(() => {
     // if (pairsNumber < 8) setPairsNumber(8);

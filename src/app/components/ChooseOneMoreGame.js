@@ -34,6 +34,7 @@ export default function ChooseOneMoreGame({
         guests,
         privacy: priv,
         lastGame: gameName,
+        lastMode: { mode: gameData.options?.mode, options: gameData.options },
         lastPosition: storedLocation,
       };
       localStorage.setItem("group", JSON.stringify(group));

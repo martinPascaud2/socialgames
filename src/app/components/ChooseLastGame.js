@@ -6,6 +6,7 @@ import { gamesRefs } from "@/assets/globals";
 
 export default function ChooseLastGame({
   lastGame,
+  lastMode,
   lastPosition,
   group,
   roomToken,
@@ -28,7 +29,7 @@ export default function ChooseLastGame({
         onClick={() => goNextGame()}
         className="border border-blue-300 bg-blue-100 w-fit"
       >
-        Rejouer à {gamesRefs[lastGame].name}
+        Rejouer à {lastMode?.mode || gamesRefs[lastGame].name}
       </div>
     </>
   );

@@ -783,7 +783,9 @@ export default function Room({
 
                 <hr />
 
-                {Options && <Options setOptions={setOptions} />}
+                {Options && (
+                  <Options setOptions={setOptions} lastMode={group?.lastMode} />
+                )}
 
                 <button
                   onClick={() => launchRoom()}
@@ -799,6 +801,7 @@ export default function Room({
                   gameName === "grouping" && (
                     <ChooseLastGame
                       lastGame={group.lastGame}
+                      lastMode={group.lastMode}
                       lastPosition={geoLocation}
                       group={group}
                       roomToken={roomToken}

@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from "react";
 
-export default function MakeTeams({ setOptions }) {
+export default function MakeTeams({ setOptions, last }) {
   const [minByTeam, setMinByTeam] = useState(2);
   const [teamsNumber, setTeamsNumber] = useState(2);
-  const [teamMode, setTeamMode] = useState("teamNumber");
+  const [teamMode, setTeamMode] = useState(last || "teamNumber");
 
   useEffect(() => {
     setOptions((options) => ({ ...options, teamMode }));

@@ -7,44 +7,59 @@ import MakeTeams from "@/components/Options/MakeTeams";
 import Countdown from "@/components/Options/Countdown";
 import AimPoints from "@/components/Options/AimPoints";
 
-export default function DrawingOptions({ setOptions }) {
-  const [mode, setMode] = useState("team");
+export default function DrawingOptions({ setOptions, lastMode }) {
+  const [mode, setMode] = useState(lastMode?.mode || "Pictionary");
   const [modeList, setModeList] = useState([]);
 
   useEffect(() => {
     setOptions((options) => ({ ...options, mode }));
 
     setModeList([
-      { mode: "team", text: "Pictionary" },
-      { mode: "chain", text: "Esquissé" },
+      { mode: "Pictionary", text: "Pictionary" },
+      { mode: "Esquissé", text: "Esquissé" },
     ]);
   }, [mode, setOptions]);
+
+  // const same = lastMode.mode === mode; //can be used
 
   return (
     <>
       <ModeSelector
-        defaultValue="team"
+        defaultValue={mode}
         modeList={modeList}
         setMode={setMode}
         setOptions={setOptions}
       />
 
-      {mode === "team" && (
+      {mode === "Pictionary" && (
         <>
-          <MakeTeams setOptions={setOptions} />
-          <Countdown setOptions={setOptions} min={1} max={5} />
+          <MakeTeams
+            setOptions={setOptions}
+            last={lastMode?.options?.teamMode}
+          />
+          <Countdown
+            setOptions={setOptions}
+            min={1}
+            max={5}
+            last={lastMode?.options?.countDownTime}
+          />
           <AimPoints
             setOptions={setOptions}
             min={3}
             max={10}
-            defaultValue={5}
+            defaultValue={lastMode?.options?.aimPoints || 5}
           />
         </>
       )}
 
-      {mode === "chain" && (
+      {mode === "Esquissé" && (
         <>
-          <Countdown setOptions={setOptions} min={1} max={5} />
+          <Countdown
+            setOptions={setOptions}
+            min={1}
+            max={5}
+            last={lastMode?.options?.countDownTime}
+          />
         </>
       )}
     </>

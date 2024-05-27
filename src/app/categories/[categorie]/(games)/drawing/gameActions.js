@@ -137,7 +137,7 @@ export async function launchGame({
   );
 
   let words = [];
-  if (options.mode === "chain") {
+  if (options.mode === "Esquissé") {
     const wordList = await getFreeWords({ gamers: gamersAndGuests });
     gamersAndGuests.map((gamer, i) => {
       words.push({
