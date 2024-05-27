@@ -86,54 +86,115 @@ export async function inviteFriend({
 }
 
 export async function serverJoin({ token, user }) {
-  const room = await prisma.room.findFirst({
-    where: {
-      token,
-    },
-  });
-
-  if (Object.values(room.gamers).includes(user.id)) return {};
-  if (!room) return { error: "Token incorrect" };
-  if (room.started) return { error: "La partie a déjà été lancée" };
-
-  const { id: roomId } = room;
-
-  await prisma.user.update({
-    where: {
-      id: user.id,
-    },
-    data: {
-      roomId,
-    },
-  });
-
-  const newGamerList = Object.keys(
-    (
-      await prisma.room.update({
-        where: { id: roomId },
-        data: {
-          gamers: {
-            ...room.gamers,
-            [user.name]: user.id,
-          },
+  try {
+    const result = await prisma.$transaction(async () => {
+      const room = await prisma.room.findFirst({
+        where: {
+          token,
         },
-      })
-    ).gamers
-  );
-  const guests = Object.keys(room.guests);
-  const multiGuests = Object.keys(room.multiGuests);
+      });
 
-  await pusher.trigger(`room-${token}`, "room-event", {
-    clientGamerList: newGamerList,
-  });
+      if (Object.values(room.gamers).includes(user.id)) return {};
+      if (!room) return { error: "Token incorrect" };
+      if (room.started) return { error: "La partie a déjà été lancée" };
 
-  return {
-    joinData: {
-      gamers: newGamerList,
-      guests,
-      multiGuests,
-    },
-  };
+      const { id: roomId } = room;
+
+      await prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          roomId,
+        },
+      });
+
+      const newGamerList = Object.keys(
+        (
+          await prisma.room.update({
+            where: { id: roomId },
+            data: {
+              gamers: {
+                ...room.gamers,
+                [user.name]: user.id,
+              },
+            },
+          })
+        ).gamers
+      );
+      const guests = Object.keys(room.guests);
+      const multiGuests = Object.keys(room.multiGuests);
+
+      setTimeout(async () => {
+        await pusher.trigger(`room-${token}`, "room-event", {
+          clientGamerList: newGamerList,
+        });
+      }, 800);
+      console.log("newGamerList", newGamerList);
+      console.log("passé ici");
+
+      return {
+        joinData: {
+          gamers: newGamerList,
+          guests,
+          multiGuests,
+        },
+        error: null,
+      };
+    });
+    return result;
+  } catch (error) {
+    console.error("error", error);
+  }
+
+  // const room = await prisma.room.findFirst({
+  //   where: {
+  //     token,
+  //   },
+  // });
+
+  // if (Object.values(room.gamers).includes(user.id)) return {};
+  // if (!room) return { error: "Token incorrect" };
+  // if (room.started) return { error: "La partie a déjà été lancée" };
+
+  // const { id: roomId } = room;
+
+  // await prisma.user.update({
+  //   where: {
+  //     id: user.id,
+  //   },
+  //   data: {
+  //     roomId,
+  //   },
+  // });
+
+  // const newGamerList = Object.keys(
+  //   (
+  //     await prisma.room.update({
+  //       where: { id: roomId },
+  //       data: {
+  //         gamers: {
+  //           ...room.gamers,
+  //           [user.name]: user.id,
+  //         },
+  //       },
+  //     })
+  //   ).gamers
+  // );
+  // const guests = Object.keys(room.guests);
+  // const multiGuests = Object.keys(room.multiGuests);
+
+  // await pusher.trigger(`room-${token}`, "room-event", {
+  //   clientGamerList: newGamerList,
+  // });
+
+  // return {
+  //   joinData: {
+  //     gamers: newGamerList,
+  //     guests,
+  //     multiGuests,
+  //   },
+  // };
 }
 
 export async function serverDeleteGamer({ token, gamerName }) {

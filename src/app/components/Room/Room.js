@@ -9,6 +9,7 @@ import genToken from "@/utils/genToken";
 import getLocation from "@/utils/getLocation";
 import getErrorInformations from "@/utils/getErrorInformations";
 import { gamesRefs } from "@/assets/globals";
+import { getRoomFriendList } from "@/utils/getFriendList";
 
 import ToggleCheckbox from "./ToggleCheckbox";
 import DeleteGroup from "@/components/DeleteGroup";
@@ -39,7 +40,7 @@ import {
 
 export default function Room({
   user,
-  friendList,
+  // friendList,
   categorie,
   gameName,
   Game,
@@ -54,6 +55,8 @@ export default function Room({
   const [isAdmin, setIsAdmin] = useState(false);
   const [roomToken, setRoomToken] = useState("");
   const [group, setGroup] = useState();
+  const [friendsList, setFriendsList] = useState();
+  const [invitedList, setInvitedList] = useState([]);
   const [gamerList, setGamerList] = useState([]);
   const [guestList, setGuestList] = useState([]);
   const [multiGuestList, setMultiGuestList] = useState([]);
@@ -63,6 +66,7 @@ export default function Room({
   const [multiGuestDataId, setMultiGuestDataId] = useState();
   const [uniqueName, setUniqueName] = useState("");
   const [deletedGamer, setDeletedGamer] = useState(null);
+  const [deletedGamersList, setDeletedGamersList] = useState([]);
 
   const [options, setOptions] = useState({});
   const [isChosen, setIsChosen] = useState(false);
@@ -76,6 +80,8 @@ export default function Room({
   const [roomId, setRoomId] = useState(0);
   const [isPrivate, setIsPrivate] = useState();
   const [gameData, setGameData] = useState({});
+
+  console.log("gamerList", gamerList);
 
   useEffect(() => {
     if (!roomToken) return;
@@ -112,6 +118,23 @@ export default function Room({
     user.multiGuest && getMultiLoc();
   }, [user]);
 
+  const getFriends = useCallback(async () => {
+    const friends = await getRoomFriendList({ userId: user.id });
+    console.log("friends", friends);
+    setFriendsList(friends);
+  }, []);
+
+  useEffect(() => {
+    if (user.multiGuest) return;
+    // const getFriends = async () => {
+    //   const friends = await getRoomFriendList({ userId: user.id });
+    //   console.log("friends", friends);
+    //   setFriendsList(friends);
+    // };
+    setTimeout(async () => await getFriends(), !friendsList ? 0 : 800);
+    getFriends();
+  }, [gamerList]);
+
   const createRoom = async (privacy, storedLocation) => {
     const newRoomToken = genToken(10);
 
@@ -131,6 +154,10 @@ export default function Room({
         data.clientGamerList && setGamerList(data.clientGamerList);
         data.multiGuestList && setMultiGuestList(data.multiGuestList);
         data.gameData && setGameData(data.gameData);
+        data.deleted &&
+          setInvitedList((prevInv) =>
+            prevInv.filter((inv) => inv !== data.deleted)
+          );
         data.privacy !== undefined && setIsPrivate(data.privacy);
       });
 
@@ -141,6 +168,8 @@ export default function Room({
       setIsChosen(true);
       setServerMessage("");
     }
+
+    // getFriends();
   };
 
   const joinRoom = useCallback(async () => {
@@ -152,6 +181,12 @@ export default function Room({
     const token = inputToken.toUpperCase();
     const id = await getRoomId(token);
     const uniqueUserName = await getUniqueName(id, user.name);
+
+    // const data = await serverJoin({
+    //   token,
+    //   user: { ...user, name: uniqueUserName },
+    // });
+    // console.log("data", data);
 
     const { error, joinData } = await serverJoin({
       token,
@@ -166,12 +201,20 @@ export default function Room({
 
       const channel = pusher.subscribe(`room-${token}`);
       channel.bind("room-event", function (data) {
-        data.clientGamerList && setGamerList(data.clientGamerList);
+        // data.clientGamerList &&
+        //   setGamerList([...data.clientGamerList, ...gamerList]);
+        // data.clientGamerList && setGamerList(data.clientGamerList);
+        data.clientGamerList &&
+          setGamerList([...new Set([...data.clientGamerList, ...gamerList])]);
         data.guestList && setGuestList(data.guestList);
         data.multiGuestList && setMultiGuestList(data.multiGuestList);
         data.started && setIsStarted(true);
         data.gameData && setGameData(data.gameData);
-        data.deleted && setDeletedGamer(data.deleted);
+        data.deleted &&
+          (setDeletedGamer(data.deleted),
+          setInvitedList((prevInv) =>
+            prevInv.filter((inv) => inv !== data.deleted)
+          ));
         data.privacy !== undefined && setIsPrivate(data.privacy);
       });
 
@@ -193,7 +236,11 @@ export default function Room({
 
     setServerMessage(`Joueur ${gamer} retiré`);
     setGamerList(gamers);
+    setDeletedGamersList((prevList) => [...prevList, gamer]);
+    setTimeout(async () => await getFriends(), [1000]);
   };
+
+  console.log("invitedList", invitedList);
 
   const addMultiGuest = useCallback(async () => {
     if (!isChosen || !inputToken || !geoLocation) {
@@ -219,7 +266,9 @@ export default function Room({
       const { gamerList, guests, multiGuests } = data;
       const channel = pusher.subscribe(`room-${token}`);
       channel.bind("room-event", function (data) {
-        data.clientGamerList && setGamerList(data.clientGamerList);
+        // data.clientGamerList && setGamerList(data.clientGamerList);
+        data.clientGamerList &&
+          setGamerList([...new Set([...data.clientGamerList, ...gamerList])]);
         data.guestList && setGuestList(data.guestList);
         data.multiGuestList && setMultiGuestList(data.multiGuestList);
         data.started && setIsStarted(true);
@@ -252,7 +301,12 @@ export default function Room({
       setInputToken(searchToken);
 
       const join = async () => {
-        if (!user.multiGuest) await joinRoom();
+        if (
+          !user.multiGuest &&
+          !gamerList.some((multiName) => multiName === uniqueName) &&
+          deletedGamer !== uniqueName
+        )
+          await joinRoom();
         else if (!multiGuestList.some((multiName) => multiName === uniqueName))
           await addMultiGuest();
       };
@@ -504,7 +558,7 @@ export default function Room({
                     </div>
                     {isHere && gamerName !== user.name && (
                       <button
-                        onClick={() => {
+                        onClick={async () => {
                           const newGamersGroup = [...group.gamers].filter(
                             (gamer) => gamer.name !== gamerName
                           );
@@ -512,7 +566,7 @@ export default function Room({
                             ...prevGroup,
                             gamers: newGamersGroup,
                           }));
-                          deleteGamer(gamerName);
+                          await deleteGamer(gamerName);
                         }}
                         className="border border-blue-300 bg-blue-100"
                       >
@@ -607,7 +661,7 @@ export default function Room({
                     </div>
                     {isAdmin && gamer !== user.name && (
                       <button
-                        onClick={() => deleteGamer(gamer)}
+                        onClick={async () => await deleteGamer(gamer)}
                         className="border border-blue-300 bg-blue-100"
                       >
                         Retirer
@@ -677,30 +731,50 @@ export default function Room({
                   parties&quot;.
                 </h2>
                 <div>
-                  {friendList.map((friend) => (
-                    <button
-                      key={friend.id}
-                      onClick={() =>
-                        inviteFriend({
-                          userName: user.name,
-                          friendMail: friend.email,
-                          categorie,
-                          gameName,
-                          roomToken,
-                        })
-                      }
-                      className="border border-blue-300 bg-blue-100"
-                    >
-                      {friend.customName}
-                    </button>
-                  ))}
+                  {friendsList &&
+                    friendsList.map((friend) => {
+                      console.log("friend", friend);
+                      if (
+                        deletedGamersList.some(
+                          (deleted) => deleted === friend.name
+                        )
+                      )
+                        return;
+                      const invited = invitedList.some(
+                        (inv) => inv === friend.name
+                      );
+                      return (
+                        <button
+                          key={friend.id}
+                          onClick={async () => {
+                            await inviteFriend({
+                              userName: user.name,
+                              friendMail: friend.email,
+                              categorie,
+                              gameName,
+                              roomToken,
+                            });
+                            setInvitedList((prevInv) => [
+                              ...new Set([...prevInv, friend.name]),
+                            ]);
+                          }}
+                          className={`border ${
+                            !invited
+                              ? "border-blue-300 bg-blue-100"
+                              : "border-green-300 bg-green-100"
+                          }`}
+                        >
+                          {friend.customName}
+                        </button>
+                      );
+                    })}
                 </div>
               </>
             )}
 
             {!user.multiGuest && !isAdmin && (
               <button
-                onClick={() => deleteGamer(uniqueName)}
+                onClick={async () => await deleteGamer(uniqueName)}
                 className="border border-blue-300 bg-blue-100"
               >
                 Quitter le groupe
@@ -837,6 +911,15 @@ export default function Room({
         <div className="flex justify-center">
           <div className="flex flex-col">{serverMessage}</div>
         </div>
+        <button
+          onClick={async () => {
+            const friends = await getRoomFriendList({ userId: user.id });
+            console.log("friends", friends);
+            setFriendsList(friends);
+          }}
+        >
+          test
+        </button>
       </>
     );
   } else {

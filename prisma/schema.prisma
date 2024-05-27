@@ -16,6 +16,7 @@ model User {
   name                   String                    @unique
   password               String
   creationDate           DateTime                  @db.Date
+  lastControlPanel       DateTime?                 @db.DateTime(0)
   friends                Friend[]                  @relation("userFriends")
   friendOf               Friend[]                  @relation("userFriendOf")
   room                   Room?                     @relation(fields: [roomId], references: [id])

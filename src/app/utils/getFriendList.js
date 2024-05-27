@@ -30,16 +30,28 @@ export async function getRoomFriendList({ userId }) {
                 id: true,
                 name: true,
                 email: true,
+                lastControlPanel: true,
               },
             },
           },
         },
       },
     })
-  ).friends;
+  ).friends.filter(
+    (friend) =>
+      friend.friend.lastControlPanel >= new Date(Date.now() - 30 * 60 * 1000)
+  );
+  console.log("friendList", friendList);
   const friendListFlat = friendList.map((friend) => ({
     customName: friend.customName,
     ...friend.friend,
   }));
-  return friendListFlat;
+  console.log("friendListFlat", friendListFlat);
+
+  const byLastCPFriendList = friendListFlat.sort(
+    (a, b) => new Date(b.lastControlPanel) - new Date(a.lastControlPanel)
+  );
+  console.log("byLastCPFriendList", byLastCPFriendList);
+  // return friendListFlat;
+  return byLastCPFriendList;
 }

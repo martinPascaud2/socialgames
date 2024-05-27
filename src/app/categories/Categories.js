@@ -24,6 +24,7 @@ export default function Categories({
   addFriend,
   deleteFriend,
   getPublicRooms,
+  updateLastCP,
   signOut,
 }) {
   const router = useRouter();
@@ -161,6 +162,9 @@ export default function Categories({
         });
       }
     });
+
+    updateLastCP({ userId: user.id }); //no await
+
     return () => {
       pusher.unsubscribe(`user-${user.email}`);
     };
@@ -224,12 +228,13 @@ export default function Categories({
             {friendList.map((friend) => (
               <div
                 key={friend.friendId}
-                onClick={() =>
-                  deleteFriend({
+                onClick={async () => {
+                  await deleteFriend({
                     userId: user.id,
                     friendId: friend.friendId,
-                  })
-                }
+                  });
+                  updateLastCP({ userId: user.id }); //no await
+                }}
               >
                 {friend.customName}
               </div>
@@ -244,6 +249,7 @@ export default function Categories({
             <Link
               href="/"
               onClick={async () => {
+                await updateLastCP({ userId: user.id, out: true });
                 await signOut();
                 window.location.reload();
               }}
@@ -272,7 +278,10 @@ export default function Categories({
             {showInvitations && (
               <>
                 <div
-                  onClick={async () => setPublicRooms(await getPublicRooms())}
+                  onClick={async () => {
+                    setPublicRooms(await getPublicRooms());
+                    updateLastCP({ userId: user.id }); //no await
+                  }}
                   className="flex justify-center items-center border text-center text-slate-300"
                 >
                   Parties de tes amis <ArrowPathIcon className="ml-2 h-4 w-4" />
@@ -286,7 +295,10 @@ export default function Categories({
                 {invitations.map((invitation, i) => (
                   <Link
                     key={i}
-                    onClick={() => resetPermissions()}
+                    onClick={async () => {
+                      resetPermissions();
+                      await updateLastCP({ userId: user.id, out: true });
+                    }}
                     href={invitation.link}
                   >
                     <div className="border border-slate-700 bg-slate-300 text-center">
@@ -332,8 +344,9 @@ export default function Categories({
           >
             <div className="flex flex-row m-3">
               <button
-                onClick={() => {
+                onClick={async () => {
                   resetPermissions();
+                  updateLastCP({ userId: user.id }); //no await
                   setShowQrCode(false);
                   setScanning(false);
                   setShowInvitations(true);
@@ -346,7 +359,10 @@ export default function Categories({
                 Parties de tes amis
               </button>
               <Link
-                onClick={() => resetPermissions()}
+                onClick={async () => {
+                  resetPermissions();
+                  await updateLastCP({ userId: user.id, out: true });
+                }}
                 href="/categories/grouping/grouping"
                 className="text-center m-1 p-2"
               >
@@ -360,6 +376,7 @@ export default function Categories({
                 })}
                 onClick={async () => {
                   resetPermissions();
+                  updateLastCP({ userId: user.id }); //no await
                   try {
                     setLocation(await getLocation());
                     setServerMessage("QR code généré !");
@@ -387,6 +404,7 @@ export default function Categories({
               <button
                 onClick={() => {
                   resetPermissions();
+                  updateLastCP({ userId: user.id }); //no await
                   setShowQrCode(false);
                   setScanning(!scanning);
                   setShowInvitations(false);
@@ -428,7 +446,10 @@ export default function Categories({
               return (
                 <Link
                   key={index}
-                  onClick={() => resetPermissions()}
+                  onClick={async () => {
+                    resetPermissions();
+                    await updateLastCP({ userId: user.id, out: true });
+                  }}
                   href={`${categorie.href}${isGroup ? "?group=true" : ""}`}
                   className={classNames(`z-20 absolute  min-h-[18dvh] border`, {
                     hidden: togglingParameters && toggledParameters,

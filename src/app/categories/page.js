@@ -135,6 +135,19 @@ export default async function CategoriesPage() {
     revalidatePath("/categories");
   };
 
+  const updateLastCP = async ({ userId, out }) => {
+    "use server";
+    const updatedUser = await prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        lastControlPanel: !out ? new Date() : null,
+      },
+    });
+    console.log("updatedUser", updatedUser);
+  };
+
   const signOut = async () => {
     "use server";
     cookies().delete("SG_token");
@@ -147,6 +160,7 @@ export default async function CategoriesPage() {
       addFriend={addFriend}
       deleteFriend={deleteFriend}
       getPublicRooms={getPublicRooms}
+      updateLastCP={updateLastCP}
       signOut={signOut}
     />
   );
