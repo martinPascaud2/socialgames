@@ -26,6 +26,7 @@ import {
   goOneMoreGame,
   inviteFriend,
   serverJoin,
+  triggerGamers,
   serverDeleteGamer,
   serverAddGuest,
   serverDeleteGuest,
@@ -133,6 +134,9 @@ export default function Room({
     // };
     setTimeout(async () => await getFriends(), !friendsList ? 0 : 800);
     getFriends();
+    setTimeout(async () => {
+      await triggerGamers({ roomToken, gamerList });
+    }, 800);
   }, [gamerList]);
 
   const createRoom = async (privacy, storedLocation) => {

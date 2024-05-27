@@ -125,11 +125,12 @@ export async function serverJoin({ token, user }) {
       const guests = Object.keys(room.guests);
       const multiGuests = Object.keys(room.multiGuests);
 
-      setTimeout(async () => {
-        await pusher.trigger(`room-${token}`, "room-event", {
-          clientGamerList: newGamerList,
-        });
-      }, 800);
+      // setTimeout(async () => {
+      //   await pusher.trigger(`room-${token}`, "room-event", {
+      //     clientGamerList: newGamerList,
+      //   });
+      // }, 800);
+      triggerGamers({ roomToken: token, gamers: newGamerList });
       console.log("newGamerList", newGamerList);
       console.log("passé ici");
 
@@ -195,6 +196,13 @@ export async function serverJoin({ token, user }) {
   //     multiGuests,
   //   },
   // };
+}
+
+export async function triggerGamers({ roomToken, gamers }) {
+  await new Promise((resolve) => setTimeout(resolve, 800));
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    clientGamerList: gamers,
+  });
 }
 
 export async function serverDeleteGamer({ token, gamerName }) {
