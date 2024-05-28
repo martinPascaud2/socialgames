@@ -1,9 +1,9 @@
 import getUser from "@/utils/getUser";
-import { getRoomFriendList } from "@/utils/getFriendList";
+
+import { launchGame } from "./gameActions";
 
 import Room from "@/components/Room/Room";
 import Dobble from "./Dobble";
-import { launchGame } from "./gameActions";
 
 export default async function DobblePage({ params, searchParams }) {
   const user = await getUser();
@@ -21,12 +21,10 @@ export default async function DobblePage({ params, searchParams }) {
     );
 
   const { id, name } = user;
-  const friendList = await getRoomFriendList({ userId: user.id });
 
   return (
     <Room
       user={{ id, name }}
-      friendList={friendList}
       categorie={params?.categorie}
       gameName="dobble"
       Game={Dobble}

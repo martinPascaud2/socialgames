@@ -1,10 +1,10 @@
 import getUser from "@/utils/getUser";
-import { getRoomFriendList } from "@/utils/getFriendList";
+
+import { launchGame } from "./gameActions";
 
 import Room from "@/components/Room/Room";
 import Ptitbac from "./Ptitbac";
 import PtitbacOptions from "./Options";
-import { launchGame } from "./gameActions";
 
 export default async function PtitbacPage({ params, searchParams }) {
   const user = await getUser();
@@ -13,7 +13,6 @@ export default async function PtitbacPage({ params, searchParams }) {
     return (
       <Room
         user={{ name: searchParams.guestName, multiGuest: true }}
-        friendList={null}
         categorie={params?.categorie}
         gameName="ptitbac"
         Game={Ptitbac}
@@ -22,12 +21,10 @@ export default async function PtitbacPage({ params, searchParams }) {
     );
 
   const { id, name } = user;
-  const friendList = await getRoomFriendList({ userId: user.id });
 
   return (
     <Room
       user={{ id, name }}
-      friendList={friendList}
       categorie={params?.categorie}
       gameName="ptitbac"
       Game={Ptitbac}

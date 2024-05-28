@@ -145,7 +145,6 @@ export default async function CategoriesPage() {
         lastControlPanel: !out ? new Date() : null,
       },
     });
-    console.log("updatedUser", updatedUser);
   };
 
   const signOut = async () => {
