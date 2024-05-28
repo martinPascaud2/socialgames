@@ -82,8 +82,6 @@ export default function Room({
   const [isPrivate, setIsPrivate] = useState();
   const [gameData, setGameData] = useState({});
 
-  console.log("gamerList", gamerList);
-
   useEffect(() => {
     if (!roomToken) return;
     async function get() {
@@ -121,7 +119,6 @@ export default function Room({
 
   const getFriends = useCallback(async () => {
     const friends = await getRoomFriendList({ userId: user.id });
-    console.log("friends", friends);
     setFriendsList(friends);
   }, []);
 
@@ -243,8 +240,6 @@ export default function Room({
     setDeletedGamersList((prevList) => [...prevList, gamer]);
     setTimeout(async () => await getFriends(), 1000);
   };
-
-  console.log("invitedList", invitedList);
 
   const addMultiGuest = useCallback(async () => {
     if (!isChosen || !inputToken || !geoLocation) {
@@ -737,7 +732,6 @@ export default function Room({
                 <div>
                   {friendsList &&
                     friendsList.map((friend) => {
-                      console.log("friend", friend);
                       if (
                         deletedGamersList.some(
                           (deleted) => deleted === friend.name
@@ -918,7 +912,6 @@ export default function Room({
         <button
           onClick={async () => {
             const friends = await getRoomFriendList({ userId: user.id });
-            console.log("friends", friends);
             setFriendsList(friends);
           }}
         >
