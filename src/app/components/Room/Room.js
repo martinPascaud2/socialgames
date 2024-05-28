@@ -134,9 +134,9 @@ export default function Room({
     // };
     setTimeout(async () => await getFriends(), !friendsList ? 0 : 800);
     getFriends();
-    setTimeout(async () => {
-      await triggerGamers({ roomToken, gamerList });
-    }, 800);
+    // setTimeout(async () => {
+    //   await triggerGamers({ roomToken, gamerList });
+    // }, 800);
   }, [gamerList]);
 
   const createRoom = async (privacy, storedLocation) => {
@@ -241,7 +241,7 @@ export default function Room({
     setServerMessage(`Joueur ${gamer} retiré`);
     setGamerList(gamers);
     setDeletedGamersList((prevList) => [...prevList, gamer]);
-    setTimeout(async () => await getFriends(), [1000]);
+    setTimeout(async () => await getFriends(), 1000);
   };
 
   console.log("invitedList", invitedList);
@@ -430,10 +430,10 @@ export default function Room({
           newRoomToken: roomToken,
           gameName,
         });
+        localStorage.removeItem("group");
       };
       go();
 
-      localStorage.removeItem("group");
       setGameData({});
     }
   }, [roomToken, gameName]);
