@@ -242,7 +242,7 @@ export async function goValidation({ gamers, roomToken, gameData }) {
     one.responses.forEach((res, index) => {
       themesResponses[themes[index]][one.gamer] = {
         word: res,
-        validated: res.length >= 3 ? null : false,
+        validated: res.length >= 2 ? null : false,
       };
     });
   });

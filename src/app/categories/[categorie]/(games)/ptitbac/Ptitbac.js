@@ -134,7 +134,7 @@ export default function Ptitbac({
     const newResponses = [...responses];
     newResponses[i] = e.target.value;
     setResponses(newResponses);
-    setIsCompleted(newResponses.every((res) => res.length >= 3));
+    setIsCompleted(newResponses.every((res) => res.length >= 2));
   };
 
   useEffect(() => {
