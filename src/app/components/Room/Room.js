@@ -221,6 +221,8 @@ export default function Room({
         data.privacy !== undefined && setIsPrivate(data.privacy);
       });
 
+      triggerGamers({ roomToken: token, gamers });
+
       setRoomToken(token);
       setUniqueName(uniqueUserName);
       setGamerList(gamers);
@@ -228,7 +230,7 @@ export default function Room({
       setMultiGuestList(multiGuests);
       setServerMessage("");
     }
-  }, [inputToken, user]);
+  }, [inputToken, user, gamerList]);
 
   const deleteGamer = async (gamer) => {
     const gamers = await serverDeleteGamer({

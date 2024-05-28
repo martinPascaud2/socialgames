@@ -130,7 +130,7 @@ export async function serverJoin({ token, user }) {
       //     clientGamerList: newGamerList,
       //   });
       // }, 800);
-      triggerGamers({ roomToken: token, gamers: newGamerList });
+      // triggerGamers({ roomToken: token, gamers: newGamerList });
       console.log("newGamerList", newGamerList);
       console.log("passé ici");
 
@@ -199,11 +199,11 @@ export async function serverJoin({ token, user }) {
 }
 
 export async function triggerGamers({ roomToken, gamers }) {
-  await new Promise((resolve) => setTimeout(resolve, 2000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     clientGamerList: gamers,
   });
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 2000));
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     clientGamerList: gamers,
   });
