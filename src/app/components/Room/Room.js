@@ -152,7 +152,9 @@ export default function Room({
     } else {
       const channel = pusher.subscribe(`room-${newRoomToken}`);
       channel.bind("room-event", function (data) {
-        data.clientGamerList && setGamerList(data.clientGamerList);
+        // data.clientGamerList && setGamerList(data.clientGamerList);
+        data.clientGamerList &&
+          setGamerList([...new Set([...data.clientGamerList, ...gamerList])]);
         data.multiGuestList && setMultiGuestList(data.multiGuestList);
         data.gameData && setGameData(data.gameData);
         data.deleted &&

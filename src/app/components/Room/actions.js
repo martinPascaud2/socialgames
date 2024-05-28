@@ -199,7 +199,11 @@ export async function serverJoin({ token, user }) {
 }
 
 export async function triggerGamers({ roomToken, gamers }) {
-  await new Promise((resolve) => setTimeout(resolve, 800));
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    clientGamerList: gamers,
+  });
+  await new Promise((resolve) => setTimeout(resolve, 1000));
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     clientGamerList: gamers,
   });
