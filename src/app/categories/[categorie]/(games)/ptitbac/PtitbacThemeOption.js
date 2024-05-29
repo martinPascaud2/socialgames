@@ -37,7 +37,7 @@ export default function PtitbacThemeOption({
       setThemes([...statusAllThemes, ...defaultThemes]);
       setAllRandomLength(statusAllThemes.length);
     };
-    setTimeout(() => fetchThemes(), 500); // tricky
+    setTimeout(() => fetchThemes(), 1000); // tricky
   }, [defaultThemes]);
 
   useEffect(() => {
