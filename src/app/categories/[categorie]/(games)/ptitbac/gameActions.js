@@ -4,6 +4,7 @@ import prisma from "@/utils/prisma";
 
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkPlayers from "@/utils/checkPlayers";
+import { shuffleObject } from "@/utils/shuffleArray";
 
 export async function launchGame({
   roomId,
@@ -135,8 +136,66 @@ const getFreeThemes = async ({ gamers }) => {
   return themeList;
 };
 
+async function getThemes({ gameData }) {
+  const { options } = gameData;
+  const { themes } = options;
+
+  const getRandoms = async () => {
+    const allThemes = await getAllThemes();
+    let newStatusRandoms;
+
+    if (gameData.statusRandoms) {
+      newStatusRandoms = { ...gameData.statusRandoms };
+    } else {
+      newStatusRandoms = {};
+      allThemes.forEach((theme) => {
+        newStatusRandoms[theme] = gameData.options.random;
+      });
+    }
+
+    let newRandoms = [];
+    const totalWeight = Object.values(newStatusRandoms).reduce(
+      (acc, weight) => acc + weight,
+      0
+    );
+    let randomNumber = gameData.options.random;
+    const shuffledStatusRandoms = shuffleObject(newStatusRandoms);
+
+    while (randomNumber > 0) {
+      let cumulativeWeight = 0;
+      let randomWeight = Math.random() * totalWeight;
+      for (const [key, weight] of Object.entries(shuffledStatusRandoms)) {
+        cumulativeWeight += weight;
+        if (newRandoms.some((newRandom) => newRandom === key)) continue;
+        if (randomWeight < cumulativeWeight) {
+          newRandoms.push(key);
+          randomNumber--;
+
+          if (randomNumber === 0) break;
+        }
+      }
+    }
+
+    newRandoms.forEach((random) => {
+      newStatusRandoms[random] =
+        newStatusRandoms[random] !== 1
+          ? newStatusRandoms[random] - 1
+          : Math.floor(gameData.options.random / 2);
+    });
+
+    return { newRandoms, newStatusRandoms };
+  };
+
+  const { newRandoms, newStatusRandoms } = await getRandoms();
+  const newThemes = [...themes, ...newRandoms];
+
+  return { newThemes, newStatusRandoms };
+}
+
 export async function startCountdown({ time, roomToken, gameData }) {
-  const themeList = await getFreeThemes({ gamers: gameData.gamers });
+  // const themeList = await getFreeThemes({ gamers: gameData.gamers });
+  // const themeList = gameData.options.themes;
+  const { newThemes, newStatusRandoms } = await getThemes({ gameData });
   const randomLetter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[
     Math.floor(Math.random() * 26)
   ];
@@ -146,9 +205,11 @@ export async function startCountdown({ time, roomToken, gameData }) {
     gameData: {
       ...gameData,
       phase: "searching",
-      themes: themeList,
+      // themes: themeList,
+      themes: newThemes,
       letter: randomLetter,
       finishCountdownDate,
+      statusRandoms: newStatusRandoms,
     },
   });
 }
@@ -488,4 +549,11 @@ export async function vote({ vote, roomToken, gameData }) {
       }
     }
   }
+}
+
+export async function getAllThemes() {
+  const allThemes = (await prisma.ptitbactheme.findMany({ where: {} }))
+    .map((theme) => theme.theme)
+    .sort((a, b) => a.localeCompare(b));
+  return allThemes;
 }

@@ -384,7 +384,8 @@ export default function Room({
         storedLocation && setGeoLocation(storedLocation);
       };
       create();
-    } else if (group && roomToken && gameName) {
+      // } else if (group && roomToken && gameName) {
+    } else if (group && roomToken && gameName && pathname) {
       const addElderGuests = async () => {
         let elderGuests = [];
         await Promise.all(
@@ -400,20 +401,35 @@ export default function Room({
       };
       addElderGuests();
 
-      const go = async () => {
-        await goOneMoreGame({
-          pathname,
-          oldRoomToken: group.roomToken,
-          newRoomToken: roomToken,
-          gameName,
-        });
-        localStorage.removeItem("group");
-      };
-      go();
+      // const go = async () => {
+      //   await goOneMoreGame({
+      //     pathname,
+      //     oldRoomToken: group.roomToken,
+      //     newRoomToken: roomToken,
+      //     gameName,
+      //   });
+      //   localStorage.removeItem("group");
+      // };
+      // go();
 
       setGameData({});
     }
   }, [roomToken, gameName]);
+  // }, [roomToken, gameName, pathname, group]);
+
+  useEffect(() => {
+    if (!gameName || !group || !pathname || !roomToken) return;
+    const go = async () => {
+      await goOneMoreGame({
+        pathname,
+        oldRoomToken: group.roomToken,
+        newRoomToken: roomToken,
+        gameName,
+      });
+      localStorage.removeItem("group");
+    };
+    go();
+  }, [gameName, group, pathname, roomToken]);
 
   useEffect(() => {
     const storedGroup = JSON.parse(localStorage.getItem("group"));
@@ -452,6 +468,7 @@ export default function Room({
     } else {
       const goNewGame = () => {
         // check router.push
+
         window.location.href = `${gameData.nextGame.path}${
           user.multiGuest ? `&guestName=${user.name}` : ""
         }`;
@@ -837,9 +854,17 @@ export default function Room({
 
                 <hr />
 
-                {Options && (
-                  <Options setOptions={setOptions} lastMode={group?.lastMode} />
+                {Options && setOptions && setServerMessage && (
+                  <Options
+                    setOptions={setOptions}
+                    lastMode={group?.lastMode}
+                    setServerMessage={setServerMessage}
+                  />
                 )}
+
+                <div className="flex justify-center">
+                  <div className="flex flex-col">{serverMessage}</div>
+                </div>
 
                 <button
                   onClick={() => launchRoom()}
@@ -888,9 +913,6 @@ export default function Room({
             )}
           </>
         )}
-        <div className="flex justify-center">
-          <div className="flex flex-col">{serverMessage}</div>
-        </div>
       </>
     );
   } else {
