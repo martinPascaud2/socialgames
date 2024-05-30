@@ -110,7 +110,12 @@ export default function PtitbacThemeOption({
           {themes
             .filter((theme) => !theme.selected)
             .map((theme, i) => (
-              <div key={i} className="border-t w-full flex py-2">
+              <div
+                key={i}
+                className={`border-t w-full flex py-2 ${
+                  selectedThemes.length === max && "bg-gray-100"
+                }`}
+              >
                 <div className="ml-20 w-full">
                   {theme.theme.split().map((lettre) => lettre)}
                 </div>
@@ -119,6 +124,7 @@ export default function PtitbacThemeOption({
                   checked={false}
                   onChange={() => handleCheck(theme)}
                   className="mr-4"
+                  disabled={selectedThemes.length === max}
                 />
               </div>
             ))}
