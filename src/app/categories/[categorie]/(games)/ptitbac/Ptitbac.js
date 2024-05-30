@@ -7,6 +7,7 @@ import {
   sendResponses,
   goValidation,
   // vote,
+  refereeTrigger,
   validate,
   manageEmptyTheme,
 } from "./gameActions";
@@ -17,6 +18,7 @@ import FinishGame from "@/components/FinishGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import EndGame from "@/components/EndGame";
 import CountDown from "@/components/CountDown";
+import ToggleCheckbox from "@/components/Room/ToggleCheckbox";
 
 function levenshtein(a, b) {
   const matrix = [];
@@ -74,7 +76,6 @@ function levenshtein(a, b) {
 function groupSimilarWords(responses, threshold = 1) {
   const groups = [];
   const visited = new Set();
-  console.log("responses", responses);
 
   Object.entries(responses).forEach((res) => {
     // if (!visited.has(res[1].word)) {
@@ -84,7 +85,6 @@ function groupSimilarWords(responses, threshold = 1) {
       visited.add(res[0]);
 
       Object.entries(responses).forEach((otherRes) => {
-        console.log("otherRes[1]", otherRes[1]);
         if (
           // !visited.has(otherRes[1].word) &&
           !visited.has(otherRes[0]) &&
@@ -124,6 +124,7 @@ export default function Ptitbac({
   const [valTheme, setValTheme] = useState("");
   const [themesResponses, setThemesResponses] = useState({});
   const [allFalse, setAllFalse] = useState();
+  const [refereeValidation, setRefereeValidation] = useState({});
 
   useEffect(() => {
     if (gameData.ended) setIsEnded(true);
@@ -139,7 +140,6 @@ export default function Ptitbac({
 
   useEffect(() => {
     if ((hasValidated && phase === "searching") || phase === "sending") {
-      console.log("passé par là");
       const send = async () => {
         await sendResponses({
           responses,
@@ -151,10 +151,14 @@ export default function Ptitbac({
       };
       send();
     }
+
+    // setRefereeValidation({});
   }, [hasValidated, phase]);
 
   useEffect(() => {
-    setResponses(Array.from({ length: 6 }, () => `${letter}`));
+    phase === "searching" &&
+      setResponses(Array.from({ length: 6 }, () => `${letter}`));
+    // setRefereeValidation({});
 
     const send = async () => {
       if (phase === "sending") {
@@ -167,7 +171,7 @@ export default function Ptitbac({
               roomToken,
               gameData,
             });
-          }, 500);
+          }, 1000);
       }
     };
     send();
@@ -175,12 +179,13 @@ export default function Ptitbac({
     if (phase?.startsWith("validating")) {
       setValTheme(themes[phase.split("-")[1]]);
       setHasValidated(false);
+      // setRefereeValidation({});
     }
   }, [phase]);
 
   useEffect(() => {
     if (
-      themesResponses &&
+      Object.keys(themesResponses).length &&
       valTheme &&
       Object.values(themesResponses[valTheme]).every(
         (res) => res.validated === false
@@ -196,36 +201,161 @@ export default function Ptitbac({
   console.log("valTheme", valTheme);
   console.log("hasValidated", hasValidated);
   console.log("responses", responses);
+  console.log("refereeValidation", refereeValidation);
 
   useEffect(() => {
+    console.log("gameData.themesResponses", gameData.themesResponses);
+    console.log("valTheme", valTheme);
+    // if (phase !== "validating-0") return;
     setThemesResponses(gameData.themesResponses);
-  }, [gameData.themesResponses]);
+    // if (
+    //   !gameData.themesResponses ||
+    //   !valTheme
+    //   // ||
+    //   // Object.keys(refereeValidation).length
+    // )
+    //   return;
+    const groupedRes = groupSimilarWords(gameData.themesResponses[valTheme], 1);
+    console.log("groupedRes", groupedRes);
+    const refVal = {};
+    groupedRes.forEach((group, i) => {
+      console.log("group", group, "i", i);
+      refVal[i] = {
+        gamers: group.map((gamer) => gamer.gamer),
+        word: group[0].response.word,
+        validated: group[0].response.validated,
+      };
+    });
+    setRefereeValidation(refVal);
+    // }, [gameData.themesResponses, valTheme, refereeValidation]);
+  }, [gameData.themesResponses, valTheme, phase]);
+
+  useEffect(() => {
+    gameData.refereeValidation &&
+      setRefereeValidation(gameData.refereeValidation);
+  }, [gameData.refereeValidation]);
+
   const validationList = useCallback(() => {
     if (
       !valTheme ||
       !themesResponses ||
       !themesResponses[valTheme] ||
+      !Object.keys(refereeValidation).length ||
       !phase.startsWith("validating")
     ) {
       return;
     }
-    const invResponses = {};
-    const pendsAndVals = {};
-    Object.entries({ ...themesResponses[valTheme] })
-      .sort((a, b) => a[0].localeCompare(b[0]))
-      .forEach((res) => {
-        if (res[1].validated === false) invResponses[res[0]] = res[1];
-        else pendsAndVals[res[0]] = res[1];
-      });
+    // const invResponses = {};
+    // const pendsAndVals = {};
+    // Object.entries({ ...themesResponses[valTheme] })
+    //   .sort((a, b) => a[0].localeCompare(b[0]))
+    //   .forEach((res) => {
+    //     if (res[1].validated === false) invResponses[res[0]] = res[1];
+    //     else pendsAndVals[res[0]] = res[1];
+    //   });
 
-    console.log("pendsAndVals", pendsAndVals);
-    const groupedRes = groupSimilarWords(pendsAndVals, 1);
-    console.log("groupedRes", groupedRes);
+    // console.log("pendsAndVals", pendsAndVals);
+    // const groupedRes = groupSimilarWords(pendsAndVals, 1);
+
+    // const groupedRes = groupSimilarWords(themesResponses[valTheme], 1);
+    // console.log("groupedRes", groupedRes);
 
     return (
       <div>
         <div>Validation pour le thème : {valTheme}</div>
-        {groupedRes.map((group, i) => {
+
+        {/* {groupedRes.map((group, i) => { */}
+        {Object.values(refereeValidation).map((group, i) => {
+          console.log("group", group);
+
+          const isInvalidated = group.validated === false;
+
+          return (
+            <div key={i} className="flex items-center justify-center gap-4">
+              <div className="flex flex-col items-center my-2">
+                {group.gamers.map((gamer, j) => {
+                  return (
+                    <div key={j} className="flex flex-col my-1">
+                      <div className="flex gap-2">
+                        <div>{gamer}</div>
+                        {/* <div>{gamerRes.response.word}</div> */}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div>{group.word}</div>
+              <div>
+                {!isInvalidated ? (
+                  <CheckIcon className="block h-6 w-6 " />
+                ) : (
+                  <XMarkIcon className="block h-6 w-6 " />
+                )}
+              </div>
+              {isReferee && (
+                <ToggleCheckbox
+                  checked={!isInvalidated}
+                  onChange={async () => {
+                    const newRefereeValidation = {
+                      ...refereeValidation,
+                      [i]: {
+                        ...refereeValidation[i],
+                        validated: !refereeValidation[i].validated,
+                      },
+                    };
+                    await refereeTrigger({
+                      group,
+                      newRefereeValidation,
+                      validated: !refereeValidation[i].validated,
+                      roomToken,
+                      gameData,
+                    });
+                    // setRefereeValidation((prevRefVal) => ({
+                    //   ...prevRefVal,
+                    //   [i]: {
+                    //     ...prevRefVal[i],
+                    //     validated: !prevRefVal[i].validated,
+                    //   },
+                    // }));
+                  }}
+                />
+              )}
+
+              {/* {isReferee && (
+                <div>
+                  <button
+                    onClick={async () => {
+                      await validate({
+                        group,
+                        validation: true,
+                        roomToken,
+                        gameData,
+                      });
+                    }}
+                    className="border border-blue-300 bg-blue-100 mx-4"
+                  >
+                    Validax
+                  </button>
+                  <button
+                    onClick={async () => {
+                      await validate({
+                        group,
+                        validation: false,
+                        roomToken,
+                        gameData,
+                      });
+                    }}
+                    className="border border-blue-300 bg-blue-100 mx-4"
+                  >
+                    Nope
+                  </button>
+                </div>
+              )} */}
+            </div>
+          );
+        })}
+
+        {/* {groupedRes.map((group, i) => {
           if (group[0].response.validated === null)
             return (
               <div key={i} className="flex items-center justify-center gap-4">
@@ -310,7 +440,21 @@ export default function Ptitbac({
               </div>
             </div>
           );
-        })}
+        })} */}
+        {isReferee && (
+          <button
+            onClick={async () => {
+              if (allFalse) {
+                await manageEmptyTheme({ roomToken, gameData });
+              } else {
+                await validate({ roomToken, gameData });
+              }
+            }}
+            className="border border-blue-300 bg-blue-100"
+          >
+            Thème suivant
+          </button>
+        )}
       </div>
     );
   }, [
@@ -321,6 +465,7 @@ export default function Ptitbac({
     valTheme,
     phase,
     allFalse,
+    refereeValidation,
   ]);
 
   const handleTimeUp = () => {
