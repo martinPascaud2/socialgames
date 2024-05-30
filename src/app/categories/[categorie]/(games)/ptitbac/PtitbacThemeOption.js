@@ -96,7 +96,7 @@ export default function PtitbacThemeOption({
               key={i}
               className={`${i !== 0 && "border-t"} w-full flex py-2`}
             >
-              <div className="ml-20 w-full">
+              <div className="ml-8 w-full">
                 {theme.theme.split().map((lettre) => lettre)}
               </div>
               <input
@@ -116,7 +116,7 @@ export default function PtitbacThemeOption({
                   selectedThemes.length === max && "bg-gray-100"
                 }`}
               >
-                <div className="ml-20 w-full">
+                <div className="ml-8 w-full">
                   {theme.theme.split().map((lettre) => lettre)}
                 </div>
                 <input
