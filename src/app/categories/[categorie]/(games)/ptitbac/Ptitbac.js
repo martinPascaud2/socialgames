@@ -175,7 +175,7 @@ export default function Ptitbac({
               roomToken,
               gameData,
             });
-          }, 1000);
+          }, 2000);
       }
     };
     send();
