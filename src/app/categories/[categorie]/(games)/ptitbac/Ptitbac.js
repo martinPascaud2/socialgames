@@ -116,7 +116,11 @@ export default function Ptitbac({
   const { phase, letter, themes, finishCountdownDate, counts, winners } =
     gameData;
 
-  const [responses, setResponses] = useState([]);
+  // const [responses, setResponses] = useState([]);
+  const [responses, setResponses] = useState(
+    Array.from({ length: 6 }, () => "")
+  );
+
   const [isCompleted, setIsCompleted] = useState(false);
   const [hasValidated, setHasValidated] = useState(false);
   const [isEnded, setIsEnded] = useState(false);
@@ -206,6 +210,7 @@ export default function Ptitbac({
   useEffect(() => {
     console.log("gameData.themesResponses", gameData.themesResponses);
     console.log("valTheme", valTheme);
+    if (!gameData.themesResponses || !valTheme) return;
     // if (phase !== "validating-0") return;
     setThemesResponses(gameData.themesResponses);
     // if (
