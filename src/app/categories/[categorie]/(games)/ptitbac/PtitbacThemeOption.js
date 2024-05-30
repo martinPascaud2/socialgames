@@ -43,7 +43,9 @@ export default function PtitbacThemeOption({
   useEffect(() => {
     if (!themes || !setOptions) return;
     const newSelected = themes.filter((theme) => theme.selected);
-    setSelectedThemes(newSelected);
+    setSelectedThemes(
+      newSelected.sort((a, b) => a.theme.localeCompare(b.theme))
+    );
     setOptions((options) => ({
       ...options,
       themes: newSelected.map((sel) => sel.theme),
@@ -64,7 +66,7 @@ export default function PtitbacThemeOption({
       };
       const newThemes = [...themes];
       newThemes[themeIndex] = newTheme;
-      setThemes(newThemes);
+      setThemes(newThemes.sort((a, b) => a.theme.localeCompare(b.theme)));
       setServerMessage("");
     },
     [max, selectedThemes, themes]
