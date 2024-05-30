@@ -15,7 +15,7 @@ import ToggleCheckbox from "./ToggleCheckbox";
 import DeleteGroup from "@/components/DeleteGroup";
 import ChooseAnotherGame from "@/components/ChooseAnotherGame";
 import ChooseLastGame from "@/components/ChooseLastGame";
-import { CheckIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 
 var pusher = new Pusher("61853af9f30abf9d5b3d", {
   cluster: "eu",
@@ -722,8 +722,21 @@ export default function Room({
             <hr />
 
             {isPrivate && !user.multiGuest && (
-              <>
-                <h1>Invite tes amis !</h1>
+              <div className="flex flex-col items-center">
+                <div className="flex mt-1">
+                  <h1>Invite tes amis !</h1>
+                  <button
+                    onClick={async () => {
+                      const friends = await getRoomFriendList({
+                        userId: user.id,
+                      });
+                      setFriendsList(friends);
+                    }}
+                    className="flex justify-center items-center border border-blue-300 bg-blue-100 ml-2"
+                  >
+                    <ArrowPathIcon className="h-4 w-4" />
+                  </button>
+                </div>
                 <h2 className="text-sm italic">
                   Ils recevront ton invitation via &quot;Invitations aux
                   parties&quot;.
@@ -766,7 +779,7 @@ export default function Room({
                       );
                     })}
                 </div>
-              </>
+              </div>
             )}
 
             {!user.multiGuest && !isAdmin && (
