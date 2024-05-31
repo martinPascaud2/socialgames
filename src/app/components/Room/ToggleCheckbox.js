@@ -12,6 +12,7 @@ export default function ToggleCheckbox({ checked, onChange, colors, size }) {
           : colors?.no || "rgb(134 239 172)",
         height: `${2.5 * scale}rem`,
         width: `${5 * scale}rem`,
+        WebkitTapHighlightColor: "transparent",
       }}
     >
       <div
