@@ -327,7 +327,7 @@ export default function Ptitbac({
   };
 
   return (
-    <div>
+    <div className="flex flex-col">
       <div className="flex flex-col items-center">
         <div className="font-semibold">Points</div>
         {counts
@@ -390,18 +390,18 @@ export default function Ptitbac({
               </div>
 
               {!hasValidated && isCompleted && (
-                <button
-                  onClick={() => setHasValidated(true)}
-                  className="border border-blue-300 bg-blue-100"
-                >
-                  J&apos;ai fini !
-                </button>
+                <div className="m-4">
+                  <NextStep onClick={() => setHasValidated(true)}>
+                    J&apos;ai fini !
+                  </NextStep>
+                </div>
               )}
-
-              <CountDown
-                finishCountdownDate={finishCountdownDate}
-                onTimeUp={handleTimeUp}
-              />
+              <div className="h-fit">
+                <CountDown
+                  finishCountdownDate={finishCountdownDate}
+                  onTimeUp={handleTimeUp}
+                />
+              </div>
             </div>
           )}
 
@@ -434,7 +434,13 @@ export default function Ptitbac({
         </div>
       )}
 
-      <div className="absolute bottom-0 flex justify-center w-full">
+      <div
+        className={`flex justify-center ${
+          phase === "searching" && isCompleted
+            ? ""
+            : "absolute bottom-0  w-full"
+        }`}
+      >
         {isAdmin ? (
           !isEnded ? (
             <FinishGame gameData={gameData} roomToken={roomToken} />
