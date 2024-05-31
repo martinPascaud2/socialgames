@@ -19,6 +19,7 @@ import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import EndGame from "@/components/EndGame";
 import CountDown from "@/components/CountDown";
 import ToggleCheckbox from "@/components/Room/ToggleCheckbox";
+import NextStep from "@/components/NextStep";
 
 function levenshtein(a, b) {
   const matrix = [];
@@ -220,7 +221,10 @@ export default function Ptitbac({
 
     return (
       <div>
-        <div className="border-b">Validation pour le thème : {valTheme}</div>
+        <div className="flex justify-center border-b">
+          Validation pour la catégorie :
+          <span className="font-semibold">&nbsp;{valTheme}</span>
+        </div>
 
         {/* {groupedRes.map((group, i) => { */}
         {Object.values(refereeValidation).map((group, i) => {
@@ -283,18 +287,19 @@ export default function Ptitbac({
         })}
 
         {isReferee && (
-          <button
-            onClick={async () => {
-              if (allFalse) {
-                await manageEmptyTheme({ roomToken, gameData });
-              } else {
-                await validate({ roomToken, gameData });
-              }
-            }}
-            className="border border-blue-300 bg-blue-100"
-          >
-            Thème suivant
-          </button>
+          <div className="flex justify-center m-4">
+            <NextStep
+              onClick={async () => {
+                if (allFalse) {
+                  await manageEmptyTheme({ roomToken, gameData });
+                } else {
+                  await validate({ roomToken, gameData });
+                }
+              }}
+            >
+              Suite ={">"}
+            </NextStep>
+          </div>
         )}
       </div>
     );
@@ -318,12 +323,13 @@ export default function Ptitbac({
   return (
     <div>
       <div className="flex flex-col items-center">
-        <div>Points</div>
+        <div className="font-semibold">Points</div>
         {counts
           ?.sort((a, b) => a.name.localeCompare(b.name))
           .map((gamerCount) => (
             <div key={gamerCount.name}>
-              {gamerCount.name} : {gamerCount.gold} point
+              {gamerCount.name} :{" "}
+              <span className="font-semibold">{gamerCount.gold}</span> point
               {gamerCount.gold > 1 ? "s" : ""}
             </div>
           ))}
@@ -334,19 +340,18 @@ export default function Ptitbac({
       {!isEnded && (
         <>
           {phase === "waiting" && isAdmin && (
-            <div className="flex justify-center">
-              <button
-                onClick={() =>
-                  startCountdown({
+            <div className="flex justify-center m-8">
+              <NextStep
+                onClick={async () =>
+                  await startCountdown({
                     time: gameData.options.countDownTime, //remove
                     roomToken,
                     gameData,
                   })
                 }
-                className="border border-blue-300 bg-blue-100"
               >
-                Lancer le tour
-              </button>
+                Tour suivant
+              </NextStep>
             </div>
           )}
 

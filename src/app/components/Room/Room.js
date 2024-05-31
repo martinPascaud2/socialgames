@@ -1,6 +1,14 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  createContext,
+  useContext,
+} from "react";
+
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import Pusher from "pusher-js";
 import QRCode from "react-qr-code";
@@ -20,6 +28,8 @@ import { CheckIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 var pusher = new Pusher("61853af9f30abf9d5b3d", {
   cluster: "eu",
 });
+
+const UserContext = createContext();
 
 import {
   serverCreate,
@@ -479,7 +489,7 @@ export default function Room({
 
   if (!isStarted) {
     return (
-      <>
+      <UserContext.Provider value={"coucou"}>
         <div className="flex justify-center border-b">
           {gamesRefs[gameName].categorie === "grouping"
             ? "Lobby"
@@ -930,11 +940,11 @@ export default function Room({
             )}
           </>
         )}
-      </>
+      </UserContext.Provider>
     );
   } else {
     return (
-      <>
+      <UserContext.Provider value={"coucou"}>
         <div className="flex justify-center border-b">
           {gamesRefs[gameName].categorie === "grouping"
             ? "Lobby"
@@ -954,7 +964,11 @@ export default function Room({
           gameData={gameData}
           storedLocation={geoLocation} //searching game only
         />
-      </>
+      </UserContext.Provider>
     );
   }
+}
+
+export function useUserContext() {
+  return useContext(UserContext);
 }
