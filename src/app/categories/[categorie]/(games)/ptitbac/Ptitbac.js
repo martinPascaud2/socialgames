@@ -186,7 +186,12 @@ export default function Ptitbac({
   useEffect(() => {
     console.log("gameData.themesResponses", gameData.themesResponses);
     console.log("valTheme", valTheme);
-    if (!Object.values(gameData.themesResponses).length || !valTheme) return;
+    if (
+      !Object.values(gameData.themesResponses).length ||
+      !valTheme ||
+      !gameData.themesResponses[valTheme]
+    )
+      return;
     setThemesResponses(gameData.themesResponses);
 
     const groupedRes = groupSimilarWords(gameData.themesResponses[valTheme], 1);
