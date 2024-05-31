@@ -519,8 +519,12 @@ export default function Room({
                 >
                   Partie {isPrivate ? "privée" : "publique"}
                 </div>
-                <div className="pl-4">
-                  <ToggleCheckbox checked={isPrivate} onChange={togglePriv} />
+                <div className="pl-4 my-1">
+                  <ToggleCheckbox
+                    checked={isPrivate}
+                    onChange={togglePriv}
+                    size={80}
+                  />
                 </div>
               </div>
             )}

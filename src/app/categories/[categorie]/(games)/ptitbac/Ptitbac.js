@@ -299,7 +299,6 @@ export default function Ptitbac({
               </div>
               {isReferee && (
                 <ToggleCheckbox
-                  checked={!isInvalidated}
                   onChange={async () => {
                     const newRefereeValidation = {
                       ...refereeValidation,
@@ -315,14 +314,10 @@ export default function Ptitbac({
                       roomToken,
                       gameData,
                     });
-                    // setRefereeValidation((prevRefVal) => ({
-                    //   ...prevRefVal,
-                    //   [i]: {
-                    //     ...prevRefVal[i],
-                    //     validated: !prevRefVal[i].validated,
-                    //   },
-                    // }));
                   }}
+                  checked={!isInvalidated}
+                  colors={{ yes: "rgb(22, 163, 74)", no: "rgb(220, 38, 38)" }}
+                  size={70}
                 />
               )}
 
