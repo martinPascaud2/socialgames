@@ -28,7 +28,6 @@ export default function Memory({
   gameData,
   storedLocation,
 }) {
-  const [icons, setIcons] = useState([]);
   const { scores } = gameData;
   const isAdmin = gameData.admin === user.name;
   const isActive =
@@ -50,12 +49,8 @@ export default function Memory({
         gameData,
       });
     }
-    isAdmin && !icons.length && initialize();
+    isAdmin && !gameData.icons?.length && initialize();
   }, []);
-
-  useEffect(() => {
-    gameData.icons && setIcons(gameData.icons);
-  }, [gameData.icons]);
 
   useEffect(() => {
     const triggered = gameData.icons?.filter((icon) => icon.triggered).length;
@@ -63,7 +58,7 @@ export default function Memory({
       setTimeout(() => {
         isActive && hideUndiscovered({ roomToken, gameData });
         setTriggeredNumber(0);
-      }, 1400);
+      }, 1000);
     }
   }, [gameData.icons]);
 
@@ -88,7 +83,7 @@ export default function Memory({
       )}
 
       <div className="flex flex-wrap justify-center">
-        {icons.map((icon, i) => {
+        {gameData?.icons?.map((icon, i) => {
           const { triggered, discovered } = icon;
           return (
             <Card
