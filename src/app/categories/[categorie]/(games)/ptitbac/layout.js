@@ -1,7 +1,7 @@
 export default function PtitbacLayout({ children }) {
   return (
     <>
-      <div className="border">{children}</div>
+      <div className="">{children}</div>
     </>
   );
 }

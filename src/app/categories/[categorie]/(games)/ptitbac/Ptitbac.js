@@ -48,31 +48,6 @@ function levenshtein(a, b) {
   return matrix[b.length][a.length];
 }
 
-// function groupSimilarWords(words, threshold = 1) {
-//   const groups = [];
-//   const visited = new Set();
-
-//   words.forEach((word) => {
-//     if (!visited.has(word)) {
-//       const group = [word];
-//       visited.add(word);
-
-//       words.forEach((otherWord) => {
-//         if (
-//           !visited.has(otherWord) &&
-//           levenshtein(word, otherWord) <= threshold
-//         ) {
-//           group.push(otherWord);
-//           visited.add(otherWord);
-//         }
-//       });
-
-//       groups.push(group);
-//     }
-//   });
-
-//   return groups;
-// }
 function groupSimilarWords(responses, threshold = 1) {
   const groups = [];
   const visited = new Set();
@@ -211,15 +186,8 @@ export default function Ptitbac({
     console.log("gameData.themesResponses", gameData.themesResponses);
     console.log("valTheme", valTheme);
     if (!gameData.themesResponses || !valTheme) return;
-    // if (phase !== "validating-0") return;
     setThemesResponses(gameData.themesResponses);
-    // if (
-    //   !gameData.themesResponses ||
-    //   !valTheme
-    //   // ||
-    //   // Object.keys(refereeValidation).length
-    // )
-    //   return;
+
     const groupedRes = groupSimilarWords(gameData.themesResponses[valTheme], 1);
     console.log("groupedRes", groupedRes);
     const refVal = {};
@@ -232,7 +200,6 @@ export default function Ptitbac({
       };
     });
     setRefereeValidation(refVal);
-    // }, [gameData.themesResponses, valTheme, refereeValidation]);
   }, [gameData.themesResponses, valTheme, phase]);
 
   useEffect(() => {
@@ -250,24 +217,10 @@ export default function Ptitbac({
     ) {
       return;
     }
-    // const invResponses = {};
-    // const pendsAndVals = {};
-    // Object.entries({ ...themesResponses[valTheme] })
-    //   .sort((a, b) => a[0].localeCompare(b[0]))
-    //   .forEach((res) => {
-    //     if (res[1].validated === false) invResponses[res[0]] = res[1];
-    //     else pendsAndVals[res[0]] = res[1];
-    //   });
-
-    // console.log("pendsAndVals", pendsAndVals);
-    // const groupedRes = groupSimilarWords(pendsAndVals, 1);
-
-    // const groupedRes = groupSimilarWords(themesResponses[valTheme], 1);
-    // console.log("groupedRes", groupedRes);
 
     return (
       <div>
-        <div>Validation pour le thème : {valTheme}</div>
+        <div className="border-b">Validation pour le thème : {valTheme}</div>
 
         {/* {groupedRes.map((group, i) => { */}
         {Object.values(refereeValidation).map((group, i) => {
@@ -276,171 +229,59 @@ export default function Ptitbac({
           const isInvalidated = group.validated === false;
 
           return (
-            <div key={i} className="flex items-center justify-center gap-4">
-              <div className="flex flex-col items-center my-2">
+            <div key={i} className="flex justify-between items-center border-b">
+              <div className="flex flex-col my-2 items-start w-1/6">
                 {group.gamers.map((gamer, j) => {
                   return (
-                    <div key={j} className="flex flex-col my-1">
+                    <div key={j} className="flex flex-col my-1 ml-2">
                       <div className="flex gap-2">
-                        <div>{gamer}</div>
+                        <div className="font-semibold">{gamer}</div>
                         {/* <div>{gamerRes.response.word}</div> */}
                       </div>
                     </div>
                   );
                 })}
               </div>
-              <div>{group.word}</div>
-              <div>
-                {!isInvalidated ? (
-                  <CheckIcon className="block h-6 w-6 " />
-                ) : (
-                  <XMarkIcon className="block h-6 w-6 " />
-                )}
+              <div className="flex flex-col w-1/6 justify-center items-center">
+                <div>{group.word}</div>
               </div>
-              {isReferee && (
-                <ToggleCheckbox
-                  onChange={async () => {
-                    const newRefereeValidation = {
-                      ...refereeValidation,
-                      [i]: {
-                        ...refereeValidation[i],
-                        validated: !refereeValidation[i].validated,
-                      },
-                    };
-                    await refereeTrigger({
-                      group,
-                      newRefereeValidation,
-                      validated: !refereeValidation[i].validated,
-                      roomToken,
-                      gameData,
-                    });
-                  }}
-                  checked={!isInvalidated}
-                  colors={{ yes: "rgb(22, 163, 74)", no: "rgb(220, 38, 38)" }}
-                  size={70}
-                />
-              )}
-
-              {/* {isReferee && (
-                <div>
-                  <button
-                    onClick={async () => {
-                      await validate({
-                        group,
-                        validation: true,
-                        roomToken,
-                        gameData,
-                      });
-                    }}
-                    className="border border-blue-300 bg-blue-100 mx-4"
-                  >
-                    Validax
-                  </button>
-                  <button
-                    onClick={async () => {
-                      await validate({
-                        group,
-                        validation: false,
-                        roomToken,
-                        gameData,
-                      });
-                    }}
-                    className="border border-blue-300 bg-blue-100 mx-4"
-                  >
-                    Nope
-                  </button>
-                </div>
-              )} */}
-            </div>
-          );
-        })}
-
-        {/* {groupedRes.map((group, i) => {
-          if (group[0].response.validated === null)
-            return (
-              <div key={i} className="flex items-center justify-center gap-4">
-                <div className="flex flex-col items-center my-2">
-                  {group.map((gamerRes, j) => {
-                    return (
-                      <div key={j} className="flex flex-col my-1">
-                        <div className="flex gap-2">
-                          <div>{gamerRes.gamer}</div>
-                          <div>{gamerRes.response.word}</div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+              <div className="flex flex-col w-1/6 justify-center items-center mr-2">
                 {isReferee ? (
-                  <div>
-                    <button
-                      onClick={async () => {
-                        await validate({
-                          group,
-                          validation: true,
-                          roomToken,
-                          gameData,
-                        });
-                      }}
-                      className="border border-blue-300 bg-blue-100 mx-4"
-                    >
-                      Validax
-                    </button>
-                    <button
-                      onClick={async () => {
-                        await validate({
-                          group,
-                          validation: false,
-                          roomToken,
-                          gameData,
-                        });
-                      }}
-                      className="border border-blue-300 bg-blue-100 mx-4"
-                    >
-                      Nope
-                    </button>
-                  </div>
+                  <ToggleCheckbox
+                    onChange={async () => {
+                      const newRefereeValidation = {
+                        ...refereeValidation,
+                        [i]: {
+                          ...refereeValidation[i],
+                          validated: !refereeValidation[i].validated,
+                        },
+                      };
+                      await refereeTrigger({
+                        group,
+                        newRefereeValidation,
+                        validated: !refereeValidation[i].validated,
+                        roomToken,
+                        gameData,
+                      });
+                    }}
+                    checked={!isInvalidated}
+                    colors={{ yes: "rgb(22, 163, 74)", no: "rgb(220, 38, 38)" }}
+                    size={70}
+                  />
                 ) : (
-                  <div>...</div>
+                  <div>
+                    {!isInvalidated ? (
+                      <CheckIcon className="block h-6 w-6 " />
+                    ) : (
+                      <XMarkIcon className="block h-6 w-6 " />
+                    )}
+                  </div>
                 )}
-              </div>
-            );
-        })}
-
-        {isReferee && allFalse && (
-          <button
-            onClick={async () =>
-              await manageEmptyTheme({ roomToken, gameData })
-            }
-            className="border border-blue-300 bg-blue-100"
-          >
-            Thème suivant
-          </button>
-        )}
-
-        {Object.entries(pendsAndVals).map((res, i) => {
-          if (res[1].validated)
-            return (
-              <div key={i} className="flex justify-center gap-4">
-                <div>{res[0]}</div>
-                <div>{res[1].word}</div>
-                <div>
-                  <CheckIcon className="block h-6 w-6 " />
-                </div>
-              </div>
-            );
-        })}
-        {Object.entries(invResponses).map((res, i) => {
-          return (
-            <div key={i} className="flex justify-center gap-4">
-              <div>{res[0]}</div>
-              <div>{res[1].word}</div>
-              <div>
-                <XMarkIcon className="block h-6 w-6 " />
               </div>
             </div>
           );
-        })} */}
+        })}
+
         {isReferee && (
           <button
             onClick={async () => {
@@ -475,7 +316,7 @@ export default function Ptitbac({
   };
 
   return (
-    <>
+    <div>
       <div className="flex flex-col items-center">
         <div>Points</div>
         {counts
@@ -493,18 +334,20 @@ export default function Ptitbac({
       {!isEnded && (
         <>
           {phase === "waiting" && isAdmin && (
-            <button
-              onClick={() =>
-                startCountdown({
-                  time: gameData.options.countDownTime, //remove
-                  roomToken,
-                  gameData,
-                })
-              }
-              className="border border-blue-300 bg-blue-100"
-            >
-              Lancer le tour
-            </button>
+            <div className="flex justify-center">
+              <button
+                onClick={() =>
+                  startCountdown({
+                    time: gameData.options.countDownTime, //remove
+                    roomToken,
+                    gameData,
+                  })
+                }
+                className="border border-blue-300 bg-blue-100"
+              >
+                Lancer le tour
+              </button>
+            </div>
           )}
 
           {phase === "searching" && (
@@ -579,17 +422,20 @@ export default function Ptitbac({
           <EndGame gameData={gameData} user={user} />
         </div>
       )}
-      {isAdmin ? (
-        !isEnded ? (
-          <FinishGame gameData={gameData} roomToken={roomToken} />
-        ) : (
-          <ChooseOneMoreGame
-            gameData={gameData}
-            roomToken={roomToken}
-            storedLocation={storedLocation}
-          />
-        )
-      ) : null}
-    </>
+
+      <div className="absolute bottom-0 flex justify-center w-full">
+        {isAdmin ? (
+          !isEnded ? (
+            <FinishGame gameData={gameData} roomToken={roomToken} />
+          ) : (
+            <ChooseOneMoreGame
+              gameData={gameData}
+              roomToken={roomToken}
+              storedLocation={storedLocation}
+            />
+          )
+        ) : null}
+      </div>
+    </div>
   );
 }
