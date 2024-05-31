@@ -23,6 +23,15 @@ export async function launchGame({
   });
   if (playersError) return { error: playersError };
 
+  const { themes, random } = options;
+  const miss = 6 - (themes.length + random);
+  if (miss > 0)
+    return {
+      error: `Il te manque ${miss} catégorie${
+        miss >= 2 ? "s" : ""
+      } à sélectionner`,
+    };
+
   const startedRoom = await prisma.room.update({
     where: {
       id: roomId,
