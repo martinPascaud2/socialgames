@@ -187,6 +187,7 @@ export default function Ptitbac({
     console.log("gameData.themesResponses", gameData.themesResponses);
     console.log("valTheme", valTheme);
     if (
+      !gameData.themesResponses ||
       !Object.values(gameData.themesResponses).length ||
       !valTheme ||
       !gameData.themesResponses[valTheme]
