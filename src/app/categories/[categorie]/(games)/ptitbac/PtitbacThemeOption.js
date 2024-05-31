@@ -55,7 +55,7 @@ export default function PtitbacThemeOption({
 
   const handleCheck = useCallback(
     (theme) => {
-      if (!theme.selected && selectedThemes.length === max) {
+      if (!theme.selected && selectedThemes.length + random === max) {
         setServerMessage("Nombre maximal de catégories atteint");
         return;
       }
@@ -69,7 +69,7 @@ export default function PtitbacThemeOption({
       setThemes(newThemes.sort((a, b) => a.theme.localeCompare(b.theme)));
       setServerMessage("");
     },
-    [max, selectedThemes, themes]
+    [max, selectedThemes, themes, random]
   );
 
   useEffect(() => {
@@ -115,7 +115,7 @@ export default function PtitbacThemeOption({
               <div
                 key={i}
                 className={`border-t w-full flex py-2 ${
-                  selectedThemes.length === max && "bg-gray-100"
+                  selectedThemes.length + random === max && "bg-gray-100"
                 }`}
               >
                 <div className="ml-8 w-full">
@@ -126,7 +126,7 @@ export default function PtitbacThemeOption({
                   checked={false}
                   onChange={() => handleCheck(theme)}
                   className="mr-4"
-                  disabled={selectedThemes.length === max}
+                  disabled={selectedThemes.length + random === max}
                 />
               </div>
             ))}
