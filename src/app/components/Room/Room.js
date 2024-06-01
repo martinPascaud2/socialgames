@@ -948,7 +948,7 @@ export default function Room({
         <div className="flex justify-center border-b">
           {gamesRefs[gameName].categorie === "grouping"
             ? "Lobby"
-            : gamesRefs[gameName].name}{" "}
+            : gameData.options?.mode || gamesRefs[gameName].name}{" "}
           ({gameData.gamers?.length} joueurs)
         </div>
 
