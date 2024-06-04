@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 
 import FinishGame from "@/components/FinishGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
@@ -62,14 +62,17 @@ export default function Memory({
     }
   }, [gameData.icons]);
 
-  const reveal = async ({ index, iconKey }) => {
-    if (!isActive || triggeredNumber >= 2) return;
-    setTriggeredNumber((prevTrigs) => prevTrigs + 1);
-    await revealCard({ roomToken, gameData, index, iconKey });
-  };
+  const reveal = useCallback(
+    async ({ index, iconKey }) => {
+      if (!isActive || triggeredNumber >= 2) return;
+      setTriggeredNumber((prevTrigs) => prevTrigs + 1);
+      await revealCard({ roomToken, gameData, index, iconKey });
+    },
+    [isActive, triggeredNumber, gameData, roomToken]
+  );
 
-  return (
-    <>
+  const scoresList = useMemo(
+    () => (
       <div>
         Scores
         {scores?.map((score, i) => (
@@ -78,6 +81,13 @@ export default function Memory({
           </div>
         ))}
       </div>
+    ),
+    [scores]
+  );
+
+  return (
+    <>
+      {scoresList}
       {!isEnded && (
         <div>C&apos;est au tour de {gameData.activePlayer?.name}</div>
       )}
