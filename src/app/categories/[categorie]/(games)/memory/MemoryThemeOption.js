@@ -20,7 +20,7 @@ export default function MemoryThemeOption({
   console.log("lastMode", lastMode);
 
   useEffect(() => {
-    if (!lastMode || !themes) return;
+    if (!lastMode || !lastMode.options || !themes) return;
     setThemes((prevThemes) => {
       const lastThemes = lastMode.options.themes;
       const newThemes = prevThemes.map((theme) => {
@@ -32,7 +32,7 @@ export default function MemoryThemeOption({
       });
       return newThemes;
     });
-  }, []);
+  }, [lastMode, themes]);
 
   useEffect(() => {
     if (!themes || !setOptions) return;
