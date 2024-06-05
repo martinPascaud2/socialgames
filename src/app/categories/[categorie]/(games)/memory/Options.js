@@ -2,10 +2,17 @@
 
 import { useEffect, useState } from "react";
 
-export default function MemoryOptions({ setOptions, lastMode }) {
+import MemoryThemeOption from "./MemoryThemeOption";
+
+export default function MemoryOptions({
+  setOptions,
+  lastMode,
+  setServerMessage,
+}) {
   const [pairsNumber, setPairsNumber] = useState(
     lastMode?.options?.pairsNumber || 12
   );
+  const [selectedThemes, setSelectedThemes] = useState([]);
 
   useEffect(() => {
     // if (pairsNumber < 8) setPairsNumber(8);
@@ -16,23 +23,40 @@ export default function MemoryOptions({ setOptions, lastMode }) {
   }, [pairsNumber]);
 
   return (
-    <div className="m-4 flex flex-col items-center">
-      <div>Nombre de paires</div>
-      <div className="border w-[60%] flex">
-        <button
-          onClick={() => setPairsNumber((pairs) => pairs - 2)}
-          className="mr-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center"
-        >
-          -
-        </button>
-        <div className="flex items-center">{pairsNumber}</div>
-        <button
-          onClick={() => setPairsNumber((pairs) => pairs + 2)}
-          className="ml-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center"
-        >
-          +
-        </button>
+    <div>
+      <div className="m-4 flex flex-col items-center">
+        <div>Nombre de paires</div>
+        <div className="border w-[60%] flex">
+          <button
+            onClick={() => {
+              const newPairsNumber = pairsNumber - 2;
+              if (newPairsNumber < selectedThemes.length) {
+                setServerMessage("coucou");
+                return;
+              }
+              setPairsNumber((pairs) => pairs - 2);
+            }}
+            className="mr-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center"
+          >
+            -
+          </button>
+          <div className="flex items-center">{pairsNumber}</div>
+          <button
+            onClick={() => setPairsNumber((pairs) => pairs + 2)}
+            className="ml-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center"
+          >
+            +
+          </button>
+        </div>
       </div>
+      <MemoryThemeOption
+        setOptions={setOptions}
+        selectedThemes={selectedThemes}
+        setSelectedThemes={setSelectedThemes}
+        max={pairsNumber}
+        setServerMessage={setServerMessage}
+        lastMode={lastMode}
+      />
     </div>
   );
 }
