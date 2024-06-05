@@ -103,28 +103,29 @@ export default function MemoryThemeOption({
               />
             </div>
           ))}
-          {themes
-            .filter((theme) => !theme.selected)
-            .map((theme, i) => (
-              <div
-                key={i}
-                className={`border-t w-full flex py-2 ${
-                  selectedThemes.length === max && "bg-gray-100"
-                }`}
-              >
-                <div className="ml-8 w-full">
-                  {/* {theme.theme.split().map((lettre) => lettre)} */}
-                  {theme.label.split().map((lettre) => lettre)}
+          {themes &&
+            themes
+              .filter((theme) => !theme.selected)
+              .map((theme, i) => (
+                <div
+                  key={i}
+                  className={`border-t w-full flex py-2 ${
+                    selectedThemes.length === max && "bg-gray-100"
+                  }`}
+                >
+                  <div className="ml-8 w-full">
+                    {/* {theme.theme.split().map((lettre) => lettre)} */}
+                    {theme.label.split().map((lettre) => lettre)}
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={false}
+                    onChange={() => handleCheck(theme)}
+                    className="mr-4"
+                    disabled={selectedThemes.length === max}
+                  />
                 </div>
-                <input
-                  type="checkbox"
-                  checked={false}
-                  onChange={() => handleCheck(theme)}
-                  className="mr-4"
-                  disabled={selectedThemes.length === max}
-                />
-              </div>
-            ))}
+              ))}
         </div>
       )}
     </div>
