@@ -146,8 +146,7 @@ export default function Memory({
       !gameData.options.pairsNumber ||
       Object.keys(images).length ||
       imagesNames.length ||
-      imageLength ||
-      gameData.icons
+      imageLength
     )
       return;
     const adminLoad = async () => {
@@ -165,10 +164,12 @@ export default function Memory({
       setImages(loadedImages);
       setImagesNames(loadedImagesNames);
       setImageLength(loadedImageLength);
-      setIsLoaded(true);
     };
     adminLoad();
-  }, [gameData.options, isLoaded, gameData.icons]);
+    // setTimeout(() => adminLoad(), 2000);
+    setIsLoaded(true);
+    // }, [gameData.options, isLoaded, gameData.icons]);
+  }, [gameData.options]);
 
   useEffect(() => {
     if (isAdmin || !gameData.adminLoad) return;
@@ -229,7 +230,7 @@ export default function Memory({
     }
     // isAdmin && !gameData.icons?.length && initialize();
     // }, []);
-  }, [isAdmin, initialized, gameData.options, imageLength]);
+  }, [isAdmin, gameData.options, imageLength]);
 
   useEffect(() => {
     const triggered = gameData.icons?.filter((icon) => icon.triggered).length;
@@ -266,7 +267,8 @@ export default function Memory({
 
   console.log("gameData", gameData);
 
-  const CardList = useMemo(() => {
+  // const CardList = useMemo(() => {
+  const CardList = useCallback(() => {
     // if (!gameData.icons) return;
     if (!gameData.icons || !Object.keys(images).length || !imagesNames.length)
       return;
@@ -303,7 +305,7 @@ export default function Memory({
         <div>C&apos;est au tour de {gameData.activePlayer?.name}</div>
       )}
 
-      {CardList}
+      {CardList()}
 
       {/* <div className="flex flex-wrap justify-center">
         {gameData?.icons?.map((icon, i) => {
