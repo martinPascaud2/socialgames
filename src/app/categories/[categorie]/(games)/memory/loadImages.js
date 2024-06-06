@@ -1,8 +1,16 @@
 "use server";
 
+import pusher from "@/utils/pusher";
 import shuffleArray from "@/utils/shuffleArray";
 
-export async function loadImages({ prefixes, pairsNumber }) {
+export async function loadImages({
+  prefixes,
+  pairsNumber,
+  gameData,
+  roomToken,
+}) {
+  "use server";
+  console.log("coucou");
   const imageContext = require.context("./icons", false, /\.(png)$/);
   const images = {};
   const imagesNames = [];
@@ -56,5 +64,25 @@ export async function loadImages({ prefixes, pairsNumber }) {
   //   });
   console.log("imagesNames", imagesNames);
 
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      adminLoad: { images, imagesNames, imageLength },
+    },
+  });
+
   return { images, imagesNames, imageLength };
+}
+
+export async function userLoadImages(adminLoad) {
+  console.log("adminLoad", adminLoad);
+
+  //   const images = {};
+
+  //     imageContext.keys().forEach((path) => {
+  //     const imageName = path.replace(/^\.\/(.*)\.png$/, "$1");
+
+  //     })
+
+  return "zefze";
 }

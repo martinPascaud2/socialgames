@@ -20,7 +20,8 @@ export default function MemoryThemeOption({
   console.log("lastMode", lastMode);
 
   useEffect(() => {
-    if (!lastMode || !lastMode.options || !themes) return;
+    // if (!lastMode || !lastMode.options || !themes) return;
+    if (!lastMode || !lastMode.options) return;
     setThemes((prevThemes) => {
       const lastThemes = lastMode.options.themes;
       const newThemes = prevThemes.map((theme) => {
@@ -32,7 +33,8 @@ export default function MemoryThemeOption({
       });
       return newThemes;
     });
-  }, [lastMode, themes]);
+    //   }, [lastMode, themes]);
+  }, [lastMode]);
 
   useEffect(() => {
     if (!themes || !setOptions) return;
