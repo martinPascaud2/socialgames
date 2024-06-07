@@ -32,7 +32,7 @@ main {
 
 /*----------fixed mobile screen----------*/
 body {
-  overflow: hidden;
+  overflow-x: hidden;
 }
 /*----------fixed mobile screen----------*/
 
