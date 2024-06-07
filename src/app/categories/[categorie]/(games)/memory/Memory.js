@@ -137,7 +137,6 @@ export default function Memory({
   const [initialized, setInitialized] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [triggeredNumber, setTriggeredNumber] = useState(0);
-  const [triggeredIndex, setTriggeredIndex] = useState([]);
   const [isEnded, setIsEnded] = useState(false);
 
   useEffect(() => {
@@ -214,7 +213,6 @@ export default function Memory({
       setTimeout(() => {
         isActive && hideUndiscovered({ roomToken, gameData });
         setTriggeredNumber(0);
-        setTriggeredIndex([]);
       }, 1000);
     }
   }, [gameData.icons]);
@@ -223,7 +221,6 @@ export default function Memory({
     async ({ index }) => {
       if (!isActive || triggeredNumber >= 2) return;
       setTriggeredNumber((prevTrigs) => prevTrigs + 1);
-      setTriggeredIndex((prevTrig) => [...prevTrig, index]);
       await revealCard({ roomToken, gameData, index });
     },
     [isActive, triggeredNumber, gameData, roomToken]
@@ -261,7 +258,7 @@ export default function Memory({
               triggered={triggered}
               discovered={discovered}
               reveal={
-                !isEnded && !triggeredIndex.some((index) => index === i)
+                !isEnded
                   ? reveal
                   : () => {
                       return;
