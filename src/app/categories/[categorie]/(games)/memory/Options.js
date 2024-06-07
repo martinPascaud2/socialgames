@@ -15,9 +15,7 @@ export default function MemoryOptions({
   const [selectedThemes, setSelectedThemes] = useState([]);
 
   useEffect(() => {
-    // if (pairsNumber < 8) setPairsNumber(8);
     if (pairsNumber < 8) setPairsNumber(8);
-    // if (pairsNumber > 20) setPairsNumber(20);
     if (pairsNumber > 12) setPairsNumber(12);
     setOptions((options) => ({ ...options, pairsNumber }));
   }, [pairsNumber]);
@@ -31,7 +29,7 @@ export default function MemoryOptions({
             onClick={() => {
               const newPairsNumber = pairsNumber - 2;
               if (newPairsNumber < selectedThemes.length) {
-                setServerMessage("coucou");
+                setServerMessage("coucou"); // can be used
                 return;
               }
               setPairsNumber((pairs) => pairs - 2);

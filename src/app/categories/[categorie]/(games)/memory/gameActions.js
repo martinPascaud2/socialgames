@@ -63,6 +63,7 @@ export async function getIcons({
 }) {
   const alreadySelected = [];
   let remaining = pairsNumber;
+
   while (remaining > 0) {
     const randomKey = Math.floor(Math.random() * imageLength);
     if (alreadySelected.some((key) => key === randomKey)) continue;
@@ -89,6 +90,7 @@ export async function getIcons({
 
 const getNextGamer = (gamers, activePlayer, newIcons) => {
   let triggered = newIcons.filter((icon) => icon.triggered).length;
+
   if (triggered <= 1) return activePlayer;
 
   const index = gamers.findIndex(
@@ -96,11 +98,13 @@ const getNextGamer = (gamers, activePlayer, newIcons) => {
   );
   const nextIndex = (index + 1) % gamers.length;
   const nextGamer = gamers[nextIndex];
+
   return nextGamer;
 };
 
 export async function revealCard({ roomToken, gameData, index }) {
   const { icons } = gameData;
+
   const icon = icons[index];
   const newIcon = { ...icon, triggered: true };
 
@@ -155,8 +159,11 @@ export async function revealCard({ roomToken, gameData, index }) {
 
 export async function hideUndiscovered({ roomToken, gameData }) {
   const { icons } = gameData;
+
   if (!icons) return;
+
   const newIcons = icons.map((icon) => ({ ...icon, triggered: false }));
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,

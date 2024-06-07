@@ -16,12 +16,10 @@ export default function MemoryThemeOption({
     { theme: "ObjectBall", label: "Ballons", selected: true },
   ]);
   const [show, setShow] = useState(false);
-  //   const [selectedThemes, setSelectedThemes] = useState([]);
-  console.log("lastMode", lastMode);
 
   useEffect(() => {
-    // if (!lastMode || !lastMode.options || !themes) return;
     if (!lastMode || !lastMode.options) return;
+
     setThemes((prevThemes) => {
       const lastThemes = lastMode.options.themes;
       const newThemes = prevThemes.map((theme) => {
@@ -33,7 +31,6 @@ export default function MemoryThemeOption({
       });
       return newThemes;
     });
-    //   }, [lastMode, themes]);
   }, [lastMode]);
 
   useEffect(() => {
@@ -55,13 +52,8 @@ export default function MemoryThemeOption({
         ...themes[themeIndex],
         selected: !themes[themeIndex].selected,
       };
-
-      //   if (newTheme.selected && selectedThemes.length === max) {
-      //     setServerMessage("Limite atteinte: augmente le nombre de paires");
-      //     return;
-      //   }
-
       const newThemes = [...themes];
+
       newThemes[themeIndex] = newTheme;
       setThemes(newThemes.sort((a, b) => a.label.localeCompare(b.label)));
 
@@ -70,10 +62,6 @@ export default function MemoryThemeOption({
     [setServerMessage, themes]
   );
 
-  console.log("show", show);
-  console.log("selectedThemes", selectedThemes);
-  console.log("max", max);
-  console.log("selectedThemes.length", selectedThemes.length);
   return (
     <div className="flex flex-col justify-center items-center mb-4">
       <button
@@ -94,7 +82,6 @@ export default function MemoryThemeOption({
               className={`${i !== 0 && "border-t"} w-full flex py-2`}
             >
               <div className="ml-8 w-full">
-                {/* {theme.theme.split().map((lettre) => lettre)} */}
                 {theme.label.split().map((lettre) => lettre)}
               </div>
               <input
@@ -116,7 +103,6 @@ export default function MemoryThemeOption({
                   }`}
                 >
                   <div className="ml-8 w-full">
-                    {/* {theme.theme.split().map((lettre) => lettre)} */}
                     {theme.label.split().map((lettre) => lettre)}
                   </div>
                   <input
