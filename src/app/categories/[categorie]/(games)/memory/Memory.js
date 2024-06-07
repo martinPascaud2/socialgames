@@ -136,6 +136,7 @@ export default function Memory({
   const [imageLength, setImageLength] = useState(0);
   const [initialized, setInitialized] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isRevealing, setIsRevealing] = useState(false);
   const [triggeredNumber, setTriggeredNumber] = useState(0);
   const [isEnded, setIsEnded] = useState(false);
 
@@ -219,11 +220,16 @@ export default function Memory({
 
   const reveal = useCallback(
     async ({ index }) => {
-      if (!isActive || triggeredNumber >= 2) return;
+      if (!isActive || isRevealing || triggeredNumber >= 2) return;
       setTriggeredNumber((prevTrigs) => prevTrigs + 1);
+      setIsRevealing(true);
+
       await revealCard({ roomToken, gameData, index });
+      setTimeout(() => {
+        setIsRevealing(false);
+      }, 500);
     },
-    [isActive, triggeredNumber, gameData, roomToken]
+    [isActive, triggeredNumber, gameData, roomToken, isRevealing]
   );
 
   const scoresList = useMemo(
@@ -269,7 +275,7 @@ export default function Memory({
         })}
       </div>
     );
-  }, [gameData.icons, images, imagesNames]);
+  }, [gameData.icons, images, imagesNames, reveal]);
 
   return (
     <>
