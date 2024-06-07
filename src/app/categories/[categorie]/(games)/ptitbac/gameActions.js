@@ -50,7 +50,6 @@ export async function launchGame({
 
   const counts = gamersAndGuests.map((gamer) => ({
     name: gamer.name,
-    // points: 0,
     gold: 0,
   }));
 
@@ -70,80 +69,81 @@ export async function launchGame({
   return {};
 }
 
-const getFreeThemes = async ({ gamers }) => {
-  const userIds = gamers.map((gamer) => gamer.id);
+// LEGACY
+// const getFreeThemes = async ({ gamers }) => {
+//   const userIds = gamers.map((gamer) => gamer.id);
 
-  const alreadyThemes = await prisma.ptitbacthemesOnUsers.findMany({
-    where: { userId: { in: userIds } },
-    select: { ptitbacthemeId: true },
-  });
-  const alreadyThemesIds = [
-    ...new Set(alreadyThemes.map((theme) => theme.ptitbacthemeId)),
-  ];
+//   const alreadyThemes = await prisma.ptitbacthemesOnUsers.findMany({
+//     where: { userId: { in: userIds } },
+//     select: { ptitbacthemeId: true },
+//   });
+//   const alreadyThemesIds = [
+//     ...new Set(alreadyThemes.map((theme) => theme.ptitbacthemeId)),
+//   ];
 
-  let freeThemes = await prisma.ptitbactheme.findMany({
-    where: {
-      NOT: {
-        id: { in: alreadyThemesIds },
-      },
-    },
-    take: 6,
-  });
-  const freeThemesIds = [...new Set(freeThemes.map((free) => free.id))];
+//   let freeThemes = await prisma.ptitbactheme.findMany({
+//     where: {
+//       NOT: {
+//         id: { in: alreadyThemesIds },
+//       },
+//     },
+//     take: 6,
+//   });
+//   const freeThemesIds = [...new Set(freeThemes.map((free) => free.id))];
 
-  await Promise.all(
-    userIds.map(async (userId) => {
-      await Promise.all(
-        freeThemesIds.map(async (freeThemeId) => {
-          await prisma.ptitbacthemesOnUsers.create({
-            data: {
-              user: { connect: { id: userId } },
-              ptitbactheme: { connect: { id: freeThemeId } },
-            },
-          });
-        })
-      );
-    })
-  );
+//   await Promise.all(
+//     userIds.map(async (userId) => {
+//       await Promise.all(
+//         freeThemesIds.map(async (freeThemeId) => {
+//           await prisma.ptitbacthemesOnUsers.create({
+//             data: {
+//               user: { connect: { id: userId } },
+//               ptitbactheme: { connect: { id: freeThemeId } },
+//             },
+//           });
+//         })
+//       );
+//     })
+//   );
 
-  const missingThemes = 6 - freeThemesIds.length;
-  if (missingThemes !== 0) {
-    await prisma.ptitbacthemesOnUsers.deleteMany({
-      where: {
-        userId: { in: userIds },
-      },
-    });
-  }
+//   const missingThemes = 6 - freeThemesIds.length;
+//   if (missingThemes !== 0) {
+//     await prisma.ptitbacthemesOnUsers.deleteMany({
+//       where: {
+//         userId: { in: userIds },
+//       },
+//     });
+//   }
 
-  const addedThemes = await prisma.ptitbactheme.findMany({
-    where: {
-      NOT: {
-        id: { in: freeThemesIds },
-      },
-    },
-    take: missingThemes,
-  });
-  const addedThemesIds = [...new Set(addedThemes.map((added) => added.id))];
+//   const addedThemes = await prisma.ptitbactheme.findMany({
+//     where: {
+//       NOT: {
+//         id: { in: freeThemesIds },
+//       },
+//     },
+//     take: missingThemes,
+//   });
+//   const addedThemesIds = [...new Set(addedThemes.map((added) => added.id))];
 
-  await Promise.all(
-    userIds.map(async (userId) => {
-      await Promise.all(
-        addedThemesIds.map(async (addedThemeId) => {
-          await prisma.ptitbacthemesOnUsers.create({
-            data: {
-              user: { connect: { id: userId } },
-              ptitbactheme: { connect: { id: addedThemeId } },
-            },
-          });
-        })
-      );
-    })
-  );
+//   await Promise.all(
+//     userIds.map(async (userId) => {
+//       await Promise.all(
+//         addedThemesIds.map(async (addedThemeId) => {
+//           await prisma.ptitbacthemesOnUsers.create({
+//             data: {
+//               user: { connect: { id: userId } },
+//               ptitbactheme: { connect: { id: addedThemeId } },
+//             },
+//           });
+//         })
+//       );
+//     })
+//   );
 
-  const themes = [...freeThemes, ...addedThemes];
-  const themeList = themes.map((theme) => theme.theme);
-  return themeList;
-};
+//   const themes = [...freeThemes, ...addedThemes];
+//   const themeList = themes.map((theme) => theme.theme);
+//   return themeList;
+// };
 
 async function getThemes({ gameData }) {
   const { options } = gameData;
@@ -179,7 +179,6 @@ async function getThemes({ gameData }) {
         if (randomWeight < cumulativeWeight) {
           newRandoms.push(key);
           randomNumber--;
-
           if (randomNumber === 0) break;
         }
       }
@@ -202,8 +201,6 @@ async function getThemes({ gameData }) {
 }
 
 export async function startCountdown({ time, roomToken, gameData }) {
-  // const themeList = await getFreeThemes({ gamers: gameData.gamers });
-  // const themeList = gameData.options.themes;
   const { newThemes, newStatusRandoms } = await getThemes({ gameData });
   const randomLetter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[
     Math.floor(Math.random() * 26)
@@ -214,7 +211,6 @@ export async function startCountdown({ time, roomToken, gameData }) {
     gameData: {
       ...gameData,
       phase: "searching",
-      // themes: themeList,
       themes: newThemes,
       letter: randomLetter,
       finishCountdownDate,
@@ -226,15 +222,9 @@ export async function startCountdown({ time, roomToken, gameData }) {
 export async function sendResponses({
   responses,
   userId,
-  roomId,
   roomToken,
   gameData,
 }) {
-  console.log("responses", responses);
-  console.log("userId", userId);
-  console.log("roomId", roomId);
-  console.log("roomToken", roomToken);
-  console.log("gameData", gameData);
   try {
     await prisma.$transaction(async () => {
       const responsesStr = responses.join("/");
@@ -266,7 +256,6 @@ export async function sendResponses({
       await pusher.trigger(`room-${roomToken}`, "room-event", {
         gameData: {
           ...gameData,
-          // alreadySent: newAlreadySent,
           phase: "sending",
         },
       });
@@ -274,18 +263,6 @@ export async function sendResponses({
   } catch (error) {
     console.log("error", error);
   }
-
-  // const alreadySent = gameData.alreadySent || 0;
-  // const newAlreadySent = alreadySent + 1;
-
-  // await pusher.trigger(`room-${roomToken}`, "room-event", {
-  //   gameData: {
-  //     ...gameData,
-  //     alreadySent: newAlreadySent,
-  //     phase:
-  //       newAlreadySent !== gameData.gamers.length ? "searching" : "sending",
-  //   },
-  // });
 }
 
 export async function goValidation({ gamers, roomToken, gameData }) {
@@ -312,7 +289,6 @@ export async function goValidation({ gamers, roomToken, gameData }) {
     one.responses.forEach((res, index) => {
       themesResponses[themes[index]][one.gamer] = {
         word: res,
-        // validated: res.length >= 2 ? null : false,
         validated: res.length >= 2 ? true : false,
       };
     });
@@ -322,28 +298,20 @@ export async function goValidation({ gamers, roomToken, gameData }) {
     gameData: {
       ...gameData,
       alreadySent: 0,
-      // phase: "validating-0-0",
       phase: "validating-0",
-      // everyoneResponses,
       themesResponses,
     },
   });
 }
 
 export async function refereeTrigger({
-  group,
-  validated,
   newRefereeValidation,
   roomToken,
   gameData,
 }) {
-  console.log("group", group);
-  // console.log("validated", validated);
-  console.log("newRefereeValidation", newRefereeValidation);
-  const { counts, phase, gamers, themesResponses, themes, options } = gameData;
+  const { phase, themesResponses, themes } = gameData;
   const valThemeIndex = parseInt(phase.split("-")[1]);
   const theme = themes[valThemeIndex];
-  console.log("themesResponses", themesResponses);
   let newThemesResponses = { ...themesResponses };
 
   Object.values(newRefereeValidation).forEach((group) => {
@@ -351,11 +319,6 @@ export async function refereeTrigger({
       newThemesResponses[theme][gamer].validated = group.validated;
     });
   });
-
-  // group.gamers.forEach((gamer) => {
-  //   newThemesResponses[theme][gamer].validated = group.validated;
-  // });
-  console.log("newThemesResponses", newThemesResponses);
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
@@ -368,15 +331,10 @@ export async function refereeTrigger({
 
 export async function validate({ roomToken, gameData }) {
   const { counts, themesResponses, phase, themes, options } = gameData;
-  console.log("gameData", gameData);
-  console.log("themesResponses", themesResponses);
   const valThemeIndex = parseInt(phase.split("-")[1]);
   const theme = themes[valThemeIndex];
-  console.log("theme", theme);
-  const newCounts = counts.map((count) => {
-    console.log("count", count);
-    console.log("themesResponses[theme]", themesResponses[theme]);
 
+  const newCounts = counts.map((count) => {
     const isAlone =
       Object.values(themesResponses[theme]).reduce(
         (times, response) =>
@@ -385,7 +343,6 @@ export async function validate({ roomToken, gameData }) {
             : times,
         0
       ) === 1;
-    console.log("isAlone", isAlone);
     return {
       ...count,
       gold: !themesResponses[theme][count.name].validated
@@ -396,18 +353,13 @@ export async function validate({ roomToken, gameData }) {
     };
   });
 
-  console.log("counts", counts);
-  console.log("newCounts", newCounts);
-
   const isLastTheme = valThemeIndex === themes.length - 1;
 
   if (!isLastTheme) {
     const nextPhase = `validating-${valThemeIndex + 1}`;
-    // await new Promise((resolve) => setTimeout(resolve, 3000));
     await pusher.trigger(`room-${roomToken}`, "room-event", {
       gameData: {
         ...gameData,
-        // themesResponses: newThemesResponses,
         counts: newCounts,
         phase: nextPhase,
       },
@@ -418,7 +370,6 @@ export async function validate({ roomToken, gameData }) {
       (gamerCount) => gamerCount.gold >= aimPoints
     );
     if (!finalWinners.length || aimPoints === 0) {
-      // await new Promise((resolve) => setTimeout(resolve, 3000));
       await pusher.trigger(`room-${roomToken}`, "room-event", {
         gameData: {
           ...gameData,
@@ -440,109 +391,8 @@ export async function validate({ roomToken, gameData }) {
   }
 }
 
-export async function validateLECACY({
-  group,
-  validation,
-  roomToken,
-  gameData,
-}) {
-  const { counts, phase, gamers, themesResponses, themes, options } = gameData;
-  const valThemeIndex = parseInt(phase.split("-")[1]);
-  const theme = themes[valThemeIndex];
-  console.log("group", group);
-  console.log("themesResponses", themesResponses);
-  let newThemesResponses = { ...themesResponses };
-
-  // group.forEach((gamerRes) => {
-  //   newThemesResponses = {
-  //     ...newThemesResponses,
-  //     [theme]: {
-  //       ...newThemesResponses[theme],
-  //       [gamerRes.gamer]: {
-  //         ...newThemesResponses[theme][gamerRes.gamer],
-  //         validated: validation,
-  //       },
-  //     },
-  //   };
-  // });
-  // console.log("newThemesResponses", newThemesResponses);
-
-  // const newCounts = counts.map((count) => {
-  //   if (group.some((gamerRes) => gamerRes.gamer === count.name))
-  //     return {
-  //       name: count.name,
-  //       gold: validation
-  //         ? count.gold + (group.length === 1 ? 2 : 1)
-  //         : count.gold,
-  //     };
-  //   else return count;
-  // });
-  // console.log("newCounts", newCounts);
-
-  // const isLastWord = !Object.entries(newThemesResponses[theme]).some(
-  //   (res) => res[1].validated === null
-  // );
-  // console.log("isLastWord", isLastWord);
-  // if (!isLastWord) {
-  //   await pusher.trigger(`room-${roomToken}`, "room-event", {
-  //     gameData: {
-  //       ...gameData,
-  //       themesResponses: newThemesResponses,
-  //       counts: newCounts,
-  //     },
-  //   });
-  // } else {
-  //   const isLastTheme = valThemeIndex === themes.length - 1;
-  //   await pusher.trigger(`room-${roomToken}`, "room-event", {
-  //     gameData: {
-  //       ...gameData,
-  //       themesResponses: newThemesResponses,
-  //       counts: newCounts,
-  //     },
-  //   });
-  //   console.log("isLastTheme", isLastTheme);
-  //   if (!isLastTheme) {
-  //     const nextPhase = `validating-${valThemeIndex + 1}`;
-  //     await new Promise((resolve) => setTimeout(resolve, 3000));
-  //     await pusher.trigger(`room-${roomToken}`, "room-event", {
-  //       gameData: {
-  //         ...gameData,
-  //         themesResponses: newThemesResponses,
-  //         counts: newCounts,
-  //         phase: nextPhase,
-  //       },
-  //     });
-  //   } else {
-  //     const { aimPoints } = options;
-  //     const finalWinners = newCounts.filter(
-  //       (gamerCount) => gamerCount.gold >= aimPoints
-  //     );
-  //     if (!finalWinners.length || aimPoints === 0) {
-  //       await new Promise((resolve) => setTimeout(resolve, 3000));
-  //       await pusher.trigger(`room-${roomToken}`, "room-event", {
-  //         gameData: {
-  //           ...gameData,
-  //           counts: newCounts,
-  //           phase: "waiting",
-  //         },
-  //       });
-  //     } else {
-  //       await pusher.trigger(`room-${roomToken}`, "room-event", {
-  //         gameData: {
-  //           ...gameData,
-  //           counts: newCounts,
-  //           winners: finalWinners,
-  //           phase: "ended",
-  //           ended: true,
-  //         },
-  //       });
-  //     }
-  //   }
-  // }
-}
-
 export async function manageEmptyTheme({ roomToken, gameData }) {
-  const { counts, phase, gamers, themesResponses, themes } = gameData;
+  const { phase, themes } = gameData;
   const valThemeIndex = parseInt(phase.split("-")[1]);
   const isLastTheme = valThemeIndex === themes.length - 1;
   const nextPhase = isLastTheme ? "waiting" : `validating-${valThemeIndex + 1}`;
@@ -553,108 +403,6 @@ export async function manageEmptyTheme({ roomToken, gameData }) {
       phase: nextPhase,
     },
   });
-}
-
-export async function vote({ vote, roomToken, gameData }) {
-  const votes = gameData.votes || [];
-  votes.push(vote);
-  const counts = gameData.counts || [];
-  const { phase, gamers } = gameData;
-
-  let gamerIndex = parseInt(phase.split("-")[1]);
-  const gamerName = gameData.everyoneResponses[gamerIndex].gamer;
-  let responseIndex = parseInt(phase.split("-")[2]);
-  const isLastVote = votes.length === gamers.length - 1;
-
-  if (!isLastVote) {
-    // continue votes
-    await pusher.trigger(`room-${roomToken}`, "room-event", {
-      gameData: {
-        ...gameData,
-        votes,
-      },
-    });
-  } else {
-    // counting votes
-    let countGamerIndex = counts.findIndex((gamer) => gamer.name === gamerName);
-    if (countGamerIndex === -1) countGamerIndex = counts.length;
-    const countGamer = counts[countGamerIndex] || {
-      name: gamerName,
-      points: 0,
-      gold: 0,
-    };
-
-    const affirmativeVotes = votes.reduce((trues, vote) => {
-      return vote ? trues + 1 : trues;
-    }, 0);
-    const isAccepted = affirmativeVotes > (gamers.length - 1) / 2;
-    if (isAccepted) countGamer.points += 1;
-
-    const newCounts = [...counts];
-    newCounts[countGamerIndex] = countGamer;
-
-    responseIndex = responseIndex < 5 ? responseIndex + 1 : 0;
-    gamerIndex = responseIndex === 0 ? gamerIndex + 1 : gamerIndex;
-    if (gamerIndex !== gamers.length) {
-      // next theme || next gamer
-      const nextPhase = `validating-${gamerIndex}-${responseIndex}`;
-      await pusher.trigger(`room-${roomToken}`, "room-event", {
-        gameData: {
-          ...gameData,
-          votes: [],
-          counts: newCounts,
-          phase: nextPhase,
-        },
-      });
-    } else {
-      // do the accounts
-      const winnersIndexes = [];
-      let maxPoints = 0;
-      newCounts.map((gamerCount, i) => {
-        if (gamerCount.points === maxPoints) winnersIndexes.push(i);
-        else if (gamerCount.points > maxPoints) {
-          winnersIndexes.splice(0, winnersIndexes.length, i);
-          maxPoints = gamerCount.points;
-        }
-      });
-      const newGoldsCount = [...newCounts];
-      for (let i = 0; i < newGoldsCount.length; i++) {
-        if (winnersIndexes.some((index) => index === i))
-          newGoldsCount[i].gold += winnersIndexes.length > 1 ? 0.5 : 1;
-        newGoldsCount[i].points = 0;
-      }
-
-      const isFinalWinners = newGoldsCount.some(
-        (gamerCount) => gamerCount.gold >= 5
-      );
-      if (!isFinalWinners) {
-        // new turn
-        await pusher.trigger(`room-${roomToken}`, "room-event", {
-          gameData: {
-            ...gameData,
-            votes: [],
-            counts: newGoldsCount,
-            phase: "waiting",
-          },
-        });
-      } else {
-        // endgame
-        const finalWinners = newGoldsCount
-          .filter((gamerCount) => gamerCount.gold >= 5)
-          .map((winnerCount) => winnerCount.name);
-
-        await pusher.trigger(`room-${roomToken}`, "room-event", {
-          gameData: {
-            ...gameData,
-            counts: newGoldsCount,
-            winners: finalWinners,
-            phase: "ended",
-            ended: true,
-          },
-        });
-      }
-    }
-  }
 }
 
 export async function getAllThemes() {

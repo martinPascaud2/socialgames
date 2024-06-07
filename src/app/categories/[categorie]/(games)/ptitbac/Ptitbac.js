@@ -6,7 +6,6 @@ import {
   startCountdown,
   sendResponses,
   goValidation,
-  // vote,
   refereeTrigger,
   validate,
   manageEmptyTheme,
@@ -54,21 +53,16 @@ function groupSimilarWords(responses, threshold = 1) {
   const visited = new Set();
 
   Object.entries(responses).forEach((res) => {
-    // if (!visited.has(res[1].word)) {
     if (!visited.has(res[0])) {
       const group = [{ gamer: res[0], response: res[1] }];
-      // visited.add(res[1].word);
       visited.add(res[0]);
 
       Object.entries(responses).forEach((otherRes) => {
         if (
-          // !visited.has(otherRes[1].word) &&
           !visited.has(otherRes[0]) &&
           levenshtein(res[1].word, otherRes[1].word) <= threshold
         ) {
-          // group.push(otherRes.word);
           group.push({ gamer: otherRes[0], response: otherRes[1] });
-          // visited.add(otherRes[1].word);
           visited.add(otherRes[0]);
         }
       });
@@ -92,19 +86,17 @@ export default function Ptitbac({
   const { phase, letter, themes, finishCountdownDate, counts, winners } =
     gameData;
 
-  // const [responses, setResponses] = useState([]);
   const [responses, setResponses] = useState(
     Array.from({ length: 6 }, () => "")
   );
-
   const [isCompleted, setIsCompleted] = useState(false);
   const [hasValidated, setHasValidated] = useState(false);
-  const [isEnded, setIsEnded] = useState(false);
 
   const [valTheme, setValTheme] = useState("");
   const [themesResponses, setThemesResponses] = useState({});
   const [allFalse, setAllFalse] = useState();
   const [refereeValidation, setRefereeValidation] = useState({});
+  const [isEnded, setIsEnded] = useState(false);
 
   useEffect(() => {
     if (gameData.ended) setIsEnded(true);
@@ -124,21 +116,17 @@ export default function Ptitbac({
         await sendResponses({
           responses,
           userId: user.id,
-          roomId,
           roomToken,
           gameData,
         });
       };
       send();
     }
-
-    // setRefereeValidation({});
   }, [hasValidated, phase]);
 
   useEffect(() => {
     phase === "searching" &&
       setResponses(Array.from({ length: 6 }, () => `${letter}`));
-    // setRefereeValidation({});
 
     const send = async () => {
       if (phase === "sending") {
@@ -159,7 +147,6 @@ export default function Ptitbac({
     if (phase?.startsWith("validating")) {
       setValTheme(themes[phase.split("-")[1]]);
       setHasValidated(false);
-      // setRefereeValidation({});
     }
   }, [phase]);
 
@@ -175,17 +162,7 @@ export default function Ptitbac({
     else setAllFalse(false);
   }, [valTheme]); // tricky : no themesResponses_dep
 
-  console.log("gameData", gameData);
-  console.log("phase", phase);
-  console.log("themesResponses", themesResponses);
-  console.log("valTheme", valTheme);
-  console.log("hasValidated", hasValidated);
-  console.log("responses", responses);
-  console.log("refereeValidation", refereeValidation);
-
   useEffect(() => {
-    console.log("gameData.themesResponses", gameData.themesResponses);
-    console.log("valTheme", valTheme);
     if (
       !gameData.themesResponses ||
       !Object.values(gameData.themesResponses).length ||
@@ -196,10 +173,8 @@ export default function Ptitbac({
     setThemesResponses(gameData.themesResponses);
 
     const groupedRes = groupSimilarWords(gameData.themesResponses[valTheme], 1);
-    console.log("groupedRes", groupedRes);
     const refVal = {};
     groupedRes.forEach((group, i) => {
-      console.log("group", group, "i", i);
       refVal[i] = {
         gamers: group.map((gamer) => gamer.gamer),
         word: group[0].response.word,
@@ -232,10 +207,7 @@ export default function Ptitbac({
           <span className="font-semibold">&nbsp;{valTheme}</span>
         </div>
 
-        {/* {groupedRes.map((group, i) => { */}
         {Object.values(refereeValidation).map((group, i) => {
-          console.log("group", group);
-
           const isInvalidated = group.validated === false;
 
           return (
@@ -246,7 +218,6 @@ export default function Ptitbac({
                     <div key={j} className="flex flex-col my-1 ml-2">
                       <div className="flex gap-2">
                         <div className="font-semibold">{gamer}</div>
-                        {/* <div>{gamerRes.response.word}</div> */}
                       </div>
                     </div>
                   );
@@ -267,9 +238,7 @@ export default function Ptitbac({
                         },
                       };
                       await refereeTrigger({
-                        group,
                         newRefereeValidation,
-                        validated: !refereeValidation[i].validated,
                         roomToken,
                         gameData,
                       });
