@@ -171,7 +171,7 @@ export default function Memory({
         })}
       </div>
     );
-  }, [gameData.icons, images, imagesNames, reveal]);
+  }, [gameData.icons, images, imagesNames, reveal, isActive]);
 
   return (
     <>
