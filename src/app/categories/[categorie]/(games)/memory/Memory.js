@@ -158,7 +158,7 @@ export default function Memory({
               src={images[imagesNames[icon.key]]}
               triggered={triggered}
               discovered={discovered}
-              isActive={isActive}
+              isActive={isActive && !isRevealing}
               reveal={
                 !isEnded
                   ? reveal
@@ -171,7 +171,7 @@ export default function Memory({
         })}
       </div>
     );
-  }, [gameData.icons, images, imagesNames, reveal, isActive]);
+  }, [gameData.icons, images, imagesNames, reveal, isActive, isRevealing]);
 
   return (
     <>
