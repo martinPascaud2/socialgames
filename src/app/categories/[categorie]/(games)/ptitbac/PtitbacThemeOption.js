@@ -4,11 +4,9 @@ import { useMemo, useState, useEffect, useCallback } from "react";
 
 import { getAllThemes } from "./gameActions";
 
-export default function PtitbacThemeOption({
-  setOptions,
-  max,
-  setServerMessage,
-}) {
+import Modal from "@/components/Modal";
+
+export default function PtitbacThemeOption({ setOptions, max }) {
   const defaultThemes = useMemo(
     () => [
       { theme: "Animal", selected: true },
@@ -20,11 +18,12 @@ export default function PtitbacThemeOption({
     ],
     []
   );
-  const [show, setShow] = useState(false);
   const [themes, setThemes] = useState([]);
   const [selectedThemes, setSelectedThemes] = useState([]);
   const [random, setRandom] = useState(0);
   const [allRandomLength, setAllRandomLength] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
   useEffect(() => {
     if (!defaultThemes) return;
@@ -53,10 +52,14 @@ export default function PtitbacThemeOption({
     }));
   }, [themes, allRandomLength]);
 
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
   const handleCheck = useCallback(
     (theme) => {
       if (!theme.selected && selectedThemes.length + random === max) {
-        setServerMessage("Nombre maximal de catégories atteint");
+        setModalMessage("Nombre maximal de catégories atteint");
         return;
       }
       const themeIndex = themes.findIndex((th) => th.theme === theme.theme);
@@ -67,7 +70,7 @@ export default function PtitbacThemeOption({
       const newThemes = [...themes];
       newThemes[themeIndex] = newTheme;
       setThemes(newThemes.sort((a, b) => a.theme.localeCompare(b.theme)));
-      setServerMessage("");
+      setModalMessage("");
     },
     [max, selectedThemes, themes, random]
   );
@@ -83,82 +86,97 @@ export default function PtitbacThemeOption({
   return (
     <div className="flex flex-col justify-center items-center mb-4">
       <button
-        onClick={() => setShow(!show)}
+        onClick={() => setShowModal(true)}
         className="flex justify-center border border-blue-300 bg-blue-100 w-2/3"
       >
         <div className="">
           {selectedThemes.length} catégorie
-          {selectedThemes.length >= 2 ? "s" : ""} / {max}
+          {selectedThemes.length >= 2 ? "s" : ""}
         </div>
       </button>
-      {show && (
-        <div className="border border-blue-300 border-t-0 w-2/3 flex flex-col items-center">
-          {selectedThemes.map((theme, i) => (
-            <div
-              key={i}
-              className={`${i !== 0 && "border-t"} w-full flex py-2`}
-            >
-              <div className="ml-8 w-full">
-                {theme.theme.split().map((lettre) => lettre)}
+
+      <Modal isOpen={showModal} onClose={closeModal} message={modalMessage}>
+        <div className="py-2">
+          <div
+            onClick={() => closeModal()}
+            className="flex justify-center border border-blue-300 bg-blue-100 w-full py-1"
+          >
+            <button className="">
+              {selectedThemes.length} catégorie
+              {selectedThemes.length >= 2 ? "s" : ""}
+            </button>
+          </div>
+          <div className="text-center">
+            <div className="border border-blue-300 w-full flex flex-col items-center">
+              <div className="grid grid-cols-2 w-full">
+                {selectedThemes.map((theme, i) => (
+                  <div key={i} className="w-full flex items-center py-2">
+                    <div className="w-full">
+                      {theme.theme.split().map((lettre) => lettre)}
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked
+                      onChange={() => handleCheck(theme)}
+                      className="mr-2"
+                    />
+                  </div>
+                ))}
+                {themes
+                  .filter((theme) => !theme.selected)
+                  .map((theme, i) => (
+                    <div
+                      key={i}
+                      className={`w-full flex items-center py-2 ${
+                        selectedThemes.length + random === max && "bg-gray-100"
+                      }`}
+                    >
+                      <div className="w-full">
+                        {theme.theme.split().map((lettre) => lettre)}
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={false}
+                        onChange={() => handleCheck(theme)}
+                        className="mr-2"
+                        disabled={selectedThemes.length + random === max}
+                      />
+                    </div>
+                  ))}
               </div>
-              <input
-                type="checkbox"
-                checked
-                onChange={() => handleCheck(theme)}
-                className="mr-4"
-              />
-            </div>
-          ))}
-          {themes
-            .filter((theme) => !theme.selected)
-            .map((theme, i) => (
-              <div
-                key={i}
-                className={`border-t w-full flex py-2 ${
-                  selectedThemes.length + random === max && "bg-gray-100"
-                }`}
-              >
-                <div className="ml-8 w-full">
-                  {theme.theme.split().map((lettre) => lettre)}
+
+              <div className="font-semibold border-t-2 border-black w-full py-2 relative h-12">
+                <div className="flex gap-2 absolute right-2 top-2">
+                  <div className="mr-2">Aléatoires : {random}</div>
+                  <button
+                    onClick={() => {
+                      setRandom((prevRan) => (prevRan !== 0 ? prevRan - 1 : 0));
+                      setModalMessage("");
+                    }}
+                    className="border border-blue-300 bg-blue-100 w-6"
+                  >
+                    -
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (random + selectedThemes.length === max)
+                        setModalMessage("Nombre maximal de catégories atteint");
+                      else {
+                        setRandom((prevRan) => prevRan + 1);
+                        setModalMessage("");
+                      }
+                    }}
+                    className="border border-blue-300 bg-blue-100 w-6"
+                  >
+                    +
+                  </button>
                 </div>
-                <input
-                  type="checkbox"
-                  checked={false}
-                  onChange={() => handleCheck(theme)}
-                  className="mr-4"
-                  disabled={selectedThemes.length + random === max}
-                />
               </div>
-            ))}
-          <div className="font-semibold border-t-2 border-black w-full py-2 relative h-12">
-            <div className="flex gap-2 absolute right-2 top-2">
-              <div className="mr-2">Aléatoires : {random}</div>
-              <button
-                onClick={() => {
-                  setRandom((prevRan) => (prevRan !== 0 ? prevRan - 1 : 0));
-                  setServerMessage("");
-                }}
-                className="border border-blue-300 bg-blue-100 w-6"
-              >
-                -
-              </button>
-              <button
-                onClick={() => {
-                  if (random + selectedThemes.length === max)
-                    setServerMessage("Nombre maximal de catégories atteint");
-                  else {
-                    setRandom((prevRan) => prevRan + 1);
-                    setServerMessage("");
-                  }
-                }}
-                className="border border-blue-300 bg-blue-100 w-6"
-              >
-                +
-              </button>
             </div>
           </div>
+          <div className="flex justify-center h-0">{modalMessage}</div>
         </div>
-      )}
+      </Modal>
     </div>
   );
 }

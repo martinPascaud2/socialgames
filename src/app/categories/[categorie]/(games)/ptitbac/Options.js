@@ -7,11 +7,7 @@ import ModeSelector from "@/components/Options/ModeSelector";
 import AimPoints from "@/components/Options/AimPoints";
 import PtitbacThemeOption from "./PtitbacThemeOption";
 
-export default function PtitbacOptions({
-  setOptions,
-  lastMode,
-  setServerMessage,
-}) {
+export default function PtitbacOptions({ setOptions, lastMode }) {
   const [mode, setMode] = useState(lastMode?.mode || "P'tit bac");
   const [modeList, setModeList] = useState([]);
 
@@ -41,11 +37,7 @@ export default function PtitbacOptions({
         max={30}
         defaultValue={lastMode?.options?.aimPoints || 0}
       />
-      <PtitbacThemeOption
-        setOptions={setOptions}
-        max={6}
-        setServerMessage={setServerMessage}
-      />
+      <PtitbacThemeOption setOptions={setOptions} max={6} />
     </div>
   );
 }
