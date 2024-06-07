@@ -20,9 +20,7 @@ export default function Memory({
 }) {
   const { scores } = gameData;
   const isAdmin = gameData.admin === user.name;
-  const isActive =
-    gameData.activePlayer?.id === user.id ||
-    (gameData.activePlayer?.guest && isAdmin);
+  const [isActive, setIsActive] = useState(false);
 
   const [images, setImages] = useState({});
   const [imagesNames, setImagesNames] = useState([]);
@@ -34,6 +32,20 @@ export default function Memory({
   const [triggeredNumber, setTriggeredNumber] = useState(0);
 
   const [isEnded, setIsEnded] = useState(false);
+
+  useEffect(() => {
+    if (!gameData) return;
+
+    if (
+      (gameData.activePlayer?.id === user.id ||
+        (gameData.activePlayer?.guest && isAdmin)) &&
+      triggeredNumber < 2
+    ) {
+      setIsActive(true);
+    } else {
+      setIsActive(false);
+    }
+  }, [gameData.activePlayer, triggeredNumber, isAdmin]);
 
   useEffect(() => {
     if (
@@ -106,12 +118,12 @@ export default function Memory({
   useEffect(() => {
     const triggered = gameData.icons?.filter((icon) => icon.triggered).length;
     if (triggered >= 2) {
-      setTimeout(() => {
-        isActive && hideUndiscovered({ roomToken, gameData });
+      setTimeout(async () => {
+        isActive && (await hideUndiscovered({ roomToken, gameData }));
         setTriggeredNumber(0);
       }, 1000);
     }
-  }, [gameData.icons]);
+  }, [gameData.icons, isActive]);
 
   const reveal = useCallback(
     async ({ index }) => {

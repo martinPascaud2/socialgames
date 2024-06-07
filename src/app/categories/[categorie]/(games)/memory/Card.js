@@ -22,9 +22,6 @@ export default function Card({
     }
   }, [triggered, discovered]);
 
-  console.log("index", index);
-  console.log("isRevealed", isRevealed);
-
   return (
     <div className="bg-transparent w-[24%] aspect-square inline-block m-[0.5%] perspective-10">
       <div
@@ -37,7 +34,6 @@ export default function Card({
           "flip-card relative w-full h-full rounded-2xl	border-2",
           `transition-transform duration-500 transform-style-3d ${
             isRevealed || triggered || discovered ? "rotate-y-[-180deg]" : ""
-            // triggered || discovered ? "rotate-y-[-180deg]" : ""
           }`
         )}
       >
