@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 
 // import shuffleArray from "@/utils/shuffleArray";
 import { getIcons, revealCard, hideUndiscovered } from "./gameActions";
@@ -9,6 +9,7 @@ import FinishGame from "@/components/FinishGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import EndGame from "@/components/EndGame";
 import Card from "./Card";
+const CardMemo = React.memo(Card);
 
 import { loadImages, userLoadImages } from "./loadImages";
 
@@ -184,29 +185,6 @@ export default function Memory({
     setImageLength(loadedImageLength);
   }, [gameData.adminLoad]);
 
-  // useEffect(() => {
-  //   if (!gameData.options) return;
-  //   const {
-  //     images: loadedImages,
-  //     imagesNames: loadedImagesNames,
-  //     imageLength: loadedImageLength,
-  //   } = loadImages({
-  //     prefixes: gameData.options.themes,
-  //     pairsNumber: gameData.options.pairsNumber,
-  //   });
-  //   setImages(loadedImages);
-  //   setImagesNames(loadedImagesNames);
-  //   setImageLength(loadedImageLength);
-  // }, [gameData.options]);
-  // const { images, imagesNames, imageLength } = loadImages({
-  //   prefixes: gameData.options.themes,
-  //   pairsNumber: gameData.options.pairsNumber,
-  // });
-
-  console.log("imagesNames", imagesNames);
-  console.log("gameData", gameData);
-  console.log("images", images);
-
   const [triggeredNumber, setTriggeredNumber] = useState(0);
 
   const [isEnded, setIsEnded] = useState(false);
@@ -228,8 +206,6 @@ export default function Memory({
       initialize();
       setInitialized(true);
     }
-    // isAdmin && !gameData.icons?.length && initialize();
-    // }, []);
   }, [isAdmin, gameData.options, imageLength]);
 
   useEffect(() => {
@@ -267,17 +243,16 @@ export default function Memory({
 
   console.log("gameData", gameData);
 
-  // const CardList = useMemo(() => {
   const CardList = useCallback(() => {
-    // if (!gameData.icons) return;
     if (!gameData.icons || !Object.keys(images).length || !imagesNames.length)
       return;
+
     return (
       <div className="flex flex-wrap justify-center">
         {gameData?.icons?.map((icon, i) => {
           const { triggered, discovered } = icon;
           return (
-            <Card
+            <CardMemo
               key={i}
               index={i}
               src={images[imagesNames[icon.key]]}
@@ -295,7 +270,6 @@ export default function Memory({
         })}
       </div>
     );
-    // }, [gameData.icons]);
   }, [gameData.icons, images, imagesNames]);
 
   return (
