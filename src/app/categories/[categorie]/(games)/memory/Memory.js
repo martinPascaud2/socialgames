@@ -158,6 +158,7 @@ export default function Memory({
               src={images[imagesNames[icon.key]]}
               triggered={triggered}
               discovered={discovered}
+              isActive={isActive}
               reveal={
                 !isEnded
                   ? reveal

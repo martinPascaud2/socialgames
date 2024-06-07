@@ -3,19 +3,41 @@
 import Image from "next/image";
 
 import classNames from "classnames";
+import { useEffect, useState } from "react";
 
-export default function Card({ index, src, triggered, discovered, reveal }) {
+export default function Card({
+  index,
+  src,
+  triggered,
+  discovered,
+  isActive,
+  reveal,
+}) {
+  const [isRevealed, setIsRevealed] = useState(false);
+
+  useEffect(() => {
+    if (triggered === undefined || discovered === undefined) return;
+    if (!triggered) {
+      setIsRevealed(false);
+    }
+  }, [triggered, discovered]);
+
+  console.log("index", index);
+  console.log("isRevealed", isRevealed);
+
   return (
     <div className="bg-transparent w-[24%] aspect-square inline-block m-[0.5%] perspective-10">
       <div
-        onClick={() => {
-          if (triggered || discovered) return;
-          reveal({ index });
+        onClick={async () => {
+          if (triggered || discovered || !isActive) return;
+          setIsRevealed(true);
+          await reveal({ index });
         }}
         className={classNames(
           "flip-card relative w-full h-full rounded-2xl	border-2",
           `transition-transform duration-500 transform-style-3d ${
-            triggered || discovered ? "rotate-y-[-180deg]" : ""
+            isRevealed || triggered || discovered ? "rotate-y-[-180deg]" : ""
+            // triggered || discovered ? "rotate-y-[-180deg]" : ""
           }`
         )}
       >
