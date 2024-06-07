@@ -136,6 +136,9 @@ export default function Memory({
   const [imageLength, setImageLength] = useState(0);
   const [initialized, setInitialized] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [triggeredNumber, setTriggeredNumber] = useState(0);
+  const [triggeredIndex, setTriggeredIndex] = useState([]);
+  const [isEnded, setIsEnded] = useState(false);
 
   useEffect(() => {
     if (
@@ -185,9 +188,6 @@ export default function Memory({
     setImageLength(loadedImageLength);
   }, [gameData.adminLoad]);
 
-  const [triggeredNumber, setTriggeredNumber] = useState(0);
-
-  const [isEnded, setIsEnded] = useState(false);
   useEffect(() => {
     if (gameData.ended) setIsEnded(true);
   }, [gameData.ended]);
@@ -214,15 +214,17 @@ export default function Memory({
       setTimeout(() => {
         isActive && hideUndiscovered({ roomToken, gameData });
         setTriggeredNumber(0);
+        setTriggeredIndex([]);
       }, 1000);
     }
   }, [gameData.icons]);
 
   const reveal = useCallback(
-    async ({ index, iconKey }) => {
+    async ({ index }) => {
       if (!isActive || triggeredNumber >= 2) return;
       setTriggeredNumber((prevTrigs) => prevTrigs + 1);
-      await revealCard({ roomToken, gameData, index, iconKey });
+      setTriggeredIndex((prevTrig) => [...prevTrig, index]);
+      await revealCard({ roomToken, gameData, index });
     },
     [isActive, triggeredNumber, gameData, roomToken]
   );
@@ -259,7 +261,7 @@ export default function Memory({
               triggered={triggered}
               discovered={discovered}
               reveal={
-                !isEnded
+                !isEnded && !triggeredIndex.some((index) => index === i)
                   ? reveal
                   : () => {
                       return;

@@ -99,7 +99,7 @@ const getNextGamer = (gamers, activePlayer, newIcons) => {
   return nextGamer;
 };
 
-export async function revealCard({ roomToken, gameData, index, iconKey }) {
+export async function revealCard({ roomToken, gameData, index }) {
   const { icons } = gameData;
   const icon = icons[index];
   const newIcon = { ...icon, triggered: true };

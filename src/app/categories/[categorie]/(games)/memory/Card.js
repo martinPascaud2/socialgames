@@ -4,20 +4,13 @@ import Image from "next/image";
 
 import classNames from "classnames";
 
-export default function Card({
-  index,
-  iconKey,
-  src,
-  triggered,
-  discovered,
-  reveal,
-}) {
+export default function Card({ index, src, triggered, discovered, reveal }) {
   return (
     <div className="bg-transparent w-[24%] aspect-square inline-block m-[0.5%] perspective-10">
       <div
         onClick={() => {
           if (triggered || discovered) return;
-          reveal({ index, iconKey });
+          reveal({ index });
         }}
         className={classNames(
           "flip-card relative w-full h-full rounded-2xl	border-2",
