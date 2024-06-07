@@ -124,7 +124,7 @@ export default function Memory({
 
       setTimeout(() => {
         setIsRevealing(false);
-      }, 100);
+      }, 500);
     },
     [isActive, triggeredNumber, gameData, roomToken, isRevealing]
   );
