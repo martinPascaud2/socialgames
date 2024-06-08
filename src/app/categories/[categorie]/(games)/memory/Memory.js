@@ -118,10 +118,14 @@ export default function Memory({
   useEffect(() => {
     const triggered = gameData.icons?.filter((icon) => icon.triggered).length;
     if (triggered >= 2) {
+      setIsRevealing(true);
       setTimeout(async () => {
         isActive && (await hideUndiscovered({ roomToken, gameData }));
-        setTriggeredNumber(0);
       }, 1000);
+      setTimeout(() => {
+        setTriggeredNumber(0);
+        setIsRevealing(false);
+      }, 1200);
     }
   }, [gameData.icons, isActive]);
 
@@ -136,7 +140,7 @@ export default function Memory({
 
       setTimeout(() => {
         setIsRevealing(false);
-      }, 150);
+      }, 300);
     },
     [isActive, triggeredNumber, gameData, roomToken, isRevealing]
   );

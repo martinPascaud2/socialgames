@@ -487,8 +487,6 @@ export default function Room({
     }
   }
 
-  console.log("options", options);
-
   if (!isStarted) {
     return (
       <UserContext.Provider value={"coucou"}>
