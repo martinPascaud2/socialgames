@@ -64,6 +64,13 @@ export default function Categories({
   };
 
   useEffect(() => {
+    if (sessionStorage.getItem("isFirstLoad") !== "false") {
+      sessionStorage.setItem("isFirstLoad", "false");
+      window.location.reload();
+    }
+  }, []);
+
+  useEffect(() => {
     if (urlControl) handleBgClick();
   }, [urlControl]);
 
