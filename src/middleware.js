@@ -36,7 +36,10 @@ export async function middleware(request) {
       request.nextUrl.pathname === "/signin") &&
     userStatus !== "Guest"
   ) {
-    return NextResponse.redirect(new URL("/categories", request.url));
+    // return NextResponse.redirect(new URL("/categories", request.url));
+    return NextResponse.redirect(
+      new URL("/categories?control=true", request.url)
+    );
   }
 
   if (
