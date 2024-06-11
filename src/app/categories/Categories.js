@@ -111,7 +111,17 @@ export default function Categories({
     // }, []);
   }, []);
 
-  console.log("topRect", topRect);
+  useEffect(() => {
+    if (!topRect || !bottomRect) return;
+    console.log("topRect", topRect);
+    console.log("bottomRect", bottomRect);
+    const topToBottom = bottomRect - topRect;
+    console.log("topToBottom", topToBottom);
+    const qrZone = document.getElementById("QR-zone");
+    const rectHeight = qrZone.getBoundingClientRect().height;
+    console.log("rectHeight", rectHeight);
+    if (Math.abs(topToBottom - rectHeight) > 2) window.location.reload();
+  }, [topRect, bottomRect]);
 
   useEffect(() => {
     if (!topRect) return;
