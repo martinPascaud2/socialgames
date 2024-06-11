@@ -63,20 +63,16 @@ export default function ChooseOneMoreGame({
   return (
     <>
       <div className="flex flex-col items-center">
-        <div className="flex mb-4">
-          <button
-            onClick={() => goChooseGame("private")}
-            className="border border-blue-300 bg-blue-100"
-          >
-            Lobby privé
-          </button>
-          <button
-            onClick={() => goChooseGame("public")}
-            className="border border-blue-300 bg-blue-100"
-          >
-            Lobby public
-          </button>
-        </div>
+        {privacy && (
+          <div className="flex mb-4">
+            <button
+              onClick={() => goChooseGame(privacy)}
+              className="border border-blue-300 bg-blue-100"
+            >
+              Retour au lobby
+            </button>
+          </div>
+        )}
         <div>
           <DeleteGroup roomToken={roomToken} />
         </div>
