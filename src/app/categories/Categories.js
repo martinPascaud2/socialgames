@@ -101,7 +101,8 @@ export default function Categories({
       document !== undefined ? document.getElementById("QR-zone") : null;
     console.log("qrZone", qrZone);
     const rect = qrZone?.getBoundingClientRect();
-    setTopRect(rect?.top);
+    // setTopRect(rect?.top);
+    setTopRect((rect?.top).toString());
     setBottomRect((rect?.bottom).toString());
   }, []);
 
