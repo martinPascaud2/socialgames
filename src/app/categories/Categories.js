@@ -68,27 +68,27 @@ export default function Categories({
   }, [urlControl]);
 
   // function usePageVisibility(onVisible, onHidden) {
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        // onVisible();
-        if (sessionStorage.getItem("isFirstLoad") !== "false") {
-          sessionStorage.setItem("isFirstLoad", "false");
-          window.location.reload();
-        }
-      } else {
-        // onHidden();
-        sessionStorage.setItem("isFirstLoad", "true");
-      }
-    };
+  // useEffect(() => {
+  //   const handleVisibilityChange = () => {
+  //     if (document.visibilityState === "visible") {
+  //       // onVisible();
+  //       // if (sessionStorage.getItem("isFirstLoad") !== "false") {
+  //       // sessionStorage.setItem("isFirstLoad", "false");
+  //       window.location.reload();
+  //       // }
+  //     } else {
+  //       // onHidden();
+  //       sessionStorage.setItem("isFirstLoad", "true");
+  //     }
+  //   };
 
-    document.addEventListener("visibilitychange", handleVisibilityChange);
+  //   document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    return () => {
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-    // }, [onVisible, onHidden]);
-  }, []);
+  //   return () => {
+  //     document.removeEventListener("visibilitychange", handleVisibilityChange);
+  //   };
+  // }, []);
+  // }, [onVisible, onHidden]);
   // }
 
   // usePageVisibility(
@@ -97,13 +97,18 @@ export default function Categories({
   // );
 
   useEffect(() => {
+    if (document === undefined) {
+      window.location.reload();
+    }
     const qrZone =
       document !== undefined ? document.getElementById("QR-zone") : null;
+
     console.log("qrZone", qrZone);
     const rect = qrZone?.getBoundingClientRect();
     // setTopRect(rect?.top);
     setTopRect((rect?.top).toString());
     setBottomRect((rect?.bottom).toString());
+    // }, []);
   }, []);
 
   console.log("topRect", topRect);
