@@ -67,6 +67,35 @@ export default function Categories({
     if (urlControl) handleBgClick();
   }, [urlControl]);
 
+  // function usePageVisibility(onVisible, onHidden) {
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        // onVisible();
+        if (sessionStorage.getItem("isFirstLoad") !== "false") {
+          sessionStorage.setItem("isFirstLoad", "false");
+          window.location.reload();
+        }
+      } else {
+        // onHidden();
+        sessionStorage.setItem("isFirstLoad", "true");
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+    // }, [onVisible, onHidden]);
+  }, []);
+  // }
+
+  // usePageVisibility(
+  //   () => console.log("Page is visible"),
+  //   () => sessionStorage.setItem("isFirstLoad", "true")
+  // );
+
   useEffect(() => {
     const qrZone =
       document !== undefined ? document.getElementById("QR-zone") : null;
