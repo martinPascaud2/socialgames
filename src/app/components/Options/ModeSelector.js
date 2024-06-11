@@ -31,7 +31,7 @@ export default function ModeSelector({
   }, [defaultValue, modeList, setMode, setOptions]);
 
   return (
-    <div className="flex flex-col items-center m-4">
+    <div className="flex flex-col items-center m-1">
       <div>Mode de jeu</div>
       <Select />
     </div>

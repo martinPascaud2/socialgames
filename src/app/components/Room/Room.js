@@ -24,6 +24,7 @@ import DeleteGroup from "@/components/DeleteGroup";
 import ChooseAnotherGame from "@/components/ChooseAnotherGame";
 import ChooseLastGame from "@/components/ChooseLastGame";
 import { CheckIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
+import NextStep from "../NextStep";
 
 var pusher = new Pusher("61853af9f30abf9d5b3d", {
   cluster: "eu",
@@ -893,49 +894,61 @@ export default function Room({
                   <div className="flex flex-col">{serverMessage}</div>
                 </div>
 
-                <button
-                  onClick={() => launchRoom()}
-                  className="border border-blue-300 bg-blue-100"
-                >
-                  {gameName === "grouping"
-                    ? "Rechercher un jeu"
-                    : "Lancer la partie"}
-                </button>
+                <div className="absolute bottom-0 w-full bg-black h-32">
+                  <div className="relative h-full">
+                    <div className="absolute bottom-0 left-0">
+                      <DeleteGroup roomToken={roomToken} />
+                    </div>
+                    <div className="absolute bottom-0 right-0">
+                      {group?.lastGame &&
+                        group.lastGame !== "grouping" &&
+                        gameName === "grouping" && (
+                          <ChooseLastGame
+                            lastGame={group.lastGame}
+                            lastMode={group.lastMode}
+                            lastPosition={geoLocation}
+                            group={group}
+                            roomToken={roomToken}
+                          />
+                        )}
 
-                {group?.lastGame &&
-                  group.lastGame !== "grouping" &&
-                  gameName === "grouping" && (
-                    <ChooseLastGame
-                      lastGame={group.lastGame}
-                      lastMode={group.lastMode}
-                      lastPosition={geoLocation}
-                      group={group}
-                      roomToken={roomToken}
-                    />
-                  )}
+                      {gameName !== "grouping" && group && (
+                        <>
+                          <ChooseAnotherGame
+                            group={group}
+                            roomToken={roomToken}
+                            gameData={gameData}
+                            isReturnLobby={false}
+                            lastGame={group.lastGame}
+                            lastPosition={geoLocation}
+                          />
+                          {/* <ChooseAnotherGame
+                        group={group}
+                        roomToken={roomToken}
+                        gameData={gameData}
+                        isReturnLobby={true}
+                        lastGame={group.lastGame}
+                        lastPosition={geoLocation}
+                      /> */}
+                        </>
+                      )}
+                    </div>
+                  </div>
 
-                {gameName !== "grouping" && group && (
-                  <>
-                    <ChooseAnotherGame
-                      group={group}
-                      roomToken={roomToken}
-                      gameData={gameData}
-                      isReturnLobby={false}
-                      lastGame={group.lastGame}
-                      lastPosition={geoLocation}
-                    />
-                    <ChooseAnotherGame
-                      group={group}
-                      roomToken={roomToken}
-                      gameData={gameData}
-                      isReturnLobby={true}
-                      lastGame={group.lastGame}
-                      lastPosition={geoLocation}
-                    />
-                  </>
-                )}
-
-                <DeleteGroup roomToken={roomToken} />
+                  <div className="absolute left-1/2 top-[20%] translate-x-[-50%]">
+                    <NextStep onClick={() => launchRoom()}>
+                      {gameName === "grouping" ? (
+                        <div className="text-sm">
+                          Rechercher <br /> un jeu
+                        </div>
+                      ) : (
+                        <div className="m-2 text-sm">
+                          Lancer <br /> la partie
+                        </div>
+                      )}
+                    </NextStep>
+                  </div>
+                </div>
               </>
             )}
           </>

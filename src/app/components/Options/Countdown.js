@@ -17,7 +17,7 @@ export default function Countdown({ setOptions, min, max, last }) {
   }, [countDownTime]);
 
   return (
-    <div className="m-4 flex flex-col items-center">
+    <div className="m-1 flex flex-col items-center">
       <div>Temps des tours</div>
       <div className="border w-[60%] flex">
         <button

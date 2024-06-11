@@ -18,7 +18,7 @@ export default function AimPoints({ setOptions, min, max, defaultValue }) {
   }, [aimPoints]);
 
   return (
-    <div className="m-4 flex flex-col items-center">
+    <div className="m-1 flex flex-col items-center">
       <div>Objectif</div>
       <div className="border w-[60%] flex">
         <button
