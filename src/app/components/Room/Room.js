@@ -23,7 +23,12 @@ import ToggleCheckbox from "./ToggleCheckbox";
 import DeleteGroup from "@/components/DeleteGroup";
 import ChooseAnotherGame from "@/components/ChooseAnotherGame";
 import ChooseLastGame from "@/components/ChooseLastGame";
-import { CheckIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
+import {
+  CheckIcon,
+  ArrowPathIcon,
+  LockClosedIcon,
+  LockOpenIcon,
+} from "@heroicons/react/24/outline";
 import NextStep from "../NextStep";
 
 var pusher = new Pusher("61853af9f30abf9d5b3d", {
@@ -522,23 +527,32 @@ export default function Room({
         ) : (
           <>
             {isAdmin && (
-              <div className="flex justify-center items-center">
-                <div
-                  style={{
-                    color: isPrivate ? "rgb(147 197 253)" : "rgb(134 239 172)", //blue-300, green-300
-                  }}
-                >
-                  Partie {isPrivate ? "privée" : "publique"}
+              <>
+                <div className="flex justify-center items-center m-2">
+                  <div
+                    style={{
+                      color: isPrivate
+                        ? "rgb(147 197 253)"
+                        : "rgb(134 239 172)", //blue-300, green-300
+                    }}
+                  >
+                    Partie {isPrivate ? "privée" : "publique"}
+                  </div>
+                  {isPrivate ? (
+                    <LockClosedIcon
+                      onClick={() => togglePriv()}
+                      className="ml-2 mb-2 w-8 h-8 text-blue-300"
+                    />
+                  ) : (
+                    <LockOpenIcon
+                      onClick={() => togglePriv()}
+                      className="ml-2 mb-2 w-8 h-8 text-green-300"
+                    />
+                  )}
                 </div>
-                <div className="pl-4 my-1">
-                  <ToggleCheckbox
-                    checked={isPrivate}
-                    onChange={togglePriv}
-                    size={80}
-                  />
-                </div>
-              </div>
+              </>
             )}
+
             <div>
               Liste des joueurs [
               {gamerList.length + guestList.length + multiGuestList.length}
