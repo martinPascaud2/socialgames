@@ -70,10 +70,13 @@ export default function Categories({
   useEffect(() => {
     const qrZone =
       document !== undefined ? document.getElementById("QR-zone") : null;
+    console.log("qrZone", qrZone);
     const rect = qrZone?.getBoundingClientRect();
     setTopRect(rect?.top);
     setBottomRect((rect?.bottom).toString());
   }, []);
+
+  console.log("topRect", topRect);
 
   useEffect(() => {
     if (!topRect) return;
