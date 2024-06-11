@@ -137,7 +137,7 @@ export default async function CategoriesPage() {
 
   const updateLastCP = async ({ userId, out }) => {
     "use server";
-    const updatedUser = await prisma.user.update({
+    await prisma.user.update({
       where: {
         id: userId,
       },

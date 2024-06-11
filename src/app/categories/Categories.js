@@ -54,8 +54,6 @@ export default function Categories({
 
   const [publicRooms, setPublicRooms] = useState({});
 
-  const [test, setTest] = useState();
-
   const isGroup = searchParams.get("group") === "true";
   const handleBgClick = () => {
     setTogglingParameters(!togglingParameters);
@@ -69,62 +67,13 @@ export default function Categories({
     if (urlControl) handleBgClick();
   }, [urlControl]);
 
-  // function usePageVisibility(onVisible, onHidden) {
-  // useEffect(() => {
-  //   const handleVisibilityChange = () => {
-  //     if (document.visibilityState === "visible") {
-  //       // onVisible();
-  //       // if (sessionStorage.getItem("isFirstLoad") !== "false") {
-  //       // sessionStorage.setItem("isFirstLoad", "false");
-  //       window.location.reload();
-  //       // }
-  //     } else {
-  //       // onHidden();
-  //       sessionStorage.setItem("isFirstLoad", "true");
-  //     }
-  //   };
-
-  //   document.addEventListener("visibilitychange", handleVisibilityChange);
-
-  //   return () => {
-  //     document.removeEventListener("visibilitychange", handleVisibilityChange);
-  //   };
-  // }, []);
-  // }, [onVisible, onHidden]);
-  // }
-
-  // usePageVisibility(
-  //   () => console.log("Page is visible"),
-  //   () => sessionStorage.setItem("isFirstLoad", "true")
-  // );
-
   useEffect(() => {
-    // if (document === undefined) {
-    //   window.location.reload();
-    // }
     const qrZone =
       document !== undefined ? document.getElementById("QR-zone") : null;
-
-    console.log("qrZone", qrZone);
     const rect = qrZone?.getBoundingClientRect();
-    // setTopRect(rect?.top);
     setTopRect((rect?.top).toString());
     setBottomRect((rect?.bottom).toString());
-    // }, []);
   }, []);
-
-  // useEffect(() => {
-  //   if (!topRect || !bottomRect) return;
-  //   console.log("topRect", topRect);
-  //   console.log("bottomRect", bottomRect);
-  //   const topToBottom = bottomRect - topRect;
-  //   console.log("topToBottom", topToBottom);
-  //   const qrZone = document.getElementById("QR-zone");
-  //   const rectHeight = qrZone.getBoundingClientRect().height;
-  //   console.log("rectHeight", rectHeight);
-  //   setTest(`topToBottom : ${topToBottom}, rectHeight: ${rectHeight}`);
-  //   if (Math.abs(topToBottom - rectHeight) > 2) window.location.reload();
-  // }, [topRect, bottomRect]);
 
   useEffect(() => {
     if (!topRect) return;
@@ -238,11 +187,9 @@ export default function Categories({
             ? handleBgClick()
             : router.push("/categories/grouping/grouping")
         }
-        // className="z-10 absolute h-screen w-screen max-h-full"
         className="z-10 absolute h-[100dvh] w-screen max-h-full"
       />
 
-      {/* <main className="relative h-[100svh]"> */}
       <main className="relative h-[100dvh]">
         <div
           className={classNames(
@@ -328,8 +275,6 @@ export default function Categories({
               />
             )}
             {QrCodeScanner}
-
-            {test}
 
             {showInvitations && (
               <>
