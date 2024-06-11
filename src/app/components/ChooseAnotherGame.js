@@ -9,7 +9,6 @@ export default function ChooseAnotherGame({
   group,
   roomToken,
   gameData,
-  isReturnLobby,
   lastGame,
   lastPosition,
 }) {
@@ -33,29 +32,15 @@ export default function ChooseAnotherGame({
 
     await finishGame({ gameData, roomToken });
 
-    router.push(
-      `${
-        isReturnLobby
-          ? "/categories/grouping/grouping"
-          : "/categories?group=true"
-      }`
-    );
-  }, [
-    gameData,
-    roomToken,
-    router,
-    group,
-    isReturnLobby,
-    lastGame,
-    lastPosition,
-  ]);
+    router.push("/categories?group=true");
+  }, [gameData, roomToken, router, group, lastGame, lastPosition]);
 
   return (
     <button
       onClick={async () => await returnLobby()}
       className="border border-blue-300 bg-blue-100"
     >
-      {isReturnLobby ? "Retour au lobby" : "Choisir un autre jeu"}
+      Choisir un autre jeu
     </button>
   );
 }

@@ -918,18 +918,9 @@ export default function Room({
                             group={group}
                             roomToken={roomToken}
                             gameData={gameData}
-                            isReturnLobby={false}
                             lastGame={group.lastGame}
                             lastPosition={geoLocation}
                           />
-                          {/* <ChooseAnotherGame
-                        group={group}
-                        roomToken={roomToken}
-                        gameData={gameData}
-                        isReturnLobby={true}
-                        lastGame={group.lastGame}
-                        lastPosition={geoLocation}
-                      /> */}
                         </>
                       )}
                     </div>
