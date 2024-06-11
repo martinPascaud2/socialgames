@@ -76,6 +76,7 @@ export default function Categories({
   }, []);
 
   useEffect(() => {
+    if (!topRect) return;
     const infosettings =
       document !== undefined ? document.getElementById("infosettings") : null;
     const infosettingsRect = infosettings?.getBoundingClientRect();
