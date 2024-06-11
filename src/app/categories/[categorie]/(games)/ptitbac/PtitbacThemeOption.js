@@ -6,7 +6,7 @@ import { getAllThemes } from "./gameActions";
 
 import Modal from "@/components/Modal";
 
-export default function PtitbacThemeOption({ setOptions, max }) {
+export default function PtitbacThemeOption({ setOptions, max, lastMode }) {
   const defaultThemes = useMemo(
     () => [
       { theme: "Animal", selected: true },
@@ -29,12 +29,29 @@ export default function PtitbacThemeOption({ setOptions, max }) {
     if (!defaultThemes) return;
     const fetchThemes = async () => {
       const allThemes = await getAllThemes();
+
+      const lastThemes = lastMode?.options?.themes;
       const statusAllThemes = allThemes.map((theme) => ({
         theme,
-        selected: false,
+        selected: lastThemes?.some((last) => last === theme) || false,
       }));
-      setThemes([...statusAllThemes, ...defaultThemes]);
+      const unselectedDefaults = lastThemes
+        ? defaultThemes.map((def) => ({
+            ...def,
+            selected: lastThemes.some((last) => last === def.theme),
+          }))
+        : defaultThemes;
+
+      setThemes(
+        [...statusAllThemes, ...unselectedDefaults].sort((a, b) =>
+          a.theme.localeCompare(b.theme)
+        )
+      );
       setAllRandomLength(statusAllThemes.length);
+      lastMode &&
+        lastMode.options &&
+        lastMode.options.random &&
+        setRandom(lastMode.options.random);
     };
     setTimeout(() => fetchThemes(), 1000); // tricky
   }, [defaultThemes]);
@@ -108,27 +125,18 @@ export default function PtitbacThemeOption({ setOptions, max }) {
           </div>
           <div className="text-center">
             <div className="border border-blue-300 w-full flex flex-col items-center">
-              <div className="grid grid-cols-2 w-full">
-                {selectedThemes.map((theme, i) => (
-                  <div key={i} className="w-full flex items-center py-2">
-                    <div className="w-full">
-                      {theme.theme.split().map((lettre) => lettre)}
-                    </div>
-                    <input
-                      type="checkbox"
-                      checked
-                      onChange={() => handleCheck(theme)}
-                      className="mr-2"
-                    />
-                  </div>
-                ))}
-                {themes
-                  .filter((theme) => !theme.selected)
-                  .map((theme, i) => (
+              <div className="columns-2 gap-0">
+                {themes.map((theme, i) => {
+                  const isSelected = selectedThemes.some(
+                    (sel) => sel.theme === theme.theme
+                  );
+                  return (
                     <div
                       key={i}
                       className={`w-full flex items-center py-2 ${
-                        selectedThemes.length + random === max && "bg-gray-100"
+                        selectedThemes.length + random === max &&
+                        !isSelected &&
+                        "bg-gray-100"
                       }`}
                     >
                       <div className="w-full">
@@ -136,13 +144,16 @@ export default function PtitbacThemeOption({ setOptions, max }) {
                       </div>
                       <input
                         type="checkbox"
-                        checked={false}
+                        checked={isSelected}
                         onChange={() => handleCheck(theme)}
                         className="mr-2"
-                        disabled={selectedThemes.length + random === max}
+                        disabled={
+                          selectedThemes.length + random === max && !isSelected
+                        }
                       />
                     </div>
-                  ))}
+                  );
+                })}
               </div>
 
               <div className="font-semibold border-t-2 border-black w-full py-2 relative h-12">

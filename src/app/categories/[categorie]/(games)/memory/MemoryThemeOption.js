@@ -11,9 +11,9 @@ export default function MemoryThemeOption({
   lastMode,
 }) {
   const [themes, setThemes] = useState([
+    { theme: "ObjectBall", label: "Ballons", selected: true },
     { theme: "AnimalDog", label: "Chiens", selected: true },
     { theme: "ObjectAll", label: "Objets divers", selected: true },
-    { theme: "ObjectBall", label: "Ballons", selected: true },
   ]);
   const [show, setShow] = useState(false);
 
@@ -66,7 +66,7 @@ export default function MemoryThemeOption({
     <div className="flex flex-col justify-center items-center mb-4">
       <button
         onClick={() => setShow(!show)}
-        className="flex justify-center border border-blue-300 bg-blue-100 w-2/3"
+        className="flex justify-center border border-blue-300 bg-blue-100 w-4/5"
       >
         <div className="">
           {selectedThemes.length} catégorie
@@ -75,45 +75,32 @@ export default function MemoryThemeOption({
       </button>
 
       {show && (
-        <div className="border border-blue-300 border-t-0 w-2/3 flex flex-col items-center">
-          {selectedThemes.map((theme, i) => (
-            <div
-              key={i}
-              className={`${i !== 0 && "border-t"} w-full flex py-2`}
-            >
-              <div className="ml-8 w-full">
-                {theme.label.split().map((lettre) => lettre)}
-              </div>
-              <input
-                type="checkbox"
-                checked
-                onChange={() => handleCheck(theme)}
-                className="mr-4"
-              />
-            </div>
-          ))}
+        <div className="border border-blue-300 border-t-0 w-4/5 flex justify-center items-center px-2">
           {themes &&
-            themes
-              .filter((theme) => !theme.selected)
-              .map((theme, i) => (
+            themes.map((theme, i) => {
+              const isSelected = selectedThemes.some(
+                (sel) => sel.theme === theme.theme
+              );
+              return (
                 <div
                   key={i}
-                  className={`border-t w-full flex py-2 ${
+                  className={`w-full flex ml-2 py-2 ${
                     selectedThemes.length === max && "bg-gray-100"
                   }`}
                 >
-                  <div className="ml-8 w-full">
+                  <div className="w-full">
                     {theme.label.split().map((lettre) => lettre)}
                   </div>
                   <input
                     type="checkbox"
-                    checked={false}
+                    checked={isSelected}
                     onChange={() => handleCheck(theme)}
-                    className="mr-4"
-                    disabled={selectedThemes.length === max}
+                    className="mr-2"
+                    disabled={selectedThemes.length === max && !isSelected}
                   />
                 </div>
-              ))}
+              );
+            })}
         </div>
       )}
     </div>

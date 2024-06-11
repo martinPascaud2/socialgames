@@ -37,7 +37,7 @@ export default function PtitbacOptions({ setOptions, lastMode }) {
         max={30}
         defaultValue={lastMode?.options?.aimPoints || 0}
       />
-      <PtitbacThemeOption setOptions={setOptions} max={6} />
+      <PtitbacThemeOption setOptions={setOptions} max={6} lastMode={lastMode} />
     </div>
   );
 }
