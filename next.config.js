@@ -11,6 +11,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 
 const nextConfig = {
   reactStrictMode: false,
+  trailingSlash: true,
 };
 
 module.exports = withPWA(nextConfig);
