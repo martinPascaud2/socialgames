@@ -874,7 +874,7 @@ export default function Room({
 
                   <hr />
 
-                  <h1>Ajoute des Guests mono-screen !</h1>
+                  {/* <h1>Ajoute des Guests mono-screen !</h1>
                   <h2 className="text-sm italic">
                     Ils utiliseront ton écran à leur tour de jeu.
                   </h2>
@@ -891,7 +891,7 @@ export default function Room({
                     className="border border-blue-300 bg-blue-100"
                   >
                     Ajouter le Guest
-                  </button>
+                  </button> */}
                 </>
 
                 <hr />

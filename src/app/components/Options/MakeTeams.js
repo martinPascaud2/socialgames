@@ -22,7 +22,7 @@ export default function MakeTeams({ setOptions, last }) {
   }, [teamsNumber]);
 
   return (
-    <div className="m-4 flex flex-col items-center">
+    <div className="m-1 flex flex-col items-center">
       <div>Constitution des équipes</div>
       <div className="flex justify-center gap-2">
         <button

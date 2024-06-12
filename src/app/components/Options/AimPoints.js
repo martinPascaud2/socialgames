@@ -18,9 +18,9 @@ export default function AimPoints({ setOptions, min, max, defaultValue }) {
   }, [aimPoints]);
 
   return (
-    <div className="m-1 flex flex-col items-center">
+    <div className="m-1 flex flex-col items-center justify-center">
       <div>Objectif</div>
-      <div className="border w-[60%] flex">
+      <div className="border w-full flex">
         <button
           onClick={() => setAimPoints((points) => points - 1)}
           className="mr-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center"

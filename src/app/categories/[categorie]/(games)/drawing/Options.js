@@ -32,24 +32,28 @@ export default function DrawingOptions({ setOptions, lastMode }) {
       />
 
       {mode === "Pictionary" && (
-        <>
-          <MakeTeams
-            setOptions={setOptions}
-            last={lastMode?.options?.teamMode}
-          />
-          <Countdown
-            setOptions={setOptions}
-            min={1}
-            max={5}
-            last={lastMode?.options?.countDownTime}
-          />
-          <AimPoints
-            setOptions={setOptions}
-            min={3}
-            max={10}
-            defaultValue={lastMode?.options?.aimPoints || 5}
-          />
-        </>
+        <div className="flex flex-wrap justify-center">
+          <div>
+            <MakeTeams
+              setOptions={setOptions}
+              last={lastMode?.options?.teamMode}
+            />
+          </div>
+          <div className="w-full grid grid-cols-2">
+            <Countdown
+              setOptions={setOptions}
+              min={1}
+              max={5}
+              last={lastMode?.options?.countDownTime}
+            />
+            <AimPoints
+              setOptions={setOptions}
+              min={3}
+              max={10}
+              defaultValue={lastMode?.options?.aimPoints || 5}
+            />
+          </div>
+        </div>
       )}
 
       {mode === "Esquissé" && (
