@@ -336,11 +336,11 @@ export default function Ptitbac({
                 Cherchez des mots commençants par la lettre{" "}
                 <span className="font-bold">{letter}</span>
               </div>
-              <div className="flex flex-wrap">
+              <div className="flex flex-wrap gap-2">
                 {themes.map((theme, i) => (
                   <div
                     key={theme}
-                    className="w-full flex flex-col items-center my-2"
+                    className="w-full flex flex-col items-center"
                   >
                     <div className="m-1">{theme}</div>
                     <input

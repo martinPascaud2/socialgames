@@ -90,7 +90,7 @@ export default function OneCategoriePage({ params }) {
         }
         className="relative bg-slate-300"
       >
-        <div className="z-10 p-5">
+        <div className="z-10 p-5 absolute top-[10%]">
           <div className="w-full overflow-hidden mx-auto">
             <div
               className={"inner whitespace-nowrap duration-300"}

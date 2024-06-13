@@ -343,7 +343,7 @@ export default function Categories({
             className="z-30 absolute bg-red-100 w-[75vw] h-36 translate-x-[12.5vw] flex flex-col justify-between items-center"
             style={{ top: `${bottomRect}px` }}
           >
-            <div className="flex flex-row m-3">
+            <div className="flex flex-row m-2">
               <button
                 onClick={async () => {
                   resetPermissions();
@@ -353,7 +353,7 @@ export default function Categories({
                   setShowInvitations(true);
                   setServerMessage("");
                 }}
-                className={classNames("m-1 p-2", {
+                className={classNames("p-2", {
                   "outline outline-black": showInvitations,
                 })}
               >
@@ -365,14 +365,14 @@ export default function Categories({
                   await updateLastCP({ userId: user.id, out: true });
                 }}
                 href="/categories/grouping/grouping"
-                className="text-center m-1 p-2"
+                className="text-center p-2"
               >
                 Crée un groupe
               </Link>
             </div>
             <div className="flex flex-row m-3">
               <button
-                className={classNames("m-1 p-2", {
+                className={classNames("p-2", {
                   "outline outline-black": showQrCode,
                 })}
                 onClick={async () => {
@@ -411,7 +411,7 @@ export default function Categories({
                   setShowInvitations(false);
                   setServerMessage("");
                 }}
-                className={classNames("m-1 p-2 bg-red-100", {
+                className={classNames("p-2 bg-red-100", {
                   "outline outline-black": scanning,
                 })}
               >
@@ -452,22 +452,18 @@ export default function Categories({
                     await updateLastCP({ userId: user.id, out: true });
                   }}
                   href={`${categorie.href}${isGroup ? "?group=true" : ""}`}
-                  className={classNames(`z-20 absolute  min-h-[18dvh] border`, {
+                  className={classNames(`z-20 absolute  max-h-[15dvh] border`, {
                     hidden: togglingParameters && toggledParameters,
                   })}
                   style={{
-                    top: `${Math.floor(index / 2) * 23 + 5.4}dvh`,
+                    top: `${Math.floor(index / 2) * 20 + 12.5}dvh`,
                     left: index % 2 === 0 && "8%",
                     right: index % 2 === 1 && "8%",
                     width: !isLast ? "33.333333%" : "84%",
                     aspectRatio: !isLast ? "1 / 1" : "auto",
                   }}
                 >
-                  <div
-                    className={`flex items-center justify-center h-full ${
-                      isLast && "m-[9dvh]"
-                    }`}
-                  >
+                  <div className="flex items-center justify-center h-[15dvh]">
                     {categorie.name}
                   </div>
                 </Link>
@@ -475,6 +471,11 @@ export default function Categories({
             })}
           </div>
         )}
+        <div className="absolute bottom-0 w-full bg-black h-20 z-40 flex justify-center items-center">
+          <button className="border border-red-800 bg-red-600 text-black h-10 p-2">
+            Joli bouton
+          </button>
+        </div>
       </main>
     </>
   );

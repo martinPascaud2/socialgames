@@ -22,8 +22,8 @@ export async function middleware(request) {
   if (
     !token &&
     request.nextUrl.pathname !== "/" &&
-    request.nextUrl.pathname !== "/signin" &&
-    request.nextUrl.pathname !== "/admin"
+    request.nextUrl.pathname !== "/signin/" &&
+    request.nextUrl.pathname !== "/admin/"
   ) {
     return NextResponse.redirect(new URL("/", request.url));
   }
@@ -33,10 +33,9 @@ export async function middleware(request) {
   if (
     token &&
     (request.nextUrl.pathname === "/" ||
-      request.nextUrl.pathname === "/signin") &&
+      request.nextUrl.pathname === "/signin/") &&
     userStatus !== "Guest"
   ) {
-    // return NextResponse.redirect(new URL("/categories", request.url));
     return NextResponse.redirect(
       new URL("/categories?control=true", request.url)
     );
@@ -44,7 +43,7 @@ export async function middleware(request) {
 
   if (
     userStatus === "Guest" &&
-    request.nextUrl.pathname !== "/guest" &&
+    request.nextUrl.pathname !== "/guest/" &&
     !checkGuestAllowed(request.nextUrl.href)
   ) {
     return NextResponse.redirect(new URL("/guest", request.url));

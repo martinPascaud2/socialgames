@@ -153,14 +153,16 @@ export default async function CategoriesPage() {
   };
 
   return (
-    <Categories
-      user={user}
-      friendList={friendList}
-      addFriend={addFriend}
-      deleteFriend={deleteFriend}
-      getPublicRooms={getPublicRooms}
-      updateLastCP={updateLastCP}
-      signOut={signOut}
-    />
+    <>
+      <Categories
+        user={user}
+        friendList={friendList}
+        addFriend={addFriend}
+        deleteFriend={deleteFriend}
+        getPublicRooms={getPublicRooms}
+        updateLastCP={updateLastCP}
+        signOut={signOut}
+      />
+    </>
   );
 }

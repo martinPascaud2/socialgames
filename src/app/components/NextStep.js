@@ -8,7 +8,7 @@ export default function NextStep({ onClick, children }) {
   return (
     <button
       onClick={onClick}
-      className="border border-red-600 bg-red-300 rotate-45 aspect-square"
+      className="border border-red-800 bg-red-600 rotate-45 aspect-square"
     >
       <div className="rotate-[-45deg]">{children}</div>
     </button>

@@ -496,10 +496,12 @@ export default function Room({
   if (!isStarted) {
     return (
       <UserContext.Provider value={"coucou"}>
-        <div className="flex justify-center border-b">
-          {gamesRefs[gameName].categorie === "grouping"
-            ? "Lobby"
-            : gamesRefs[gameName].name}
+        <div className="flex items-end h-28 w-full">
+          <div className="flex justify-center border-b w-full">
+            {gamesRefs[gameName].categorie === "grouping"
+              ? "Lobby"
+              : gamesRefs[gameName].name}
+          </div>
         </div>
 
         {(!isChosen && !group) || isPrivate === undefined ? (
@@ -908,7 +910,7 @@ export default function Room({
                   <div className="flex flex-col">{serverMessage}</div>
                 </div>
 
-                <div className="absolute bottom-0 w-full bg-black h-32">
+                <div className="absolute bottom-0 w-full bg-black h-20 z-10">
                   <div className="relative h-full">
                     <div className="absolute bottom-0 left-0">
                       <DeleteGroup roomToken={roomToken} />
@@ -943,13 +945,9 @@ export default function Room({
                   <div className="absolute left-1/2 top-[20%] translate-x-[-50%]">
                     <NextStep onClick={() => launchRoom()}>
                       {gameName === "grouping" ? (
-                        <div className="text-sm">
-                          Rechercher <br /> un jeu
-                        </div>
+                        <div className="">Jouer</div>
                       ) : (
-                        <div className="m-2 text-sm">
-                          Lancer <br /> la partie
-                        </div>
+                        <div className="">Lancer</div>
                       )}
                     </NextStep>
                   </div>
@@ -963,11 +961,13 @@ export default function Room({
   } else {
     return (
       <UserContext.Provider value={"coucou"}>
-        <div className="flex justify-center border-b">
-          {gamesRefs[gameName].categorie === "grouping"
-            ? "Lobby"
-            : gameData.options?.mode || gamesRefs[gameName].name}{" "}
-          ({gameData.gamers?.length} joueurs)
+        <div className="flex items-end h-28 w-full">
+          <div className="flex justify-center border-b w-full">
+            {gamesRefs[gameName].categorie === "grouping"
+              ? "Lobby"
+              : gameData.options?.mode || gamesRefs[gameName].name}{" "}
+            ({gameData.gamers?.length} joueurs)
+          </div>
         </div>
 
         <Game
