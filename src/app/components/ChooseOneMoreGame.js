@@ -62,9 +62,9 @@ export default function ChooseOneMoreGame({
 
   return (
     <>
-      <div className="flex flex-col items-center">
+      <div>
         {privacy && (
-          <div className="flex mb-4">
+          <div className="absolute right-0 bottom-0">
             <button
               onClick={() => goChooseGame(privacy)}
               className="border border-blue-300 bg-blue-100"
@@ -73,7 +73,7 @@ export default function ChooseOneMoreGame({
             </button>
           </div>
         )}
-        <div>
+        <div className="absolute left-0 bottom-0">
           <DeleteGroup roomToken={roomToken} />
         </div>
       </div>

@@ -18,6 +18,7 @@ import { DND } from "@/components/DND/DND";
 import { HTML5toTouch } from "@/components/DND/HTML5toTouch";
 import { generatePreview } from "@/components/DND/generatePreview";
 
+import NextStep from "@/components/NextStep";
 import FinishGame from "@/components/FinishGame";
 import EndGame from "@/components/EndGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
@@ -175,159 +176,171 @@ export default function Uno({
 
   return (
     <>
-      <DndProvider backend={MultiBackend} options={HTML5toTouch}>
-        <Preview>{generatePreview}</Preview>
-        <DND
-          items={items}
-          setItems={setItems}
-          setGamerItems={setGamerItems}
-          oneShot={true}
-          newHCs={newHCs}
-          setNewHCs={setNewHCs}
-          maxStageCards={1}
-          gameName="uno"
-          isLocked={isLocked}
-          checkIsAllowed={checkIsAllowed}
-          onNewItems={onNewCard}
-          newHand={newHand}
-          setNewHand={setNewHand}
-        />
+      <div className="overflow-y-auto">
+        <DndProvider backend={MultiBackend} options={HTML5toTouch}>
+          <Preview>{generatePreview}</Preview>
+          <DND
+            items={items}
+            setItems={setItems}
+            setGamerItems={setGamerItems}
+            oneShot={true}
+            newHCs={newHCs}
+            setNewHCs={setNewHCs}
+            maxStageCards={1}
+            gameName="uno"
+            isLocked={isLocked}
+            checkIsAllowed={checkIsAllowed}
+            onNewItems={onNewCard}
+            newHand={newHand}
+            setNewHand={setNewHand}
+          />
 
-        {isActive && (
-          <>
-            {!!toDraw && (
-              <div>
-                Vous devez piocher {toDraw} carte{toDraw >= 2 ? "s" : ""}
-              </div>
-            )}
-            {!hasFreelyDrawn && (
-              <button
-                onClick={async () => {
-                  if (hasFreelyDrawn) return;
-                  const newCard = await drawCard({ roomToken, gameData });
-                  setNewHCs([
-                    {
-                      ...newCard,
-                      id: 0,
-                    },
-                  ]);
-                }}
-                className="p-2 border border-blue-300 bg-blue-100"
-              >
-                Piocher
-              </button>
-            )}
-            {hasFreelyDrawn && (
-              <button
-                onClick={() => skipTurn({ roomToken, gameData })}
-                className="p-2 border border-blue-300 bg-blue-100"
-              >
-                Passer votre tour
-              </button>
-            )}
-          </>
-        )}
+          {isActive && (
+            <div className="h-20">
+              {!!toDraw && (
+                <div>
+                  Vous devez piocher {toDraw} carte{toDraw >= 2 ? "s" : ""}
+                </div>
+              )}
+              {!hasFreelyDrawn && (
+                <button
+                  onClick={async () => {
+                    if (hasFreelyDrawn) return;
+                    const newCard = await drawCard({ roomToken, gameData });
+                    setNewHCs([
+                      {
+                        ...newCard,
+                        id: 0,
+                      },
+                    ]);
+                  }}
+                  className="p-2 border border-blue-300 bg-blue-100"
+                >
+                  Piocher
+                </button>
+              )}
+              {hasFreelyDrawn && (
+                <button
+                  onClick={() => skipTurn({ roomToken, gameData })}
+                  className="p-2 border border-blue-300 bg-blue-100"
+                >
+                  Passer votre tour
+                </button>
+              )}
+            </div>
+          )}
 
-        {choosingColor && (
-          <div className="flex justify-around">
-            <div
-              onClick={() => chooseColor("red")}
-              className="border-2 border-red-300 p-2"
-            >
-              Rouge
-            </div>
-            <div
-              onClick={() => chooseColor("green")}
-              className="border-2 border-green-300 p-2"
-            >
-              Vert
-            </div>
-            <div
-              onClick={() => chooseColor("yellow")}
-              className="border-2 border-yellow-300 p-2"
-            >
-              Jaune
-            </div>
-            <div
-              onClick={() => chooseColor("blue")}
-              className="border-2 border-blue-300 p-2"
-            >
-              Bleu
-            </div>
-          </div>
-        )}
-
-        {!isLocked && (
-          <div className="flex justify-center">C&apos;est à vous !</div>
-        )}
-        <div className="flex flex-wrap w-full justify-around">
-          {gamers?.map((gamer, i) => (
-            <div
-              key={i}
-              className={`${
-                gameData.activePlayer?.name === gamer.name
-                  ? "border-2 border-slate-300"
-                  : ""
-              }`}
-            >
-              {gamer.name}
-            </div>
-          ))}
-        </div>
-
-        {phase === "uno" && (
-          <>
-            {isUno && (
+          {choosingColor && (
+            <div className="flex justify-around">
               <div
-                onClick={() => untriggerUnoPhase({ roomToken, gameData })}
-                className="border border-blue-300 bg-blue-100"
+                onClick={() => chooseColor("red")}
+                className="border-2 border-red-300 p-2"
               >
-                Uno !
+                Rouge
               </div>
-            )}
-            {availableCounter && (
               <div
-                onClick={() => triggerUnoFail({ roomToken, gameData })}
-                className="border border-blue-300 bg-blue-100"
+                onClick={() => chooseColor("green")}
+                className="border-2 border-green-300 p-2"
               >
-                Contre Uno !
+                Vert
               </div>
-            )}
-          </>
-        )}
+              <div
+                onClick={() => chooseColor("yellow")}
+                className="border-2 border-yellow-300 p-2"
+              >
+                Jaune
+              </div>
+              <div
+                onClick={() => chooseColor("blue")}
+                className="border-2 border-blue-300 p-2"
+              >
+                Bleu
+              </div>
+            </div>
+          )}
 
-        {phase === "ended" && counts && (
-          <div>
-            {Object.entries(counts).map((count, i) => (
-              <div key={i}>
-                {count[0]} : {count[1]} point{count[1] >= 2 ? "s" : ""}
+          {!isLocked && (
+            <div className="flex justify-center">C&apos;est à vous !</div>
+          )}
+          <div className="flex flex-wrap w-full justify-around">
+            {gamers?.map((gamer, i) => (
+              <div
+                key={i}
+                className={`${
+                  gameData.activePlayer?.name === gamer.name
+                    ? "border-2 border-slate-300"
+                    : ""
+                }`}
+              >
+                {gamer.name}
               </div>
             ))}
           </div>
-        )}
-      </DndProvider>
 
-      {isAdmin ? (
-        !isEnded ? (
-          <FinishGame gameData={gameData} roomToken={roomToken} />
-        ) : (
-          <>
-            <div
-              onClick={() => goNewUnoGame({ roomToken, gameData })}
-              className="border border-blue-300 bg-blue-100"
-            >
-              Nouvelle manche
+          {phase === "uno" && (
+            <>
+              {isUno && (
+                <div
+                  onClick={() => untriggerUnoPhase({ roomToken, gameData })}
+                  className="border border-blue-300 bg-blue-100"
+                >
+                  Uno !
+                </div>
+              )}
+              {availableCounter && (
+                <div
+                  onClick={() => triggerUnoFail({ roomToken, gameData })}
+                  className="border border-blue-300 bg-blue-100"
+                >
+                  Contre Uno !
+                </div>
+              )}
+            </>
+          )}
+
+          {phase === "ended" && counts && (
+            <div>
+              {Object.entries(counts).map((count, i) => (
+                <div key={i}>
+                  {count[0]} : {count[1]} point{count[1] >= 2 ? "s" : ""}
+                </div>
+              ))}
             </div>
-            <ChooseOneMoreGame
-              gameData={gameData}
-              roomToken={roomToken}
-              storedLocation={storedLocation}
-            />
-          </>
-        )
-      ) : isEnded ? (
-        <EndGame gameData={gameData} user={user} />
-      ) : null}
+          )}
+        </DndProvider>
+      </div>
+
+      <div className="fixed bottom-0 h-20 bg-black w-full">
+        <div className="w-full flex justify-around">
+          {isAdmin ? (
+            !isEnded ? (
+              <div className="absolute bottom-0 left-0">
+                <FinishGame gameData={gameData} roomToken={roomToken} />
+              </div>
+            ) : (
+              <>
+                <div className="absolute bottom-0 left-1/2 translate-x-[-50%] translate-y-[-25%]">
+                  <NextStep
+                    onClick={() => goNewUnoGame({ roomToken, gameData })}
+                  >
+                    Encore
+                  </NextStep>
+                </div>
+
+                <div>
+                  <ChooseOneMoreGame
+                    gameData={gameData}
+                    roomToken={roomToken}
+                    storedLocation={storedLocation}
+                  />
+                </div>
+              </>
+            )
+          ) : isEnded ? (
+            <EndGame gameData={gameData} user={user} />
+          ) : null}
+        </div>
+      </div>
     </>
   );
 }

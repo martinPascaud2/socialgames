@@ -23,9 +23,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <body className={`${inter.className}`}>
-        <div className="absolute top-0 w-full bg-black z-50 h-20" />
+        <div className="fixed top-0 w-full bg-black z-40 h-20" />
         {children}
-        <div className="absolute bottom-0 w-full bg-black z-0 h-20" />
+        <div className="fixed bottom-0 w-full bg-black z-0 h-20" />
       </body>
     </html>
   );

@@ -4,7 +4,7 @@ export default function EndGame({ gameData, user, isFirst = false }) {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center justify-center">
       {isFirst && <div>Recherche de la prochaine partie...</div>}
 
       {gameData?.nextGame ? (
@@ -17,18 +17,18 @@ export default function EndGame({ gameData, user, isFirst = false }) {
                 }`
               );
             }}
-            className="border border-blue-300 bg-blue-100"
+            className="border border-blue-300 bg-blue-100 m-1"
           >
             Retour au lobby
           </button>
         </>
       ) : (
-        <div>En attente de l&apos;admin...</div>
+        <div className="text-white m-1">En attente de l&apos;admin...</div>
       )}
       {gameData.admin !== user.name && (
         <button
           onClick={() => router.push("/categories?control=true")}
-          className="border border-blue-300 bg-blue-100"
+          className="border border-blue-300 bg-blue-100 m-1"
         >
           Quitter le groupe
         </button>

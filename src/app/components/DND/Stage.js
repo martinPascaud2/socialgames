@@ -122,7 +122,7 @@ export const Stage = ({
     <div
       ref={dropRef}
       style={{
-        width: "400px",
+        width: "100%",
         height: "auto",
         overflowY: "auto",
         padding: "10px",

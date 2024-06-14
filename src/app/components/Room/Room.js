@@ -472,7 +472,7 @@ export default function Room({
     if (gameData.nextGame === "deleted group") {
       return (
         <>
-          <h1>Le groupe a été supprimé</h1>
+          <h1 className="mt-28">Le groupe a été supprimé</h1>
           <button
             onClick={() => router.push("/categories?control=true")}
             className="border border-blue-300 bg-blue-100"
@@ -495,20 +495,21 @@ export default function Room({
 
   if (!isStarted) {
     return (
-      <UserContext.Provider value={"coucou"}>
-        <div className="flex items-end h-28 w-full">
-          <div className="flex justify-center border-b w-full">
-            {gamesRefs[gameName].categorie === "grouping"
-              ? "Lobby"
-              : gamesRefs[gameName].name}
+      <div className="absolute h-screen w-full z-50">
+        <UserContext.Provider value={"coucou"}>
+          <div className="flex items-end h-20 w-full z-50 bg-black">
+            <div className="flex justify-center text-white w-full m-1">
+              {gamesRefs[gameName].categorie === "grouping"
+                ? "Lobby"
+                : gamesRefs[gameName].name}
+            </div>
           </div>
-        </div>
 
-        {(!isChosen && !group) || isPrivate === undefined ? (
-          <>
-            <div>Chargement...</div>
+          {(!isChosen && !group) || isPrivate === undefined ? (
+            <>
+              <div>Chargement...</div>
 
-            {/*
+              {/*
                 <button
                   onClick={() =>
                     router.push(
@@ -525,358 +526,363 @@ export default function Room({
                 </button>
               </>
             )} */}
-          </>
-        ) : (
-          <>
-            {isAdmin && (
-              <>
-                <div className="flex justify-center items-center m-2">
-                  <div
-                    style={{
-                      color: isPrivate
-                        ? "rgb(147 197 253)"
-                        : "rgb(134 239 172)", //blue-300, green-300
-                    }}
-                  >
-                    Partie {isPrivate ? "privée" : "publique"}
+            </>
+          ) : (
+            <>
+              {isAdmin && (
+                <>
+                  <div className="flex justify-center items-center m-2">
+                    <div
+                      style={{
+                        color: isPrivate
+                          ? "rgb(147 197 253)"
+                          : "rgb(134 239 172)", //blue-300, green-300
+                      }}
+                    >
+                      Partie {isPrivate ? "privée" : "publique"}
+                    </div>
+                    {isPrivate ? (
+                      <LockClosedIcon
+                        onClick={() => togglePriv()}
+                        className="ml-2 mb-2 w-8 h-8 text-blue-300"
+                      />
+                    ) : (
+                      <LockOpenIcon
+                        onClick={() => togglePriv()}
+                        className="ml-2 mb-2 w-8 h-8 text-green-300"
+                      />
+                    )}
                   </div>
-                  {isPrivate ? (
-                    <LockClosedIcon
-                      onClick={() => togglePriv()}
-                      className="ml-2 mb-2 w-8 h-8 text-blue-300"
-                    />
-                  ) : (
-                    <LockOpenIcon
-                      onClick={() => togglePriv()}
-                      className="ml-2 mb-2 w-8 h-8 text-green-300"
-                    />
-                  )}
-                </div>
-              </>
-            )}
+                </>
+              )}
 
-            <div>
-              Liste des joueurs [
-              {gamerList.length + guestList.length + multiGuestList.length}
-              {gamesRefs[gameName].limits &&
-                ` / ${gamesRefs[gameName].limits.max}`}
-              ]
-            </div>
+              <div>
+                Liste des joueurs [
+                {gamerList.length + guestList.length + multiGuestList.length}
+                {gamesRefs[gameName].limits &&
+                  ` / ${gamesRefs[gameName].limits.max}`}
+                ]
+              </div>
 
-            {group?.gamers &&
-              group.gamers.map((gamer) => {
-                const gamerName = gamer.name;
-                const isHere = gamerList?.includes(gamerName);
-                return (
-                  <div key={gamerName} className="flex">
-                    <div className="flex">
-                      <div
-                        className={
-                          gamerName === uniqueName ? "font-semibold" : ""
-                        }
-                      >
-                        {gamerName}
+              {group?.gamers &&
+                group.gamers.map((gamer) => {
+                  const gamerName = gamer.name;
+                  const isHere = gamerList?.includes(gamerName);
+                  return (
+                    <div key={gamerName} className="flex">
+                      <div className="flex">
+                        <div
+                          className={
+                            gamerName === uniqueName ? "font-semibold" : ""
+                          }
+                        >
+                          {gamerName}
+                        </div>
+                        {gamerName !== user.name ? (
+                          isHere ? (
+                            <CheckIcon className="block h-6 w-6 " />
+                          ) : (
+                            " ... "
+                          )
+                        ) : null}
                       </div>
-                      {gamerName !== user.name ? (
-                        isHere ? (
+                      {isHere && gamerName !== user.name && (
+                        <button
+                          onClick={async () => {
+                            const newGamersGroup = [...group.gamers].filter(
+                              (gamer) => gamer.name !== gamerName
+                            );
+                            setGroup((prevGroup) => ({
+                              ...prevGroup,
+                              gamers: newGamersGroup,
+                            }));
+                            await deleteGamer(gamerName);
+                          }}
+                          className="border border-blue-300 bg-blue-100"
+                        >
+                          Retirer
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              {group?.guests &&
+                group.guests.map((guest) => {
+                  const guestName = guest.name;
+                  const isHere = guestList?.includes(guestName);
+                  return (
+                    <div key={guestName} className="flex">
+                      <div className="flex">
+                        {guestName}{" "}
+                        <span className="italic text-sm">(guest)</span>
+                        {isHere ? (
                           <CheckIcon className="block h-6 w-6 " />
                         ) : (
                           " ... "
-                        )
-                      ) : null}
-                    </div>
-                    {isHere && gamerName !== user.name && (
-                      <button
-                        onClick={async () => {
-                          const newGamersGroup = [...group.gamers].filter(
-                            (gamer) => gamer.name !== gamerName
-                          );
-                          setGroup((prevGroup) => ({
-                            ...prevGroup,
-                            gamers: newGamersGroup,
-                          }));
-                          await deleteGamer(gamerName);
-                        }}
-                        className="border border-blue-300 bg-blue-100"
-                      >
-                        Retirer
-                      </button>
-                    )}
-                  </div>
-                );
-              })}
-            {group?.guests &&
-              group.guests.map((guest) => {
-                const guestName = guest.name;
-                const isHere = guestList?.includes(guestName);
-                return (
-                  <div key={guestName} className="flex">
-                    <div className="flex">
-                      {guestName}{" "}
-                      <span className="italic text-sm">(guest)</span>
-                      {isHere ? (
-                        <CheckIcon className="block h-6 w-6 " />
-                      ) : (
-                        " ... "
-                      )}
-                    </div>
-                    {isHere && (
-                      <button
-                        onClick={() => {
-                          const newGuestsGroup = [...group.guests].filter(
-                            (guest) => guest.name !== guestName
-                          );
-                          setGroup((prevGroup) => ({
-                            ...prevGroup,
-                            guests: newGuestsGroup,
-                          }));
-                          deleteGuest(guestName);
-                        }}
-                        className="border border-blue-300 bg-blue-100"
-                      >
-                        Retirer
-                      </button>
-                    )}
-                  </div>
-                );
-              })}
-            {group?.multiGuests &&
-              group.multiGuests.map((multi) => {
-                const multiName = multi.name;
-                const isHere = multiGuestList?.includes(multiName);
-                return (
-                  <div key={multiName} className="flex">
-                    <div className="flex">
-                      {multiName}{" "}
-                      <span className="italic text-sm">(guest externe)</span>
-                      {isHere ? (
-                        <CheckIcon className="block h-6 w-6 " />
-                      ) : (
-                        " ... "
-                      )}
-                    </div>
-                    {isHere && (
-                      <button
-                        onClick={() => {
-                          const newMultiGroup = [...group.multiGuests].filter(
-                            (multi) => multi.name !== multiName
-                          );
-                          setGroup((prevGroup) => ({
-                            ...prevGroup,
-                            multiGuests: newMultiGroup,
-                          }));
-                          deleteMultiGuest(multiName);
-                        }}
-                        className="border border-blue-300 bg-blue-100"
-                      >
-                        Retirer
-                      </button>
-                    )}
-                  </div>
-                );
-              })}
-
-            <div>
-              {gamerList?.map((gamer) => {
-                const gamerNameList =
-                  group?.gamers?.map((gamer) => gamer.name) || [];
-                if (gamerNameList.includes(gamer)) return;
-                return (
-                  <div key={gamer} className="flex">
-                    <div
-                      className={gamer === uniqueName ? "font-semibold" : ""}
-                    >
-                      {gamer}
-                    </div>
-                    {isAdmin && gamer !== user.name && (
-                      <button
-                        onClick={async () => await deleteGamer(gamer)}
-                        className="border border-blue-300 bg-blue-100"
-                      >
-                        Retirer
-                      </button>
-                    )}
-                  </div>
-                );
-              })}
-              {guestList?.map((guest, i) => {
-                const guestNameList =
-                  group?.guests?.map((guest) => guest.name) || [];
-                if (guestNameList.includes(guest)) return;
-                return (
-                  <div key={i} className="flex">
-                    <div>
-                      {guest} <span className="italic text-sm">(guest)</span>
-                    </div>
-                    {isAdmin && (
-                      <button
-                        onClick={() => deleteGuest(guest)}
-                        className="border border-blue-300 bg-blue-100"
-                      >
-                        Retirer
-                      </button>
-                    )}
-                  </div>
-                );
-              })}
-              {multiGuestList?.map((multiGuest, i) => {
-                const multiNameList =
-                  group?.multiGuests?.map((multi) => multi.name) || [];
-                if (multiNameList.includes(multiGuest)) return;
-                return (
-                  <div key={i} className="flex">
-                    <div>
-                      <div
-                        className={
-                          multiGuest === uniqueName ? "font-semibold" : ""
-                        }
-                      >
-                        {multiGuest}
-                        <span className="italic text-sm font-normal">
-                          (guest externe)
-                        </span>
+                        )}
                       </div>
-                    </div>
-                    {isAdmin && (
-                      <button
-                        onClick={() => deleteMultiGuest(multiGuest)}
-                        className="border border-blue-300 bg-blue-100"
-                      >
-                        Retirer
-                      </button>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
-            <hr />
-
-            {isPrivate && !user.multiGuest && (
-              <div className="flex flex-col items-center">
-                <div className="flex mt-1">
-                  <h1>Invite tes amis !</h1>
-                  <button
-                    onClick={async () => {
-                      const friends = await getRoomFriendList({
-                        userId: user.id,
-                      });
-                      setFriendsList(friends);
-                    }}
-                    className="flex justify-center items-center border border-blue-300 bg-blue-100 ml-2"
-                  >
-                    <ArrowPathIcon className="h-4 w-4" />
-                  </button>
-                </div>
-                <h2 className="text-sm italic">
-                  Ils recevront ton invitation via &quot;Invitations aux
-                  parties&quot;.
-                </h2>
-                <div>
-                  {friendsList &&
-                    friendsList.map((friend) => {
-                      if (
-                        deletedGamersList.some(
-                          (deleted) => deleted === friend.name
-                        )
-                      )
-                        return;
-                      const invited = invitedList.some(
-                        (inv) => inv === friend.name
-                      );
-                      return (
+                      {isHere && (
                         <button
-                          key={friend.id}
-                          onClick={async () => {
-                            await inviteFriend({
-                              userName: user.name,
-                              friendMail: friend.email,
-                              categorie,
-                              gameName,
-                              roomToken,
-                            });
-                            setInvitedList((prevInv) => [
-                              ...new Set([...prevInv, friend.name]),
-                            ]);
+                          onClick={() => {
+                            const newGuestsGroup = [...group.guests].filter(
+                              (guest) => guest.name !== guestName
+                            );
+                            setGroup((prevGroup) => ({
+                              ...prevGroup,
+                              guests: newGuestsGroup,
+                            }));
+                            deleteGuest(guestName);
                           }}
-                          className={`border ${
-                            !invited
-                              ? "border-blue-300 bg-blue-100"
-                              : "border-green-300 bg-green-100"
-                          }`}
+                          className="border border-blue-300 bg-blue-100"
                         >
-                          {friend.customName}
+                          Retirer
                         </button>
-                      );
-                    })}
-                </div>
+                      )}
+                    </div>
+                  );
+                })}
+              {group?.multiGuests &&
+                group.multiGuests.map((multi) => {
+                  const multiName = multi.name;
+                  const isHere = multiGuestList?.includes(multiName);
+                  return (
+                    <div key={multiName} className="flex">
+                      <div className="flex">
+                        {multiName}{" "}
+                        <span className="italic text-sm">(guest externe)</span>
+                        {isHere ? (
+                          <CheckIcon className="block h-6 w-6 " />
+                        ) : (
+                          " ... "
+                        )}
+                      </div>
+                      {isHere && (
+                        <button
+                          onClick={() => {
+                            const newMultiGroup = [...group.multiGuests].filter(
+                              (multi) => multi.name !== multiName
+                            );
+                            setGroup((prevGroup) => ({
+                              ...prevGroup,
+                              multiGuests: newMultiGroup,
+                            }));
+                            deleteMultiGuest(multiName);
+                          }}
+                          className="border border-blue-300 bg-blue-100"
+                        >
+                          Retirer
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+
+              <div>
+                {gamerList?.map((gamer) => {
+                  const gamerNameList =
+                    group?.gamers?.map((gamer) => gamer.name) || [];
+                  if (gamerNameList.includes(gamer)) return;
+                  return (
+                    <div key={gamer} className="flex">
+                      <div
+                        className={gamer === uniqueName ? "font-semibold" : ""}
+                      >
+                        {gamer}
+                      </div>
+                      {isAdmin && gamer !== user.name && (
+                        <button
+                          onClick={async () => await deleteGamer(gamer)}
+                          className="border border-blue-300 bg-blue-100"
+                        >
+                          Retirer
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+                {guestList?.map((guest, i) => {
+                  const guestNameList =
+                    group?.guests?.map((guest) => guest.name) || [];
+                  if (guestNameList.includes(guest)) return;
+                  return (
+                    <div key={i} className="flex">
+                      <div>
+                        {guest} <span className="italic text-sm">(guest)</span>
+                      </div>
+                      {isAdmin && (
+                        <button
+                          onClick={() => deleteGuest(guest)}
+                          className="border border-blue-300 bg-blue-100"
+                        >
+                          Retirer
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+                {multiGuestList?.map((multiGuest, i) => {
+                  const multiNameList =
+                    group?.multiGuests?.map((multi) => multi.name) || [];
+                  if (multiNameList.includes(multiGuest)) return;
+                  return (
+                    <div key={i} className="flex">
+                      <div>
+                        <div
+                          className={
+                            multiGuest === uniqueName ? "font-semibold" : ""
+                          }
+                        >
+                          {multiGuest}
+                          <span className="italic text-sm font-normal">
+                            (guest externe)
+                          </span>
+                        </div>
+                      </div>
+                      {isAdmin && (
+                        <button
+                          onClick={() => deleteMultiGuest(multiGuest)}
+                          className="border border-blue-300 bg-blue-100"
+                        >
+                          Retirer
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
-            )}
 
-            {!user.multiGuest && !isAdmin && (
-              <button
-                onClick={async () => await deleteGamer(uniqueName)}
-                className="border border-blue-300 bg-blue-100"
-              >
-                Quitter le groupe
-              </button>
-            )}
-            {user.multiGuest && (
-              <button
-                onClick={() => deleteMultiGuest(uniqueName)}
-                className="border border-blue-300 bg-blue-100"
-              >
-                Quitter le groupe
-              </button>
-            )}
+              <hr />
 
-            {isAdmin && (
-              <>
-                <hr />
-
-                <>
-                  <h1>Invite des Guests multi-screen !</h1>
+              {isPrivate && !user.multiGuest && (
+                <div className="flex flex-col items-center">
+                  <div className="flex mt-1">
+                    <h1>Invite tes amis !</h1>
+                    <button
+                      onClick={async () => {
+                        const friends = await getRoomFriendList({
+                          userId: user.id,
+                        });
+                        setFriendsList(friends);
+                      }}
+                      className="flex justify-center items-center border border-blue-300 bg-blue-100 ml-2"
+                    >
+                      <ArrowPathIcon className="h-4 w-4" />
+                    </button>
+                  </div>
                   <h2 className="text-sm italic">
-                    Ils joueront sur leur propre écran.
+                    Ils recevront ton invitation via &quot;Invitations aux
+                    parties&quot;.
                   </h2>
+                  <div>
+                    {friendsList &&
+                      friendsList.map((friend) => {
+                        if (
+                          deletedGamersList.some(
+                            (deleted) => deleted === friend.name
+                          )
+                        )
+                          return;
+                        const invited = invitedList.some(
+                          (inv) => inv === friend.name
+                        );
+                        return (
+                          <button
+                            key={friend.id}
+                            onClick={async () => {
+                              await inviteFriend({
+                                userName: user.name,
+                                friendMail: friend.email,
+                                categorie,
+                                gameName,
+                                roomToken,
+                              });
+                              setInvitedList((prevInv) => [
+                                ...new Set([...prevInv, friend.name]),
+                              ]);
+                            }}
+                            className={`border ${
+                              !invited
+                                ? "border-blue-300 bg-blue-100"
+                                : "border-green-300 bg-green-100"
+                            }`}
+                          >
+                            {friend.customName}
+                          </button>
+                        );
+                      })}
+                  </div>
+                </div>
+              )}
+
+              <div className="absolute bottom-0">
+                {!user.multiGuest && !isAdmin && (
                   <button
-                    onClick={async () => {
-                      try {
-                        if (!geoLocation) {
-                          const loc = await getLocation();
-                          await saveLocation({ geoLocation: loc, roomId });
-                          setGeoLocation(loc);
-                          setShowRoomRefs(true);
-                        } else {
-                          setShowRoomRefs(!showRoomRefs);
-                        }
-                      } catch (error) {
-                        console.error(error.message);
-                        const errorInformations = getErrorInformations({
-                          window,
-                          fail: "location_permission",
-                        }).map((info, i) => (
-                          <div key={i} className={`${i === 0 && "font-bold"}`}>
-                            {i !== 0 && "=>"}
-                            {info}
-                          </div>
-                        ));
-                        setServerMessage(errorInformations);
-                      }
-                    }}
+                    onClick={async () => await deleteGamer(uniqueName)}
                     className="border border-blue-300 bg-blue-100"
                   >
-                    {!showRoomRefs ? "Afficher" : "Cacher"} le QrCode
+                    Quitter le groupe
                   </button>
-                  {showRoomRefs && geoLocation && (
-                    <QRCode
-                      value={`/categories/${categorie}/${gameName}?token=${roomToken}`}
-                    />
-                  )}
+                )}
+                {user.multiGuest && (
+                  <button
+                    onClick={() => deleteMultiGuest(uniqueName)}
+                    className="border border-blue-300 bg-blue-100"
+                  >
+                    Quitter le groupe
+                  </button>
+                )}
+              </div>
 
+              {isAdmin && (
+                <>
                   <hr />
 
-                  {/* <h1>Ajoute des Guests mono-screen !</h1>
+                  <>
+                    <h1>Invite des Guests multi-screen !</h1>
+                    <h2 className="text-sm italic">
+                      Ils joueront sur leur propre écran.
+                    </h2>
+                    <button
+                      onClick={async () => {
+                        try {
+                          if (!geoLocation) {
+                            const loc = await getLocation();
+                            await saveLocation({ geoLocation: loc, roomId });
+                            setGeoLocation(loc);
+                            setShowRoomRefs(true);
+                          } else {
+                            setShowRoomRefs(!showRoomRefs);
+                          }
+                        } catch (error) {
+                          console.error(error.message);
+                          const errorInformations = getErrorInformations({
+                            window,
+                            fail: "location_permission",
+                          }).map((info, i) => (
+                            <div
+                              key={i}
+                              className={`${i === 0 && "font-bold"}`}
+                            >
+                              {i !== 0 && "=>"}
+                              {info}
+                            </div>
+                          ));
+                          setServerMessage(errorInformations);
+                        }
+                      }}
+                      className="border border-blue-300 bg-blue-100"
+                    >
+                      {!showRoomRefs ? "Afficher" : "Cacher"} le QrCode
+                    </button>
+                    {showRoomRefs && geoLocation && (
+                      <QRCode
+                        value={`/categories/${categorie}/${gameName}?token=${roomToken}`}
+                      />
+                    )}
+
+                    <hr />
+
+                    {/* <h1>Ajoute des Guests mono-screen !</h1>
                   <h2 className="text-sm italic">
                     Ils utiliseront ton écran à leur tour de jeu.
                   </h2>
@@ -894,95 +900,100 @@ export default function Room({
                   >
                     Ajouter le Guest
                   </button> */}
-                </>
+                  </>
 
-                <hr />
+                  <hr />
 
-                {Options && setOptions && setServerMessage && (
-                  <Options
-                    setOptions={setOptions}
-                    lastMode={group?.lastMode}
-                    setServerMessage={setServerMessage}
-                  />
-                )}
+                  {Options && setOptions && setServerMessage && (
+                    <Options
+                      setOptions={setOptions}
+                      lastMode={group?.lastMode}
+                      setServerMessage={setServerMessage}
+                    />
+                  )}
 
-                <div className="flex justify-center">
-                  <div className="flex flex-col">{serverMessage}</div>
-                </div>
+                  <div className="flex justify-center">
+                    <div className="flex flex-col">{serverMessage}</div>
+                  </div>
 
-                <div className="absolute bottom-0 w-full bg-black h-20 z-10">
-                  <div className="relative h-full">
-                    <div className="absolute bottom-0 left-0">
-                      <DeleteGroup roomToken={roomToken} />
-                    </div>
-                    <div className="absolute bottom-0 right-0">
-                      {group?.lastGame &&
-                        group.lastGame !== "grouping" &&
-                        gameName === "grouping" && (
-                          <ChooseLastGame
-                            lastGame={group.lastGame}
-                            lastMode={group.lastMode}
-                            lastPosition={geoLocation}
-                            group={group}
-                            roomToken={roomToken}
-                          />
+                  <div className="absolute bottom-0 w-full bg-black h-20 z-10">
+                    <div className="relative h-full">
+                      <div className="absolute bottom-0 left-0">
+                        <DeleteGroup roomToken={roomToken} />
+                      </div>
+                      <div className="absolute bottom-0 right-0">
+                        {group?.lastGame &&
+                          group.lastGame !== "grouping" &&
+                          gameName === "grouping" && (
+                            <ChooseLastGame
+                              lastGame={group.lastGame}
+                              lastMode={group.lastMode}
+                              lastPosition={geoLocation}
+                              group={group}
+                              roomToken={roomToken}
+                            />
+                          )}
+
+                        {gameName !== "grouping" && group && (
+                          <>
+                            <ChooseAnotherGame
+                              group={group}
+                              roomToken={roomToken}
+                              gameData={gameData}
+                              lastGame={group.lastGame}
+                              lastPosition={geoLocation}
+                            />
+                          </>
                         )}
+                      </div>
+                    </div>
 
-                      {gameName !== "grouping" && group && (
-                        <>
-                          <ChooseAnotherGame
-                            group={group}
-                            roomToken={roomToken}
-                            gameData={gameData}
-                            lastGame={group.lastGame}
-                            lastPosition={geoLocation}
-                          />
-                        </>
-                      )}
+                    <div className="absolute left-1/2 top-[20%] translate-x-[-50%]">
+                      <NextStep onClick={() => launchRoom()}>
+                        {gameName === "grouping" ? (
+                          <div className="">Jouer</div>
+                        ) : (
+                          <div className="">Lancer</div>
+                        )}
+                      </NextStep>
                     </div>
                   </div>
-
-                  <div className="absolute left-1/2 top-[20%] translate-x-[-50%]">
-                    <NextStep onClick={() => launchRoom()}>
-                      {gameName === "grouping" ? (
-                        <div className="">Jouer</div>
-                      ) : (
-                        <div className="">Lancer</div>
-                      )}
-                    </NextStep>
-                  </div>
-                </div>
-              </>
-            )}
-          </>
-        )}
-      </UserContext.Provider>
+                </>
+              )}
+            </>
+          )}
+        </UserContext.Provider>
+      </div>
     );
   } else {
     return (
-      <UserContext.Provider value={"coucou"}>
-        <div className="flex items-end h-28 w-full">
-          <div className="flex justify-center border-b w-full">
-            {gamesRefs[gameName].categorie === "grouping"
-              ? "Lobby"
-              : gameData.options?.mode || gamesRefs[gameName].name}{" "}
-            ({gameData.gamers?.length} joueurs)
+      <div className="absolute h-screen w-full z-50">
+        <UserContext.Provider value={"coucou"}>
+          <div className="fixed flex items-end h-20 w-full z-[70] bg-black">
+            <div className="flex justify-center w-full text-white m-1">
+              {gamesRefs[gameName].categorie === "grouping"
+                ? "Lobby"
+                : gameData.options?.mode || gamesRefs[gameName].name}{" "}
+              {gameData.gamers?.length &&
+                `(${gameData.gamers?.length} joueurs)`}
+            </div>
           </div>
-        </div>
-
-        <Game
-          roomId={roomId}
-          roomToken={roomToken}
-          user={{
-            ...user,
-            name: uniqueName,
-            ...(!!multiGuestId ? { id: multiGuestId } : {}),
-            ...(!!multiGuestDataId ? { dataId: multiGuestDataId } : {}),
-          }}
-          gameData={gameData}
-          storedLocation={geoLocation} //searching game only
-        />
-      </UserContext.Provider>
+          <div className="mt-20 overflow-y-auto z-[60] w-full">
+            <Game
+              roomId={roomId}
+              roomToken={roomToken}
+              user={{
+                ...user,
+                name: uniqueName,
+                ...(!!multiGuestId ? { id: multiGuestId } : {}),
+                ...(!!multiGuestDataId ? { dataId: multiGuestDataId } : {}),
+              }}
+              gameData={gameData}
+              storedLocation={geoLocation} //searching game only
+            />
+          </div>
+        </UserContext.Provider>
+      </div>
     );
   }
 }
