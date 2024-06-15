@@ -5,9 +5,7 @@ import classNames from "classnames";
 
 import { triggerGameEvent } from "./gameActions";
 
-import FinishGame from "@/components/FinishGame";
-import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
-import EndGame from "@/components/EndGame";
+import NextEndingPossibilities from "@/components/NextEndingPossibilities";
 
 export default function Actionouverite({
   roomId,
@@ -69,7 +67,7 @@ export default function Actionouverite({
   }, [gameData.ended]);
 
   return (
-    <>
+    <div className="overflow-y-auto">
       {!isEnded && (
         <>
           <div className="absolute top-20 left-14 z-10">
@@ -141,23 +139,18 @@ export default function Actionouverite({
           {Object.values(stats).map((stat, i) => (
             <div key={i}>{stat}</div>
           ))}
-          <EndGame gameData={gameData} user={user} />
         </>
       )}
 
-      {isAdmin ? (
-        !isEnded ? (
-          <div className="absolute bottom-0">
-            <FinishGame gameData={gameData} roomToken={roomToken} />
-          </div>
-        ) : (
-          <ChooseOneMoreGame
-            gameData={gameData}
-            roomToken={roomToken}
-            storedLocation={storedLocation}
-          />
-        )
-      ) : null}
-    </>
+      <NextEndingPossibilities
+        isAdmin={isAdmin}
+        isEnded={isEnded}
+        gameData={gameData}
+        roomToken={roomToken}
+        reset={() => console.log("to be done")}
+        storedLocation={storedLocation}
+        user={user}
+      />
+    </div>
   );
 }

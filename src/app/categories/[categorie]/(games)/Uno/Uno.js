@@ -18,10 +18,7 @@ import { DND } from "@/components/DND/DND";
 import { HTML5toTouch } from "@/components/DND/HTML5toTouch";
 import { generatePreview } from "@/components/DND/generatePreview";
 
-import NextStep from "@/components/NextStep";
-import FinishGame from "@/components/FinishGame";
-import EndGame from "@/components/EndGame";
-import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
+import NextEndingPossibilities from "@/components/NextEndingPossibilities";
 
 export default function Uno({
   roomId,
@@ -310,37 +307,15 @@ export default function Uno({
         </DndProvider>
       </div>
 
-      <div className="fixed bottom-0 h-20 bg-black w-full">
-        <div className="w-full flex justify-around">
-          {isAdmin ? (
-            !isEnded ? (
-              <div className="absolute bottom-0 left-0">
-                <FinishGame gameData={gameData} roomToken={roomToken} />
-              </div>
-            ) : (
-              <>
-                <div className="absolute bottom-0 left-1/2 translate-x-[-50%] translate-y-[-25%]">
-                  <NextStep
-                    onClick={() => goNewUnoGame({ roomToken, gameData })}
-                  >
-                    Encore
-                  </NextStep>
-                </div>
-
-                <div>
-                  <ChooseOneMoreGame
-                    gameData={gameData}
-                    roomToken={roomToken}
-                    storedLocation={storedLocation}
-                  />
-                </div>
-              </>
-            )
-          ) : isEnded ? (
-            <EndGame gameData={gameData} user={user} />
-          ) : null}
-        </div>
-      </div>
+      <NextEndingPossibilities
+        isAdmin={isAdmin}
+        isEnded={isEnded}
+        gameData={gameData}
+        roomToken={roomToken}
+        reset={goNewUnoGame}
+        storedLocation={storedLocation}
+        user={user}
+      />
     </>
   );
 }
