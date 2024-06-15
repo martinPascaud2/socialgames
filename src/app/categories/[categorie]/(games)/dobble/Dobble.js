@@ -5,10 +5,9 @@ import { useEffect, useState } from "react";
 
 import { goFirstRound, serverSucceed, serverFail } from "./gameActions";
 
-import FinishGame from "@/components/FinishGame";
-import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
-import EndGame from "@/components/EndGame";
 import { XMarkIcon } from "@heroicons/react/24/outline";
+import NextStep from "@/components/NextStep";
+import NextEndingPossibilities from "@/components/NextEndingPossibilities";
 
 const imageContext = require.context("./icons", false, /\.(png)$/);
 
@@ -89,107 +88,113 @@ export default function Dobble({
   }, [gameData.ended]);
 
   return (
-    <div className="flex flex-row flex-wrap justify-center">
-      <div className="w-full flex flex-col items-center justify-center">
-        <div>Scores</div>
-        {scores.map((score) => (
-          <div key={score.name}>
-            {score.name} : {score.score}
+    <>
+      {isAdmin && roundNumber === 0 && (
+        <div className="absolute bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-25%]">
+          <NextStep
+            onClick={() => {
+              goFirstRound({ roomId, roomToken, gameData, imageLength });
+            }}
+          >
+            Lancer
+          </NextStep>
+        </div>
+      )}
+
+      <div className="overflow-y-auto">
+        <div className="flex flex-row flex-wrap justify-center">
+          <div className="w-full flex flex-col items-center justify-center">
+            <div>Scores</div>
+            {scores.map((score) => (
+              <div key={score.name}>
+                {score.name} : {score.score}
+              </div>
+            ))}
           </div>
-        ))}
+
+          {!isEnded ? (
+            <>
+              <div
+                className={`w-[90vw] m-2 p-2 ${
+                  randomIcons && "border"
+                } flex flex-cols flex-wrap justify-around content-around ${
+                  gameData.rotation?.top ? "rotate-180" : ""
+                }`}
+              >
+                {randomIcons?.map((icon) => (
+                  <Image
+                    key={icon.key}
+                    src={images[imagesNames[icon.key]]}
+                    alt={imagesNames[icon.key]}
+                    className=""
+                    style={{
+                      transform: `rotate(${icon.rotation}deg)`,
+                      width: `${icon.size}vw`,
+                      height: `${icon.size}vw`,
+                    }}
+                  />
+                ))}
+              </div>
+
+              <div
+                className={`w-[90vw] m-2 p-2 ${
+                  onlyWithOne && "border"
+                } flex flex-cols flex-wrap justify-around content-around ${
+                  gameData.rotation?.bot ? "rotate-180" : ""
+                }`}
+              >
+                {onlyWithOne?.map((icon) => (
+                  <button
+                    key={icon.key}
+                    onClick={() => {
+                      !locked &&
+                        (sameKey === icon.key
+                          ? goSucceed()
+                          : (goFail(), setLocked(true)));
+                    }}
+                    style={{
+                      transform: `rotate(${icon.rotation}deg)`,
+                      width: `${icon.size}vw`,
+                      height: `${icon.size}vw`,
+                    }}
+                    className="relative"
+                  >
+                    <Image
+                      src={images[imagesNames[icon.key]]}
+                      alt={imagesNames[icon.key]}
+                      className="m-2 p-2"
+                    />
+                    {locked && sameKey !== icon.key && (
+                      <XMarkIcon className="absolute top-[4vw] left-[4vw] text-red-600" />
+                    )}
+                    {locked && sameKey === icon.key && (
+                      <div
+                        className={`absolute top-[2vw] left-[2vw] border border-green-600 rounded-full w-full h-full`}
+                      />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex flex-col">
+                <div>{scores[0].name} remporte la partie !</div>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
-      {!isEnded ? (
-        <>
-          <div
-            className={`w-[90vw] m-2 p-2 border flex flex-cols flex-wrap  justify-around content-around ${
-              gameData.rotation?.top ? "rotate-180" : ""
-            }`}
-          >
-            {randomIcons?.map((icon) => (
-              <Image
-                key={icon.key}
-                src={images[imagesNames[icon.key]]}
-                alt={imagesNames[icon.key]}
-                className=""
-                style={{
-                  transform: `rotate(${icon.rotation}deg)`,
-                  width: `${icon.size}vw`,
-                  height: `${icon.size}vw`,
-                }}
-              />
-            ))}
-          </div>
-
-          <div
-            className={`w-[90vw] m-2 p-2 border flex flex-cols flex-wrap justify-around content-around ${
-              gameData.rotation?.bot ? "rotate-180" : ""
-            }`}
-          >
-            {onlyWithOne?.map((icon) => (
-              <button
-                key={icon.key}
-                onClick={() => {
-                  !locked &&
-                    (sameKey === icon.key
-                      ? goSucceed()
-                      : (goFail(), setLocked(true)));
-                }}
-                style={{
-                  transform: `rotate(${icon.rotation}deg)`,
-                  width: `${icon.size}vw`,
-                  height: `${icon.size}vw`,
-                }}
-                className="relative"
-              >
-                <Image
-                  src={images[imagesNames[icon.key]]}
-                  alt={imagesNames[icon.key]}
-                  className="m-2 p-2"
-                />
-                {locked && sameKey !== icon.key && (
-                  <XMarkIcon className="absolute top-[4vw] left-[4vw] text-red-600" />
-                )}
-                {locked && sameKey === icon.key && (
-                  <div
-                    className={`absolute top-[2vw] left-[2vw] border border-green-600 rounded-full w-full h-full`}
-                  />
-                )}
-              </button>
-            ))}
-          </div>
-        </>
-      ) : (
-        <>
-          <div className="flex flex-col">
-            <div>{scores[0].name} remporte la partie !</div>
-            <EndGame gameData={gameData} user={user} />
-          </div>
-        </>
-      )}
-
-      {isAdmin && roundNumber === 0 && (
-        <button
-          onClick={() => {
-            goFirstRound({ roomId, roomToken, gameData, imageLength });
-          }}
-          className="border border-blue-300 bg-blue-100"
-        >
-          Tout le monde est prêt ?
-        </button>
-      )}
-
-      {isAdmin ? (
-        !isEnded ? (
-          <FinishGame gameData={gameData} roomToken={roomToken} />
-        ) : (
-          <ChooseOneMoreGame
-            gameData={gameData}
-            roomToken={roomToken}
-            storedLocation={storedLocation}
-          />
-        )
-      ) : null}
-    </div>
+      <NextEndingPossibilities
+        isAdmin={isAdmin}
+        isEnded={isEnded}
+        gameData={gameData}
+        roomToken={roomToken}
+        reset={() => console.log("to be done")}
+        storedLocation={storedLocation}
+        user={user}
+      />
+    </>
   );
 }
