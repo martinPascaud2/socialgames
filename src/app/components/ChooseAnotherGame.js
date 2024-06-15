@@ -40,7 +40,7 @@ export default function ChooseAnotherGame({
       onClick={async () => await returnLobby()}
       className="border border-blue-300 bg-blue-100"
     >
-      Choisir un autre jeu
+      Autre jeu
     </button>
   );
 }

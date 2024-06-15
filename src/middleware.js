@@ -51,7 +51,7 @@ export async function middleware(request) {
 
   if (
     userStatus !== "Admin" &&
-    request.nextUrl.pathname.startsWith("/admin/app-edition")
+    request.nextUrl.pathname.startsWith("/admin/app-edition/")
   ) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
   }
@@ -62,9 +62,9 @@ export async function middleware(request) {
 
   if (
     userStatus === "Admin" &&
-    !request.nextUrl.pathname.startsWith("/admin/app-edition")
+    !request.nextUrl.pathname.startsWith("/admin/app-edition/")
   ) {
-    return NextResponse.redirect(new URL("/admin/app-edition", request.url));
+    return NextResponse.redirect(new URL("/admin/app-edition/", request.url));
   }
 
   return NextResponse.next();

@@ -15,7 +15,7 @@ export default function DeleteGroup({ roomToken }) {
       }}
       className="border border-blue-300 bg-blue-100"
     >
-      Supprimer le groupe
+      Quitter
     </button>
   );
 }
