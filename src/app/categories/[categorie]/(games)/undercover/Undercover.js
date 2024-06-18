@@ -3,9 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useFormState } from "react-dom";
 
-import FinishGame from "@/components/FinishGame";
-import EndGame from "@/components/EndGame";
-import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
+import NextStep from "@/components/NextStep";
+import NextEndingPossibilities from "@/components/NextEndingPossibilities";
 
 const initialState = {
   message: null,
@@ -214,158 +213,162 @@ export default function Undercover({
 
   return (
     <>
-      {!isEnded ? (
-        <>
-          <div>
-            {deviceGamers.map((gamer) => (
-              <div key={gamer.name} className="m-20">
-                <button
-                  onClick={() =>
-                    setReveals((prevReveals) => ({
-                      ...prevReveals,
-                      [gamer.name]: !reveals[gamer.name],
-                    }))
-                  }
-                  className="border border-blue-300 bg-blue-100"
-                >
-                  {deviceGamers.length === 1
-                    ? "Révéler votre mot"
-                    : `Révéler le mot de ${gamer.name}`}
-                </button>
-                {reveals[gamer.name] && <div>Votre mot : {gamer.word}</div>}
-              </div>
-            ))}
-          </div>
-
-          {gameData.phase === "reveal" && (
+      <div className="overflow-y-auto">
+        {!isEnded ? (
+          <>
             <div>
-              <div>Phase de découverte des mots</div>
-              {user.name === gameData.admin && (
-                <button
-                  onClick={() => launchDescriptions({ gameData, roomToken })}
-                  className="border border-blue-300 bg-blue-100"
-                >
-                  Lancer le tour des descriptions
-                </button>
-              )}
+              {deviceGamers.map((gamer) => (
+                <div key={gamer.name} className="m-20">
+                  <button
+                    onClick={() =>
+                      setReveals((prevReveals) => ({
+                        ...prevReveals,
+                        [gamer.name]: !reveals[gamer.name],
+                      }))
+                    }
+                    className="border border-blue-300 bg-blue-100"
+                  >
+                    {deviceGamers.length === 1
+                      ? "Révéler votre mot"
+                      : `Révéler le mot de ${gamer.name}`}
+                  </button>
+                  {reveals[gamer.name] && <div>Votre mot : {gamer.word}</div>}
+                </div>
+              ))}
             </div>
-          )}
 
-          {gameData.phase === "description" && (
-            <div>
-              {gameData.activePlayer.id === user.id ? (
-                <div>
-                  {gamers.some((gamer) => gamer.guest === true) ? (
-                    <>
+            {gameData.phase === "reveal" && (
+              <div>
+                <div>Phase de découverte des mots</div>
+
+                {user.name === gameData.admin && (
+                  <div className="absolute bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-30%]">
+                    <NextStep
+                      onClick={() =>
+                        launchDescriptions({ gameData, roomToken })
+                      }
+                    >
+                      <div className="text-sm">Décrire</div>
+                    </NextStep>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {gameData.phase === "description" && (
+              <div>
+                {gameData.activePlayer.id === user.id ? (
+                  <div>
+                    {gamers.some((gamer) => gamer.guest === true) ? (
                       <div>
                         C&apos;est au tour de {`${gameData.activePlayer.name}`}{" "}
                         de décrire le mot.
                       </div>
-                      <button
-                        onClick={() => getNextGamer(gameData, roomToken)}
-                        className="border border-blue-300 bg-blue-100"
-                      >
-                        Passer au joueur suivant
-                      </button>
-                    </>
-                  ) : (
-                    <div>C&apos;est à votre tour !</div>
-                  )}
-                </div>
-              ) : (
-                <div>
-                  C&apos;est au tour de {`${gameData.activePlayer.name}`} de
-                  décrire le mot.
-                </div>
-              )}
-            </div>
-          )}
-
-          {gameData.phase === "vote" && (
-            <>
-              <div>Phase d&apos;élimination</div>
-              {!hasVoted ? (
-                <div>
-                  {user.name === gameData.admin ? (
-                    <div>{adminPossibleVotes}</div>
-                  ) : (
-                    <div className="flex flex-col">{possibleVotes}</div>
-                  )}
-                </div>
-              ) : (
-                <div>Vous avez voté ! En attente de la fin du vote.</div>
-              )}
-            </>
-          )}
-
-          {gameData.phase && <div>Déesse de la Justice : {goddess}</div>}
-          {gameData.phase === "goddess" && (
-            <div>
-              <div>La Déesse de la Justice tranche !</div>
-              {isGoddess && <div>{goddessPossibleVotes}</div>}
-            </div>
-          )}
-
-          {gameData.phase === "white" && (
-            <>
-              <div>Mister White a été tué !</div>
-              {whiteForm}
-            </>
-          )}
-
-          {gameData.phase === "undercoversWinMaybeWhite" && (
-            <>
-              <div>
-                Les undercovers remportent la partie, Mister White avec eux ?
+                    ) : (
+                      <>
+                        <div>C&apos;est à votre tour !</div>
+                        <div className="absolute bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-30%]">
+                          <NextStep
+                            onClick={() => getNextGamer(gameData, roomToken)}
+                          >
+                            <div className="text-sm">Suivant</div>
+                          </NextStep>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ) : (
+                  <div>
+                    C&apos;est au tour de {`${gameData.activePlayer.name}`} de
+                    décrire le mot.
+                  </div>
+                )}
               </div>
-              {whiteForm}
-            </>
-          )}
+            )}
 
-          {!!gamers.length && (
-            <div>
-              Joueurs restants :
-              {gamers
-                ?.filter(
-                  (gamer) =>
-                    gamer.alive ||
-                    (gamer.role === "white" &&
-                      [
-                        "white",
-                        "undercoversWinMaybeWhite",
-                        "whiteWin",
-                        "undercoversWinWithWhite",
-                      ].includes(gameData.phase))
-                )
-                .map((alive) => (
-                  <div key={alive.name}>{alive.name}</div>
-                ))}
-            </div>
-          )}
-        </>
-      ) : (
-        <>
-          <div className="flex flex-col items-center border-b">
-            <div>Résultats</div>
-            {Object.values(stats).map((stat, i) => (
-              <div key={i}>{stat}</div>
-            ))}
-          </div>
-          <EndGame gameData={gameData} user={user} />
-        </>
-      )}
+            {gameData.phase === "vote" && (
+              <>
+                <div>Phase d&apos;élimination</div>
+                {!hasVoted ? (
+                  <div>
+                    {user.name === gameData.admin ? (
+                      <div>{adminPossibleVotes}</div>
+                    ) : (
+                      <div className="flex flex-col">{possibleVotes}</div>
+                    )}
+                  </div>
+                ) : (
+                  <div>Vous avez voté ! En attente de la fin du vote.</div>
+                )}
+              </>
+            )}
 
-      {isAdmin ? (
-        !isEnded ? (
-          <FinishGame gameData={gameData} roomToken={roomToken} />
+            {gameData.phase && <div>Déesse de la Justice : {goddess}</div>}
+            {gameData.phase === "goddess" && (
+              <div>
+                <div>La Déesse de la Justice tranche !</div>
+                {isGoddess && <div>{goddessPossibleVotes}</div>}
+              </div>
+            )}
+
+            {gameData.phase === "white" && (
+              <>
+                <div>Mister White a été tué !</div>
+                {whiteForm}
+              </>
+            )}
+
+            {gameData.phase === "undercoversWinMaybeWhite" && (
+              <>
+                <div>
+                  Les undercovers remportent la partie, Mister White avec eux ?
+                </div>
+                {whiteForm}
+              </>
+            )}
+
+            {!!gamers.length && (
+              <div>
+                Joueurs restants :
+                {gamers
+                  ?.filter(
+                    (gamer) =>
+                      gamer.alive ||
+                      (gamer.role === "white" &&
+                        [
+                          "white",
+                          "undercoversWinMaybeWhite",
+                          "whiteWin",
+                          "undercoversWinWithWhite",
+                        ].includes(gameData.phase))
+                  )
+                  .map((alive) => (
+                    <div key={alive.name}>{alive.name}</div>
+                  ))}
+              </div>
+            )}
+          </>
         ) : (
-          <ChooseOneMoreGame
-            gameData={gameData}
-            roomToken={roomToken}
-            storedLocation={storedLocation}
-          />
-        )
-      ) : null}
+          <>
+            <div className="flex flex-col items-center border-b">
+              <div>Résultats</div>
+              {Object.values(stats).map((stat, i) => (
+                <div key={i}>{stat}</div>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      <NextEndingPossibilities
+        isAdmin={isAdmin}
+        isEnded={isEnded}
+        gameData={gameData}
+        roomToken={roomToken}
+        reset={() => console.log("to be done")}
+        storedLocation={storedLocation}
+        user={user}
+      />
     </>
   );
 }
