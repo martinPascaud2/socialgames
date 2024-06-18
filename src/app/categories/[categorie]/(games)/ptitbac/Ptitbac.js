@@ -13,12 +13,10 @@ import {
 
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
-import FinishGame from "@/components/FinishGame";
-import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
-import EndGame from "@/components/EndGame";
 import CountDown from "@/components/CountDown";
 import ToggleCheckbox from "@/components/Room/ToggleCheckbox";
 import NextStep from "@/components/NextStep";
+import NextEndingPossibilities from "@/components/NextEndingPossibilities";
 
 function levenshtein(a, b) {
   const matrix = [];
@@ -211,7 +209,10 @@ export default function Ptitbac({
           const isInvalidated = group.validated === false;
 
           return (
-            <div key={i} className="flex justify-between items-center border-b">
+            <div
+              key={i}
+              className="flex justify-between items-center border-b mr-2"
+            >
               <div className="flex flex-col my-2 items-start w-1/6">
                 {group.gamers.map((gamer, j) => {
                   return (
@@ -226,43 +227,42 @@ export default function Ptitbac({
               <div className="flex flex-col w-1/6 justify-center items-center">
                 <div>{group.word}</div>
               </div>
-              <div className="flex flex-col w-1/6 justify-center items-center mr-2">
-                {isReferee ? (
-                  <ToggleCheckbox
-                    onChange={async () => {
-                      const newRefereeValidation = {
-                        ...refereeValidation,
-                        [i]: {
-                          ...refereeValidation[i],
-                          validated: !refereeValidation[i].validated,
-                        },
-                      };
-                      await refereeTrigger({
-                        newRefereeValidation,
-                        roomToken,
-                        gameData,
-                      });
-                    }}
-                    checked={!isInvalidated}
-                    colors={{ yes: "rgb(22, 163, 74)", no: "rgb(220, 38, 38)" }}
-                    size={70}
-                  />
-                ) : (
-                  <div>
-                    {!isInvalidated ? (
-                      <CheckIcon className="block h-6 w-6 " />
-                    ) : (
-                      <XMarkIcon className="block h-6 w-6 " />
-                    )}
-                  </div>
-                )}
+              <div className="flex flex-col w-1/6 justify-center items-center">
+                <div>
+                  {!isInvalidated ? (
+                    <CheckIcon className="block h-6 w-6 " />
+                  ) : (
+                    <XMarkIcon className="block h-6 w-6 " />
+                  )}
+                </div>
               </div>
+              {isReferee && (
+                <ToggleCheckbox
+                  onChange={async () => {
+                    const newRefereeValidation = {
+                      ...refereeValidation,
+                      [i]: {
+                        ...refereeValidation[i],
+                        validated: !refereeValidation[i].validated,
+                      },
+                    };
+                    await refereeTrigger({
+                      newRefereeValidation,
+                      roomToken,
+                      gameData,
+                    });
+                  }}
+                  checked={!isInvalidated}
+                  colors={{ yes: "rgb(22, 163, 74)", no: "rgb(220, 38, 38)" }}
+                  size={70}
+                />
+              )}
             </div>
           );
         })}
 
         {isReferee && (
-          <div className="flex justify-center m-4">
+          <div className="absolute bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-60%]">
             <NextStep
               onClick={async () => {
                 if (allFalse) {
@@ -272,7 +272,7 @@ export default function Ptitbac({
                 }
               }}
             >
-              Suite ={">"}
+              Suite
             </NextStep>
           </div>
         )}
@@ -296,132 +296,118 @@ export default function Ptitbac({
   };
 
   return (
-    <div className="flex flex-col">
-      <div className="flex flex-col items-center">
-        <div className="font-semibold">Points</div>
-        {counts
-          ?.sort((a, b) => a.name.localeCompare(b.name))
-          .map((gamerCount) => (
-            <div key={gamerCount.name}>
-              {gamerCount.name} :{" "}
-              <span className="font-semibold">{gamerCount.gold}</span> point
-              {gamerCount.gold > 1 ? "s" : ""}
-            </div>
-          ))}
-      </div>
-
-      <hr />
-
-      {!isEnded && (
-        <>
-          {phase === "waiting" && isAdmin && (
-            <div className="flex justify-center m-8">
-              <NextStep
-                onClick={async () =>
-                  await startCountdown({
-                    time: gameData.options.countDownTime, //remove
-                    roomToken,
-                    gameData,
-                  })
-                }
-              >
-                Tour suivant
-              </NextStep>
-            </div>
-          )}
-
-          {phase === "searching" && (
-            <div className="flex flex-col items-center">
-              <div>
-                Cherchez des mots commençants par la lettre{" "}
-                <span className="font-bold">{letter}</span>
+    <>
+      <div className="flex flex-col overflow-y-auto">
+        <div className="flex flex-col items-center">
+          <div className="font-semibold">Points</div>
+          {counts
+            ?.sort((a, b) => a.name.localeCompare(b.name))
+            .map((gamerCount) => (
+              <div key={gamerCount.name}>
+                {gamerCount.name} :{" "}
+                <span className="font-semibold">{gamerCount.gold}</span> point
+                {gamerCount.gold > 1 ? "s" : ""}
               </div>
-              <div className="flex flex-wrap gap-2">
-                {themes.map((theme, i) => (
-                  <div
-                    key={theme}
-                    className="w-full flex flex-col items-center"
-                  >
-                    <div className="m-1">{theme}</div>
-                    <input
-                      type="text"
-                      value={responses[i]}
-                      onChange={(e) => handleChange(e, i)}
-                      onKeyDown={(e) => {
-                        if (e.key === "/") {
-                          e.preventDefault();
-                        }
-                      }}
-                      className="w-4/5 border focus:outline-none focus:border"
-                    />
-                  </div>
-                ))}
-              </div>
+            ))}
+        </div>
 
-              {!hasValidated && isCompleted && (
-                <div className="m-4">
-                  <NextStep onClick={() => setHasValidated(true)}>
-                    J&apos;ai fini !
-                  </NextStep>
-                </div>
-              )}
-              <div className="h-fit">
-                <CountDown
-                  finishCountdownDate={finishCountdownDate}
-                  onTimeUp={handleTimeUp}
-                />
-              </div>
-            </div>
-          )}
+        <hr />
 
-          {phase?.startsWith("validating") &&
-            themesResponses &&
-            Object.keys(themesResponses).length && (
-              <>
-                <div>{validationList()}</div>
-              </>
+        {!isEnded && (
+          <>
+            {phase === "waiting" && isAdmin && (
+              <div className="absolute bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-25%]">
+                <NextStep
+                  onClick={async () =>
+                    await startCountdown({
+                      time: gameData.options.countDownTime, //remove
+                      roomToken,
+                      gameData,
+                    })
+                  }
+                >
+                  Lancer
+                </NextStep>
+              </div>
             )}
-        </>
-      )}
 
-      {phase === "ended" && (
-        <div className="flex justify-center">
-          {winners.map((winner, i) => (
-            <span key={i}>
-              {i > 0 ? (i === winners.length - 1 ? "et " : ", ") : ""}
-              {winner.name}
-              &nbsp;
-            </span>
-          ))}
-          {winners.length === 1 ? "a" : "ont"} gagné la partie !
-        </div>
-      )}
+            {phase === "searching" && (
+              <div className="flex flex-col items-center">
+                <div>
+                  Cherchez des mots commençants par la lettre{" "}
+                  <span className="font-bold">{letter}</span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {themes.map((theme, i) => (
+                    <div
+                      key={theme}
+                      className="w-full flex flex-col items-center"
+                    >
+                      <div className="m-1">{theme}</div>
+                      <input
+                        type="text"
+                        value={responses[i]}
+                        onChange={(e) => handleChange(e, i)}
+                        onKeyDown={(e) => {
+                          if (e.key === "/") {
+                            e.preventDefault();
+                          }
+                        }}
+                        className="w-4/5 border focus:outline-none focus:border"
+                      />
+                    </div>
+                  ))}
+                </div>
 
-      {isEnded && (
-        <div className="flex flex-col">
-          <EndGame gameData={gameData} user={user} />
-        </div>
-      )}
+                {!hasValidated && isCompleted && (
+                  <div className="absolute bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-25%]">
+                    <NextStep onClick={() => setHasValidated(true)}>
+                      J'ai fini
+                    </NextStep>
+                  </div>
+                )}
+                <div className="h-fit">
+                  <CountDown
+                    finishCountdownDate={finishCountdownDate}
+                    onTimeUp={handleTimeUp}
+                  />
+                </div>
+              </div>
+            )}
 
-      <div
-        className={`flex justify-center ${
-          phase === "searching" && isCompleted
-            ? ""
-            : "absolute bottom-0  w-full"
-        }`}
-      >
-        {isAdmin ? (
-          !isEnded ? (
-            <FinishGame gameData={gameData} roomToken={roomToken} />
-          ) : (
-            <ChooseOneMoreGame
-              gameData={gameData}
-              roomToken={roomToken}
-              storedLocation={storedLocation}
-            />
-          )
-        ) : null}
+            {phase?.startsWith("validating") &&
+              themesResponses &&
+              Object.keys(themesResponses).length && (
+                <>
+                  <div>{validationList()}</div>
+                </>
+              )}
+          </>
+        )}
+
+        {phase === "ended" && (
+          <div className="flex justify-center">
+            {winners.map((winner, i) => (
+              <span key={i}>
+                {i > 0 ? (i === winners.length - 1 ? "et " : ", ") : ""}
+                {winner.name}
+                &nbsp;
+              </span>
+            ))}
+            {winners.length === 1 ? "a" : "ont"} gagné la partie !
+          </div>
+        )}
       </div>
-    </div>
+
+      <NextEndingPossibilities
+        isAdmin={isAdmin}
+        isEnded={isEnded}
+        gameData={gameData}
+        roomToken={roomToken}
+        reset={() => console.log("to be done")}
+        storedLocation={storedLocation}
+        user={user}
+      />
+    </>
   );
 }
