@@ -36,7 +36,7 @@ export async function launchGame({
     multiGuests,
   });
 
-  if (options.mode === "peek") {
+  if (options.mode === "Triaction (peek)") {
     gamersAndGuests[0].place = 1;
   } else {
     const places = gamersAndGuests.map((_, i) => i + 1);
@@ -48,7 +48,7 @@ export async function launchGame({
     });
   }
 
-  const phase = options.mode === "peek" ? "peek" : "write";
+  const phase = options.mode === "Triaction (peek)" ? "peek" : "write";
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,

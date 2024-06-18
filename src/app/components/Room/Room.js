@@ -951,7 +951,7 @@ export default function Room({
                     <div className="absolute left-1/2 top-[15%] translate-x-[-50%]">
                       <NextStep onClick={() => launchRoom()}>
                         {gameName === "grouping" ? (
-                          <div className="">Jouer</div>
+                          <div className="text-xl">Jouer</div>
                         ) : (
                           <div className="">Lancer</div>
                         )}
