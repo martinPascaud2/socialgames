@@ -779,7 +779,8 @@ export default function Room({
                         if (
                           deletedGamersList.some(
                             (deleted) => deleted === friend.name
-                          )
+                          ) ||
+                          gamerList.some((gamer) => gamer === friend.name)
                         )
                           return;
                         const invited = invitedList.some(
