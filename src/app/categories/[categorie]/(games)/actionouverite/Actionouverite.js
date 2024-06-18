@@ -67,81 +67,82 @@ export default function Actionouverite({
   }, [gameData.ended]);
 
   return (
-    <div className="overflow-y-auto">
-      {!isEnded && (
-        <>
-          <div className="absolute top-20 left-14 z-10">
-            <div className="playing-card bg-transparent w-60 h-80 inline-block m-2.5 perspective-10">
-              <div
-                className={classNames(
-                  `flip-card relative w-full h-full rounded-2xl	border-2 transition-transform duration-1000 transform-style-3d rotate-y-[-180deg] ${
-                    triggerTranslateOld && oldCard
-                      ? "transition-transform translate-x-72 duration-700 ease-in-out"
-                      : "collapse"
-                  }`
-                )}
-              >
+    <>
+      <div className="overflow-y-auto">
+        {!isEnded && (
+          <>
+            <div className="absolute top-20 left-14 z-10">
+              <div className="playing-card bg-transparent w-60 h-80 inline-block m-2.5 perspective-10">
                 <div
-                  className={`card-front absolute w-full h-full rounded-2xl backface-hidden bg-yellow-500 rotate-y-[180deg]`}
+                  className={classNames(
+                    `flip-card relative w-full h-full rounded-2xl	border-2 transition-transform duration-1000 transform-style-3d rotate-y-[-180deg] ${
+                      triggerTranslateOld && oldCard
+                        ? "transition-transform translate-x-72 duration-700 ease-in-out"
+                        : "collapse"
+                    }`
+                  )}
                 >
-                  {oldCard?.title}
-                </div>
-                <div className="card-back absolute w-full h-full rounded-2xl backface-hidden bg-red-500"></div>
-              </div>
-            </div>
-          </div>
-
-          <div className="absolute top-20 left-14 z-0">
-            <div className="playing-card bg-transparent	w-60 h-80 inline-block m-2.5 perspective-10">
-              <div
-                className={classNames(
-                  `flip-card relative w-full h-full rounded-2xl	border-2 ${
-                    triggerReveal
-                      ? "transition-transform duration-1000 transform-style-3d rotate-y-[-180deg]"
-                      : ""
-                  }`
-                )}
-              >
-                <div className="card-front absolute w-full h-full rounded-2xl backface-hidden bg-yellow-500 rotate-y-[180deg]">
-                  {newCard?.title}
-                </div>
-                <div className="card-back absolute w-full h-full rounded-2xl backface-hidden bg-red-500">
-                  dos de carte
+                  <div
+                    className={`card-front absolute w-full h-full rounded-2xl backface-hidden bg-yellow-500 rotate-y-[180deg]`}
+                  >
+                    {oldCard?.title}
+                  </div>
+                  <div className="card-back absolute w-full h-full rounded-2xl backface-hidden bg-red-500"></div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div>C&apos;est au tour de {gameData.activePlayer?.name}</div>
+            <div className="absolute top-20 left-14 z-0">
+              <div className="playing-card bg-transparent	w-60 h-80 inline-block m-2.5 perspective-10">
+                <div
+                  className={classNames(
+                    `flip-card relative w-full h-full rounded-2xl	border-2 ${
+                      triggerReveal
+                        ? "transition-transform duration-1000 transform-style-3d rotate-y-[-180deg]"
+                        : ""
+                    }`
+                  )}
+                >
+                  <div className="card-front absolute w-full h-full rounded-2xl backface-hidden bg-yellow-500 rotate-y-[180deg]">
+                    {newCard?.title}
+                  </div>
+                  <div className="card-back absolute w-full h-full rounded-2xl backface-hidden bg-red-500">
+                    dos de carte
+                  </div>
+                </div>
+              </div>
+            </div>
 
-          {isActive && (
-            <>
-              <button
-                onClick={async () => await takeAction()}
-                className="absolute bottom-32 left-20 border border-blue-300 bg-blue-100"
-              >
-                Action
-              </button>
-              <button
-                onClick={async () => await takeVerite()}
-                className="absolute bottom-32 right-20 border border-blue-300 bg-blue-100"
-              >
-                Vérité
-              </button>
-            </>
-          )}
-        </>
-      )}
+            <div>C&apos;est au tour de {gameData.activePlayer?.name}</div>
 
-      {isEnded && (
-        <>
-          <div>Statistiques :</div>
-          {Object.values(stats).map((stat, i) => (
-            <div key={i}>{stat}</div>
-          ))}
-        </>
-      )}
+            {isActive && (
+              <>
+                <button
+                  onClick={async () => await takeAction()}
+                  className="absolute bottom-32 left-20 border border-blue-300 bg-blue-100"
+                >
+                  Action
+                </button>
+                <button
+                  onClick={async () => await takeVerite()}
+                  className="absolute bottom-32 right-20 border border-blue-300 bg-blue-100"
+                >
+                  Vérité
+                </button>
+              </>
+            )}
+          </>
+        )}
 
+        {isEnded && (
+          <>
+            <div>Statistiques :</div>
+            {Object.values(stats).map((stat, i) => (
+              <div key={i}>{stat}</div>
+            ))}
+          </>
+        )}
+      </div>
       <NextEndingPossibilities
         isAdmin={isAdmin}
         isEnded={isEnded}
@@ -151,6 +152,6 @@ export default function Actionouverite({
         storedLocation={storedLocation}
         user={user}
       />
-    </div>
+    </>
   );
 }
