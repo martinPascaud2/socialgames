@@ -8,6 +8,8 @@ import {
   ArrowUturnRightIcon,
 } from "@heroicons/react/24/outline";
 
+import NextStep from "@/components/NextStep";
+
 export default function Draw({
   setImgData,
   setSvg,
@@ -164,17 +166,15 @@ export default function Draw({
       >
         Envoi paths
       </button> */}
-
-      <div className="flex justify-center mt-2">
-        <button
+      <div className="fixed bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-40%]">
+        <NextStep
           onClick={() => {
             handleExportImage();
             setHasValidated(true);
           }}
-          className="border border-2 border-blue-500 bg-blue-100 p-2"
         >
-          Envoyer
-        </button>
+          Envoi
+        </NextStep>
       </div>
     </>
   );

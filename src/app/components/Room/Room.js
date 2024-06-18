@@ -948,7 +948,7 @@ export default function Room({
                       </div>
                     </div>
 
-                    <div className="absolute left-1/2 top-[20%] translate-x-[-50%]">
+                    <div className="absolute left-1/2 top-[15%] translate-x-[-50%]">
                       <NextStep onClick={() => launchRoom()}>
                         {gameName === "grouping" ? (
                           <div className="">Jouer</div>
@@ -978,7 +978,7 @@ export default function Room({
                 `(${gameData.gamers?.length} joueurs)`}
             </div>
           </div>
-          <div className="mt-20 overflow-y-auto z-[60] w-full">
+          <div className="mt-20 h-[calc(100vh-5rem)] overflow-y-auto z-[60] w-full">
             <Game
               roomId={roomId}
               roomToken={roomToken}

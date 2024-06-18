@@ -12,6 +12,7 @@ import {
   guessWord,
 } from "./gameActions";
 
+import NextStep from "@/components/NextStep";
 import Draw from "./Draw";
 import CountDown from "@/components/CountDown";
 
@@ -99,167 +100,175 @@ export default function TeamDrawing({ roomId, roomToken, user, gameData }) {
 
   return (
     <>
-      <div className="flex flex-col items-between">
-        <div className="self-center">Equipes</div>
-        <div className="flex justify-around">
-          {teams &&
-            Object.entries(teams).map((team) => (
-              <div key={team[0]} className="flex flex-col">
-                <div className="border-2 border-red-300">
-                  {counts[team[0]].points} point
-                  <span>{counts[team[0]].points >= 2 ? "s" : ""}</span>
-                </div>
-                {team[1].map((gamer) => (
-                  <div
-                    key={gamer.name}
-                    className={`${
-                      activePlayers?.some(
-                        (player) => player.name === gamer.name
-                      )
-                        ? "font-bold"
-                        : ""
-                    }`}
-                  >
-                    {gamer.name}
-                  </div>
-                ))}
-              </div>
-            ))}
+      {phase === "waiting" && !gameData.ended && isAdmin && (
+        <div className="fixed bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-25%]">
+          <NextStep
+            onClick={() => startDrawing({ roomId, roomToken, gameData })}
+          >
+            Lancer
+          </NextStep>
         </div>
-      </div>
-
-      <hr />
-
-      {phase === "waiting" && (
-        <>
-          {lastWord && (
-            <div className="flex justify-center">
-              Le mot était :{" "}
-              <span className="font-semibold">&nbsp;{lastWord}</span>
-            </div>
-          )}
-          {isAdmin && (
-            <button
-              onClick={() => startDrawing({ roomId, roomToken, gameData })}
-              className="w-full border border-blue-300 bg-blue-100"
-            >
-              Tout le monde est prêt ?
-            </button>
-          )}
-        </>
       )}
 
-      {phase === "drawing" && (
-        <>
-          {isActive ? (
-            <>
-              <div className="flex justify-center">
-                Mot à dessiner :
-                <span className="font-semibold">&nbsp;{word}</span>
+      <div className="overflow-y-auto">
+        {!gameData.ended && (
+          <>
+            <div className="flex flex-col items-between">
+              <div className="self-center">Equipes</div>
+              <div className="flex justify-around">
+                {teams &&
+                  Object.entries(teams).map((team) => (
+                    <div key={team[0]} className="flex flex-col">
+                      <div className="border-2 border-red-300">
+                        {counts[team[0]].points} point
+                        <span>{counts[team[0]].points >= 2 ? "s" : ""}</span>
+                      </div>
+                      {team[1].map((gamer) => (
+                        <div
+                          key={gamer.name}
+                          className={`${
+                            activePlayers?.some(
+                              (player) => player.name === gamer.name
+                            )
+                              ? "font-bold"
+                              : ""
+                          }`}
+                        >
+                          {gamer.name}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
               </div>
+            </div>
 
-              {!hasValidated ? (
-                <Draw
-                  setImgData={setImgData}
-                  //   setSvg={setSvg}
-                  //   setPath={setPath}
-                  setHasValidated={setHasValidated}
-                  finishCountdownDate={finishCountdownDate}
-                />
-              ) : (
+            <hr />
+
+            {phase === "waiting" && lastWord && (
+              <div className="flex justify-center">
+                Le mot était :{" "}
+                <span className="font-semibold">&nbsp;{lastWord}</span>
+              </div>
+            )}
+
+            {phase === "drawing" && (
+              <>
+                {isActive ? (
+                  <>
+                    <div className="flex justify-center">
+                      Mot à dessiner :
+                      <span className="font-semibold">&nbsp;{word}</span>
+                    </div>
+
+                    {!hasValidated ? (
+                      <Draw
+                        setImgData={setImgData}
+                        //   setSvg={setSvg}
+                        //   setPath={setPath}
+                        setHasValidated={setHasValidated}
+                        finishCountdownDate={finishCountdownDate}
+                      />
+                    ) : (
+                      <div className="flex justify-center">
+                        Hop ! C&apos;est envoyé ! On attend les autres...
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="flex justify-center">
+                    {activePlayers.map((active, i) => (
+                      <span key={i}>
+                        {i > 0
+                          ? i === activePlayers.length - 1
+                            ? "et "
+                            : ", "
+                          : ""}
+                        {active.name}&nbsp;
+                      </span>
+                    ))}
+                    dessinent !
+                  </div>
+                )}
+
                 <div className="flex justify-center">
-                  Hop ! C&apos;est envoyé ! On attend les autres...
+                  <CountDown finishCountdownDate={finishCountdownDate} />
                 </div>
-              )}
-            </>
-          ) : (
-            <div className="flex justify-center">
-              {activePlayers.map((active, i) => (
+              </>
+            )}
+
+            {phase === "searching" && receivedImage && (
+              <>
+                <div
+                  style={{
+                    position: "relative",
+                    width: "auto",
+                    height: "50vh",
+                    // left: "5vw",
+                  }}
+                >
+                  <Image
+                    src={receivedImage}
+                    alt="drawing-png"
+                    // sizes="500px"
+                    fill
+                    style={{
+                      objectFit: "contain",
+                    }}
+                  />
+                </div>
+
+                <div className="flex justify-center">
+                  {isActive ? (
+                    !hasProposed ? (
+                      <form
+                        action={(FormData) => {
+                          formAction(FormData);
+                          setHasProposed(true);
+                        }}
+                        className="flex flex-col justify-center items-center"
+                      >
+                        <label htmlFor="guess">Propose un mot</label>
+                        <input
+                          type="text"
+                          name="guess"
+                          id="guess"
+                          className="border focus:outline-none focus:border-2"
+                        />
+
+                        <button
+                          type="submit"
+                          className="border border-blue-300 bg-blue-100"
+                        >
+                          Envoi
+                        </button>
+                      </form>
+                    ) : (
+                      <div>Proposition envoyée, on attend les autres...</div>
+                    )
+                  ) : (
+                    <div>Ton équipe cherche le mot</div>
+                  )}
+                </div>
+              </>
+            )}
+          </>
+        )}
+
+        {phase === "ended" && (
+          <div className="flex flex-col items-center">
+            <div>Fin du jeu !</div>
+            <div>Les vainqueurs sont :</div>
+            <div>
+              {winners.map((winner, i) => (
                 <span key={i}>
-                  {i > 0 ? (i === activePlayers.length - 1 ? "et " : ", ") : ""}
-                  {active.name}&nbsp;
+                  {i > 0 ? (i === winners.length - 1 ? " et " : ", ") : ""}
+                  {winner.name}
                 </span>
               ))}
-              dessinent !
             </div>
-          )}
-
-          <div className="flex justify-center">
-            <CountDown finishCountdownDate={finishCountdownDate} />
           </div>
-        </>
-      )}
-
-      {phase === "searching" && receivedImage && (
-        <>
-          <div
-            style={{
-              position: "relative",
-              width: "auto",
-              height: "50vh",
-              // left: "5vw",
-            }}
-          >
-            <Image
-              src={receivedImage}
-              alt="drawing-png"
-              // sizes="500px"
-              fill
-              style={{
-                objectFit: "contain",
-              }}
-            />
-          </div>
-
-          <div className="flex justify-center">
-            {isActive ? (
-              !hasProposed ? (
-                <form
-                  action={(FormData) => {
-                    formAction(FormData);
-                    setHasProposed(true);
-                  }}
-                  className="flex flex-col justify-center items-center"
-                >
-                  <label htmlFor="guess">Propose un mot</label>
-                  <input
-                    type="text"
-                    name="guess"
-                    id="guess"
-                    className="border focus:outline-none focus:border-2"
-                  />
-
-                  <button
-                    type="submit"
-                    className="border border-blue-300 bg-blue-100"
-                  >
-                    Envoi
-                  </button>
-                </form>
-              ) : (
-                <div>Proposition envoyée, on attend les autres...</div>
-              )
-            ) : (
-              <div>Ton équipe cherche le mot</div>
-            )}
-          </div>
-        </>
-      )}
-
-      {phase === "ended" && (
-        <div className="flex flex-col items-center">
-          <div>Fin du jeu !</div>
-          <div>Les vainqueurs sont :</div>
-          <div>
-            {winners.map((winner, i) => (
-              <span key={i}>
-                {i > 0 ? (i === winners.length - 1 ? " et " : ", ") : ""}
-                {winner.name}
-              </span>
-            ))}
-          </div>
-        </div>
-      )}
+        )}
+      </div>
     </>
   );
 }

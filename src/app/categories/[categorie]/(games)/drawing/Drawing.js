@@ -4,10 +4,7 @@ import { useEffect, useState } from "react";
 
 import TeamDrawing from "./TeamDrawing";
 import ChainDrawing from "./ChainDrawing";
-
-import FinishGame from "@/components/FinishGame";
-import EndGame from "@/components/EndGame";
-import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
+import NextEndingPossibilities from "@/components/NextEndingPossibilities";
 
 export default function Drawing({
   roomId,
@@ -44,19 +41,15 @@ export default function Drawing({
         />
       )}
 
-      {isAdmin ? (
-        !isEnded ? (
-          <FinishGame gameData={gameData} roomToken={roomToken} />
-        ) : (
-          <ChooseOneMoreGame
-            gameData={gameData}
-            roomToken={roomToken}
-            storedLocation={storedLocation}
-          />
-        )
-      ) : isEnded ? (
-        <EndGame gameData={gameData} user={user} />
-      ) : null}
+      <NextEndingPossibilities
+        isAdmin={isAdmin}
+        isEnded={isEnded}
+        gameData={gameData}
+        roomToken={roomToken}
+        reset={() => console.log("to be done")}
+        storedLocation={storedLocation}
+        user={user}
+      />
     </>
   );
 }

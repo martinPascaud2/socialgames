@@ -12,6 +12,7 @@ import {
   getNextLink,
 } from "./gameActions";
 
+import NextStep from "@/components/NextStep";
 import Draw from "./Draw";
 import CountDown from "@/components/CountDown";
 
@@ -170,14 +171,15 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
           ) : (
             <>
               {isAdmin ? (
-                <button
-                  onClick={() =>
-                    goNextPhase({ roomToken, gameData, full: true })
-                  }
-                  className="border border-blue-300 bg-blue-100"
-                >
-                  Tout le monde est prêt ?
-                </button>
+                <div className="fixed bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-25%]">
+                  <NextStep
+                    onClick={() =>
+                      goNextPhase({ roomToken, gameData, full: true })
+                    }
+                  >
+                    Lancer
+                  </NextStep>
+                </div>
               ) : (
                 <div>Ça va commencer !</div>
               )}
