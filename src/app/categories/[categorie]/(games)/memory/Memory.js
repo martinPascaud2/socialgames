@@ -5,11 +5,9 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { getIcons, revealCard, hideUndiscovered } from "./gameActions";
 import { loadImages } from "./loadImages";
 
-import FinishGame from "@/components/FinishGame";
-import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
-import EndGame from "@/components/EndGame";
 import Card from "./Card";
 const CardMemo = React.memo(Card);
+import NextEndingPossibilities from "@/components/NextEndingPossibilities";
 
 export default function Memory({
   roomId,
@@ -191,30 +189,25 @@ export default function Memory({
 
   return (
     <>
-      {scoresList}
+      <div className="overflow-y-auto">
+        {scoresList}
 
-      {!isEnded && (
-        <div>C&apos;est au tour de {gameData.activePlayer?.name}</div>
-      )}
+        {!isEnded && (
+          <div>C&apos;est au tour de {gameData.activePlayer?.name}</div>
+        )}
 
-      {CardList()}
+        {CardList()}
 
-      {isEnded && (
-        <div className="flex flex-col">
-          <EndGame gameData={gameData} user={user} />
-        </div>
-      )}
-      {isAdmin ? (
-        !isEnded ? (
-          <FinishGame gameData={gameData} roomToken={roomToken} />
-        ) : (
-          <ChooseOneMoreGame
-            gameData={gameData}
-            roomToken={roomToken}
-            storedLocation={storedLocation}
-          />
-        )
-      ) : null}
+        <NextEndingPossibilities
+          isAdmin={isAdmin}
+          isEnded={isEnded}
+          gameData={gameData}
+          roomToken={roomToken}
+          reset={() => console.log("to be done")}
+          storedLocation={storedLocation}
+          user={user}
+        />
+      </div>
     </>
   );
 }
