@@ -32,7 +32,7 @@ export const subCategories = {
         "Le but est de trouver, par écrit et en un temps limité, une série de mots appartenant à une catégorie prédéfinie et commençant par la même lettre.",
     },
     {
-      name: "Memory",
+      name: "Mémoire",
       path: "memory",
       img: "/memory.jpeg",
       description:
@@ -96,7 +96,7 @@ export const gamesRefs = {
     isGuestsAllowed: false,
   },
   memory: {
-    name: "Memory",
+    name: "Mémoire",
     categorie: "categorie1",
     limits: { min: 2, max: 6 },
     isGuestsAllowed: true,

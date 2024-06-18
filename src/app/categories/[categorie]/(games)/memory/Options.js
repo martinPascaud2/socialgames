@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import ModeSelector from "@/components/Options/ModeSelector";
 import MemoryThemeOption from "./MemoryThemeOption";
 
 export default function MemoryOptions({
@@ -9,10 +10,19 @@ export default function MemoryOptions({
   lastMode,
   setServerMessage,
 }) {
+  const [mode, setMode] = useState(lastMode?.mode || "Memory");
+  const [modeList, setModeList] = useState([]);
+
   const [pairsNumber, setPairsNumber] = useState(
     lastMode?.options?.pairsNumber || 12
   );
   const [selectedThemes, setSelectedThemes] = useState([]);
+
+  useEffect(() => {
+    setOptions((options) => ({ ...options, mode }));
+
+    setModeList([{ mode: "Memory", text: "Memory" }]);
+  }, [mode, setOptions]);
 
   useEffect(() => {
     if (pairsNumber < 8) setPairsNumber(8);
@@ -22,6 +32,13 @@ export default function MemoryOptions({
 
   return (
     <div>
+      <ModeSelector
+        defaultValue={mode}
+        modeList={modeList}
+        setMode={setMode}
+        setOptions={setOptions}
+      />
+
       <div className="m-4 flex flex-col items-center">
         <div>Nombre de paires</div>
         <div className="border w-[60%] flex">
