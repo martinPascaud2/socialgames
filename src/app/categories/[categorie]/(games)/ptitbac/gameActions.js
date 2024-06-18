@@ -261,7 +261,7 @@ export async function sendResponses({
       });
     });
   } catch (error) {
-    console.log("error", error);
+    console.error("error", error);
   }
 }
 

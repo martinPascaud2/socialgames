@@ -246,7 +246,6 @@ export default function Triaction({
   gameData,
   storedLocation,
 }) {
-  console.log("gameData", gameData);
   const { phase, gamers, activePlayer, senders } = gameData;
   const isActive = gameData.activePlayer?.id === user.id;
   const [isValidated, setIsValidated] = useState(false);
@@ -359,7 +358,6 @@ export default function Triaction({
   }, [phase]);
 
   const onDecision = ({ decision }) => {
-    console.log("decision", decision);
     const proposer = gameData.propositions[user.name].sender;
     let kept;
     let backed;
