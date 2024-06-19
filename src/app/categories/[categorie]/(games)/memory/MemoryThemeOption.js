@@ -29,7 +29,9 @@ export default function MemoryThemeOption({
           return { ...theme, selected: false };
         }
       });
-      return newThemes;
+      const themesChanged =
+        JSON.stringify(prevThemes) !== JSON.stringify(newThemes);
+      return themesChanged ? newThemes : prevThemes;
     });
   }, [lastMode]);
 

@@ -22,6 +22,8 @@ export default function Card({
     }
   }, [triggered, discovered]);
 
+  if (!src) return;
+
   return (
     <div className="bg-transparent w-[24%] aspect-square inline-block m-[0.5%] perspective-10">
       <div

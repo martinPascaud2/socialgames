@@ -171,3 +171,23 @@ export async function hideUndiscovered({ roomToken, gameData }) {
     },
   });
 }
+
+export async function prepareNewGame({ roomToken, gameData }) {
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      newGame: true,
+    },
+  });
+}
+
+export async function goNewMemoryGame({ roomToken, gameData, options }) {
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      newGame: false,
+      ended: false,
+      options,
+    },
+  });
+}

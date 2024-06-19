@@ -4,10 +4,12 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 
 import { getIcons, revealCard, hideUndiscovered } from "./gameActions";
 import { loadImages } from "./loadImages";
+import { prepareNewGame, goNewMemoryGame } from "./gameActions";
 
 import Card from "./Card";
 const CardMemo = React.memo(Card);
 import NextEndingPossibilities from "@/components/NextEndingPossibilities";
+import MemoryOptions from "./Options";
 
 export default function Memory({
   roomId,
@@ -30,6 +32,9 @@ export default function Memory({
   const [triggeredNumber, setTriggeredNumber] = useState(0);
 
   const [isEnded, setIsEnded] = useState(false);
+  const [options, setOptions] = useState(gameData.options);
+  const [serverMessage, setServerMessage] = useState("");
+  const [newGame, setNewGame] = useState(false);
 
   useEffect(() => {
     if (!gameData) return;
@@ -93,7 +98,7 @@ export default function Memory({
   }, [gameData.adminLoad]);
 
   useEffect(() => {
-    if (gameData.ended) setIsEnded(true);
+    setIsEnded(gameData.ended);
   }, [gameData.ended]);
 
   useEffect(() => {
@@ -145,7 +150,7 @@ export default function Memory({
 
   const scoresList = useMemo(
     () => (
-      <div>
+      <div className="flex flex-col items-center m-2">
         Scores
         {scores?.map((score, i) => (
           <div key={i}>
@@ -187,23 +192,56 @@ export default function Memory({
     );
   }, [gameData.icons, images, imagesNames, reveal, isActive, isRevealing]);
 
+  useEffect(() => {
+    setNewGame(gameData.newGame);
+  }, [gameData.newGame]);
+  useEffect(() => {
+    if (!newGame) return;
+    setIsActive(false);
+    setImages({});
+    setImagesNames([]);
+    setImageLength(0);
+    setInitialized(false);
+    setIsLoaded(false);
+    setIsRevealing(false);
+    setTriggeredNumber(0);
+    setIsEnded(false);
+    setServerMessage("");
+    setNewGame(false);
+  }, [newGame]);
+  useEffect(() => {
+    setOptions(gameData.options);
+  }, [gameData.options]);
+
   return (
     <>
       <div className="overflow-y-auto">
         {scoresList}
 
         {!isEnded && (
-          <div>C&apos;est au tour de {gameData.activePlayer?.name}</div>
+          <>
+            <div>C&apos;est au tour de {gameData.activePlayer?.name}</div>
+            {CardList()}
+          </>
         )}
 
-        {CardList()}
+        {isEnded && isAdmin && (
+          <MemoryOptions
+            setOptions={setOptions}
+            lastMode={{ mode: options?.mode, options }}
+            setServerMessage={setServerMessage}
+          />
+        )}
 
         <NextEndingPossibilities
           isAdmin={isAdmin}
           isEnded={isEnded}
           gameData={gameData}
           roomToken={roomToken}
-          reset={() => console.log("to be done")}
+          reset={async () => {
+            await prepareNewGame({ roomToken, gameData });
+            await goNewMemoryGame({ roomToken, gameData, options });
+          }}
           storedLocation={storedLocation}
           user={user}
         />
