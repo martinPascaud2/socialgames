@@ -98,7 +98,7 @@ export default function Memory({
   }, [gameData.adminLoad]);
 
   useEffect(() => {
-    setIsEnded(gameData.ended);
+    gameData.ended && setIsEnded(gameData.ended);
   }, [gameData.ended]);
 
   useEffect(() => {
@@ -232,20 +232,19 @@ export default function Memory({
             setServerMessage={setServerMessage}
           />
         )}
-
-        <NextEndingPossibilities
-          isAdmin={isAdmin}
-          isEnded={isEnded}
-          gameData={gameData}
-          roomToken={roomToken}
-          reset={async () => {
-            await prepareNewGame({ roomToken, gameData });
-            await goNewMemoryGame({ roomToken, gameData, options });
-          }}
-          storedLocation={storedLocation}
-          user={user}
-        />
       </div>
+      <NextEndingPossibilities
+        isAdmin={isAdmin}
+        isEnded={isEnded}
+        gameData={gameData}
+        roomToken={roomToken}
+        reset={async () => {
+          await prepareNewGame({ roomToken, gameData });
+          await goNewMemoryGame({ roomToken, gameData, options });
+        }}
+        storedLocation={storedLocation}
+        user={user}
+      />
     </>
   );
 }

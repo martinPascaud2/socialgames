@@ -362,7 +362,7 @@ export default function Ptitbac({
                 {!hasValidated && isCompleted && (
                   <div className="absolute bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-25%]">
                     <NextStep onClick={() => setHasValidated(true)}>
-                      J'ai fini
+                      J&apos;ai fini
                     </NextStep>
                   </div>
                 )}

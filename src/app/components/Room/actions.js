@@ -59,14 +59,18 @@ export async function goOneMoreGame({
   newRoomToken,
   gameName,
 }) {
-  await pusher.trigger(`room-${oldRoomToken}`, "room-event", {
-    gameData: {
-      nextGame: {
-        name: gameName,
-        path: `${pathname}?token=${newRoomToken}`,
+  try {
+    await pusher.trigger(`room-${oldRoomToken}`, "room-event", {
+      gameData: {
+        nextGame: {
+          name: gameName,
+          path: `${pathname}?token=${newRoomToken}`,
+        },
       },
-    },
-  });
+    });
+  } catch (error) {
+    console.error("error", error);
+  }
 }
 
 export async function inviteFriend({

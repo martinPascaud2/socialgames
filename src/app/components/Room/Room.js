@@ -69,7 +69,7 @@ export default function Room({
   const searchToken = searchParams.get("token");
 
   const [isAdmin, setIsAdmin] = useState(false);
-  const [roomToken, setRoomToken] = useState("");
+  const [roomToken, setRoomToken] = useState();
   const [group, setGroup] = useState();
   const [friendsList, setFriendsList] = useState();
   const [invitedList, setInvitedList] = useState([]);
@@ -143,41 +143,45 @@ export default function Room({
     getFriends();
   }, [gamerList]);
 
-  const createRoom = async (privacy, storedLocation) => {
-    const newRoomToken = genToken(10);
+  const createRoom = useCallback(
+    async (privacy, storedLocation) => {
+      if (isChosen) return;
+      const newRoomToken = genToken(10);
 
-    const { error, gamers } = await serverCreate(
-      newRoomToken,
-      privacy,
-      user,
-      gameName,
-      storedLocation
-    );
+      const { error, gamers } = await serverCreate(
+        newRoomToken,
+        privacy,
+        user,
+        gameName,
+        storedLocation
+      );
 
-    if (error) {
-      setServerMessage(error);
-    } else {
-      const channel = pusher.subscribe(`room-${newRoomToken}`);
-      channel.bind("room-event", function (data) {
-        data.clientGamerList &&
-          setGamerList([...new Set([...data.clientGamerList, ...gamerList])]);
-        data.multiGuestList && setMultiGuestList(data.multiGuestList);
-        data.gameData && setGameData(data.gameData);
-        data.deleted &&
-          setInvitedList((prevInv) =>
-            prevInv.filter((inv) => inv !== data.deleted)
-          );
-        data.privacy !== undefined && setIsPrivate(data.privacy);
-      });
+      if (error) {
+        setServerMessage(error);
+      } else {
+        const channel = pusher.subscribe(`room-${newRoomToken}`);
+        channel.bind("room-event", function (data) {
+          data.clientGamerList &&
+            setGamerList([...new Set([...data.clientGamerList, ...gamerList])]);
+          data.multiGuestList && setMultiGuestList(data.multiGuestList);
+          data.gameData && setGameData(data.gameData);
+          data.deleted &&
+            setInvitedList((prevInv) =>
+              prevInv.filter((inv) => inv !== data.deleted)
+            );
+          data.privacy !== undefined && setIsPrivate(data.privacy);
+        });
 
-      setRoomToken(newRoomToken);
-      setIsAdmin(true);
-      setUniqueName(user.name);
-      setGamerList(gamers);
-      setIsChosen(true);
-      setServerMessage("");
-    }
-  };
+        setRoomToken(newRoomToken);
+        setIsAdmin(true);
+        setUniqueName(user.name);
+        setGamerList(gamers);
+        setIsChosen(true);
+        setServerMessage("");
+      }
+    },
+    [user, gameName, gamerList, invitedList]
+  );
 
   const joinRoom = useCallback(async () => {
     if (!isChosen || !inputToken) {
@@ -392,15 +396,6 @@ export default function Room({
     const storedGroup = JSON.parse(localStorage.getItem("group"));
     if (!roomToken && storedGroup) {
       setGroup(storedGroup);
-      const create = async () => {
-        const storedLocation = storedGroup.lastPosition;
-        storedGroup.privacy === "public"
-          ? await createRoom("public", storedLocation)
-          : await createRoom("private", storedLocation);
-        storedLocation && setGeoLocation(storedLocation);
-      };
-      create();
-      // } else if (group && roomToken && gameName) {
     } else if (group && roomToken && gameName && pathname) {
       const addElderGuests = async () => {
         let elderGuests = [];
@@ -417,32 +412,29 @@ export default function Room({
       };
       addElderGuests();
 
-      // const go = async () => {
-      //   await goOneMoreGame({
-      //     pathname,
-      //     oldRoomToken: group.roomToken,
-      //     newRoomToken: roomToken,
-      //     gameName,
-      //   });
-      //   localStorage.removeItem("group");
-      // };
-      // go();
-
       setGameData({});
     }
   }, [roomToken, gameName]);
   // }, [roomToken, gameName, pathname, group]);
 
   useEffect(() => {
-    if (!gameName || !group || !pathname || !roomToken) return;
+    if (!gameName || !group?.roomToken || !pathname || !roomToken) return;
+
+    const storedGroup = JSON.parse(localStorage.getItem("group"));
+
     const go = async () => {
-      await goOneMoreGame({
-        pathname,
-        oldRoomToken: group.roomToken,
-        newRoomToken: roomToken,
-        gameName,
-      });
-      localStorage.removeItem("group");
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        await goOneMoreGame({
+          pathname,
+          oldRoomToken: storedGroup.roomToken,
+          newRoomToken: roomToken,
+          gameName,
+        });
+        localStorage.removeItem("group");
+      } catch (error) {
+        console.error("error", error);
+      }
     };
     go();
   }, [gameName, group, pathname, roomToken]);
