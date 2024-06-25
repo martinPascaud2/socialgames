@@ -51,7 +51,7 @@ export default function Dobble({
     setLocked(false);
 
     const newScores = gameData.gamers
-      .map((gamer) => ({
+      ?.map((gamer) => ({
         name: gamer.name,
         score: gameData.count?.[gamer.name] || 0,
       }))
@@ -80,6 +80,7 @@ export default function Dobble({
   };
 
   useEffect(() => {
+    if (!scores) return;
     const winner = scores.find((score) => score.score === 10);
     if (winner) setIsEnded(true);
   }, [scores]);
@@ -105,7 +106,7 @@ export default function Dobble({
         <div className="flex flex-row flex-wrap justify-center">
           <div className="w-full flex flex-col items-center justify-center">
             <div>Scores</div>
-            {scores.map((score) => (
+            {scores?.map((score) => (
               <div key={score.name}>
                 {score.name} : {score.score}
               </div>

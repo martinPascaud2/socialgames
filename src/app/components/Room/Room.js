@@ -166,9 +166,13 @@ export default function Room({
           data.multiGuestList && setMultiGuestList(data.multiGuestList);
           data.gameData && setGameData(data.gameData);
           data.deleted &&
-            setInvitedList((prevInv) =>
+            (setInvitedList((prevInv) =>
               prevInv.filter((inv) => inv !== data.deleted)
-            );
+            ),
+            setGroup((prevGroup) => ({
+              ...prevGroup,
+              gamers: gamerList.filter((gamer) => gamer !== data.deleted),
+            })));
           data.privacy !== undefined && setIsPrivate(data.privacy);
         });
 
@@ -418,11 +422,19 @@ export default function Room({
   // }, [roomToken, gameName, pathname, group]);
 
   useEffect(() => {
-    if (!gameName || !group?.roomToken || !pathname || !roomToken) return;
+    if (
+      !gameName ||
+      !group?.roomToken ||
+      !pathname ||
+      !roomToken ||
+      roomToken === null
+    )
+      return;
 
     const storedGroup = JSON.parse(localStorage.getItem("group"));
 
     const go = async () => {
+      if (!storedGroup?.roomToken) return;
       try {
         await new Promise((resolve) => setTimeout(resolve, 3000));
         await goOneMoreGame({
