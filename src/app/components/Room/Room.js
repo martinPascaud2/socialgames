@@ -524,15 +524,6 @@ export default function Room({
               {isAdmin && (
                 <>
                   <div className="flex justify-center items-center m-2">
-                    <div
-                      style={{
-                        color: isPrivate
-                          ? "rgb(147 197 253)"
-                          : "rgb(134 239 172)", //blue-300, green-300
-                      }}
-                    >
-                      Partie {isPrivate ? "privée" : "publique"}
-                    </div>
                     {isPrivate ? (
                       <LockClosedIcon
                         onClick={() => togglePriv()}
