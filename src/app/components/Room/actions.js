@@ -78,12 +78,14 @@ export async function inviteFriend({
   friendMail,
   categorie,
   gameName,
+  mode,
   roomToken,
 }) {
   await pusher.trigger(`user-${friendMail}`, "user-event", {
     invitation: {
       userName,
       gameName,
+      mode,
       link: `${process.env.NEXT_PUBLIC_APP_URL}/categories/${categorie}/${gameName}?token=${roomToken}`,
     },
   });

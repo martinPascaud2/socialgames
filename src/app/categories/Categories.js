@@ -304,7 +304,9 @@ export default function Categories({
                   >
                     <div className="border border-slate-700 bg-slate-300 text-center">
                       {invitation.userName} pour{" "}
-                      {`${gamesRefs[invitation.gameName].name}`}
+                      {`${
+                        invitation.mode || gamesRefs[invitation.gameName].name
+                      }`}
                     </div>
                   </Link>
                 ))}

@@ -790,6 +790,7 @@ export default function Room({
                                 friendMail: friend.email,
                                 categorie,
                                 gameName,
+                                mode: options?.mode,
                                 roomToken,
                               });
                               setInvitedList((prevInv) => [
