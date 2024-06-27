@@ -12,6 +12,7 @@ export default async function getFriendList({ userId }) {
       },
     })
   ).friends;
+
   return friendList;
 }
 

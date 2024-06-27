@@ -157,10 +157,40 @@ export default function Categories({
         router.refresh();
       }
       if (data.invitation) {
+        if (data.invitation.deleted) {
+          setPublicRooms((prevPublics) => {
+            const prevPubs = { ...prevPublics };
+            let deletedId;
+            Object.entries(prevPubs).find((pub) => {
+              if (pub[1].link === data.invitation.link) deletedId = pub[0];
+            });
+            if (deletedId) delete prevPubs[deletedId];
+            return prevPubs;
+          });
+        }
         setInvitations((prevInvitations) => {
-          if (prevInvitations.some((inv) => inv.link === data.invitation.link))
-            return [...prevInvitations];
-          return [...prevInvitations, data.invitation];
+          const prevInvs = [...prevInvitations];
+          if (data.invitation.deleted) {
+            const deletedInvs = prevInvs.filter(
+              (inv) => inv.link !== data.invitation.link
+            );
+            return deletedInvs;
+          }
+
+          const alreadyInviterIndex = prevInvs.findIndex(
+            (inv) => inv.userName === data.invitation.userName
+          );
+          if (alreadyInviterIndex !== -1) {
+            prevInvs.splice(alreadyInviterIndex, 1);
+            return [...prevInvs, data.invitation];
+          }
+
+          const sameInvLink = prevInvs.some(
+            (inv) => inv.link === data.invitation.link
+          );
+          if (sameInvLink) return [...prevInvs];
+
+          return [...prevInvs, data.invitation];
         });
       }
     });
@@ -173,11 +203,26 @@ export default function Categories({
   }, [user.email]);
 
   useEffect(() => {
+    setPublicRooms((prevPublics) => {
+      const alreadyInInvitations = [];
+      Object.entries(prevPublics).forEach((pub) => {
+        invitations.forEach((inv) => {
+          if (inv.link === pub[1].link) alreadyInInvitations.push(pub[0]);
+        });
+      });
+      if (!alreadyInInvitations.length) return prevPublics;
+      const publics = { ...prevPublics };
+      alreadyInInvitations.forEach((already) => delete publics[already]);
+      return publics;
+    });
+  }, [publicRooms, invitations]);
+
+  useEffect(() => {
     const getRooms = async () => {
       setPublicRooms(await getPublicRooms());
     };
     getRooms();
-  }, [getPublicRooms, invitations]);
+  }, [getPublicRooms]);
 
   return (
     <>

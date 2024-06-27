@@ -19,7 +19,6 @@ import getErrorInformations from "@/utils/getErrorInformations";
 import { gamesRefs } from "@/assets/globals";
 import { getRoomFriendList } from "@/utils/getFriendList";
 
-import ToggleCheckbox from "./ToggleCheckbox";
 import DeleteGroup from "@/components/DeleteGroup";
 import ChooseAnotherGame from "@/components/ChooseAnotherGame";
 import ChooseLastGame from "@/components/ChooseLastGame";
@@ -41,6 +40,7 @@ import {
   serverCreate,
   goOneMoreGame,
   inviteFriend,
+  deleteInvitations,
   serverJoin,
   triggerGamers,
   serverDeleteGamer,
@@ -366,6 +366,15 @@ export default function Room({
     setGuestList(guests);
   };
 
+  const deleteInvs = useCallback(async () => {
+    await deleteInvitations({
+      userId: user.id,
+      categorie,
+      gameName,
+      roomToken,
+    });
+  }, [user.id, categorie, gameName, roomToken]);
+
   const launchRoom = async () => {
     const { error } = await launchGame({
       roomId,
@@ -478,7 +487,10 @@ export default function Room({
         <>
           <h1 className="mt-28">Le groupe a été supprimé</h1>
           <button
-            onClick={() => router.push("/categories?control=true")}
+            onClick={async () => {
+              await deleteInvs();
+              router.push("/categories?control=true");
+            }}
             className="border border-blue-300 bg-blue-100"
           >
             Quitter
@@ -486,9 +498,9 @@ export default function Room({
         </>
       );
     } else {
-      const goNewGame = () => {
+      const goNewGame = async () => {
+        await deleteInvs();
         // check router.push
-
         window.location.href = `${gameData.nextGame.path}${
           user.multiGuest ? `&guestName=${user.name}` : ""
         }`;
@@ -915,10 +927,16 @@ export default function Room({
 
                   <div className="absolute bottom-0 w-full bg-black h-20 z-10">
                     <div className="relative h-full">
-                      <div className="absolute bottom-0 left-0">
+                      <div
+                        onClick={async () => await deleteInvs()}
+                        className="absolute bottom-0 left-0"
+                      >
                         <DeleteGroup roomToken={roomToken} />
                       </div>
-                      <div className="absolute bottom-0 right-0">
+                      <div
+                        onClick={async () => await deleteInvs()}
+                        className="absolute bottom-0 right-0"
+                      >
                         {group?.lastGame &&
                           group.lastGame !== "grouping" &&
                           gameName === "grouping" && (
@@ -945,7 +963,10 @@ export default function Room({
                       </div>
                     </div>
 
-                    <div className="absolute left-1/2 top-[15%] translate-x-[-50%]">
+                    <div
+                      onClick={async () => await deleteInvs()}
+                      className="absolute left-1/2 top-[15%] translate-x-[-50%]"
+                    >
                       <NextStep onClick={() => launchRoom()}>
                         {gameName === "grouping" ? (
                           <div className="text-xl">Jouer</div>

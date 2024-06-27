@@ -3,6 +3,7 @@
 import prisma from "@/utils/prisma";
 import pusher from "@/utils/pusher";
 import getDistance from "@/utils/getDistance";
+import { getRoomFriendList } from "@/utils/getFriendList";
 
 export async function serverCreate(token, privacy, user, game, geoLocation) {
   const roomId = (
@@ -80,6 +81,7 @@ export async function inviteFriend({
   gameName,
   mode,
   roomToken,
+  deleted = false,
 }) {
   await pusher.trigger(`user-${friendMail}`, "user-event", {
     invitation: {
@@ -87,8 +89,29 @@ export async function inviteFriend({
       gameName,
       mode,
       link: `${process.env.NEXT_PUBLIC_APP_URL}/categories/${categorie}/${gameName}?token=${roomToken}`,
+      deleted,
     },
   });
+}
+
+export async function deleteInvitations({
+  userId,
+  categorie,
+  gameName,
+  roomToken,
+}) {
+  const friends = await getRoomFriendList({ userId });
+  await Promise.all(
+    friends.map(async (friend) => {
+      await inviteFriend({
+        friendMail: friend.email,
+        categorie,
+        gameName,
+        roomToken,
+        deleted: true,
+      });
+    })
+  );
 }
 
 export async function serverJoin({ token, user }) {
