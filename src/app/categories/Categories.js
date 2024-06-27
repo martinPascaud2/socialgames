@@ -324,13 +324,14 @@ export default function Categories({
             {showInvitations && (
               <>
                 <div
-                  onClick={async () => {
-                    setPublicRooms(await getPublicRooms());
-                    updateLastCP({ userId: user.id }); //no await
-                  }}
+                  // onClick={async () => {
+                  //   setPublicRooms(await getPublicRooms());
+                  //   updateLastCP({ userId: user.id }); //no await
+                  // }}
                   className="flex justify-center items-center border text-center text-slate-300"
                 >
-                  Parties de tes amis <ArrowPathIcon className="ml-2 h-4 w-4" />
+                  Parties de tes amis
+                  {/* <ArrowPathIcon className="ml-2 h-4 w-4" /> */}
                 </div>
 
                 {!invitations.length && !Object.keys(publicRooms).length && (

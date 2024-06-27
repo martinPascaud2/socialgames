@@ -94,6 +94,31 @@ export async function inviteFriend({
   });
 }
 
+export async function inviteAll({
+  userId,
+  userName,
+
+  categorie,
+  gameName,
+  mode,
+  roomToken,
+}) {
+  const friends = await getRoomFriendList({ userId });
+
+  await Promise.all(
+    friends.map(async (friend) => {
+      await inviteFriend({
+        userName,
+        friendMail: friend.email,
+        categorie,
+        gameName,
+        mode,
+        roomToken,
+      });
+    })
+  );
+}
+
 export async function deleteInvitations({
   userId,
   categorie,

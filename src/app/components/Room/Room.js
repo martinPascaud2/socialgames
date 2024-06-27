@@ -40,6 +40,7 @@ import {
   serverCreate,
   goOneMoreGame,
   inviteFriend,
+  inviteAll,
   deleteInvitations,
   serverJoin,
   triggerGamers,
@@ -550,12 +551,22 @@ export default function Room({
                   <div className="flex justify-center items-center m-2">
                     {isPrivate ? (
                       <LockClosedIcon
-                        onClick={() => togglePriv()}
+                        onClick={async () => {
+                          await togglePriv();
+                          await inviteAll({
+                            userId: user.id,
+                            userName: user.name,
+                            categorie,
+                            gameName,
+                            mode: options?.mode,
+                            roomToken,
+                          });
+                        }}
                         className="ml-2 mb-2 w-8 h-8 text-blue-300"
                       />
                     ) : (
                       <LockOpenIcon
-                        onClick={() => togglePriv()}
+                        onClick={async () => await togglePriv()}
                         className="ml-2 mb-2 w-8 h-8 text-green-300"
                       />
                     )}
