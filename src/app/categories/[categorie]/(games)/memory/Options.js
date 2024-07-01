@@ -39,7 +39,7 @@ export default function MemoryOptions({
 
   useEffect(() => {
     if (!lastParams) return;
-    setPairsNumber(lastParams.pairsNumber);
+    lastParams.pairsNumber && setPairsNumber(lastParams.pairsNumber);
   }, [lastParams]);
 
   return (

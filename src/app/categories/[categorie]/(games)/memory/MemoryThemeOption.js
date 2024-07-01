@@ -23,7 +23,7 @@ export default function MemoryThemeOption({
     setThemes((prevThemes) => {
       const lastThemes = lastParams.themes;
       const newThemes = prevThemes.map((theme) => {
-        if (lastThemes.some((lastTheme) => lastTheme === theme.theme)) {
+        if (lastThemes?.some((lastTheme) => lastTheme === theme.theme)) {
           return theme;
         } else {
           return { ...theme, selected: false };
