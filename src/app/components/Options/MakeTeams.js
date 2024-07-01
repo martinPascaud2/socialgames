@@ -9,9 +9,9 @@ export default function MakeTeams({ setOptions, last }) {
 
   useEffect(() => {
     if (!last) return;
-    setMinByTeam(last.minByTeam);
-    setTeamsNumber(last.teamsNumber);
-    setTeamMode(last.teamMode);
+    last.minByTeam && setMinByTeam(last.minByTeam);
+    last.teamsNumber && setTeamsNumber(last.teamsNumber);
+    last.teamMode && setTeamMode(last.teamMode);
   }, [last]);
 
   useEffect(() => {
