@@ -8,6 +8,10 @@ export default function AimPoints({ setOptions, min, max, defaultValue }) {
   );
 
   useEffect(() => {
+    setAimPoints(defaultValue);
+  }, [defaultValue]);
+
+  useEffect(() => {
     if (aimPoints < min) setAimPoints(min);
     if (aimPoints > max) setAimPoints(max);
 

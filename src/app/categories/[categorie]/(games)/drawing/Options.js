@@ -2,17 +2,25 @@
 
 import { useEffect, useState } from "react";
 
+import getLastParams from "@/utils/getLastParams";
+
 import ModeSelector from "@/components/Options/ModeSelector";
 import MakeTeams from "@/components/Options/MakeTeams";
 import Countdown from "@/components/Options/Countdown";
 import AimPoints from "@/components/Options/AimPoints";
 
-export default function DrawingOptions({ setOptions, lastMode }) {
+export default function DrawingOptions({ lastMode, setOptions, userId }) {
   const [mode, setMode] = useState(lastMode?.mode || "Pictionary");
+  const [lastParams, setLastParams] = useState();
   const [modeList, setModeList] = useState([]);
 
   useEffect(() => {
-    setOptions((options) => ({ ...options, mode }));
+    const loadLasts = async () => {
+      const params = await getLastParams({ userId, mode });
+      setLastParams(params);
+      setOptions({ ...params, mode });
+    };
+    loadLasts();
 
     setModeList([
       { mode: "Pictionary", text: "Pictionary" },
@@ -34,23 +42,20 @@ export default function DrawingOptions({ setOptions, lastMode }) {
       {mode === "Pictionary" && (
         <div className="flex flex-wrap justify-center">
           <div>
-            <MakeTeams
-              setOptions={setOptions}
-              last={lastMode?.options?.teamMode}
-            />
+            <MakeTeams setOptions={setOptions} last={lastParams} />
           </div>
           <div className="w-full grid grid-cols-2">
             <Countdown
               setOptions={setOptions}
               min={1}
               max={5}
-              last={lastMode?.options?.countDownTime}
+              last={lastParams?.countDownTime}
             />
             <AimPoints
               setOptions={setOptions}
               min={3}
               max={10}
-              defaultValue={lastMode?.options?.aimPoints || 5}
+              defaultValue={lastParams?.aimPoints || 5}
             />
           </div>
         </div>
@@ -62,7 +67,7 @@ export default function DrawingOptions({ setOptions, lastMode }) {
             setOptions={setOptions}
             min={1}
             max={5}
-            last={lastMode?.options?.countDownTime}
+            last={lastParams?.countDownTime}
           />
         </>
       )}

@@ -5,7 +5,14 @@ import { useEffect, useState } from "react";
 export default function MakeTeams({ setOptions, last }) {
   const [minByTeam, setMinByTeam] = useState(2);
   const [teamsNumber, setTeamsNumber] = useState(2);
-  const [teamMode, setTeamMode] = useState(last || "teamNumber");
+  const [teamMode, setTeamMode] = useState(last?.teamMode || "teamNumber");
+
+  useEffect(() => {
+    if (!last) return;
+    setMinByTeam(last.minByTeam);
+    setTeamsNumber(last.teamsNumber);
+    setTeamMode(last.teamMode);
+  }, [last]);
 
   useEffect(() => {
     setOptions((options) => ({ ...options, teamMode }));

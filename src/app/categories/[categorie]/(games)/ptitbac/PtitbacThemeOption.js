@@ -6,7 +6,7 @@ import { getAllThemes } from "./gameActions";
 
 import Modal from "@/components/Modal";
 
-export default function PtitbacThemeOption({ setOptions, max, lastMode }) {
+export default function PtitbacThemeOption({ setOptions, max, lastParams }) {
   const defaultThemes = useMemo(
     () => [
       { theme: "Animal", selected: true },
@@ -30,7 +30,7 @@ export default function PtitbacThemeOption({ setOptions, max, lastMode }) {
     const fetchThemes = async () => {
       const allThemes = await getAllThemes();
 
-      const lastThemes = lastMode?.options?.themes;
+      const lastThemes = lastParams?.themes;
       const statusAllThemes = allThemes.map((theme) => ({
         theme,
         selected: lastThemes?.some((last) => last === theme) || false,
@@ -48,13 +48,10 @@ export default function PtitbacThemeOption({ setOptions, max, lastMode }) {
         )
       );
       setAllRandomLength(statusAllThemes.length);
-      lastMode &&
-        lastMode.options &&
-        lastMode.options.random &&
-        setRandom(lastMode.options.random);
+      lastParams && lastParams.random && setRandom(lastParams.random);
     };
     setTimeout(() => fetchThemes(), 1000); // tricky
-  }, [defaultThemes]);
+  }, [defaultThemes, lastParams]);
 
   useEffect(() => {
     if (!themes || !setOptions) return;

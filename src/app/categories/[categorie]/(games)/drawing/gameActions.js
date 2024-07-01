@@ -115,26 +115,31 @@ export async function launchGame({
   });
 
   const { error, teams } =
-    options.teamMode === "teamNumber"
-      ? makeTeams({
-          gamersList: gamersAndGuests,
-          teamsNumber: options.teamsNumber,
-        })
-      : makeMinimalTeams({
-          gamersList: gamersAndGuests,
-          minByTeam: options.minByTeam,
-        });
+    options.mode === "Pictionary"
+      ? options.teamMode === "teamNumber"
+        ? makeTeams({
+            gamersList: gamersAndGuests,
+            teamsNumber: options.teamsNumber,
+          })
+        : makeMinimalTeams({
+            gamersList: gamersAndGuests,
+            minByTeam: options.minByTeam,
+          })
+      : {};
   if (error) return { error };
 
-  const activePlayers = Object.entries(teams).map((team) => ({
-    ...team[1][0],
-    team: team[0],
-  }));
+  const activePlayers =
+    teams &&
+    Object.entries(teams).map((team) => ({
+      ...team[1][0],
+      team: team[0],
+    }));
 
   const counts = {};
-  Object.keys(teams).forEach(
-    (teamKey) => (counts[teamKey] = { votes: [], points: 0 })
-  );
+  teams &&
+    Object.keys(teams).forEach(
+      (teamKey) => (counts[teamKey] = { votes: [], points: 0 })
+    );
 
   let words = [];
   if (options.mode === "Esquissé") {

@@ -3,6 +3,7 @@
 import shuffleArray from "@/utils/shuffleArray";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkPlayers from "@/utils/checkPlayers";
+import { saveLastParams } from "@/utils/getLastParams";
 
 export async function launchGame({
   roomId,
@@ -181,7 +182,14 @@ export async function prepareNewGame({ roomToken, gameData }) {
   });
 }
 
-export async function goNewMemoryGame({ roomToken, gameData, options }) {
+export async function goNewMemoryGame({
+  userId,
+  roomToken,
+  gameData,
+  options,
+}) {
+  await saveLastParams({ userId, options });
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,

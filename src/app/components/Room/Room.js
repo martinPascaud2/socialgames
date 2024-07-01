@@ -18,6 +18,7 @@ import getLocation from "@/utils/getLocation";
 import getErrorInformations from "@/utils/getErrorInformations";
 import { gamesRefs } from "@/assets/globals";
 import { getRoomFriendList } from "@/utils/getFriendList";
+import { saveLastParams } from "@/utils/getLastParams";
 
 import DeleteGroup from "@/components/DeleteGroup";
 import ChooseAnotherGame from "@/components/ChooseAnotherGame";
@@ -377,6 +378,9 @@ export default function Room({
   }, [user.id, categorie, gameName, roomToken]);
 
   const launchRoom = async () => {
+    gameName !== "grouping" &&
+      Object.keys(options).length &&
+      (await saveLastParams({ userId: user.id, options }));
     const { error } = await launchGame({
       roomId,
       roomToken,
@@ -924,8 +928,9 @@ export default function Room({
 
                   <hr />
 
-                  {Options && setOptions && setServerMessage && (
+                  {Options && options && setOptions && setServerMessage && (
                     <Options
+                      userId={user.id}
                       setOptions={setOptions}
                       lastMode={group?.lastMode}
                       setServerMessage={setServerMessage}

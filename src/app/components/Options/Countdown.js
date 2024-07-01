@@ -8,6 +8,11 @@ export default function Countdown({ setOptions, min, max, last }) {
   );
 
   useEffect(() => {
+    if (!last) return;
+    setCountDownTime(last / 60 / 1000);
+  }, [last]);
+
+  useEffect(() => {
     if (countDownTime < min) setCountDownTime(min);
     if (countDownTime > max) setCountDownTime(max);
     setOptions((options) => ({

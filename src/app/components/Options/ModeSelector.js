@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 //modeList [{mode: "mode1", text: "text1"}, ...]
 export default function ModeSelector({
@@ -9,11 +9,19 @@ export default function ModeSelector({
   setMode,
   setOptions,
 }) {
+  const [value, setValue] = useState();
+  useEffect(() => {
+    if (!defaultValue) return;
+    setValue(defaultValue);
+  }, [defaultValue]);
+
   const Select = useCallback(() => {
+    if (!value) return;
+
     return (
       <div className="flex justify-center">
         <select
-          defaultValue={defaultValue || modeList[0]}
+          defaultValue={value}
           onChange={(e) => (
             setMode(e.target.value),
             setOptions((options) => ({ ...options, mode: e.target.value }))
@@ -28,12 +36,12 @@ export default function ModeSelector({
         </select>
       </div>
     );
-  }, [defaultValue, modeList, setMode, setOptions]);
+  }, [value, modeList, setMode, setOptions]);
 
   return (
     <div className="flex flex-col items-center m-1">
       <div>Mode de jeu</div>
-      <Select />
+      {Select()}
     </div>
   );
 }

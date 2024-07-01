@@ -228,7 +228,7 @@ export default function Memory({
         {isEnded && isAdmin && (
           <MemoryOptions
             setOptions={setOptions}
-            lastMode={{ mode: options?.mode, options }}
+            userId={user.id}
             setServerMessage={setServerMessage}
           />
         )}
@@ -240,7 +240,12 @@ export default function Memory({
         roomToken={roomToken}
         reset={async () => {
           await prepareNewGame({ roomToken, gameData });
-          await goNewMemoryGame({ roomToken, gameData, options });
+          await goNewMemoryGame({
+            userId: user.id,
+            roomToken,
+            gameData,
+            options,
+          });
         }}
         storedLocation={storedLocation}
         user={user}

@@ -11,24 +11,30 @@ datasource db {
 }
 
 model User {
-  id                     Int                       @id @default(autoincrement())
-  email                  String                    @unique
-  name                   String                    @unique
-  password               String
-  creationDate           DateTime                  @db.Date
-  lastControlPanel       DateTime?                 @db.DateTime(0)
-  friends                Friend[]                  @relation("userFriends")
-  friendOf               Friend[]                  @relation("userFriendOf")
-  room                   Room?                     @relation(fields: [roomId], references: [id])
-  roomId                 Int?
-  alreadyActionouverite  Json?
-  alreadyUndercovertheme UndercoverthemesOnUsers[]
-  alreadyPtitbactheme    PtitbacthemesOnUsers[]
-  ptitbacResponses       String                    @default("")
-  png                    String                    @default("") @db.Text
-  drawChain              DrawLink[]
-  alreadyDrawingWords    DrawingWordsOnUsers[]
-  unoCount               Int?
+  id                          Int                       @id @default(autoincrement())
+  email                       String                    @unique
+  name                        String                    @unique
+  password                    String
+  creationDate                DateTime                  @db.Date
+  lastControlPanel            DateTime?                 @db.DateTime(0)
+  friends                     Friend[]                  @relation("userFriends")
+  friendOf                    Friend[]                  @relation("userFriendOf")
+  room                        Room?                     @relation(fields: [roomId], references: [id])
+  roomId                      Int?
+  alreadyActionouverite       Json?
+  alreadyUndercovertheme      UndercoverthemesOnUsers[]
+  alreadyPtitbactheme         PtitbacthemesOnUsers[]
+  ptitbacResponses            String                    @default("")
+  pictionaryLastParams        Json?
+  esquisseLastParams          Json?
+  memoryLastParams            Json?
+  ptitbacLastParams           Json?
+  triaction_random_LastParams Json?
+  triaction_peek_LastParams   Json?
+  png                         String                    @default("") @db.Text
+  drawChain                   DrawLink[]
+  alreadyDrawingWords         DrawingWordsOnUsers[]
+  unoCount                    Int?
 }
 
 model Multiguest {

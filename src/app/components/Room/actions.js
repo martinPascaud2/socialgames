@@ -97,7 +97,6 @@ export async function inviteFriend({
 export async function inviteAll({
   userId,
   userName,
-
   categorie,
   gameName,
   mode,

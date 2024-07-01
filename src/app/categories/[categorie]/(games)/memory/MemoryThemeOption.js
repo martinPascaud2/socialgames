@@ -8,7 +8,7 @@ export default function MemoryThemeOption({
   setSelectedThemes,
   max,
   setServerMessage,
-  lastMode,
+  lastParams,
 }) {
   const [themes, setThemes] = useState([
     { theme: "ObjectBall", label: "Ballons", selected: true },
@@ -18,10 +18,10 @@ export default function MemoryThemeOption({
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    if (!lastMode || !lastMode.options) return;
+    if (!lastParams) return;
 
     setThemes((prevThemes) => {
-      const lastThemes = lastMode.options.themes;
+      const lastThemes = lastParams.themes;
       const newThemes = prevThemes.map((theme) => {
         if (lastThemes.some((lastTheme) => lastTheme === theme.theme)) {
           return theme;
@@ -33,7 +33,7 @@ export default function MemoryThemeOption({
         JSON.stringify(prevThemes) !== JSON.stringify(newThemes);
       return themesChanged ? newThemes : prevThemes;
     });
-  }, [lastMode]);
+  }, [lastParams]);
 
   useEffect(() => {
     if (!themes || !setOptions) return;

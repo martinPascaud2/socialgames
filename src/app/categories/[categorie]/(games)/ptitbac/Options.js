@@ -2,17 +2,25 @@
 
 import { useEffect, useState } from "react";
 
+import getLastParams from "@/utils/getLastParams";
+
 import Countdown from "@/components/Options/Countdown";
 import ModeSelector from "@/components/Options/ModeSelector";
 import AimPoints from "@/components/Options/AimPoints";
 import PtitbacThemeOption from "./PtitbacThemeOption";
 
-export default function PtitbacOptions({ setOptions, lastMode }) {
+export default function PtitbacOptions({ setOptions, userId, lastMode }) {
   const [mode, setMode] = useState(lastMode?.mode || "P'tit bac");
+  const [lastParams, setLastParams] = useState();
   const [modeList, setModeList] = useState([]);
 
   useEffect(() => {
-    setOptions((options) => ({ ...options, mode }));
+    const loadLasts = async () => {
+      const params = await getLastParams({ userId, mode });
+      setLastParams(params);
+      setOptions({ ...params, mode });
+    };
+    loadLasts();
 
     setModeList([{ mode: "P'tit bac", text: "P'tit bac" }]);
   }, [mode, setOptions]);
@@ -20,7 +28,7 @@ export default function PtitbacOptions({ setOptions, lastMode }) {
   return (
     <div>
       <ModeSelector
-        defaultValue={lastMode?.mode || "P'tit bac"}
+        defaultValue={mode}
         modeList={modeList}
         setMode={setMode}
         setOptions={setOptions}
@@ -29,15 +37,19 @@ export default function PtitbacOptions({ setOptions, lastMode }) {
         setOptions={setOptions}
         min={1}
         max={7}
-        last={lastMode?.options?.countDownTime}
+        last={lastParams?.countDownTime}
       />
       <AimPoints
         setOptions={setOptions}
         min={0}
         max={30}
-        defaultValue={lastMode?.options?.aimPoints || 0}
+        defaultValue={lastParams?.aimPoints || 0}
       />
-      <PtitbacThemeOption setOptions={setOptions} max={6} lastMode={lastMode} />
+      <PtitbacThemeOption
+        setOptions={setOptions}
+        max={6}
+        lastParams={lastParams}
+      />
     </div>
   );
 }

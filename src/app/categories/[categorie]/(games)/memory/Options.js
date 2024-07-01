@@ -2,24 +2,31 @@
 
 import { useEffect, useState } from "react";
 
+import getLastParams from "@/utils/getLastParams";
+
 import ModeSelector from "@/components/Options/ModeSelector";
 import MemoryThemeOption from "./MemoryThemeOption";
 
 export default function MemoryOptions({
   setOptions,
   lastMode,
+  userId,
   setServerMessage,
 }) {
   const [mode, setMode] = useState(lastMode?.mode || "Memory");
-  const [modeList, setModeList] = useState([]);
 
-  const [pairsNumber, setPairsNumber] = useState(
-    lastMode?.options?.pairsNumber || 12
-  );
+  const [lastParams, setLastParams] = useState();
+  const [modeList, setModeList] = useState([]);
+  const [pairsNumber, setPairsNumber] = useState(12);
   const [selectedThemes, setSelectedThemes] = useState([]);
 
   useEffect(() => {
-    setOptions((options) => ({ ...options, mode }));
+    const loadLasts = async () => {
+      const params = await getLastParams({ userId, mode });
+      setLastParams(params);
+      setOptions({ ...params, mode });
+    };
+    loadLasts();
 
     setModeList([{ mode: "Memory", text: "Memory" }]);
   }, [mode, setOptions]);
@@ -29,6 +36,11 @@ export default function MemoryOptions({
     if (pairsNumber > 12) setPairsNumber(12);
     setOptions((options) => ({ ...options, pairsNumber }));
   }, [pairsNumber]);
+
+  useEffect(() => {
+    if (!lastParams) return;
+    setPairsNumber(lastParams.pairsNumber);
+  }, [lastParams]);
 
   return (
     <div>
@@ -70,7 +82,7 @@ export default function MemoryOptions({
         setSelectedThemes={setSelectedThemes}
         max={pairsNumber}
         setServerMessage={setServerMessage}
-        lastMode={lastMode}
+        lastParams={lastParams}
       />
     </div>
   );
