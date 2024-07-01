@@ -579,11 +579,29 @@ export default function Room({
               )}
 
               <div>
-                Liste des joueurs [
-                {gamerList.length + guestList.length + multiGuestList.length}
-                {gamesRefs[gameName].limits &&
-                  ` / ${gamesRefs[gameName].limits.max}`}
-                ]
+                {(() => {
+                  const gamersNumber =
+                    gamerList.length + guestList.length + multiGuestList.length;
+                  const badGamersNumber =
+                    gamersNumber < gamesRefs[gameName].limits?.min ||
+                    gamersNumber > gamesRefs[gameName].limits?.max;
+
+                  return (
+                    <div>
+                      Liste des joueurs [
+                      <span
+                        className={`${
+                          badGamersNumber && "text-red-800 font-semibold"
+                        }`}
+                      >
+                        {gamersNumber}
+                      </span>
+                      {gamesRefs[gameName].limits &&
+                        ` / ${gamesRefs[gameName].limits.max}`}
+                      ]
+                    </div>
+                  );
+                })()}
               </div>
 
               {group?.gamers &&
