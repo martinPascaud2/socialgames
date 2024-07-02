@@ -112,6 +112,7 @@ export default function PtitbacThemeOption({
         <div className="">
           {selectedThemes.length} catégorie
           {selectedThemes.length >= 2 ? "s" : ""}
+          {!!random && ` (+${random} aléatoire${random >= 2 ? "s" : ""})`}
         </div>
       </button>
 
@@ -166,6 +167,7 @@ export default function PtitbacThemeOption({
                     onClick={() => {
                       setRandom((prevRan) => (prevRan !== 0 ? prevRan - 1 : 0));
                       setModalMessage("");
+                      setServerMessage("");
                     }}
                     className="border border-blue-300 bg-blue-100 w-6"
                   >
@@ -178,6 +180,7 @@ export default function PtitbacThemeOption({
                       else {
                         setRandom((prevRan) => prevRan + 1);
                         setModalMessage("");
+                        setServerMessage("");
                       }
                     }}
                     className="border border-blue-300 bg-blue-100 w-6"
