@@ -14,7 +14,6 @@ import {
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 import CountDown from "@/components/CountDown";
-import ToggleCheckbox from "@/components/Room/ToggleCheckbox";
 import NextStep from "@/components/NextStep";
 import NextEndingPossibilities from "@/components/NextEndingPossibilities";
 
@@ -227,18 +226,14 @@ export default function Ptitbac({
               <div className="flex flex-col w-1/6 justify-center items-center">
                 <div>{group.word}</div>
               </div>
-              <div className="flex flex-col w-1/6 justify-center items-center">
-                <div>
-                  {!isInvalidated ? (
-                    <CheckIcon className="block h-6 w-6 " />
-                  ) : (
-                    <XMarkIcon className="block h-6 w-6 " />
-                  )}
-                </div>
-              </div>
-              {isReferee && (
-                <ToggleCheckbox
-                  onChange={async () => {
+              <div
+                className={`flex flex-col w-1/6 justify-center items-center ${
+                  isReferee && "border border-blue-300 bg-blue-100"
+                }`}
+              >
+                <div
+                  onClick={async () => {
+                    if (!isReferee) return;
                     const newRefereeValidation = {
                       ...refereeValidation,
                       [i]: {
@@ -252,11 +247,14 @@ export default function Ptitbac({
                       gameData,
                     });
                   }}
-                  checked={!isInvalidated}
-                  colors={{ yes: "rgb(22, 163, 74)", no: "rgb(220, 38, 38)" }}
-                  size={70}
-                />
-              )}
+                >
+                  {!isInvalidated ? (
+                    <CheckIcon className="block h-6 w-6 " />
+                  ) : (
+                    <XMarkIcon className="block h-6 w-6 " />
+                  )}
+                </div>
+              </div>
             </div>
           );
         })}
