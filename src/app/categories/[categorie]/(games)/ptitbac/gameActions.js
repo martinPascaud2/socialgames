@@ -24,13 +24,11 @@ export async function launchGame({
   if (playersError) return { error: playersError };
 
   const { themes, random } = options;
-  const miss = 6 - (themes.length + random);
-  if (miss > 0)
+  if (themes.length + random === 0) {
     return {
-      error: `Il te manque ${miss} catégorie${
-        miss >= 2 ? "s" : ""
-      } à sélectionner`,
+      error: "Aucune catégorie sélectionnée",
     };
+  }
 
   const startedRoom = await prisma.room.update({
     where: {
@@ -175,7 +173,11 @@ async function getThemes({ gameData }) {
       let randomWeight = Math.random() * totalWeight;
       for (const [key, weight] of Object.entries(shuffledStatusRandoms)) {
         cumulativeWeight += weight;
-        if (newRandoms.some((newRandom) => newRandom === key)) continue;
+        if (
+          newRandoms.some((newRandom) => newRandom === key) ||
+          themes.some((theme) => theme === key)
+        )
+          continue;
         if (randomWeight < cumulativeWeight) {
           newRandoms.push(key);
           randomNumber--;

@@ -84,7 +84,7 @@ export default function Ptitbac({
     gameData;
 
   const [responses, setResponses] = useState(
-    Array.from({ length: 6 }, () => "")
+    Array.from({ length: themes?.length }, () => "")
   );
   const [isCompleted, setIsCompleted] = useState(false);
   const [hasValidated, setHasValidated] = useState(false);
@@ -123,11 +123,11 @@ export default function Ptitbac({
 
   useEffect(() => {
     phase === "searching" &&
-      setResponses(Array.from({ length: 6 }, () => `${letter}`));
+      setResponses(Array.from({ length: themes.length }, () => `${letter}`));
 
     const send = async () => {
       if (phase === "sending") {
-        setResponses(Array.from({ length: 6 }, () => ""));
+        setResponses(Array.from({ length: themes.length }, () => ""));
         setIsCompleted(false);
         isAdmin &&
           setTimeout(async () => {
@@ -149,8 +149,10 @@ export default function Ptitbac({
 
   useEffect(() => {
     if (
-      Object.keys(themesResponses).length &&
+      themesResponses &&
       valTheme &&
+      themesResponses[valTheme] &&
+      Object.keys(themesResponses).length &&
       Object.values(themesResponses[valTheme]).every(
         (res) => res.validated === false
       )
