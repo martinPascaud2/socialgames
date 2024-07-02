@@ -18,7 +18,7 @@ export default function NextEndingPossibilities({
         <div className="w-full flex justify-around">
           {isAdmin ? (
             !isEnded ? (
-              <div className="absolute bottom-0 left-0">
+              <div className="absolute bottom-[2rem] left-2">
                 <FinishGame gameData={gameData} roomToken={roomToken} />
               </div>
             ) : (

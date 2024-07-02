@@ -856,7 +856,7 @@ export default function Room({
                 </div>
               )}
 
-              <div className="absolute bottom-0">
+              <div className="absolute bottom-[2rem] left-2">
                 {!user.multiGuest && !isAdmin && (
                   <button
                     onClick={async () => await deleteGamer(uniqueName)}
@@ -963,13 +963,13 @@ export default function Room({
                     <div className="relative h-full">
                       <div
                         onClick={async () => await deleteInvs()}
-                        className="absolute bottom-0 left-0"
+                        className="absolute bottom-[2rem] left-2"
                       >
                         <DeleteGroup roomToken={roomToken} />
                       </div>
                       <div
                         onClick={async () => await deleteInvs()}
-                        className="absolute bottom-0 right-0"
+                        className="absolute bottom-[2rem] right-2"
                       >
                         {group?.lastGame &&
                           group.lastGame !== "grouping" &&
