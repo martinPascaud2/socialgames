@@ -204,9 +204,17 @@ async function getThemes({ gameData }) {
 
 export async function startCountdown({ time, roomToken, gameData }) {
   const { newThemes, newStatusRandoms } = await getThemes({ gameData });
-  const randomLetter = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[
-    Math.floor(Math.random() * 26)
-  ];
+
+  let alreadyLetters = gameData.alreadyLetters || "";
+  const remainedLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".replace(
+    new RegExp(`[${alreadyLetters}]`, "g"),
+    ""
+  );
+  const randomLetter =
+    remainedLetters[Math.floor(Math.random() * remainedLetters.length)];
+  alreadyLetters += randomLetter;
+  if (alreadyLetters.length === 26) alreadyLetters = "";
+
   const finishCountdownDate = Date.now() + time;
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
@@ -215,6 +223,7 @@ export async function startCountdown({ time, roomToken, gameData }) {
       phase: "searching",
       themes: newThemes,
       letter: randomLetter,
+      alreadyLetters,
       finishCountdownDate,
       statusRandoms: newStatusRandoms,
     },
