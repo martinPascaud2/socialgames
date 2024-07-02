@@ -6,7 +6,12 @@ import { getAllThemes } from "./gameActions";
 
 import Modal from "@/components/Modal";
 
-export default function PtitbacThemeOption({ setOptions, max, lastParams }) {
+export default function PtitbacThemeOption({
+  setOptions,
+  max,
+  lastParams,
+  setServerMessage,
+}) {
   const defaultThemes = useMemo(
     () => [
       { theme: "Animal", selected: true },
@@ -72,6 +77,7 @@ export default function PtitbacThemeOption({ setOptions, max, lastParams }) {
 
   const handleCheck = useCallback(
     (theme) => {
+      setServerMessage("");
       if (!theme.selected && selectedThemes.length + random === max) {
         setModalMessage("Nombre maximal de catégories atteint");
         return;
