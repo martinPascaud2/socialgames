@@ -50,6 +50,10 @@ export async function launchGame({
     name: gamer.name,
     gold: 0,
   }));
+  const lastTurnCounts = gamersAndGuests.map((gamer) => ({
+    name: gamer.name,
+    gold: 0,
+  }));
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
@@ -57,9 +61,11 @@ export async function launchGame({
       admin: startedRoom.admin,
       activePlayer: gamersAndGuests[0],
       gamers: gamersAndGuests,
+      hasFirstTurn: true,
       phase: "waiting",
       themes: [],
       counts,
+      lastTurnCounts,
       options,
     },
   });
@@ -204,6 +210,7 @@ async function getThemes({ gameData }) {
 
 export async function startCountdown({ time, roomToken, gameData }) {
   const { newThemes, newStatusRandoms } = await getThemes({ gameData });
+  const { counts } = gameData;
 
   let alreadyLetters = gameData.alreadyLetters || "";
   const remainedLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".replace(
@@ -221,11 +228,13 @@ export async function startCountdown({ time, roomToken, gameData }) {
     gameData: {
       ...gameData,
       phase: "searching",
+      hasFirstTurn: false,
       themes: newThemes,
       letter: randomLetter,
       alreadyLetters,
       finishCountdownDate,
       statusRandoms: newStatusRandoms,
+      lastTurnCounts: counts,
     },
   });
 }
@@ -341,7 +350,8 @@ export async function refereeTrigger({
 }
 
 export async function validate({ roomToken, gameData }) {
-  const { counts, themesResponses, phase, themes, options } = gameData;
+  const { counts, lastTurnCounts, themesResponses, phase, themes, options } =
+    gameData;
   const valThemeIndex = parseInt(phase.split("-")[1]);
   const theme = themes[valThemeIndex];
 
@@ -372,6 +382,7 @@ export async function validate({ roomToken, gameData }) {
       gameData: {
         ...gameData,
         counts: newCounts,
+        lastTurnCounts,
         phase: nextPhase,
       },
     });
@@ -385,6 +396,7 @@ export async function validate({ roomToken, gameData }) {
         gameData: {
           ...gameData,
           counts: newCounts,
+          lastTurnCounts,
           phase: "waiting",
         },
       });
@@ -393,6 +405,7 @@ export async function validate({ roomToken, gameData }) {
         gameData: {
           ...gameData,
           counts: newCounts,
+          lastTurnCounts,
           winners: finalWinners,
           phase: "ended",
           ended: true,

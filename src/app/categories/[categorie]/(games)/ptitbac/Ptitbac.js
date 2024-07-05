@@ -80,8 +80,16 @@ export default function Ptitbac({
 }) {
   const isAdmin = gameData.admin === user.name;
   const isReferee = isAdmin; //check
-  const { phase, letter, themes, finishCountdownDate, counts, winners } =
-    gameData;
+  const {
+    phase,
+    hasFirstTurn,
+    letter,
+    themes,
+    finishCountdownDate,
+    counts,
+    lastTurnCounts,
+    winners,
+  } = gameData;
 
   const [responses, setResponses] = useState(
     Array.from({ length: themes?.length }, () => "")
@@ -302,13 +310,25 @@ export default function Ptitbac({
           <div className="font-semibold">Points</div>
           {counts
             ?.sort((a, b) => a.name.localeCompare(b.name))
-            .map((gamerCount) => (
-              <div key={gamerCount.name}>
-                {gamerCount.name} :{" "}
-                <span className="font-semibold">{gamerCount.gold}</span> point
-                {gamerCount.gold > 1 ? "s" : ""}
-              </div>
-            ))}
+            .map((gamerCount) => {
+              const turnPoints =
+                lastTurnCounts &&
+                gamerCount.gold -
+                  lastTurnCounts.find(
+                    (lastCount) => lastCount.name === gamerCount.name
+                  ).gold;
+
+              return (
+                <div key={gamerCount.name}>
+                  {gamerCount.name} :{" "}
+                  <span className="font-semibold">{gamerCount.gold}</span> point
+                  {gamerCount.gold > 1 ? "s" : ""}
+                  {phase !== "searching" && !hasFirstTurn ? (
+                    <span className="italic text-sm">(+{turnPoints})</span>
+                  ) : null}
+                </div>
+              );
+            })}
         </div>
 
         <hr />
