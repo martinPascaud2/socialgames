@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
 import Image from "next/image";
 import { useCallback, useState } from "react";
 
@@ -12,15 +11,20 @@ import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 const useSwipe = (activeIndex, updateIndex) => {
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+  const [isSwiping, setIsSwiping] = useState(false);
 
   const minSwipeDistance = 50;
 
   const onTouchStart = (e) => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
+    setIsSwiping(false);
   };
 
-  const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+    setIsSwiping(true);
+  };
 
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
@@ -36,7 +40,7 @@ const useSwipe = (activeIndex, updateIndex) => {
     }
   };
 
-  return { onTouchStart, onTouchMove, onTouchEnd };
+  return { onTouchStart, onTouchMove, onTouchEnd, isSwiping };
 };
 
 export default function OneCategoriePage({ params }) {
@@ -61,7 +65,7 @@ export default function OneCategoriePage({ params }) {
     [games.length]
   );
 
-  const { onTouchStart, onTouchMove, onTouchEnd } = useSwipe(
+  const { onTouchStart, onTouchMove, onTouchEnd, isSwiping } = useSwipe(
     activeIndex,
     updateIndex
   );
@@ -73,6 +77,7 @@ export default function OneCategoriePage({ params }) {
         key={i}
         onClick={(e) => {
           e.stopPropagation();
+          e.preventDefault();
           setActiveIndex(i);
         }}
         className={`w-8 h-4 ${
@@ -109,8 +114,13 @@ export default function OneCategoriePage({ params }) {
                     onTouchMove={onTouchMove}
                     onTouchEnd={onTouchEnd}
                     onClick={(e) => {
-                      e.stopPropagation();
-                      router.push(`/categories/${categorie}/${game.path}`);
+                      if (isSwiping) {
+                        e.stopPropagation();
+                        e.preventDefault();
+                      } else {
+                        e.stopPropagation();
+                        router.push(`/categories/${categorie}/${game.path}`);
+                      }
                     }}
                     priority
                   />

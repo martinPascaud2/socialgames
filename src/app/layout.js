@@ -22,9 +22,14 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
+      <meta name="apple-mobile-web-app-capable" content="yes"></meta>
+      <meta
+        name="apple-mobile-web-app-status-bar-style"
+        content="black-translucent"
+      ></meta>
       <body className={`${inter.className}`}>
         <div className="fixed top-0 w-full bg-black z-40 h-20" />
-        {children}
+        <div className="h-screen">{children}</div>
         <div className="fixed bottom-0 w-full bg-black z-0 h-20" />
       </body>
     </html>
