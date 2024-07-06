@@ -18,7 +18,7 @@ export default function Memory({
   gameData,
   storedLocation,
 }) {
-  const { scores } = gameData;
+  const { success, scores } = gameData;
   const isAdmin = gameData.admin === user.name;
   const [isActive, setIsActive] = useState(false);
 
@@ -122,13 +122,19 @@ export default function Memory({
     const triggered = gameData.icons?.filter((icon) => icon.triggered).length;
     if (triggered >= 2) {
       setIsRevealing(true);
-      setTimeout(async () => {
-        isActive && (await hideUndiscovered({ roomToken, gameData }));
-      }, 1000);
-      setTimeout(() => {
-        setTriggeredNumber(0);
-        setIsRevealing(false);
-      }, 1200);
+      setTimeout(
+        async () => {
+          isActive && (await hideUndiscovered({ roomToken, gameData }));
+        },
+        !success ? 1000 : 0
+      );
+      setTimeout(
+        () => {
+          setTriggeredNumber(0);
+          setIsRevealing(false);
+        },
+        !success ? 1200 : 0
+      );
     }
   }, [gameData.icons, isActive]);
 

@@ -150,6 +150,7 @@ export async function revealCard({ roomToken, gameData, index }) {
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
+      success,
       icons: newIcons,
       activePlayer: newActivePlayer,
       scores: newScores,
