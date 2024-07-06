@@ -38,9 +38,10 @@ export async function launchGame({
     multiGuests,
   });
 
-  const scores = gamersAndGuests.map((gamer) => ({
+  const roundScores = gamersAndGuests.map((gamer) => ({
     [gamer.name]: 0,
   }));
+  const totalScores = [...roundScores];
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
@@ -48,7 +49,8 @@ export async function launchGame({
       admin: startedRoom.admin,
       activePlayer: gamersAndGuests[0],
       gamers: gamersAndGuests,
-      scores,
+      roundScores,
+      totalScores,
       options,
     },
   });
@@ -104,7 +106,8 @@ const getNextGamer = (gamers, activePlayer, newIcons) => {
 };
 
 export async function revealCard({ roomToken, gameData, index }) {
-  const { icons } = gameData;
+  const { icons, gamers } = gameData;
+  let { totalScores } = gameData;
 
   const icon = icons[index];
   const newIcon = { ...icon, triggered: true };
@@ -130,14 +133,14 @@ export async function revealCard({ roomToken, gameData, index }) {
   };
   checkDiscovered();
 
-  const newScores = [...gameData.scores];
+  let newRoundScores = [...gameData.roundScores];
   if (success) {
-    const gamerIndex = newScores.findIndex(
+    const gamerIndex = newRoundScores.findIndex(
       (score) => Object.entries(score)[0][0] === gameData.activePlayer.name
     );
-    newScores[gamerIndex] = {
+    newRoundScores[gamerIndex] = {
       [gameData.activePlayer.name]:
-        Object.entries(newScores[gamerIndex])[0][1] + 1,
+        Object.entries(newRoundScores[gamerIndex])[0][1] + 1,
     };
   }
 
@@ -147,13 +150,51 @@ export async function revealCard({ roomToken, gameData, index }) {
 
   const isEnded = newIcons.every((icon) => icon.discovered);
 
+  const scoresEvolution = {};
+  if (isEnded) {
+    let maxRoundScore = 0;
+    newRoundScores.forEach((score) => {
+      const gamerScore = Object.entries(score)[0][1];
+      if (gamerScore > maxRoundScore) maxRoundScore = gamerScore;
+    });
+
+    const winners = [];
+    newRoundScores.forEach((score) => {
+      Object.entries(score).forEach((gamerScore) => {
+        if (gamerScore[1] === maxRoundScore) winners.push(gamerScore[0]);
+      });
+    });
+
+    totalScores = totalScores.map((score) => {
+      if (winners.some((winner) => winner === Object.keys(score)[0])) {
+        const gamerName = Object.keys(score)[0];
+        const scoreEvolution = winners.length === 1 ? 1 : 0.5;
+        scoresEvolution[gamerName] = scoreEvolution;
+        return {
+          [gamerName]: Object.values(score)[0] + scoreEvolution,
+        };
+      } else {
+        const gamerName = Object.keys(score)[0];
+        const scoreEvolution = 0;
+        scoresEvolution[gamerName] = scoreEvolution;
+        return score;
+      }
+    });
+
+    newRoundScores = gamers.map((gamer) => ({
+      [gamer.name]: 0,
+    }));
+  }
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
       success,
       icons: newIcons,
       activePlayer: newActivePlayer,
-      scores: newScores,
+      roundScores: newRoundScores,
+      totalScores,
+      scoresEvolution,
       ended: isEnded,
     },
   });

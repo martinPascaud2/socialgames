@@ -18,7 +18,7 @@ export default function Memory({
   gameData,
   storedLocation,
 }) {
-  const { success, scores } = gameData;
+  const { success, roundScores, totalScores, scoresEvolution } = gameData;
   const isAdmin = gameData.admin === user.name;
   const [isActive, setIsActive] = useState(false);
 
@@ -154,18 +154,37 @@ export default function Memory({
     [isActive, triggeredNumber, gameData, roomToken, isRevealing]
   );
 
-  const scoresList = useMemo(
+  const roundScoresList = useMemo(
     () => (
       <div className="flex flex-col items-center m-2">
-        Scores
-        {scores?.map((score, i) => (
+        Paires trouvées
+        {roundScores?.map((score, i) => (
           <div key={i}>
             {Object.entries(score)[0][0]} : {Object.entries(score)[0][1]}
           </div>
         ))}
       </div>
     ),
-    [scores]
+    [roundScores]
+  );
+  const totalScoresList = useMemo(
+    () => (
+      <div className="flex flex-col items-center m-2">
+        Scores
+        {totalScores?.map((score, i) => {
+          const [gamerName, gamerScore] = Object.entries(score)[0];
+          return (
+            <div key={i}>
+              {gamerName} : {gamerScore}
+              {scoresEvolution && scoresEvolution[gamerName]
+                ? `(+${scoresEvolution[gamerName]})`
+                : ""}
+            </div>
+          );
+        })}
+      </div>
+    ),
+    [totalScores, scoresEvolution]
   );
 
   const CardList = useCallback(() => {
@@ -222,20 +241,21 @@ export default function Memory({
   return (
     <>
       <div className="overflow-y-auto">
-        {scoresList}
-
         {!isEnded && (
           <>
+            {roundScoresList}
             <div>C&apos;est au tour de {gameData.activePlayer?.name}</div>
             {CardList()}
           </>
         )}
 
+        {isEnded && totalScoresList}
         {isEnded && isAdmin && (
           <MemoryOptions
             setOptions={setOptions}
             userId={user.id}
             setServerMessage={setServerMessage}
+            modeSelector={false}
           />
         )}
       </div>

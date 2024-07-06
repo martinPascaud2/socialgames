@@ -12,6 +12,7 @@ export default function MemoryOptions({
   lastMode,
   userId,
   setServerMessage,
+  modeSelector = true,
 }) {
   const [mode, setMode] = useState(lastMode?.mode || "Memory");
 
@@ -44,12 +45,14 @@ export default function MemoryOptions({
 
   return (
     <div>
-      <ModeSelector
-        defaultValue={mode}
-        modeList={modeList}
-        setMode={setMode}
-        setOptions={setOptions}
-      />
+      {modeSelector && (
+        <ModeSelector
+          defaultValue={mode}
+          modeList={modeList}
+          setMode={setMode}
+          setOptions={setOptions}
+        />
+      )}
 
       <div className="m-4 flex flex-col items-center">
         <div>Nombre de paires</div>
