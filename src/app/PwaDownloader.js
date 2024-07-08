@@ -43,7 +43,7 @@ export default function PwaDownloader() {
 
   if (showInstallMessage)
     return (
-      <div className="absolute bottom-0 flex flex-col items-center">
+      <div className="absolute bottom-20 flex flex-col items-center">
         <div className="w-screen border border-blue-300 bg-blue-100 pt-2 flex flex-col items-center">
           <div>Installe Social Games sur ton iPhone !</div>
           <div>
