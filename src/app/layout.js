@@ -27,6 +27,8 @@ export default function RootLayout({ children }) {
         name="apple-mobile-web-app-status-bar-style"
         content="black-translucent"
       ></meta>
+      <meta name="theme-color" content="#000000"></meta>
+
       <body className={`${inter.className}`}>
         <div className="fixed top-0 w-full bg-black z-40 h-20" />
         <div className="h-screen">{children}</div>

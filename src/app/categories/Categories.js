@@ -311,7 +311,7 @@ export default function Categories({
 
           <div
             id="QR-zone"
-            className="z-30 absolute top-1/2 left-1/2 -translate-x-1/2	-translate-y-1/2 bg-slate-500 w-[75vw] h-[75vw] border-2 border-black"
+            className="z-30 absolute top-[50lvh] left-1/2 -translate-x-1/2	-translate-y-1/2 bg-slate-500 w-[75vw] h-[75vw] border-2 border-black"
           >
             {showQrCode && location && (
               <QRCode
@@ -472,7 +472,7 @@ export default function Categories({
             className={`z-20 absolute bg-red-100 w-full bottom-0`}
             style={{
               height: `${bottomSpace}px`,
-              maxHeight: "20vh",
+              height: "20dvh",
             }}
           />
         </div>
@@ -519,6 +519,7 @@ export default function Categories({
             })}
           </div>
         )}
+
         <div className="absolute bottom-0 w-full bg-black h-20 z-40 flex justify-center items-center">
           <button className="border border-red-800 bg-red-600 text-black h-10 p-2">
             Joli bouton
