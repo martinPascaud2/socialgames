@@ -565,6 +565,12 @@ export default function Room({
                             mode: options?.mode,
                             roomToken,
                           });
+                          setInvitedList(() => {
+                            const friendsNames = friendsList.map(
+                              (friend) => friend.name
+                            );
+                            return friendsNames;
+                          });
                         }}
                         className="ml-2 mb-2 w-8 h-8 text-blue-300"
                       />
@@ -793,7 +799,7 @@ export default function Room({
 
               <hr />
 
-              {isPrivate && !user.multiGuest && (
+              {!user.multiGuest && (
                 <div className="flex flex-col items-center">
                   <div className="flex mt-1">
                     <h1>Invite tes amis !</h1>

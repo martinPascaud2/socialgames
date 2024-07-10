@@ -271,6 +271,7 @@ export default function Categories({
             className="z-30 absolute bg-blue-100 w-[37.5vw] h-36 translate-x-[12.5vw] border-r border-black"
             style={{ top: `${topRect - 144}px` }}
           >
+            <div>joueur {user.name}</div>
             <div>infos</div>
             {friendList.map((friend) => (
               <div
