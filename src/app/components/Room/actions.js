@@ -151,7 +151,7 @@ export async function serverJoin({ token, user }) {
       if (!room) return { error: "Token incorrect" };
       if (room.started) return { error: "La partie a déjà été lancée" };
 
-      const { id: roomId } = room;
+      const { id: roomId, options } = room;
 
       await prisma.user.update({
         where: {
@@ -183,6 +183,7 @@ export async function serverJoin({ token, user }) {
           gamers: newGamerList,
           guests,
           multiGuests,
+          options,
         },
         error: null,
       };
@@ -299,7 +300,7 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
   if (!room) return { error: "Token incorrect" };
   if (room.started) return { error: "La partie a déjà été lancée" };
 
-  const { id: roomId, adminLocation, gamers, multiGuests } = room;
+  const { id: roomId, adminLocation, gamers, multiGuests, options } = room;
 
   const distance = getDistance({ first: adminLocation, second: geoLocation });
   if (distance > 50)
@@ -330,6 +331,7 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
       gamerList,
       guests,
       multiGuests: newMultiGuests,
+      options,
     },
   };
 }
@@ -415,6 +417,23 @@ export async function getRoomRefs(token) {
   return { id: room?.id, priv: room?.private };
 }
 
+export async function changeOptions({ roomId, roomToken, options }) {
+  try {
+    await prisma.$transaction(async () => {
+      await prisma.room.update({
+        where: { id: roomId },
+        data: { options: options },
+      });
+
+      await pusher.trigger(`room-${roomToken}`, "room-event", {
+        options,
+      });
+    });
+  } catch (error) {
+    console.error("error", error);
+  }
+}
+
 export async function togglePrivacy({ roomId, roomToken, privacy }) {
   const updatedRoom = await prisma.room.update({
     where: { id: roomId },
@@ -424,4 +443,8 @@ export async function togglePrivacy({ roomId, roomToken, privacy }) {
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     privacy: updatedRoom.private,
   });
+}
+
+export async function deleteRoom({ roomId }) {
+  await prisma.room.delete({ where: { id: roomId } });
 }

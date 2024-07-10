@@ -53,6 +53,7 @@ import {
   getUniqueName,
   getRoomId,
   getRoomRefs,
+  changeOptions,
   togglePrivacy,
   saveLocation,
 } from "./actions";
@@ -208,7 +209,7 @@ export default function Room({
       setServerMessage(error);
     } else {
       if (joinData === undefined) return;
-      const { gamers, guests, multiGuests } = joinData;
+      const { gamers, guests, multiGuests, options } = joinData;
 
       const channel = pusher.subscribe(`room-${token}`);
       channel.bind("room-event", function (data) {
@@ -223,6 +224,7 @@ export default function Room({
           setInvitedList((prevInv) =>
             prevInv.filter((inv) => inv !== data.deleted)
           ));
+        data.options && setOptions(data.options);
         data.privacy !== undefined && setIsPrivate(data.privacy);
       });
 
@@ -233,6 +235,7 @@ export default function Room({
       setGamerList(gamers);
       setGuestList(guests);
       setMultiGuestList(multiGuests);
+      setOptions(options);
       setServerMessage("");
     }
   }, [inputToken, user, gamerList]);
@@ -271,7 +274,7 @@ export default function Room({
     if (error) {
       setServerMessage(error);
     } else {
-      const { gamerList, guests, multiGuests } = data;
+      const { gamerList, guests, multiGuests, options } = data;
       const channel = pusher.subscribe(`room-${token}`);
       channel.bind("room-event", function (data) {
         data.clientGamerList &&
@@ -281,6 +284,7 @@ export default function Room({
         data.started && setIsStarted(true);
         data.gameData && setGameData(data.gameData);
         data.deleted && setDeletedGamer(data.deleted);
+        data.options && setOptions(data.options);
       });
 
       setRoomToken(token);
@@ -288,6 +292,7 @@ export default function Room({
       setGamerList(gamerList);
       setGuestList(guests);
       setMultiGuestList(multiGuests);
+      setOptions(options);
       setServerMessage("");
     }
   }, [geoLocation, searchParams, inputToken, isChosen]);
@@ -476,6 +481,14 @@ export default function Room({
     };
     !searchToken && init();
   }, []);
+
+  useEffect(() => {
+    if (!isAdmin || !Object.keys(options).length) return;
+    const editOptions = async () => {
+      await changeOptions({ roomId, roomToken, options });
+    };
+    editOptions();
+  }, [options]);
 
   const togglePriv = useCallback(async () => {
     await togglePrivacy({ roomId, roomToken, privacy: isPrivate });
@@ -971,7 +984,7 @@ export default function Room({
                         onClick={async () => await deleteInvs()}
                         className="absolute bottom-[2rem] left-2"
                       >
-                        <DeleteGroup roomToken={roomToken} />
+                        <DeleteGroup roomToken={roomToken} roomId={roomId} />
                       </div>
                       <div
                         onClick={async () => await deleteInvs()}

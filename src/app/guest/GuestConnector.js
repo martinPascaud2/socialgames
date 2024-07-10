@@ -74,7 +74,7 @@ export default function GuestConnector() {
             className="outline m-4"
           />
           <button
-            onClick={() => joinGame()}
+            onClick={async () => await joinGame()}
             className="self-center border border-blue-300 bg-blue-100 w-1/2"
           >
             Rejoindre la partie

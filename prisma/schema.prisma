@@ -55,8 +55,10 @@ model Friend {
 
 model Room {
   id            Int      @id @default(autoincrement())
+  creationDate  DateTime @db.DateTime(0)
   private       Boolean  @default(false)
   game          String
+  options       Json?
   token         String
   admin         String
   adminLocation Json?
@@ -65,7 +67,6 @@ model Room {
   multiGuests   Json?
   started       Boolean  @default(false)
   gameData      Json?
-  creationDate  DateTime @db.DateTime(0)
   User          User[]
 }
 
