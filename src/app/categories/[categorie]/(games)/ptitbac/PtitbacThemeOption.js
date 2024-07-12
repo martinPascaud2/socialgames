@@ -34,7 +34,6 @@ export default function PtitbacThemeOption({
 
   useEffect(() => {
     if (!defaultThemes) return;
-    // if (!defaultThemes || !isAdmin) return;
     const fetchThemes = async () => {
       const allThemes = await getAllThemes();
 
@@ -62,7 +61,6 @@ export default function PtitbacThemeOption({
   }, [defaultThemes, lastParams, isAdmin]);
 
   useEffect(() => {
-    // if (!themes || !setOptions) return;
     if (!themes || !setOptions || !isAdmin) return;
     const newSelected = themes.filter((theme) => theme.selected);
     setSelectedThemes(
@@ -73,7 +71,6 @@ export default function PtitbacThemeOption({
       themes: newSelected.map((sel) => sel.theme),
       allRandomLength,
     }));
-    // }, [themes, allRandomLength]);
   }, [themes, allRandomLength, setOptions, isAdmin]);
 
   const closeModal = () => {
@@ -103,7 +100,6 @@ export default function PtitbacThemeOption({
   );
 
   useEffect(() => {
-    // if (!setOptions) return;
     if (!setOptions || !isAdmin) return;
     setOptions((options) => ({
       ...options,
@@ -117,13 +113,6 @@ export default function PtitbacThemeOption({
     setRandom(options.random);
   }, [options, isAdmin]);
 
-  console.log("options.themes", options.themes);
-  console.log("options.random", options.random);
-  console.log("random", random);
-  console.log("themes", themes);
-  console.log("selectedThemes", selectedThemes);
-  console.log("random", random);
-
   return (
     <div className="flex flex-col justify-center items-center mb-4">
       <button
@@ -133,7 +122,6 @@ export default function PtitbacThemeOption({
         <div className="">
           {selectedThemes.length + random} catégorie
           {selectedThemes.length + random >= 2 ? "s" : ""}
-          {/* {!!random && ` (${random} aléatoire${random >= 2 ? "s" : ""})`} */}
         </div>
       </button>
 
@@ -159,7 +147,6 @@ export default function PtitbacThemeOption({
                       )) ||
                     (!isAdmin &&
                       selectedThemes.some((sel) => sel === theme.theme));
-                  console.log("isSelected", isSelected);
                   return (
                     <div
                       key={i}

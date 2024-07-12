@@ -32,11 +32,8 @@ export default function PtitbacOptions({
     isAdmin && loadLasts();
 
     setModeList([{ mode: "P'tit bac", text: "P'tit bac" }]);
-    // }, [mode, setOptions]);
   }, [mode, setOptions, isAdmin, userId]);
 
-  console.log("isAdmin", isAdmin);
-  console.log("options", options);
   return (
     <div>
       <ModeSelector

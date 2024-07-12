@@ -2,9 +2,14 @@
 
 import React, { useEffect, useState, useCallback, useMemo } from "react";
 
-import { getIcons, revealCard, hideUndiscovered } from "./gameActions";
+import {
+  getIcons,
+  revealCard,
+  hideUndiscovered,
+  prepareNewGame,
+  goNewMemoryGame,
+} from "./gameActions";
 import { loadImages } from "./loadImages";
-import { prepareNewGame, goNewMemoryGame } from "./gameActions";
 import { syncNewOptions } from "@/components/Room/actions";
 
 import Card from "./Card";
@@ -236,7 +241,6 @@ export default function Memory({
     setNewGame(false);
   }, [newGame]);
   useEffect(() => {
-    // setOptions(gameData.options);
     setOptions((prevOptions) => {
       const isOptionsDifferent =
         JSON.stringify(prevOptions) !== JSON.stringify(gameData.options);
@@ -253,9 +257,6 @@ export default function Memory({
     };
     syncOptions();
   }, [options]);
-
-  console.log("gameData", gameData);
-  console.log("options memory main", options);
 
   return (
     <>
@@ -279,28 +280,10 @@ export default function Memory({
               setServerMessage={setServerMessage}
               modeSelector={false}
             />
-            <button
-              onClick={async () =>
-                await syncNewOptions({ roomToken, gameData, options })
-              }
-            >
-              TEST
-            </button>
           </>
         )}
-
-        {/* {isEnded && totalScoresList}
-        {isEnded && isAdmin && (
-          <MemoryOptions
-            isAdmin={isAdmin}
-            options={gameData.options}
-            setOptions={setOptions}
-            userId={user.id}
-            setServerMessage={setServerMessage}
-            modeSelector={false}
-          />
-        )} */}
       </div>
+
       <NextEndingPossibilities
         isAdmin={isAdmin}
         isEnded={isEnded}

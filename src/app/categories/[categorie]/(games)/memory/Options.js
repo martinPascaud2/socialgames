@@ -17,11 +17,9 @@ export default function MemoryOptions({
   //for new games
   modeSelector = true,
 }) {
-  // const [mode, setMode] = useState(lastMode?.mode || "Memory");
   const [mode, setMode] = useState(
     (isAdmin && lastMode?.mode) || options?.mode || "Memory"
   );
-
   const [lastParams, setLastParams] = useState();
   const [modeList, setModeList] = useState([]);
   const [pairsNumber, setPairsNumber] = useState(12);
@@ -41,15 +39,13 @@ export default function MemoryOptions({
   useEffect(() => {
     if (pairsNumber < 8) setPairsNumber(8);
     if (pairsNumber > 12) setPairsNumber(12);
-    // isAdmin && setOptions((options) => ({ ...options, pairsNumber }));
+
     isAdmin &&
       setOptions &&
       setOptions((options) => ({ ...options, pairsNumber }));
   }, [pairsNumber, isAdmin, setOptions]);
-  // }, [pairsNumber, setOptions, isAdmin]);
 
   useEffect(() => {
-    // if (!lastParams) return;
     if (!lastParams || !isAdmin) return;
     lastParams.pairsNumber && setPairsNumber(lastParams.pairsNumber);
   }, [lastParams, isAdmin]);
@@ -60,19 +56,6 @@ export default function MemoryOptions({
     setPairsNumber(options.pairsNumber);
     setSelectedThemes(options.themes);
   }, [isAdmin, options]);
-
-  // useEffect(() => {
-  //   if (!isAdmin || !onNewGameOptions) return;
-  //   const syncOptions = async () => {
-  //     await onNewGameOptions();
-  //   };
-  //   syncOptions();
-  //   }, [isAdmin, onNewGameOptions]);
-
-  console.log("isAdmin", isAdmin);
-  console.log("selectedThemes options simples", selectedThemes);
-  console.log("options memory options", options);
-  console.log("modeSelector", modeSelector);
 
   return (
     <div>

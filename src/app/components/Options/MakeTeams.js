@@ -9,7 +9,6 @@ export default function MakeTeams({ isAdmin, options, setOptions, last }) {
 
   useEffect(() => {
     if (!last || !isAdmin) return;
-    // if (!last) return;
     last.minByTeam && setMinByTeam(last.minByTeam);
     last.teamsNumber && setTeamsNumber(last.teamsNumber);
     last.teamMode && setTeamMode(last.teamMode);

@@ -37,7 +37,6 @@ export default function MemoryThemeOption({
   }, [lastParams]);
 
   useEffect(() => {
-    // if (!themes || !setOptions) return;
     if (!themes || !setOptions || !isAdmin) return;
     const newSelected = themes.filter((theme) => theme.selected);
     setSelectedThemes(
@@ -67,9 +66,6 @@ export default function MemoryThemeOption({
     },
     [setServerMessage, themes, isAdmin]
   );
-
-  console.log("selectedThemes", selectedThemes);
-  // if (!selectedThemes) return null;
 
   return (
     <div className="flex flex-col justify-center items-center mb-4">

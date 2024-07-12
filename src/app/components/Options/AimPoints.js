@@ -27,7 +27,6 @@ export default function AimPoints({
       ...options,
       aimPoints,
     }));
-    // }, [aimPoints]);
   }, [aimPoints, isAdmin, min, max, setOptions]);
 
   useEffect(() => {

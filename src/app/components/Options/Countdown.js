@@ -19,7 +19,6 @@ export default function Countdown({
     if (!last || !isAdmin) return;
 
     setCountDownTime(last / 60 / 1000);
-    // }, [last]);
   }, [last, isAdmin]);
 
   useEffect(() => {
@@ -31,15 +30,12 @@ export default function Countdown({
       ...options,
       countDownTime: countDownTime * 60 * 1000,
     }));
-    // }, [countDownTime]);
   }, [countDownTime, isAdmin, max, min, setOptions]);
 
   useEffect(() => {
     if (isAdmin) return;
     setCountDownTime(options.countDownTime / 60 / 1000);
   }, [options, isAdmin]);
-
-  // console.log("options.countDownTime countdown", options.countDownTime);
 
   return (
     <div className="m-1 flex flex-col items-center justify-center">

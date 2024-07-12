@@ -16,21 +16,17 @@ export default function PtitbacOptions({
   const [mode, setMode] = useState(
     (isAdmin && lastMode?.mode) || options.mode || "Triaction (random)"
   );
-  // const [mode, setMode] = useState(lastMode?.mode || "Triaction (random)");
-  const [lastParams, setLastParams] = useState();
   const [modeList, setModeList] = useState([]);
 
   useEffect(() => {
     const loadLasts = async () => {
       const params = await getLastParams({ userId, mode });
-      setLastParams(params);
       setOptions({ ...params, mode });
     };
     isAdmin && loadLasts();
 
     setModeList([
       { mode: "Triaction (random)", text: "Triaction (random)" },
-      // { mode: "Triaction (random)", text: "Aléatoire" },
       { mode: "Triaction (peek)", text: "Triaction (peek)" },
     ]);
   }, [mode, setOptions, isAdmin, userId]);
