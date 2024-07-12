@@ -6,8 +6,17 @@ import getLastParams from "@/utils/getLastParams";
 
 import ModeSelector from "@/components/Options/ModeSelector";
 
-export default function PtitbacOptions({ setOptions, userId, lastMode }) {
-  const [mode, setMode] = useState(lastMode?.mode || "Triaction (random)");
+export default function PtitbacOptions({
+  userId,
+  isAdmin,
+  options,
+  setOptions,
+  lastMode,
+}) {
+  const [mode, setMode] = useState(
+    (isAdmin && lastMode?.mode) || options.mode || "Triaction (random)"
+  );
+  // const [mode, setMode] = useState(lastMode?.mode || "Triaction (random)");
   const [lastParams, setLastParams] = useState();
   const [modeList, setModeList] = useState([]);
 
@@ -17,17 +26,20 @@ export default function PtitbacOptions({ setOptions, userId, lastMode }) {
       setLastParams(params);
       setOptions({ ...params, mode });
     };
-    loadLasts();
+    isAdmin && loadLasts();
 
     setModeList([
-      { mode: "Triaction (random)", text: "Aléatoire" },
+      { mode: "Triaction (random)", text: "Triaction (random)" },
+      // { mode: "Triaction (random)", text: "Aléatoire" },
       { mode: "Triaction (peek)", text: "Triaction (peek)" },
     ]);
-  }, [mode, setOptions]);
+  }, [mode, setOptions, isAdmin, userId]);
 
   return (
     <>
       <ModeSelector
+        isAdmin={isAdmin}
+        options={options}
         defaultValue={mode}
         modeList={modeList}
         setMode={setMode}

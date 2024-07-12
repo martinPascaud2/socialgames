@@ -7,6 +7,8 @@ import { getAllThemes } from "./gameActions";
 import Modal from "@/components/Modal";
 
 export default function PtitbacThemeOption({
+  isAdmin,
+  options,
   setOptions,
   max,
   lastParams,
@@ -32,6 +34,7 @@ export default function PtitbacThemeOption({
 
   useEffect(() => {
     if (!defaultThemes) return;
+    // if (!defaultThemes || !isAdmin) return;
     const fetchThemes = async () => {
       const allThemes = await getAllThemes();
 
@@ -56,10 +59,11 @@ export default function PtitbacThemeOption({
       lastParams && lastParams.random && setRandom(lastParams.random);
     };
     setTimeout(() => fetchThemes(), 1000); // tricky
-  }, [defaultThemes, lastParams]);
+  }, [defaultThemes, lastParams, isAdmin]);
 
   useEffect(() => {
-    if (!themes || !setOptions) return;
+    // if (!themes || !setOptions) return;
+    if (!themes || !setOptions || !isAdmin) return;
     const newSelected = themes.filter((theme) => theme.selected);
     setSelectedThemes(
       newSelected.sort((a, b) => a.theme.localeCompare(b.theme))
@@ -69,7 +73,8 @@ export default function PtitbacThemeOption({
       themes: newSelected.map((sel) => sel.theme),
       allRandomLength,
     }));
-  }, [themes, allRandomLength]);
+    // }, [themes, allRandomLength]);
+  }, [themes, allRandomLength, setOptions, isAdmin]);
 
   const closeModal = () => {
     setShowModal(false);
@@ -77,6 +82,8 @@ export default function PtitbacThemeOption({
 
   const handleCheck = useCallback(
     (theme) => {
+      if (!isAdmin) return;
+
       setServerMessage("");
       if (!theme.selected && selectedThemes.length + random === max) {
         setModalMessage("Nombre maximal de catégories atteint");
@@ -96,12 +103,26 @@ export default function PtitbacThemeOption({
   );
 
   useEffect(() => {
-    if (!setOptions) return;
+    // if (!setOptions) return;
+    if (!setOptions || !isAdmin) return;
     setOptions((options) => ({
       ...options,
       random,
     }));
-  }, [random]);
+  }, [random, isAdmin, setOptions]);
+
+  useEffect(() => {
+    if (isAdmin) return;
+    setSelectedThemes(options.themes);
+    setRandom(options.random);
+  }, [options, isAdmin]);
+
+  console.log("options.themes", options.themes);
+  console.log("options.random", options.random);
+  console.log("random", random);
+  console.log("themes", themes);
+  console.log("selectedThemes", selectedThemes);
+  console.log("random", random);
 
   return (
     <div className="flex flex-col justify-center items-center mb-4">
@@ -110,9 +131,9 @@ export default function PtitbacThemeOption({
         className="flex justify-center border border-blue-300 bg-blue-100 w-2/3"
       >
         <div className="">
-          {selectedThemes.length} catégorie
-          {selectedThemes.length >= 2 ? "s" : ""}
-          {!!random && ` (+${random} aléatoire${random >= 2 ? "s" : ""})`}
+          {selectedThemes.length + random} catégorie
+          {selectedThemes.length + random >= 2 ? "s" : ""}
+          {/* {!!random && ` (${random} aléatoire${random >= 2 ? "s" : ""})`} */}
         </div>
       </button>
 
@@ -123,17 +144,22 @@ export default function PtitbacThemeOption({
             className="flex justify-center border border-blue-300 bg-blue-100 w-full py-1"
           >
             <button className="">
-              {selectedThemes.length} catégorie
-              {selectedThemes.length >= 2 ? "s" : ""}
+              {selectedThemes.length + random} catégorie
+              {selectedThemes.length + random >= 2 ? "s" : ""}
             </button>
           </div>
           <div className="text-center">
             <div className="border border-blue-300 w-full flex flex-col items-center">
               <div className="columns-2 gap-0">
                 {themes.map((theme, i) => {
-                  const isSelected = selectedThemes.some(
-                    (sel) => sel.theme === theme.theme
-                  );
+                  const isSelected =
+                    (isAdmin &&
+                      selectedThemes.some(
+                        (sel) => sel.theme === theme.theme
+                      )) ||
+                    (!isAdmin &&
+                      selectedThemes.some((sel) => sel === theme.theme));
+                  console.log("isSelected", isSelected);
                   return (
                     <div
                       key={i}
@@ -169,7 +195,9 @@ export default function PtitbacThemeOption({
                       setModalMessage("");
                       setServerMessage("");
                     }}
-                    className="border border-blue-300 bg-blue-100 w-6"
+                    className={`border border-blue-300 bg-blue-100 w-6 ${
+                      !isAdmin ? "hidden" : ""
+                    }`}
                   >
                     -
                   </button>
@@ -183,7 +211,9 @@ export default function PtitbacThemeOption({
                         setServerMessage("");
                       }
                     }}
-                    className="border border-blue-300 bg-blue-100 w-6"
+                    className={`border border-blue-300 bg-blue-100 w-6 ${
+                      !isAdmin ? "hidden" : ""
+                    }`}
                   >
                     +
                   </button>

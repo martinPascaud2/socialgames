@@ -2,7 +2,14 @@
 
 import { useEffect, useState } from "react";
 
-export default function AimPoints({ setOptions, min, max, defaultValue }) {
+export default function AimPoints({
+  isAdmin,
+  options,
+  setOptions,
+  min,
+  max,
+  defaultValue,
+}) {
   const [aimPoints, setAimPoints] = useState(
     defaultValue !== undefined ? defaultValue : Math.floor((min + max) / 2)
   );
@@ -12,6 +19,7 @@ export default function AimPoints({ setOptions, min, max, defaultValue }) {
   }, [defaultValue]);
 
   useEffect(() => {
+    if (!isAdmin) return;
     if (aimPoints < min) setAimPoints(min);
     if (aimPoints > max) setAimPoints(max);
 
@@ -19,7 +27,13 @@ export default function AimPoints({ setOptions, min, max, defaultValue }) {
       ...options,
       aimPoints,
     }));
-  }, [aimPoints]);
+    // }, [aimPoints]);
+  }, [aimPoints, isAdmin, min, max, setOptions]);
+
+  useEffect(() => {
+    if (isAdmin) return;
+    setAimPoints(options.aimPoints);
+  }, [options, isAdmin]);
 
   return (
     <div className="m-1 flex flex-col items-center justify-center">
@@ -27,7 +41,9 @@ export default function AimPoints({ setOptions, min, max, defaultValue }) {
       <div className="border w-full flex">
         <button
           onClick={() => setAimPoints((points) => points - 1)}
-          className="mr-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center"
+          className={`mr-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center ${
+            !isAdmin ? "collapse" : ""
+          }`}
         >
           -
         </button>
@@ -38,7 +54,9 @@ export default function AimPoints({ setOptions, min, max, defaultValue }) {
         </div>
         <button
           onClick={() => setAimPoints((points) => points + 1)}
-          className="ml-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center"
+          className={`ml-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center ${
+            !isAdmin ? "collapse" : ""
+          }`}
         >
           +
         </button>

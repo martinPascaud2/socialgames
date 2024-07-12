@@ -9,8 +9,16 @@ import MakeTeams from "@/components/Options/MakeTeams";
 import Countdown from "@/components/Options/Countdown";
 import AimPoints from "@/components/Options/AimPoints";
 
-export default function DrawingOptions({ lastMode, setOptions, userId }) {
-  const [mode, setMode] = useState(lastMode?.mode || "Pictionary");
+export default function DrawingOptions({
+  userId,
+  isAdmin,
+  options,
+  lastMode,
+  setOptions,
+}) {
+  const [mode, setMode] = useState(
+    (isAdmin && lastMode?.mode) || options.mode || "Pictionary"
+  );
   const [lastParams, setLastParams] = useState();
   const [modeList, setModeList] = useState([]);
 
@@ -20,19 +28,26 @@ export default function DrawingOptions({ lastMode, setOptions, userId }) {
       setLastParams(params);
       setOptions({ ...params, mode });
     };
-    loadLasts();
+    isAdmin && loadLasts();
 
     setModeList([
       { mode: "Pictionary", text: "Pictionary" },
       { mode: "Esquissé", text: "Esquissé" },
     ]);
-  }, [mode, setOptions]);
+  }, [mode, setOptions, isAdmin, userId]);
+
+  useEffect(() => {
+    if (isAdmin) return;
+    setMode(options.mode);
+  }, [isAdmin, options.mode]);
 
   // const same = lastMode.mode === mode; //can be used
 
   return (
     <>
       <ModeSelector
+        isAdmin={isAdmin}
+        options={options}
         defaultValue={mode}
         modeList={modeList}
         setMode={setMode}
@@ -42,16 +57,25 @@ export default function DrawingOptions({ lastMode, setOptions, userId }) {
       {mode === "Pictionary" && (
         <div className="flex flex-wrap justify-center">
           <div>
-            <MakeTeams setOptions={setOptions} last={lastParams} />
+            <MakeTeams
+              isAdmin={isAdmin}
+              options={options}
+              setOptions={setOptions}
+              last={lastParams}
+            />
           </div>
           <div className="w-full grid grid-cols-2">
             <Countdown
+              isAdmin={isAdmin}
+              options={options}
               setOptions={setOptions}
               min={1}
               max={5}
               last={lastParams?.countDownTime}
             />
             <AimPoints
+              isAdmin={isAdmin}
+              options={options}
               setOptions={setOptions}
               min={3}
               max={10}
@@ -64,6 +88,8 @@ export default function DrawingOptions({ lastMode, setOptions, userId }) {
       {mode === "Esquissé" && (
         <>
           <Countdown
+            isAdmin={isAdmin}
+            options={options}
             setOptions={setOptions}
             min={1}
             max={5}

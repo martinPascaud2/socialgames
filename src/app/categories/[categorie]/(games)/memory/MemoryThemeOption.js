@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 
 export default function MemoryThemeOption({
+  isAdmin,
   setOptions,
   selectedThemes,
   setSelectedThemes,
@@ -18,7 +19,7 @@ export default function MemoryThemeOption({
   const [show, setShow] = useState(false);
 
   useEffect(() => {
-    if (!lastParams) return;
+    if (!lastParams || !isAdmin) return;
 
     setThemes((prevThemes) => {
       const lastThemes = lastParams.themes;
@@ -36,7 +37,8 @@ export default function MemoryThemeOption({
   }, [lastParams]);
 
   useEffect(() => {
-    if (!themes || !setOptions) return;
+    // if (!themes || !setOptions) return;
+    if (!themes || !setOptions || !isAdmin) return;
     const newSelected = themes.filter((theme) => theme.selected);
     setSelectedThemes(
       newSelected.sort((a, b) => a.label.localeCompare(b.label))
@@ -49,6 +51,8 @@ export default function MemoryThemeOption({
 
   const handleCheck = useCallback(
     (theme) => {
+      if (!isAdmin) return;
+
       const themeIndex = themes.findIndex((th) => th.theme === theme.theme);
       const newTheme = {
         ...themes[themeIndex],
@@ -61,8 +65,11 @@ export default function MemoryThemeOption({
 
       setServerMessage("");
     },
-    [setServerMessage, themes]
+    [setServerMessage, themes, isAdmin]
   );
+
+  console.log("selectedThemes", selectedThemes);
+  // if (!selectedThemes) return null;
 
   return (
     <div className="flex flex-col justify-center items-center mb-4">
@@ -80,9 +87,10 @@ export default function MemoryThemeOption({
         <div className="border border-blue-300 border-t-0 w-4/5 flex justify-center items-center px-2">
           {themes &&
             themes.map((theme, i) => {
-              const isSelected = selectedThemes.some(
-                (sel) => sel.theme === theme.theme
-              );
+              const isSelected =
+                (isAdmin &&
+                  selectedThemes.some((sel) => sel.theme === theme.theme)) ||
+                (!isAdmin && selectedThemes.some((sel) => sel === theme.theme));
               return (
                 <div
                   key={i}

@@ -8,13 +8,19 @@ import ModeSelector from "@/components/Options/ModeSelector";
 import MemoryThemeOption from "./MemoryThemeOption";
 
 export default function MemoryOptions({
+  isAdmin,
+  options,
   setOptions,
   lastMode,
   userId,
   setServerMessage,
+  //for new games
   modeSelector = true,
 }) {
-  const [mode, setMode] = useState(lastMode?.mode || "Memory");
+  // const [mode, setMode] = useState(lastMode?.mode || "Memory");
+  const [mode, setMode] = useState(
+    (isAdmin && lastMode?.mode) || options?.mode || "Memory"
+  );
 
   const [lastParams, setLastParams] = useState();
   const [modeList, setModeList] = useState([]);
@@ -27,26 +33,53 @@ export default function MemoryOptions({
       setLastParams(params);
       setOptions({ ...params, mode });
     };
-    loadLasts();
+    isAdmin && setOptions && loadLasts();
 
     setModeList([{ mode: "Memory", text: "Memory" }]);
-  }, [mode, setOptions]);
+  }, [mode, setOptions, isAdmin, userId]);
 
   useEffect(() => {
     if (pairsNumber < 8) setPairsNumber(8);
     if (pairsNumber > 12) setPairsNumber(12);
-    setOptions((options) => ({ ...options, pairsNumber }));
-  }, [pairsNumber]);
+    // isAdmin && setOptions((options) => ({ ...options, pairsNumber }));
+    isAdmin &&
+      setOptions &&
+      setOptions((options) => ({ ...options, pairsNumber }));
+  }, [pairsNumber, isAdmin, setOptions]);
+  // }, [pairsNumber, setOptions, isAdmin]);
 
   useEffect(() => {
-    if (!lastParams) return;
+    // if (!lastParams) return;
+    if (!lastParams || !isAdmin) return;
     lastParams.pairsNumber && setPairsNumber(lastParams.pairsNumber);
-  }, [lastParams]);
+  }, [lastParams, isAdmin]);
+
+  useEffect(() => {
+    if (isAdmin || !options) return;
+    setMode(options.mode);
+    setPairsNumber(options.pairsNumber);
+    setSelectedThemes(options.themes);
+  }, [isAdmin, options]);
+
+  // useEffect(() => {
+  //   if (!isAdmin || !onNewGameOptions) return;
+  //   const syncOptions = async () => {
+  //     await onNewGameOptions();
+  //   };
+  //   syncOptions();
+  //   }, [isAdmin, onNewGameOptions]);
+
+  console.log("isAdmin", isAdmin);
+  console.log("selectedThemes options simples", selectedThemes);
+  console.log("options memory options", options);
+  console.log("modeSelector", modeSelector);
 
   return (
     <div>
       {modeSelector && (
         <ModeSelector
+          isAdmin={isAdmin}
+          options={options}
           defaultValue={mode}
           modeList={modeList}
           setMode={setMode}
@@ -66,20 +99,25 @@ export default function MemoryOptions({
               }
               setPairsNumber((pairs) => pairs - 2);
             }}
-            className="mr-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center"
+            className={`mr-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center ${
+              !isAdmin ? "collapse" : ""
+            }`}
           >
             -
           </button>
           <div className="flex items-center">{pairsNumber}</div>
           <button
             onClick={() => setPairsNumber((pairs) => pairs + 2)}
-            className="ml-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center"
+            className={`ml-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center ${
+              !isAdmin ? "collapse" : ""
+            }`}
           >
             +
           </button>
         </div>
       </div>
       <MemoryThemeOption
+        isAdmin={isAdmin}
         setOptions={setOptions}
         selectedThemes={selectedThemes}
         setSelectedThemes={setSelectedThemes}

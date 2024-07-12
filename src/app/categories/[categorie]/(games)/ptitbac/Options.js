@@ -10,12 +10,16 @@ import AimPoints from "@/components/Options/AimPoints";
 import PtitbacThemeOption from "./PtitbacThemeOption";
 
 export default function PtitbacOptions({
-  setOptions,
   userId,
+  isAdmin,
+  options,
+  setOptions,
   lastMode,
   setServerMessage,
 }) {
-  const [mode, setMode] = useState(lastMode?.mode || "P'tit bac");
+  const [mode, setMode] = useState(
+    (isAdmin && lastMode?.mode) || options.mode || "P'tit bac"
+  );
   const [lastParams, setLastParams] = useState();
   const [modeList, setModeList] = useState([]);
 
@@ -25,32 +29,43 @@ export default function PtitbacOptions({
       setLastParams(params);
       setOptions({ ...params, mode });
     };
-    loadLasts();
+    isAdmin && loadLasts();
 
     setModeList([{ mode: "P'tit bac", text: "P'tit bac" }]);
-  }, [mode, setOptions]);
+    // }, [mode, setOptions]);
+  }, [mode, setOptions, isAdmin, userId]);
 
+  console.log("isAdmin", isAdmin);
+  console.log("options", options);
   return (
     <div>
       <ModeSelector
+        isAdmin={isAdmin}
+        options={options}
         defaultValue={mode}
         modeList={modeList}
         setMode={setMode}
         setOptions={setOptions}
       />
       <Countdown
+        isAdmin={isAdmin}
+        options={options}
         setOptions={setOptions}
         min={1}
         max={7}
         last={lastParams?.countDownTime}
       />
       <AimPoints
+        isAdmin={isAdmin}
+        options={options}
         setOptions={setOptions}
         min={0}
         max={30}
         defaultValue={lastParams?.aimPoints || 0}
       />
       <PtitbacThemeOption
+        isAdmin={isAdmin}
+        options={options}
         setOptions={setOptions}
         max={6}
         lastParams={lastParams}

@@ -238,6 +238,9 @@ export default function Memory({
     setOptions(gameData.options);
   }, [gameData.options]);
 
+  console.log("gameData", gameData);
+  console.log("options", options);
+
   return (
     <>
       <div className="overflow-y-auto">
@@ -249,15 +252,31 @@ export default function Memory({
           </>
         )}
 
-        {isEnded && totalScoresList}
+        {isEnded && (
+          <>
+            {totalScoresList}
+            <MemoryOptions
+              isAdmin={isAdmin}
+              options={options}
+              setOptions={setOptions}
+              userId={user.id}
+              setServerMessage={setServerMessage}
+              modeSelector={false}
+            />
+          </>
+        )}
+
+        {/* {isEnded && totalScoresList}
         {isEnded && isAdmin && (
           <MemoryOptions
+            isAdmin={isAdmin}
+            options={gameData.options}
             setOptions={setOptions}
             userId={user.id}
             setServerMessage={setServerMessage}
             modeSelector={false}
           />
-        )}
+        )} */}
       </div>
       <NextEndingPossibilities
         isAdmin={isAdmin}

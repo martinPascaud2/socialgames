@@ -213,6 +213,7 @@ export default function Room({
 
       const channel = pusher.subscribe(`room-${token}`);
       channel.bind("room-event", function (data) {
+        console.log("coucou");
         data.clientGamerList &&
           setGamerList([...new Set([...data.clientGamerList, ...gamerList])]);
         data.guestList && setGuestList(data.guestList);
@@ -526,6 +527,8 @@ export default function Room({
       if (gameName === "grouping" || !isStarted) goNewGame();
     }
   }
+
+  console.log("room gameData", gameData);
 
   if (!isStarted) {
     return (
@@ -965,14 +968,15 @@ export default function Room({
 
                   <hr />
 
-                  {Options && options && setOptions && setServerMessage && (
+                  {/* {Options && options && setOptions && setServerMessage && (
                     <Options
                       userId={user.id}
+                      isAdmin={isAdmin}
                       setOptions={setOptions}
                       lastMode={group?.lastMode}
                       setServerMessage={setServerMessage}
                     />
-                  )}
+                  )} */}
 
                   <div className="flex justify-center">
                     <div className="flex flex-col">{serverMessage}</div>
@@ -1030,6 +1034,17 @@ export default function Room({
                     </div>
                   </div>
                 </>
+              )}
+
+              {Options && options && setOptions && setServerMessage && (
+                <Options
+                  userId={user.id}
+                  isAdmin={isAdmin}
+                  options={options}
+                  setOptions={setOptions}
+                  lastMode={group?.lastMode}
+                  setServerMessage={setServerMessage}
+                />
               )}
             </>
           )}
