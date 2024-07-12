@@ -312,6 +312,7 @@ export default function Uno({
         isEnded={isEnded}
         gameData={gameData}
         roomToken={roomToken}
+        roomId={roomId}
         reset={goNewUnoGame}
         storedLocation={storedLocation}
         user={user}

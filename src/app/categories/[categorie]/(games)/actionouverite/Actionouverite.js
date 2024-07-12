@@ -148,6 +148,7 @@ export default function Actionouverite({
         isEnded={isEnded}
         gameData={gameData}
         roomToken={roomToken}
+        roomId={roomId}
         reset={() => console.log("to be done")}
         storedLocation={storedLocation}
         user={user}

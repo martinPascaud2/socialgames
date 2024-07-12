@@ -306,6 +306,7 @@ export default function Memory({
         isEnded={isEnded}
         gameData={gameData}
         roomToken={roomToken}
+        roomId={roomId}
         reset={async () => {
           await prepareNewGame({ roomToken, gameData });
           await goNewMemoryGame({

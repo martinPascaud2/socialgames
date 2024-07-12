@@ -11,6 +11,7 @@ import DeleteGroup from "./DeleteGroup";
 export default function ChooseOneMoreGame({
   gameData,
   roomToken,
+  roomId,
   isFirst = false,
   storedLocation,
 }) {
@@ -74,7 +75,7 @@ export default function ChooseOneMoreGame({
           </div>
         )}
         <div className="absolute left-2 bottom-[2rem]">
-          <DeleteGroup roomToken={roomToken} />
+          <DeleteGroup roomToken={roomToken} roomId={roomId} />
         </div>
       </div>
     </>

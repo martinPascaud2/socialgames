@@ -8,6 +8,7 @@ export default function NextEndingPossibilities({
   isEnded,
   gameData,
   roomToken,
+  roomId,
   reset,
   storedLocation,
   user,
@@ -33,6 +34,7 @@ export default function NextEndingPossibilities({
                   <ChooseOneMoreGame
                     gameData={gameData}
                     roomToken={roomToken}
+                    roomId={roomId}
                     storedLocation={storedLocation}
                   />
                 </div>
