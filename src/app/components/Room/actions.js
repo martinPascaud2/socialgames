@@ -434,6 +434,25 @@ export async function changeOptions({ roomId, roomToken, options }) {
   }
 }
 
+// for new games
+export async function syncNewOptions({ roomToken, gameData, options }) {
+  console.log("options du sync", options);
+  try {
+    await prisma.$transaction(async () => {
+      await pusher.trigger(`room-${roomToken}`, "room-event", {
+        gameData: {
+          ...gameData,
+          options,
+        },
+      });
+    });
+  } catch (error) {
+    console.error("error", error);
+  }
+  console.log("options", options);
+  console.log("passé par là");
+}
+
 export async function togglePrivacy({ roomId, roomToken, privacy }) {
   const updatedRoom = await prisma.room.update({
     where: { id: roomId },

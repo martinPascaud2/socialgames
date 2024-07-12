@@ -5,6 +5,7 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { getIcons, revealCard, hideUndiscovered } from "./gameActions";
 import { loadImages } from "./loadImages";
 import { prepareNewGame, goNewMemoryGame } from "./gameActions";
+import { syncNewOptions } from "@/components/Room/actions";
 
 import Card from "./Card";
 const CardMemo = React.memo(Card);
@@ -235,11 +236,26 @@ export default function Memory({
     setNewGame(false);
   }, [newGame]);
   useEffect(() => {
-    setOptions(gameData.options);
+    // setOptions(gameData.options);
+    setOptions((prevOptions) => {
+      const isOptionsDifferent =
+        JSON.stringify(prevOptions) !== JSON.stringify(gameData.options);
+      if (isOptionsDifferent) return gameData.options;
+      else return prevOptions;
+    });
   }, [gameData.options]);
 
+  //sync new game options
+  useEffect(() => {
+    if (!isAdmin) return;
+    const syncOptions = async () => {
+      await syncNewOptions({ roomToken, gameData, options });
+    };
+    syncOptions();
+  }, [options]);
+
   console.log("gameData", gameData);
-  console.log("options", options);
+  console.log("options memory main", options);
 
   return (
     <>
@@ -263,6 +279,13 @@ export default function Memory({
               setServerMessage={setServerMessage}
               modeSelector={false}
             />
+            <button
+              onClick={async () =>
+                await syncNewOptions({ roomToken, gameData, options })
+              }
+            >
+              TEST
+            </button>
           </>
         )}
 

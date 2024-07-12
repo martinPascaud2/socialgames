@@ -224,25 +224,6 @@ export async function prepareNewGame({ roomToken, gameData }) {
   });
 }
 
-// for new games
-export async function syncNewOptions({ roomToken, gameData, options }) {
-  console.log("options du sync", options);
-  try {
-    await prisma.$transaction(async () => {
-      await pusher.trigger(`room-${roomToken}`, "room-event", {
-        gameData: {
-          ...gameData,
-          options,
-        },
-      });
-    });
-  } catch (error) {
-    console.error("error", error);
-  }
-  console.log("options", options);
-  console.log("passé par là");
-}
-
 export async function goNewMemoryGame({
   userId,
   roomToken,
