@@ -296,3 +296,8 @@ export async function triggerGameEvent(roomId, roomToken, gameData, choice) {
     gameData: newData,
   });
 }
+
+export async function getAllofRoom({ roomId }) {
+  const room = await prisma.room.findFirst({ where: { id: roomId } });
+  console.log("room", room);
+}

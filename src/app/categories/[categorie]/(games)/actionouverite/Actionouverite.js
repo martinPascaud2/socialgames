@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import classNames from "classnames";
 
-import { triggerGameEvent } from "./gameActions";
+import { triggerGameEvent, getAllofRoom } from "./gameActions";
 
 import NextEndingPossibilities from "@/components/NextEndingPossibilities";
 
@@ -65,6 +65,11 @@ export default function Actionouverite({
     };
     setStats(calculateStats());
   }, [gameData.ended]);
+
+  console.log("roomId", roomId);
+  console.log("roomToken", roomToken);
+  console.log("user", user);
+  console.log("gameData", gameData);
 
   return (
     <>
@@ -131,6 +136,13 @@ export default function Actionouverite({
                 </button>
               </>
             )}
+            <button
+              onClick={async () => {
+                await getAllofRoom({ roomId });
+              }}
+            >
+              TEST
+            </button>
           </>
         )}
 

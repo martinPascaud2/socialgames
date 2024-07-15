@@ -146,10 +146,22 @@ export async function serverJoin({ token, user }) {
           token,
         },
       });
+      console.log("room serverjoin", room);
+      console.log("room.gamers", room.gamers);
+
+      if (!room) return { error: "Token incorrect" };
+      // if (room.started) return { error: "La partie a déjà été lancée" };
+
+      if (room.started) {
+        return {
+          joinData: {
+            isJoinAgain: true,
+            gameData: room.gameData,
+          },
+        };
+      }
 
       if (Object.values(room.gamers).includes(user.id)) return {};
-      if (!room) return { error: "Token incorrect" };
-      if (room.started) return { error: "La partie a déjà été lancée" };
 
       const { id: roomId, options } = room;
 
@@ -298,7 +310,16 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
   });
 
   if (!room) return { error: "Token incorrect" };
-  if (room.started) return { error: "La partie a déjà été lancée" };
+
+  if (room.started) {
+    return {
+      data: {
+        isJoinAgain: true,
+        gameData: room.gameData,
+      },
+    };
+  }
+  // if (room.started) return { error: "La partie a déjà été lancée" };
 
   const { id: roomId, adminLocation, gamers, multiGuests, options } = room;
 
@@ -370,6 +391,9 @@ export async function getUniqueName(roomId, wantedName) {
       id: roomId,
     },
   });
+
+  if (room.started) return wantedName;
+
   const gamers = Object.keys(room.gamers);
   const guests = Object.keys(room.guests);
   const multiGuests = Object.keys(room.multiGuests);
