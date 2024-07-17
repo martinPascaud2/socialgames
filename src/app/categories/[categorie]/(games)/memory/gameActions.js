@@ -66,10 +66,7 @@ export async function getIcons({
   roomId,
   gameData,
 }) {
-  // const
-
   let icons;
-
   const alreadySelected = [];
   let remaining = pairsNumber;
 
@@ -83,40 +80,14 @@ export async function getIcons({
 
   const sortedSelected = shuffleArray(alreadySelected);
 
-  // const icons = sortedSelected.map((key) => ({
   icons = sortedSelected.map((key) => ({
     key,
     triggered: false,
     discovered: false,
   }));
 
-  // await pusher.trigger(`room-${roomToken}`, "room-event", {
-  //   gameData: {
-  //     ...gameData,
-  //     icons,
-  //   },
-  // });
-
   const newData = { ...gameData, icons };
   await saveAndDispatchData({ roomId, roomToken, newData });
-
-  // const newData = (
-  //   await prisma.room.update({
-  //     where: {
-  //       id: roomId,
-  //     },
-  //     data: {
-  //       gameData: {
-  //         ...gameData,
-  //         icons,
-  //       },
-  //     },
-  //   })
-  // ).gameData;
-
-  // await pusher.trigger(`room-${roomToken}`, "room-event", {
-  //   gameData: newData,
-  // });
 }
 
 const getNextGamer = (gamers, activePlayer, newIcons) => {
@@ -133,7 +104,7 @@ const getNextGamer = (gamers, activePlayer, newIcons) => {
   return nextGamer;
 };
 
-export async function revealCard({ roomId, roomToken, gameData, index }) {
+export async function revealCard({ roomToken, gameData, index }) {
   const { icons, gamers } = gameData;
   let { totalScores } = gameData;
 
@@ -214,18 +185,6 @@ export async function revealCard({ roomId, roomToken, gameData, index }) {
     }));
   }
 
-  // const newData = {
-  //   ...gameData,
-  //   success,
-  //   icons: newIcons,
-  //   activePlayer: newActivePlayer,
-  //   roundScores: newRoundScores,
-  //   totalScores,
-  //   scoresEvolution,
-  //   ended: isEnded,
-  // };
-  // await saveAndDispatchData({ roomId, roomToken, newData });
-
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
@@ -252,20 +211,12 @@ export async function hideUndiscovered({ roomId, roomToken, gameData }) {
     icons: newIcons,
   };
   await saveAndDispatchData({ roomId, roomToken, newData });
-
-  // await pusher.trigger(`room-${roomToken}`, "room-event", {
-  //   gameData: {
-  //     ...gameData,
-  //     icons: newIcons,
-  //   },
-  // });
 }
 
 export async function prepareNewGame({ roomToken, gameData }) {
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
-      // icons: [],
       newGame: true,
     },
   });
@@ -286,7 +237,6 @@ export async function goNewMemoryGame({
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
-      // adminLoad: null,
       icons: [],
       roundScores: newRoundScores,
       newGame: false,

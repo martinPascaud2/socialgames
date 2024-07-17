@@ -11,7 +11,6 @@ import {
 } from "./gameActions";
 import { loadImages } from "./loadImages";
 import { syncNewOptions } from "@/components/Room/actions";
-import { getAllRoomData, saveData } from "@/components/Room/actions";
 
 import Card from "./Card";
 const CardMemo = React.memo(Card);
@@ -110,15 +109,7 @@ export default function Memory({
   }, [gameData.ended]);
 
   useEffect(() => {
-    // if (!gameData.options || !imageLength) return;
-    console.log("gameData.newGame", gameData.newGame);
     if (!gameData.options || !imageLength || gameData.icons?.length) return;
-    // if (
-    //   !gameData.options ||
-    //   !imageLength ||
-    //   (gameData.icons?.length && !gameData.newGame)
-    // )
-    //   return;
 
     async function initialize() {
       await getIcons({
@@ -137,13 +128,12 @@ export default function Memory({
 
   useEffect(() => {
     const triggered = gameData.icons?.filter((icon) => icon.triggered).length;
-    // if (triggered >= 2) {
+
     //+ triggeredNumber: no save between reveals
     if (triggered >= 2 || triggeredNumber >= 2) {
       setIsRevealing(true);
       setTimeout(
         async () => {
-          // isActive && (await hideUndiscovered({ roomToken, gameData }));
           isActive && (await hideUndiscovered({ roomId, roomToken, gameData }));
         },
         !success ? 1000 : 0
@@ -165,7 +155,7 @@ export default function Memory({
       setTriggeredNumber((prevTrigs) => prevTrigs + 1);
       setIsRevealing(true);
 
-      await revealCard({ roomId, roomToken, gameData, index });
+      await revealCard({ roomToken, gameData, index });
 
       setTimeout(() => {
         setIsRevealing(false);
@@ -272,18 +262,6 @@ export default function Memory({
     syncOptions();
   }, [options]);
 
-  // useEffect(() => {
-  //   if (!isAdmin || !roomId || !gameData) return;
-  //   const save = async () => {
-  //     await saveData({ roomId, newData: gameData });
-  //   };
-  //   save();
-  // }, [gameData.success, isAdmin, roomId]);
-
-  console.log("gameData", gameData);
-  console.log("triggeredNumber", triggeredNumber);
-  // console.log("roomId", roomId);
-
   return (
     <>
       <div className="overflow-y-auto">
@@ -294,15 +272,6 @@ export default function Memory({
             {CardList()}
           </>
         )}
-
-        <button onClick={async () => await getAllRoomData({ roomId })}>
-          roomTEST
-        </button>
-        <button
-          onClick={async () => await saveData({ roomId, newData: gameData })}
-        >
-          sauvegardeTEST
-        </button>
 
         {isEnded && (
           <>

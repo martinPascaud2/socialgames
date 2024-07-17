@@ -141,7 +141,6 @@ export default function Room({
   }, []);
 
   useEffect(() => {
-    console.log("user là", user);
     if (user.multiGuest) return;
     setTimeout(async () => await getFriends(), !friendsList ? 0 : 800);
     getFriends();
@@ -187,7 +186,6 @@ export default function Room({
         setIsChosen(true);
         setServerMessage("");
 
-        console.log("pathname", pathname);
         router.replace(`${pathname}?token=${newRoomToken}`);
       }
     },
@@ -204,7 +202,6 @@ export default function Room({
     const id = await getRoomId(token);
     const uniqueUserName = await getUniqueName(id, user.name);
 
-    // const { error, joinData } = await serverJoin({
     const { error, joinData } = await serverJoin({
       token,
       user: { ...user, name: uniqueUserName },
@@ -213,9 +210,7 @@ export default function Room({
     if (error) {
       setServerMessage(error);
     } else {
-      console.log("joinData", joinData);
       if (joinData === undefined) return;
-      console.log("joinData", joinData);
       if (joinData.isJoinAgain) {
         setIsStarted(true);
         setGameData(joinData.gameData);
@@ -331,13 +326,14 @@ export default function Room({
       const join = async () => {
         if (
           !user.multiGuest &&
-          // !gamerList.some((multiName) => multiName === uniqueName) &&
           !gamerList?.some((multiName) => multiName === uniqueName) &&
           deletedGamer !== uniqueName
         )
           await joinRoom();
-        // else if (!multiGuestList.some((multiName) => multiName === uniqueName))
-        else if (!multiGuestList?.some((multiName) => multiName === uniqueName))
+        else if (
+          user.multiGuest &&
+          !multiGuestList?.some((multiName) => multiName === uniqueName)
+        )
           await addMultiGuest();
       };
       join();
@@ -423,20 +419,16 @@ export default function Room({
   };
 
   useEffect(() => {
-    console.log("uniqueName", uniqueName);
     user.multiGuest &&
       gameData.gamers &&
-      uniqueName && // new
+      uniqueName &&
       (setMultiGuestId(
-        // gameData.gamers.find((gamer) => gamer.name === uniqueName).id
         gameData.gamers.find((gamer) => gamer.name === uniqueName)?.id
       ),
       setMultiGuestDataId(
         gameData.gamers.find((gamer) => gamer.name === uniqueName)?.dataId
       ));
   }, [isStarted, gameData, user, uniqueName]);
-
-  console.log("multiGuestId", multiGuestId);
 
   useEffect(() => {
     const storedGroup = JSON.parse(localStorage.getItem("group"));
@@ -506,7 +498,7 @@ export default function Room({
   }, []);
 
   useEffect(() => {
-    if (!isAdmin || !Object.keys(options).length) return;
+    if (!isAdmin || !options || !Object.keys(options).length) return;
     const editOptions = async () => {
       await changeOptions({ roomId, roomToken, options });
     };
@@ -522,7 +514,6 @@ export default function Room({
       }));
   }, [isPrivate, roomId]);
 
-  // if (gameData.nextGame && user) {
   if (gameData && gameData.nextGame && user) {
     if (gameData.nextGame === "deleted group") {
       return (
@@ -542,8 +533,8 @@ export default function Room({
     } else {
       const goNewGame = async () => {
         !user.multiGuest && (await deleteInvs());
-        // check router.push
 
+        // check router.push
         window.location.href = `${gameData.nextGame.path}${
           user.multiGuest ? `&guestName=${user.name}` : ""
         }`;
@@ -551,11 +542,6 @@ export default function Room({
       if (gameName === "grouping" || !isStarted) goNewGame();
     }
   }
-
-  console.log("isChosen", isChosen);
-  console.log("isPrivate", isPrivate);
-  console.log("roomToken", roomToken);
-  console.log("gameData", gameData);
 
   if (!roomId || !gameData) return null;
 

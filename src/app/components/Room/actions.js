@@ -146,12 +146,10 @@ export async function serverJoin({ token, user }) {
           token,
         },
       });
-      console.log("room serverjoin", room);
-      console.log("room.gamers", room.gamers);
 
       if (!room) return { error: "Token incorrect" };
-      // if (room.started) return { error: "La partie a déjà été lancée" };
 
+      // if (room.started) return { error: "La partie a déjà été lancée" };
       if (room.started) {
         return {
           joinData: {
@@ -311,6 +309,7 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
 
   if (!room) return { error: "Token incorrect" };
 
+  // if (room.started) return { error: "La partie a déjà été lancée" };
   if (room.started) {
     return {
       data: {
@@ -319,7 +318,6 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
       },
     };
   }
-  // if (room.started) return { error: "La partie a déjà été lancée" };
 
   const { id: roomId, adminLocation, gamers, multiGuests, options } = room;
 
@@ -497,17 +495,6 @@ export async function saveAndDispatchData({ roomId, roomToken, newData }) {
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: newData,
-  });
-}
-
-export async function saveData({ roomId, newData }) {
-  await prisma.room.update({
-    where: {
-      id: roomId,
-    },
-    data: {
-      gameData: newData,
-    },
   });
 }
 
