@@ -522,7 +522,8 @@ export default function Room({
       }));
   }, [isPrivate, roomId]);
 
-  if (gameData.nextGame && user) {
+  // if (gameData.nextGame && user) {
+  if (gameData && gameData.nextGame && user) {
     if (gameData.nextGame === "deleted group") {
       return (
         <>
@@ -554,6 +555,9 @@ export default function Room({
   console.log("isChosen", isChosen);
   console.log("isPrivate", isPrivate);
   console.log("roomToken", roomToken);
+  console.log("gameData", gameData);
+
+  if (!roomId || !gameData) return null;
 
   if (!isStarted) {
     return (

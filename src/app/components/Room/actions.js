@@ -485,6 +485,39 @@ export async function togglePrivacy({ roomId, roomToken, privacy }) {
   });
 }
 
+export async function saveAndDispatchData({ roomId, roomToken, newData }) {
+  await prisma.room.update({
+    where: {
+      id: roomId,
+    },
+    data: {
+      gameData: newData,
+    },
+  });
+
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: newData,
+  });
+}
+
+export async function saveData({ roomId, newData }) {
+  await prisma.room.update({
+    where: {
+      id: roomId,
+    },
+    data: {
+      gameData: newData,
+    },
+  });
+}
+
 export async function deleteRoom({ roomId }) {
   await prisma.room.delete({ where: { id: roomId } });
+}
+
+//dev
+export async function getAllRoomData({ roomId }) {
+  const data = (await prisma.room.findFirst({ where: { id: roomId } }))
+    .gameData;
+  console.log("data", data);
 }

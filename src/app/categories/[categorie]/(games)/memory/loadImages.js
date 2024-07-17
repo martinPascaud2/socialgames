@@ -2,14 +2,21 @@
 
 import pusher from "@/utils/pusher";
 import shuffleArray from "@/utils/shuffleArray";
+import { saveAndDispatchData } from "@/components/Room/actions";
 
 export async function loadImages({
   prefixes,
   pairsNumber,
   gameData,
   roomToken,
+  roomId,
 }) {
   "use server";
+  console.log("gameData loadimages", gameData);
+  console.log("roomId loadimages", roomId);
+  const savedAdminLoad = gameData.adminLoad;
+  if (savedAdminLoad) return savedAdminLoad;
+
   const imageContext = require.context("./icons", false, /\.(png)$/);
   const images = {};
   const imagesNames = [];
@@ -47,12 +54,22 @@ export async function loadImages({
     }
   });
 
-  await pusher.trigger(`room-${roomToken}`, "room-event", {
-    gameData: {
-      ...gameData,
-      adminLoad: { images, imagesNames, imageLength },
-    },
-  });
+  const adminLoad = { images, imagesNames, imageLength };
 
-  return { images, imagesNames, imageLength };
+  const newData = {
+    ...gameData,
+    // adminLoad: { images, imagesNames, imageLength },
+    adminLoad,
+  };
+  await saveAndDispatchData({ roomId, roomToken, newData });
+
+  // await pusher.trigger(`room-${roomToken}`, "room-event", {
+  //   gameData: {
+  //     ...gameData,
+  //     adminLoad: { images, imagesNames, imageLength },
+  //   },
+  // });
+
+  // return { images, imagesNames, imageLength };
+  return adminLoad;
 }
