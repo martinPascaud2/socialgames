@@ -279,11 +279,16 @@ export async function goNewMemoryGame({
 }) {
   await saveLastParams({ userId, options });
 
+  const newRoundScores = gameData.gamers.map((gamer) => ({
+    [gamer.name]: 0,
+  }));
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
       // adminLoad: null,
       icons: [],
+      roundScores: newRoundScores,
       newGame: false,
       ended: false,
       options,
