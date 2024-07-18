@@ -18,6 +18,8 @@ export async function serverCreate(token, privacy, user, game, geoLocation) {
         guests: {},
         multiGuests: {},
         creationDate: new Date(),
+        gameData: {},
+        options: {},
       },
     })
   ).id;
@@ -150,16 +152,22 @@ export async function serverJoin({ token, user }) {
       if (!room) return { error: "Token incorrect" };
 
       // if (room.started) return { error: "La partie a déjà été lancée" };
-      if (room.started) {
+
+      if (Object.values(room.gamers).includes(user.id)) {
         return {
           joinData: {
             isJoinAgain: true,
+            game: room.game,
+            admin: room.admin,
             gameData: room.gameData,
+            gamers: Object.keys(room.gamers),
+            guests: Object.keys(room.guests),
+            multiGuests: Object.keys(room.multiGuests),
+            options: room.options,
+            isStarted: room.started,
           },
         };
       }
-
-      if (Object.values(room.gamers).includes(user.id)) return {};
 
       const { id: roomId, options } = room;
 
@@ -190,10 +198,13 @@ export async function serverJoin({ token, user }) {
 
       return {
         joinData: {
+          admin: room.admin,
+          game: room.game,
           gamers: newGamerList,
           guests,
           multiGuests,
           options,
+          isStarted: room.started,
         },
         error: null,
       };
@@ -390,7 +401,9 @@ export async function getUniqueName(roomId, wantedName) {
     },
   });
 
-  if (room.started) return wantedName;
+  //to be done
+  return wantedName;
+  // if (room.started) return wantedName;
 
   const gamers = Object.keys(room.gamers);
   const guests = Object.keys(room.guests);
@@ -442,14 +455,22 @@ export async function getRoomRefs(token) {
 export async function changeOptions({ roomId, roomToken, options }) {
   try {
     await prisma.$transaction(async () => {
-      await prisma.room.update({
-        where: { id: roomId },
-        data: { options: options },
-      });
+      const roomOptions = (
+        await prisma.room.findFirst({
+          where: { id: roomId },
+        })
+      ).options;
 
-      await pusher.trigger(`room-${roomToken}`, "room-event", {
-        options,
-      });
+      if (JSON.stringify(roomOptions) !== JSON.stringify(options)) {
+        await prisma.room.update({
+          where: { id: roomId },
+          data: { options: options },
+        });
+
+        await pusher.trigger(`room-${roomToken}`, "room-event", {
+          options,
+        });
+      }
     });
   } catch (error) {
     console.error("error", error);

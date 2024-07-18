@@ -200,7 +200,7 @@ export default function Room({
 
     const token = inputToken.toUpperCase();
     const id = await getRoomId(token);
-    const uniqueUserName = await getUniqueName(id, user.name);
+    const uniqueUserName = await getUniqueName(id, user.name); // to be done
 
     const { error, joinData } = await serverJoin({
       token,
@@ -212,8 +212,10 @@ export default function Room({
     } else {
       if (joinData === undefined) return;
       if (joinData.isJoinAgain) {
-        setIsStarted(true);
+        setIsStarted(joinData.isStarted);
         setGameData(joinData.gameData);
+        setIsAdmin(joinData.admin === uniqueUserName);
+        setOptions(joinData.options);
       }
       const { gamers, guests, multiGuests, options } = joinData;
 
@@ -326,6 +328,7 @@ export default function Room({
       const join = async () => {
         if (
           !user.multiGuest &&
+          !uniqueName &&
           !gamerList?.some((multiName) => multiName === uniqueName) &&
           deletedGamer !== uniqueName
         )
