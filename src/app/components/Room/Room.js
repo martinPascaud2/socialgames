@@ -180,8 +180,8 @@ export default function Room({
         });
 
         setRoomToken(newRoomToken);
-        setIsAdmin(true);
         setUniqueName(user.name);
+        setIsAdmin(true);
         setGamerList(gamers);
         setIsChosen(true);
         setServerMessage("");
@@ -215,13 +215,18 @@ export default function Room({
         setIsStarted(joinData.isStarted);
         setGameData(joinData.gameData);
         setIsAdmin(joinData.admin === uniqueUserName);
+        joinData.admin === uniqueUserName &&
+          joinData.adminLocation &&
+          setGeoLocation(joinData.adminLocation);
         setOptions(joinData.options);
       }
       const { gamers, guests, multiGuests, options } = joinData;
 
       const channel = pusher.subscribe(`room-${token}`);
       channel.bind("room-event", function (data) {
-        data.clientGamerList &&
+        data.clientGamerList.length &&
+          data.clientGamerList &&
+          data.clientGamerList.length &&
           setGamerList([...new Set([...data.clientGamerList, ...gamerList])]);
         data.guestList && setGuestList(data.guestList);
         data.multiGuestList && setMultiGuestList(data.multiGuestList);
@@ -236,7 +241,8 @@ export default function Room({
         data.privacy !== undefined && setIsPrivate(data.privacy);
       });
 
-      triggerGamers({ roomToken: token, gamers }); // no await
+      joinData.admin !== uniqueUserName &&
+        triggerGamers({ roomToken: token, gamers }); // no await
 
       setRoomToken(token);
       setUniqueName(uniqueUserName);
@@ -284,13 +290,15 @@ export default function Room({
     } else {
       if (data === undefined) return;
       if (data.isJoinAgain) {
-        setIsStarted(true);
+        setIsStarted(data.isStarted);
         setGameData(data.gameData);
+        setOptions(data.options);
       }
       const { gamerList, guests, multiGuests, options } = data;
       const channel = pusher.subscribe(`room-${token}`);
       channel.bind("room-event", function (data) {
         data.clientGamerList &&
+          data.clientGamerList.length &&
           setGamerList([...new Set([...data.clientGamerList, ...gamerList])]);
         data.guestList && setGuestList(data.guestList);
         data.multiGuestList && setMultiGuestList(data.multiGuestList);
@@ -335,6 +343,7 @@ export default function Room({
           await joinRoom();
         else if (
           user.multiGuest &&
+          !uniqueName &&
           !multiGuestList?.some((multiName) => multiName === uniqueName)
         )
           await addMultiGuest();
@@ -524,7 +533,7 @@ export default function Room({
           <h1 className="mt-28">Le groupe a été supprimé</h1>
           <button
             onClick={async () => {
-              await deleteInvs();
+              !user.multiGuest && (await deleteInvs());
               router.push("/categories?control=true");
             }}
             className="border border-blue-300 bg-blue-100"

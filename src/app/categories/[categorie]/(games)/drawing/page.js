@@ -16,6 +16,7 @@ export default async function DrawingPage({ params, searchParams }) {
         categorie={params?.categorie}
         gameName="drawing"
         Game={Drawing}
+        Options={DrawingOptions}
         launchGame={null}
       />
     );

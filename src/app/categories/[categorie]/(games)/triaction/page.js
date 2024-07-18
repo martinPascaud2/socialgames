@@ -16,6 +16,7 @@ export default async function TriactionPage({ params, searchParams }) {
         categorie={params?.categorie}
         gameName="triaction"
         Game={Triaction}
+        Options={TriactionOptions}
         launchGame={null}
       />
     );

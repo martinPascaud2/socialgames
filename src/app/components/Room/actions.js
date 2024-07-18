@@ -159,6 +159,7 @@ export async function serverJoin({ token, user }) {
             isJoinAgain: true,
             game: room.game,
             admin: room.admin,
+            adminLocation: room.adminLocation,
             gameData: room.gameData,
             gamers: Object.keys(room.gamers),
             guests: Object.keys(room.guests),
@@ -325,18 +326,25 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
     return {
       data: {
         isJoinAgain: true,
+        game: room.game,
+        admin: room.admin,
         gameData: room.gameData,
+        gamers: Object.keys(room.gamers),
+        guests: Object.keys(room.guests),
+        multiGuests: Object.keys(room.multiGuests),
+        options: room.options,
+        isStarted: room.started,
       },
     };
   }
 
-  const { id: roomId, adminLocation, gamers, multiGuests, options } = room;
+  const { id: roomId, adminLocation, multiGuests, options } = room;
 
   const distance = getDistance({ first: adminLocation, second: geoLocation });
   if (distance > 50)
     return { error: "Veuillez vous approcher de la zone de jeu" };
 
-  const gamerList = Object.keys(gamers);
+  const gamerList = Object.keys(room.gamers);
   const guests = Object.keys(room.guests);
   const newMultiGuests = Object.keys(
     (
@@ -358,10 +366,13 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
 
   return {
     data: {
+      admin: room.admin,
+      game: room.game,
       gamerList,
       guests,
       multiGuests: newMultiGuests,
       options,
+      isStarted: room.started,
     },
   };
 }
@@ -528,4 +539,9 @@ export async function getAllRoomData({ roomId }) {
   const data = (await prisma.room.findFirst({ where: { id: roomId } }))
     .gameData;
   console.log("data", data);
+}
+
+export async function getAllRoom({ roomId }) {
+  const room = await prisma.room.findFirst({ where: { id: roomId } });
+  console.log("room", room);
 }

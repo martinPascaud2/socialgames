@@ -16,6 +16,7 @@ export default async function PtitbacPage({ params, searchParams }) {
         categorie={params?.categorie}
         gameName="ptitbac"
         Game={Ptitbac}
+        Options={PtitbacOptions}
         launchGame={null}
       />
     );
