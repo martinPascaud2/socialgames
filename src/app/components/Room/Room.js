@@ -224,8 +224,7 @@ export default function Room({
 
       const channel = pusher.subscribe(`room-${token}`);
       channel.bind("room-event", function (data) {
-        data.clientGamerList.length &&
-          data.clientGamerList &&
+        data.clientGamerList &&
           data.clientGamerList.length &&
           setGamerList([...new Set([...data.clientGamerList, ...gamerList])]);
         data.guestList && setGuestList(data.guestList);
