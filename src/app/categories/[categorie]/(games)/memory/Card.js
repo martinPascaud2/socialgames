@@ -42,7 +42,7 @@ export default function Card({
         <div
           className={`card-front absolute w-full h-full rounded-2xl backface-hidden rotate-y-[180deg]`}
         >
-          <Image src={src} alt="Memory icon" />
+          <Image src={src} alt="Memory icon" priority={true} />
         </div>
         <div className="card-back absolute w-full h-full rounded-2xl backface-hidden bg-red-500"></div>
       </div>

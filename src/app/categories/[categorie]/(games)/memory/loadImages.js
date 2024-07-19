@@ -3,6 +3,8 @@
 import shuffleArray from "@/utils/shuffleArray";
 import { saveAndDispatchData } from "@/components/Room/actions";
 
+const imageContext = require.context("./icons", false, /\.(png)$/);
+
 export async function loadImages({
   prefixes,
   pairsNumber,
@@ -14,7 +16,7 @@ export async function loadImages({
   const savedAdminLoad = gameData.adminLoad;
   if (savedAdminLoad) return savedAdminLoad;
 
-  const imageContext = require.context("./icons", false, /\.(png)$/);
+  // const imageContext = require.context("./icons", false, /\.(png)$/); //check
   const images = {};
   const imagesNames = [];
   let imageLength = 0;

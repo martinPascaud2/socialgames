@@ -82,12 +82,13 @@ export default function Memory({
         roomToken,
         roomId,
       });
+
       setImages(loadedImages);
       setImagesNames(loadedImagesNames);
       setImageLength(loadedImageLength);
+      setIsLoaded(true);
     };
     adminLoad();
-    setIsLoaded(true);
   }, [gameData.options]);
 
   useEffect(() => {
@@ -102,7 +103,7 @@ export default function Memory({
     setImages(loadedImages);
     setImagesNames(loadedImagesNames);
     setImageLength(loadedImageLength);
-  }, [gameData.adminLoad]);
+  }, [gameData.adminLoad, isAdmin]);
 
   useEffect(() => {
     gameData.ended && setIsEnded(gameData.ended);
@@ -299,7 +300,7 @@ export default function Memory({
           await goNewMemoryGame({
             userId: user.id,
             roomToken,
-            gameData,
+            gameData: { ...gameData, adminLoad: null },
             options,
           });
         }}
