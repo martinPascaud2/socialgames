@@ -217,98 +217,134 @@ export async function serverJoin({ token, user }) {
 }
 
 export async function triggerGamers({ roomToken, gamers }) {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  await pusher.trigger(`room-${roomToken}`, "room-event", {
-    clientGamerList: gamers,
-  });
-  await new Promise((resolve) => setTimeout(resolve, 2000));
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     clientGamerList: gamers,
   });
 }
 
-export async function serverDeleteGamer({ token, gamerName }) {
-  if (!token || !gamerName) return;
-
-  const room = await prisma.room.findFirst({
-    where: {
-      token,
-    },
+export async function triggerMultiguests({ roomToken, multiGuests }) {
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    multiGuestList: multiGuests,
   });
-  const { id: roomId, gamers } = room;
-
-  delete gamers[gamerName];
-
-  await prisma.room.update({
-    where: { id: roomId },
-    data: {
-      gamers,
-    },
-  });
-
-  const gamerList = Object.keys(gamers);
-  await pusher.trigger(`room-${token}`, "room-event", {
-    clientGamerList: gamerList,
-    deleted: gamerName,
-  });
-  return gamerList;
 }
 
-export async function serverAddGuest({ token, guestName }) {
-  const room = await prisma.room.findFirst({
-    where: {
-      token,
-    },
-  });
-  if (!room) throw new Error("Token incorrect");
+export async function checkConnection({ roomId, uniqueName, isMultiGuest }) {
+  const room = await prisma.room.findFirst({ where: { id: roomId } });
+  const gamers = Object.keys(room.gamers);
+  const multiGuests = Object.keys(room.multiGuests);
+  if (gamers.includes(uniqueName) && !isMultiGuest) return true;
+  if (multiGuests.includes(uniqueName) && isMultiGuest) return true;
+  return false;
+}
 
-  const { id: roomId, guests } = room;
+export async function retryGamerConnection({
+  roomId,
+  uniqueName,
+  roomToken,
+  userId,
+}) {
+  const room = await prisma.room.findFirst({ where: { id: roomId } });
 
-  const newGuests = Object.keys(
+  const newGamerList = Object.keys(
     (
       await prisma.room.update({
         where: { id: roomId },
         data: {
-          guests: {
-            ...guests,
-            [guestName]: true,
+          gamers: {
+            ...room.gamers,
+            [uniqueName]: userId,
           },
         },
       })
-    ).guests
+    ).gamers
   );
 
-  await pusher.trigger(`room-${token}`, "room-event", {
-    guestList: newGuests,
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    clientGamerList: newGamerList,
   });
-
-  return newGuests;
 }
 
-export async function serverDeleteGuest({ token, guestName }) {
-  const room = await prisma.room.findFirst({
-    where: {
-      token,
-    },
-  });
-  const { id: roomId, guests } = room;
-  const newGuests = { ...guests };
+export async function retryMultiGuestConnection({
+  roomId,
+  uniqueName,
+  roomToken,
+}) {
+  const room = await prisma.room.findFirst({ where: { id: roomId } });
 
-  delete newGuests[guestName];
+  const newMultiGuests = Object.keys(
+    (
+      await prisma.room.update({
+        where: { id: roomId },
+        data: {
+          multiGuests: {
+            ...room.multiGuests,
+            [uniqueName]: true,
+          },
+        },
+      })
+    ).multiGuests
+  );
 
-  await prisma.room.update({
-    where: { id: roomId },
-    data: {
-      guests: newGuests,
-    },
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    multiGuestList: newMultiGuests,
   });
-
-  const newGuestList = Object.keys(newGuests);
-  await pusher.trigger(`room-${token}`, "room-event", {
-    guestList: newGuestList,
-  });
-  return newGuestList;
 }
+
+// export async function serverAddGuest({ token, guestName }) {
+//   const room = await prisma.room.findFirst({
+//     where: {
+//       token,
+//     },
+//   });
+//   if (!room) throw new Error("Token incorrect");
+
+//   const { id: roomId, guests } = room;
+
+//   const newGuests = Object.keys(
+//     (
+//       await prisma.room.update({
+//         where: { id: roomId },
+//         data: {
+//           guests: {
+//             ...guests,
+//             [guestName]: true,
+//           },
+//         },
+//       })
+//     ).guests
+//   );
+
+//   await pusher.trigger(`room-${token}`, "room-event", {
+//     guestList: newGuests,
+//   });
+
+//   return newGuests;
+// }
+
+// export async function serverDeleteGuest({ token, guestName }) {
+//   const room = await prisma.room.findFirst({
+//     where: {
+//       token,
+//     },
+//   });
+//   const { id: roomId, guests } = room;
+//   const newGuests = { ...guests };
+
+//   delete newGuests[guestName];
+
+//   await prisma.room.update({
+//     where: { id: roomId },
+//     data: {
+//       guests: newGuests,
+//     },
+//   });
+
+//   const newGuestList = Object.keys(newGuests);
+//   await pusher.trigger(`room-${token}`, "room-event", {
+//     guestList: newGuestList,
+//   });
+//   return newGuestList;
+// }
 
 export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
   if (!geoLocation) return { error: "Chargement..." };
@@ -341,8 +377,8 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
   const { id: roomId, adminLocation, multiGuests, options } = room;
 
   const distance = getDistance({ first: adminLocation, second: geoLocation });
-  if (distance > 50)
-    return { error: "Veuillez vous approcher de la zone de jeu" };
+  // if (distance > 50)
+  //   return { error: "Veuillez vous approcher de la zone de jeu" };
 
   const gamerList = Object.keys(room.gamers);
   const guests = Object.keys(room.guests);
@@ -360,9 +396,9 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
     ).multiGuests
   );
 
-  await pusher.trigger(`room-${token}`, "room-event", {
-    multiGuestList: newMultiGuests,
-  });
+  // await pusher.trigger(`room-${token}`, "room-event", {
+  //   multiGuestList: newMultiGuests,
+  // });
 
   return {
     data: {
@@ -375,6 +411,33 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
       isStarted: room.started,
     },
   };
+}
+
+export async function serverDeleteGamer({ token, gamerName }) {
+  if (!token || !gamerName) return;
+
+  const room = await prisma.room.findFirst({
+    where: {
+      token,
+    },
+  });
+  const { id: roomId, gamers } = room;
+
+  delete gamers[gamerName];
+
+  await prisma.room.update({
+    where: { id: roomId },
+    data: {
+      gamers,
+    },
+  });
+
+  const gamerList = Object.keys(gamers);
+  await pusher.trigger(`room-${token}`, "room-event", {
+    clientGamerList: gamerList,
+    deleted: gamerName,
+  });
+  return gamerList;
 }
 
 export async function serverDeleteMultiGuest({ token, multiGuestName }) {
@@ -405,7 +468,7 @@ export async function serverDeleteMultiGuest({ token, multiGuestName }) {
   return multiGuestList;
 }
 
-export async function getUniqueName(roomId, wantedName) {
+export async function getUniqueName(roomId, wantedName, isReserved) {
   const room = await prisma.room.findFirst({
     where: {
       id: roomId,
@@ -413,8 +476,7 @@ export async function getUniqueName(roomId, wantedName) {
   });
 
   //to be done
-  return wantedName;
-  // if (room.started) return wantedName;
+  if (isReserved) return wantedName;
 
   const gamers = Object.keys(room.gamers);
   const guests = Object.keys(room.guests);
