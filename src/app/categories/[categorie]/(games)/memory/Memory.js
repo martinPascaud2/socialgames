@@ -158,9 +158,7 @@ export default function Memory({
 
       await revealCard({ roomToken, gameData, index });
 
-      setTimeout(() => {
-        setIsRevealing(false);
-      }, 300);
+      setIsRevealing(false);
     },
     [isActive, triggeredNumber, gameData, roomToken, isRevealing]
   );

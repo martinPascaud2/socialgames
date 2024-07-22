@@ -492,7 +492,7 @@ export default function Room({
     const go = async () => {
       if (!storedGroup?.roomToken) return;
       try {
-        // await new Promise((resolve) => setTimeout(resolve, 3000)); // check
+        await new Promise((resolve) => setTimeout(resolve, 1500)); // check
         await goOneMoreGame({
           pathname,
           oldRoomToken: storedGroup.roomToken,
