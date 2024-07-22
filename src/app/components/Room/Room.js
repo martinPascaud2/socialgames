@@ -4,7 +4,6 @@ import {
   useState,
   useEffect,
   useCallback,
-  useRef,
   createContext,
   useContext,
 } from "react";
@@ -16,9 +15,9 @@ import QRCode from "react-qr-code";
 import genToken from "@/utils/genToken";
 import getLocation from "@/utils/getLocation";
 import getErrorInformations from "@/utils/getErrorInformations";
-import { gamesRefs } from "@/assets/globals";
 import { getRoomFriendList } from "@/utils/getFriendList";
 import { saveLastParams } from "@/utils/getLastParams";
+import { gamesRefs } from "@/assets/globals";
 
 import DeleteGroup from "@/components/DeleteGroup";
 import ChooseAnotherGame from "@/components/ChooseAnotherGame";
@@ -47,8 +46,6 @@ import {
   triggerGamers,
   triggerMultiguests,
   serverDeleteGamer,
-  // serverAddGuest,
-  // serverDeleteGuest,
   serverAddMultiGuest,
   serverDeleteMultiGuest,
   getUniqueName,
@@ -60,7 +57,6 @@ import {
   checkConnection,
   retryGamerConnection,
   retryMultiGuestConnection,
-  getAllRoom,
 } from "./actions";
 
 export default function Room({
@@ -77,33 +73,30 @@ export default function Room({
   const searchToken = searchParams.get("token");
 
   const [isAdmin, setIsAdmin] = useState(false);
+  const [roomId, setRoomId] = useState(0);
+  const [inputToken, setInputToken] = useState("");
   const [roomToken, setRoomToken] = useState();
-  const [group, setGroup] = useState();
-  const [friendsList, setFriendsList] = useState();
-  const [invitedList, setInvitedList] = useState([]);
-  const [gamerList, setGamerList] = useState([]);
-  const [guestList, setGuestList] = useState([]);
-  const [multiGuestList, setMultiGuestList] = useState([]);
-  const [newGuest, setNewGuest] = useState("");
-  const refGuest = useRef();
-  const [multiGuestId, setMultiGuestId] = useState();
-  const [multiGuestDataId, setMultiGuestDataId] = useState();
-  // const [uniqueName, setUniqueName] = useState("");
-  const [uniqueName, setUniqueName] = useState();
-  const [deletedGamer, setDeletedGamer] = useState(null);
-  const [deletedGamersList, setDeletedGamersList] = useState([]);
-  const [isHere, setIsHere] = useState(false);
-
-  const [options, setOptions] = useState({});
   const [isChosen, setIsChosen] = useState(false);
+  const [showRoomRefs, setShowRoomRefs] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
   const [serverMessage, setServerMessage] = useState("");
 
-  const [showRoomRefs, setShowRoomRefs] = useState(false);
-  const [inputToken, setInputToken] = useState("");
-  const [geoLocation, setGeoLocation] = useState(null);
+  const [uniqueName, setUniqueName] = useState();
+  const [isHere, setIsHere] = useState(false);
 
-  const [roomId, setRoomId] = useState(0);
+  const [friendsList, setFriendsList] = useState();
+  const [invitedList, setInvitedList] = useState([]);
+  const [group, setGroup] = useState();
+  const [gamerList, setGamerList] = useState([]);
+  const [guestList, setGuestList] = useState([]);
+  const [multiGuestList, setMultiGuestList] = useState([]);
+  const [multiGuestId, setMultiGuestId] = useState();
+  const [multiGuestDataId, setMultiGuestDataId] = useState();
+  const [deletedGamer, setDeletedGamer] = useState(null);
+  const [deletedGamersList, setDeletedGamersList] = useState([]);
+
+  const [options, setOptions] = useState({});
+  const [geoLocation, setGeoLocation] = useState(null);
   const [isPrivate, setIsPrivate] = useState();
   const [gameData, setGameData] = useState({});
 
@@ -152,7 +145,18 @@ export default function Room({
     setTimeout(async () => await getFriends(), !friendsList ? 0 : 2000);
     getFriends();
   }, [gamerList]);
-  // }, [gamerList, friendsList, getFriends, user.multiGuest]);
+
+  useEffect(() => {
+    user.multiGuest &&
+      gameData.gamers &&
+      uniqueName &&
+      (setMultiGuestId(
+        gameData.gamers.find((gamer) => gamer.name === uniqueName)?.id
+      ),
+      setMultiGuestDataId(
+        gameData.gamers.find((gamer) => gamer.name === uniqueName)?.dataId
+      ));
+  }, [isStarted, gameData, user, uniqueName]);
 
   const createRoom = useCallback(
     async (privacy, storedLocation) => {
@@ -184,7 +188,6 @@ export default function Room({
             setMultiGuestList([
               ...new Set([...data.multiGuestList, ...multiGuestList]),
             ]);
-          // data.multiGuestList && setMultiGuestList(data.multiGuestList);
           data.gameData && setGameData(data.gameData);
           data.deleted && setDeletedGamer(data.deleted),
             (setInvitedList((prevInv) =>
@@ -235,22 +238,6 @@ export default function Room({
       JSON.stringify({ roomToken: token, name: uniqueUserName })
     );
 
-    // localStorage.setItem(
-    //   "reservedName",
-    //   JSON.stringify({ roomToken: token, name: uniqueUserName })
-    // );
-
-    // const { roomToken: reservedToken } = JSON.parse(
-    //   localStorage.getItem("reservedName")
-    // );
-    // const isReserved = reservedToken === token;
-    // const uniqueUserName = await getUniqueName(id, user.name, isReserved);
-    // localStorage.setItem(
-    //   "reservedName",
-    //   // JSON.stringify({ roomToken: token, name: uniqueUserName })
-    //   JSON.stringify({ roomToken: token })
-    // );
-
     const { error, joinData } = await serverJoin({
       token,
       user: { ...user, name: uniqueUserName },
@@ -276,13 +263,11 @@ export default function Room({
         data.clientGamerList &&
           data.clientGamerList.length &&
           setGamerList([...new Set([...data.clientGamerList, ...gamerList])]);
-        // data.guestList && setGuestList(data.guestList);
         data.multiGuestList &&
           data.multiGuestList.length &&
           setMultiGuestList([
             ...new Set([...data.multiGuestList, ...multiGuestList]),
           ]);
-        // data.multiGuestList && setMultiGuestList(data.multiGuestList);
         data.started && setIsStarted(true);
         data.gameData && setGameData(data.gameData);
         data.deleted &&
@@ -305,7 +290,6 @@ export default function Room({
       setOptions(options);
       setServerMessage("");
     }
-    // }, [inputToken, user, gamerList]);
   }, [inputToken, user, gamerList, isChosen]);
 
   const addMultiGuest = useCallback(async () => {
@@ -316,22 +300,15 @@ export default function Room({
     const token = inputToken.toUpperCase();
     const id = await getRoomId(token);
 
-    // const multiGuestName = await getUniqueName(
-    //   id,
-    //   searchParams.get("guestName")
-    // );
     const paramsName = searchParams.get("guestName");
     const reserved = JSON.parse(localStorage.getItem("reservedName"));
     const reservedToken = reserved?.roomToken;
     const reservedName = reserved?.name;
-    // const isReserved = reservedToken === token;
 
     const isReserved =
       reservedToken === token ||
       (reservedToken === group?.roomToken && reservedToken && group);
 
-    // const isReserved =
-    //   reservedToken === token || reservedToken === group?.roomToken;
     const wantedName = isReserved ? reservedName : paramsName;
     const multiGuestName = await getUniqueName(id, wantedName, isReserved);
     localStorage.setItem(
@@ -361,31 +338,17 @@ export default function Room({
         data.clientGamerList &&
           data.clientGamerList.length &&
           setGamerList([...new Set([...data.clientGamerList, ...gamerList])]);
-        // data.guestList && setGuestList(data.guestList);
-        // if (data.multiGuestList && data.multiGuestList.length) {
-        //   const newMultiGuests = [
-        //     ...new Set([...data.multiGuestList, ...multiGuestList]),
-        //   ];
-        //   setMultiGuestList(newMultiGuests);
-        // }
         data.multiGuestList &&
           data.multiGuestList.length &&
           setMultiGuestList([
             ...new Set([...data.multiGuestList, ...multiGuestList]),
           ]);
-        // data.multiGuestList &&
-        //   data.multiGuestList.length &&
-        //   setMultiGuestList([
-        //     ...new Set([...data.multiGuestList, ...multiGuestList]),
-        //   ]);
-        // data.multiGuestList && setMultiGuestList(data.multiGuestList);
         data.started && setIsStarted(true);
         data.gameData && setGameData(data.gameData);
         data.deleted && setDeletedGamer(data.deleted);
         data.options && setOptions(data.options);
       });
 
-      // triggerMultiguests({ roomToken: token, multiGuests }); // no await
       await triggerMultiguests({ roomToken: token, multiGuests });
 
       setRoomToken(token);
@@ -397,6 +360,38 @@ export default function Room({
       setServerMessage("");
     }
   }, [geoLocation, searchParams, inputToken, isChosen]);
+
+  useEffect(() => {
+    if (searchToken) {
+      setInputToken(searchToken);
+
+      const join = async () => {
+        if (
+          !user.multiGuest &&
+          !uniqueName &&
+          !gamerList?.some((multiName) => multiName === uniqueName) &&
+          deletedGamer !== uniqueName
+        )
+          await joinRoom();
+        else if (
+          user.multiGuest &&
+          !uniqueName &&
+          !multiGuestList?.some((multiName) => multiName === uniqueName) &&
+          deletedGamer !== uniqueName
+        )
+          await addMultiGuest();
+      };
+      join();
+    }
+  }, [
+    searchToken,
+    joinRoom,
+    addMultiGuest,
+    user.multiGuest,
+    gamerList,
+    multiGuestList,
+    uniqueName,
+  ]);
 
   useEffect(() => {
     if (!roomId || isHere || !uniqueName || !roomToken) return;
@@ -453,6 +448,10 @@ export default function Room({
   };
 
   useEffect(() => {
+    if (deletedGamer === uniqueName) router.push("/categories?control=true");
+  }, [deletedGamer]);
+
+  useEffect(() => {
     if (!deletedGamer) return;
     setGamerList((prevGamers) =>
       prevGamers.filter((gamer) => gamer !== deletedGamer)
@@ -461,77 +460,6 @@ export default function Room({
       prevMultiGuests.filter((multiGuest) => multiGuest !== deletedGamer)
     );
   }, [deletedGamer]);
-
-  useEffect(() => {
-    if (searchToken) {
-      setInputToken(searchToken);
-
-      const join = async () => {
-        if (
-          !user.multiGuest &&
-          !uniqueName &&
-          !gamerList?.some((multiName) => multiName === uniqueName) &&
-          deletedGamer !== uniqueName
-        )
-          await joinRoom();
-        else if (
-          user.multiGuest &&
-          !uniqueName &&
-          !multiGuestList?.some((multiName) => multiName === uniqueName) &&
-          deletedGamer !== uniqueName
-        )
-          await addMultiGuest();
-      };
-      join();
-    }
-  }, [
-    searchToken,
-    joinRoom,
-    addMultiGuest,
-    user.multiGuest,
-    gamerList,
-    multiGuestList,
-    uniqueName,
-  ]);
-
-  useEffect(() => {
-    if (deletedGamer === uniqueName) router.push("/categories?control=true");
-  }, [deletedGamer]);
-
-  // const addGuest = async () => {
-  //   if (newGuest.length < 3) {
-  //     setServerMessage("Nom trop court");
-  //     return;
-  //   }
-
-  //   const uniqueGuestName = await getUniqueName(roomId, newGuest);
-  //   const guests = await serverAddGuest({
-  //     token: roomToken,
-  //     guestName: uniqueGuestName,
-  //   });
-
-  //   refGuest.current.value = "";
-  //   setServerMessage(`Guest ${uniqueGuestName} ajouté`);
-  //   setNewGuest("");
-  //   setGuestList(guests);
-  //   if (group) {
-  //     const newGuestsGroup = [
-  //       ...group.guests,
-  //       { id: user.id, name: uniqueGuestName, guest: true, multiGuest: false },
-  //     ];
-  //     setGroup((prevGroup) => ({ ...prevGroup, guests: newGuestsGroup }));
-  //   }
-  // };
-
-  // const deleteGuest = async (guest) => {
-  //   const guests = await serverDeleteGuest({
-  //     token: roomToken,
-  //     guestName: guest,
-  //   });
-
-  //   setServerMessage(`Guest ${guest} retiré`);
-  //   setGuestList(guests);
-  // };
 
   const deleteInvs = useCallback(async () => {
     await deleteInvitations({
@@ -542,66 +470,12 @@ export default function Room({
     });
   }, [user.id, categorie, gameName, roomToken]);
 
-  const launchRoom = async () => {
-    gameName !== "grouping" &&
-      Object.keys(options).length &&
-      (await saveLastParams({ userId: user.id, options }));
-    const { error } = await launchGame({
-      roomId,
-      roomToken,
-      adminId: user.id,
-      gamers: gamerList,
-      guests: guestList,
-      multiGuests: multiGuestList,
-      options,
-    });
-
-    if (error) {
-      setServerMessage(error);
-    } else {
-      setServerMessage("");
-      setIsStarted(true);
-    }
-  };
-
-  useEffect(() => {
-    user.multiGuest &&
-      gameData.gamers &&
-      uniqueName &&
-      (setMultiGuestId(
-        gameData.gamers.find((gamer) => gamer.name === uniqueName)?.id
-      ),
-      setMultiGuestDataId(
-        gameData.gamers.find((gamer) => gamer.name === uniqueName)?.dataId
-      ));
-  }, [isStarted, gameData, user, uniqueName]);
-
   useEffect(() => {
     const storedGroup = JSON.parse(localStorage.getItem("group"));
     if (!roomToken && storedGroup) {
       setGroup(storedGroup);
     }
-    //  else if (group && roomToken && gameName && pathname) {
-    //   const addElderGuests = async () => {
-    //     let elderGuests = [];
-    //     await Promise.all(
-    //       group.guests.map(async (guest) => {
-    //         await serverAddGuest({
-    //           token: roomToken,
-    //           guestName: guest.name,
-    //         });
-    //         elderGuests.push(guest.name);
-    //       })
-    //     );
-    //     setGuestList(elderGuests);
-    //   };
-    //   addElderGuests();
-
-    //   setGameData({});
-    // }
   }, [roomToken, gameName]);
-
-  // }, [roomToken, gameName, pathname, group]);
 
   useEffect(() => {
     if (
@@ -618,7 +492,7 @@ export default function Room({
     const go = async () => {
       if (!storedGroup?.roomToken) return;
       try {
-        await new Promise((resolve) => setTimeout(resolve, 3000)); // check
+        // await new Promise((resolve) => setTimeout(resolve, 3000)); // check
         await goOneMoreGame({
           pathname,
           oldRoomToken: storedGroup.roomToken,
@@ -662,6 +536,28 @@ export default function Room({
       }));
   }, [isPrivate, roomId]);
 
+  const launchRoom = async () => {
+    gameName !== "grouping" &&
+      Object.keys(options).length &&
+      (await saveLastParams({ userId: user.id, options }));
+    const { error } = await launchGame({
+      roomId,
+      roomToken,
+      adminId: user.id,
+      gamers: gamerList,
+      guests: guestList,
+      multiGuests: multiGuestList,
+      options,
+    });
+
+    if (error) {
+      setServerMessage(error);
+    } else {
+      setServerMessage("");
+      setIsStarted(true);
+    }
+  };
+
   if (gameData && gameData.nextGame && user) {
     if (gameData.nextGame === "deleted group") {
       return (
@@ -681,16 +577,7 @@ export default function Room({
     } else {
       const goNewGame = async () => {
         !user.multiGuest && (await deleteInvs());
-        const group = {
-          roomToken,
-          //   gamers,
-          //   multiGuests,
-          //   guests,
-          //   privacy: priv,
-          //   lastGame: gameName,
-          //   lastMode: { mode: gameData.options?.mode, options: gameData.options }, // options to remove ?
-          //   lastPosition: storedLocation,
-        };
+        const group = { roomToken };
         localStorage.setItem("group", JSON.stringify(group));
 
         // check router.push
@@ -717,27 +604,7 @@ export default function Room({
           </div>
 
           {(!isChosen && !group) || isPrivate === undefined ? (
-            <>
-              <div>Chargement...</div>
-
-              {/*
-                <button
-                  onClick={() =>
-                    router.push(
-                      `/categories${
-                        gameName !== "grouping"
-                          ? `/${gamesRefs[gameName].categorie}`
-                          : "?control=true"
-                      }`
-                    )
-                  }
-                  className="border border-blue-300 bg-blue-100"
-                >
-                  Retour
-                </button>
-              </>
-            )} */}
-            </>
+            <div>Chargement...</div>
           ) : (
             <>
               {isAdmin && (
@@ -843,41 +710,6 @@ export default function Room({
                     </div>
                   );
                 })}
-              {/* {group?.guests &&
-                group.guests.map((guest) => {
-                  const guestName = guest.name;
-                  const isHere = guestList?.includes(guestName);
-                  return (
-                    <div key={guestName} className="flex">
-                      <div className="flex">
-                        {guestName}{" "}
-                        <span className="italic text-sm">(guest)</span>
-                        {isHere ? (
-                          <CheckIcon className="block h-6 w-6 " />
-                        ) : (
-                          " ... "
-                        )}
-                      </div>
-                      {isHere && (
-                        <button
-                          onClick={() => {
-                            const newGuestsGroup = [...group.guests].filter(
-                              (guest) => guest.name !== guestName
-                            );
-                            setGroup((prevGroup) => ({
-                              ...prevGroup,
-                              guests: newGuestsGroup,
-                            }));
-                            deleteGuest(guestName);
-                          }}
-                          className="border border-blue-300 bg-blue-100"
-                        >
-                          Retirer
-                        </button>
-                      )}
-                    </div>
-                  );
-                })} */}
               {group?.multiGuests &&
                 group.multiGuests.map((multi) => {
                   const multiName = multi.name;
@@ -920,13 +752,11 @@ export default function Room({
                     group?.gamers?.map((gamer) => gamer.name) || [];
                   const multiNameList =
                     group?.multiGuests?.map((multi) => multi.name) || [];
-                  // if (gamerNameList.includes(gamer)) return;
                   if (
                     gamerNameList.includes(gamer) ||
                     multiNameList.includes(gamer)
                   )
                     return;
-
                   return (
                     <div key={gamer} className="flex">
                       <div
@@ -945,26 +775,6 @@ export default function Room({
                     </div>
                   );
                 })}
-                {/* {guestList?.map((guest, i) => {
-                  const guestNameList =
-                    group?.guests?.map((guest) => guest.name) || [];
-                  if (guestNameList.includes(guest)) return;
-                  return (
-                    <div key={i} className="flex">
-                      <div>
-                        {guest} <span className="italic text-sm">(guest)</span>
-                      </div>
-                      {isAdmin && (
-                        <button
-                          onClick={() => deleteGuest(guest)}
-                          className="border border-blue-300 bg-blue-100"
-                        >
-                          Retirer
-                        </button>
-                      )}
-                    </div>
-                  );
-                })} */}
                 {multiGuestList?.map((multiGuest, i) => {
                   const gamerNameList =
                     group?.gamers?.map((gamer) => gamer.name) || [];
@@ -1134,28 +944,7 @@ export default function Room({
                     )}
 
                     <hr />
-
-                    {/* <h1>Ajoute des Guests mono-screen !</h1>
-                  <h2 className="text-sm italic">
-                    Ils utiliseront ton écran à leur tour de jeu.
-                  </h2>
-                  <input
-                    ref={refGuest}
-                    placeholder="Nom du guest"
-                    onChange={(event) => setNewGuest(event.target.value)}
-                    className="outline-none focus:outline-black mr-2"
-                  />
-                  <button
-                    onClick={async () => {
-                      await addGuest();
-                    }}
-                    className="border border-blue-300 bg-blue-100"
-                  >
-                    Ajouter le Guest
-                  </button> */}
                   </>
-
-                  <hr />
 
                   <div className="flex justify-center">
                     <div className="flex flex-col">{serverMessage}</div>
@@ -1214,10 +1003,6 @@ export default function Room({
                   </div>
                 </>
               )}
-
-              <button onClick={() => getAllRoom({ roomId })}>
-                zefzefzefzfe
-              </button>
 
               {Options && options && setOptions && setServerMessage && (
                 <Options
