@@ -520,6 +520,12 @@ export default function Categories({
             })}
           </div>
         )}
+
+        <div className="absolute bottom-0 w-full bg-black h-20 z-40 flex justify-center items-center">
+          {/* <button className="border border-red-800 bg-red-600 text-black h-10 p-2">
+            Joli bouton
+          </button> */}
+        </div>
       </main>
     </>
   );
