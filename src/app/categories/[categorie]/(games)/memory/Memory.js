@@ -141,10 +141,10 @@ export default function Memory({
       );
       setTimeout(
         () => {
-          setTriggeredNumber(0);
           setIsRevealing(false);
+          setTriggeredNumber(0);
         },
-        !success ? 1200 : 0
+        !success ? 2000 : 400
       );
     }
   }, [gameData.icons, isActive]);
