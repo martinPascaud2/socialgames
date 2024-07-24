@@ -66,19 +66,6 @@ export async function launchGame({
     started: startedRoom.started,
   });
 
-  // await pusher.trigger(`room-${roomToken}`, "room-event", {
-  //   started: startedRoom.started,
-  //   gameData: {
-  //     admin: startedRoom.admin,
-  //     activePlayer: gamersAndGuests[0],
-  //     gamers: gamersAndGuests,
-  //     phase,
-  //     options,
-  //     actions: {},
-  //     senders: [],
-  //   },
-  // });
-
   return {};
 }
 
@@ -133,7 +120,6 @@ export async function sendActions({
 
   if (newSenders.length === gameData.gamers.length) {
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    // setTimeout(async () => {
     await pusher.trigger(`room-${roomToken}`, "room-event", {
       gameData: {
         ...gameData,
@@ -142,12 +128,10 @@ export async function sendActions({
         senders: [],
       },
     });
-    // }, 2000);
   }
 }
 
 export async function sendActionBack({ backed, roomToken, gameData, sender }) {
-  // const { actions } = gameData;
   const { actions } = gameData;
   const { aimed, action } = backed;
   const backedActions = gameData.backedActions || {};
@@ -193,7 +177,6 @@ export async function proposeAction({
 
   if (newSenders.length === gameData.gamers.length) {
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    // setTimeout(async () => {
     await pusher.trigger(`room-${roomToken}`, "room-event", {
       gameData: {
         ...gameData,
@@ -202,7 +185,6 @@ export async function proposeAction({
         senders: [],
       },
     });
-    // }, 2000);
   }
 }
 
@@ -239,7 +221,6 @@ export async function sendPropositionBack({
 
   if (newSenders.length === gameData.gamers.length) {
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    // setTimeout(async () => {
     await pusher.trigger(`room-${roomToken}`, "room-event", {
       gameData: {
         ...gameData,
@@ -248,6 +229,5 @@ export async function sendPropositionBack({
         senders: newSenders,
       },
     });
-    // }, 2000);
   }
 }

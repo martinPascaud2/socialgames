@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, act } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import "./ripple.css";
 
+import { saveData } from "@/components/Room/actions";
 import { useLongPress, LongPressEventType } from "use-long-press";
 import {
   aimPlayer,
@@ -13,8 +14,6 @@ import {
 } from "./gameActions";
 
 import { vampiro } from "@/assets/fonts";
-
-import { saveData } from "@/components/Room/actions";
 
 import NextEndingPossibilities from "@/components/NextEndingPossibilities";
 
@@ -50,7 +49,6 @@ const RipplingButton = ({
   };
   useEffect(() => {
     if (!isValidated) cancel();
-    //   }, [isValidated]);
   }, [isValidated, isActive]);
 
   const bind = useLongPress(isActive ? callback : null, {
@@ -88,14 +86,12 @@ const RipplingButton = ({
     >
       {isRippling && !longPressed ? (
         <span
-          // className="ripple"
           className="absolute w-5 h-5 bg-red-400 block border-0 rounded-full"
           style={{
             animationDuration: "10s",
             animationTimingFunction: "ease",
             animationIterationCount: "1",
             animationFillMode: "forwards",
-            // animationName: isRippling ? "ripple-effect" : "",
             animationName: "ripple-effect",
             left: coords.x,
             top: coords.y,
@@ -166,7 +162,6 @@ const SlidingCard = ({ onDecision, sender, action }) => {
       setTranslateX(0);
     } else {
       onDecision({ decision: acceptation < 0 ? "accept" : "refuse" });
-      //   setTranslateX(0);
     }
   };
 
@@ -331,7 +326,6 @@ export default function Triaction({
   const sendBack = async () => {
     setSentBack(selected);
     setIsValidated(false);
-    // await sendActionBack({ backed: selected, roomToken, gameData });
     await sendActionBack({
       backed: selected,
       roomToken,
@@ -359,9 +353,7 @@ export default function Triaction({
   };
 
   useEffect(() => {
-    // if (phase !== "choose") return;
     if (phase !== "choose" || showChoose === "waiting") return;
-    console.log("showChoose useEffect", showChoose);
     setChooseTimeout(
       setTimeout(() => {
         setShowChoose("long");
@@ -424,19 +416,7 @@ export default function Triaction({
   useEffect(() => {
     if (hasReload || !gameData) return;
 
-    // if (isAdmin) {
-    // const save = async () => {
-    //   saveData({ roomId, newData: gameData });
-    // };
-    // save();
-    // }
-
     const reload = async () => {
-      // setActions((prevActions) => {
-      //   if (JSON.stringify(prevActions) === JSON.stringify(actions))
-      //     return prevActions;
-      //   else return gameData.actions[user.name];
-      // });
       setWaiting(senders.some((sender) => sender.name === user.name));
       setActions((prevActions) => {
         if (phase === "exchange") {
@@ -459,22 +439,20 @@ export default function Triaction({
           (gamer) => gamer.place === (userPlace % gamers.length) + 1
         );
         return aimed;
-        // setAimed(aimed);
       });
-
       setIsProposed(
-        gameData.senders.some((sender) => sender.name === user.name)
+        gameData.senders.some((sender) => sender.name === user.name) &&
+          phase === "exchange"
       );
-
       setPrevious(() => {
         const prevPlace = userPlace === 1 ? gamers.length : userPlace - 1;
         const prev = gamers.find((gamer) => gamer.place === prevPlace);
         return prev;
       });
-
       setShowChoose((prevShow) => {
         if (senders.some((sender) => sender.name === user.name))
           return "waiting";
+        else return prevShow;
       });
 
       setHasReload(true);
@@ -494,15 +472,6 @@ export default function Triaction({
   useEffect(() => {
     if (showChoose === "waiting" && chooseTimeout) clearTimeout(chooseTimeout);
   }, [showChoose, chooseTimeout]);
-
-  console.log("gameData", gameData);
-  console.log("hasReload", hasReload);
-  console.log("waiting", waiting);
-  console.log("actions", actions);
-  console.log("phase", phase);
-  console.log("isProposed", isProposed);
-  console.log("sentBack", sentBack);
-  console.log("showChoose", showChoose);
 
   return (
     <>
@@ -780,7 +749,6 @@ export default function Triaction({
               )
                 newChoose = "waiting";
               newChoose && setShowChoose(newChoose);
-              // setShowChoose("proposition");
             }}
           >
             {(showChoose === "long" || showChoose === "backed") &&
@@ -874,10 +842,12 @@ export default function Triaction({
             };
 
             const FinalCard = ({ data }) => (
-              <div className="w-[90%] rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center bg-white">
-                <label>{data.label}</label>
+              <div className="w-[90%] rounded-md border border-lime-800 my-3 py-2 px-4 flex flex-col items-center shadow-lg shadow-lime-900 bg-lime-700">
+                <label className="font-bold text-slate-100 tracking-wide">
+                  {data.label}
+                </label>
                 <div
-                  className={`${vampiro.className} w-full p-2 m-2 text-center`}
+                  className={`${vampiro.className} w-full p-2 m-2 text-center text-red-900 text-lg bg-lime-100 border-4 border-double border-lime-800`}
                 >
                   {data.action}
                 </div>
