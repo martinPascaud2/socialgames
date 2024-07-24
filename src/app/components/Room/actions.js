@@ -519,6 +519,17 @@ export async function togglePrivacy({ roomId, roomToken, privacy }) {
   });
 }
 
+export async function saveData({ roomId, newData }) {
+  await prisma.room.update({
+    where: {
+      id: roomId,
+    },
+    data: {
+      gameData: newData,
+    },
+  });
+}
+
 export async function saveAndDispatchData({ roomId, roomToken, newData }) {
   await prisma.room.update({
     where: {

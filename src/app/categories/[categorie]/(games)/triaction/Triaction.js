@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, act } from "react";
 import "./ripple.css";
 
 import { useLongPress, LongPressEventType } from "use-long-press";
@@ -13,6 +13,8 @@ import {
 } from "./gameActions";
 
 import { vampiro } from "@/assets/fonts";
+
+import { saveData } from "@/components/Room/actions";
 
 import NextEndingPossibilities from "@/components/NextEndingPossibilities";
 
@@ -270,6 +272,7 @@ export default function Triaction({
   const [chooseTimeout, setChooseTimeout] = useState();
 
   const [isEnded, setIsEnded] = useState(false);
+  const [hasReload, setHasReload] = useState(false);
 
   const aim = async ({ aimerPlace, aimed }) => {
     if (aimed.place) return;
@@ -328,7 +331,13 @@ export default function Triaction({
   const sendBack = async () => {
     setSentBack(selected);
     setIsValidated(false);
-    await sendActionBack({ backed: selected, roomToken, gameData });
+    // await sendActionBack({ backed: selected, roomToken, gameData });
+    await sendActionBack({
+      backed: selected,
+      roomToken,
+      gameData,
+      sender: user.name,
+    });
     setSelected({});
   };
 
@@ -350,7 +359,9 @@ export default function Triaction({
   };
 
   useEffect(() => {
-    if (phase !== "choose") return;
+    // if (phase !== "choose") return;
+    if (phase !== "choose" || showChoose === "waiting") return;
+    console.log("showChoose useEffect", showChoose);
     setChooseTimeout(
       setTimeout(() => {
         setShowChoose("long");
@@ -387,7 +398,7 @@ export default function Triaction({
   };
 
   useEffect(() => {
-    if (showChoose !== "hiddenReveal") return;
+    if (showChoose !== "hiddenReveal" || showChoose === "waiting") return;
     setChooseTimeout(
       setTimeout(() => {
         setShowChoose("hiddenLong");
@@ -402,6 +413,96 @@ export default function Triaction({
   useEffect(() => {
     if (phase === "finalReveal" || gameData.ended) setIsEnded(true);
   }, [phase, gameData.ended]);
+
+  useEffect(() => {
+    if (!isAdmin || !hasReload) return;
+    const save = async () => {
+      saveData({ roomId, newData: gameData });
+    };
+    save();
+  }, [gameData, hasReload, isAdmin, roomId]);
+  useEffect(() => {
+    if (hasReload || !gameData) return;
+
+    // if (isAdmin) {
+    // const save = async () => {
+    //   saveData({ roomId, newData: gameData });
+    // };
+    // save();
+    // }
+
+    const reload = async () => {
+      // setActions((prevActions) => {
+      //   if (JSON.stringify(prevActions) === JSON.stringify(actions))
+      //     return prevActions;
+      //   else return gameData.actions[user.name];
+      // });
+      setWaiting(senders.some((sender) => sender.name === user.name));
+      setActions((prevActions) => {
+        if (phase === "exchange") {
+          const actions = { ...gameData.actions[user.name] };
+          delete actions.backed;
+          return actions;
+        }
+        return prevActions;
+      });
+      setSentBack((prevSentBack) => {
+        if (gameData.backedActions && gameData.backedActions[user.name])
+          return gameData.backedActions[user.name];
+        else return prevSentBack;
+      });
+
+      const userPlace = gamers?.find((gamer) => gamer.name === user.name).place;
+
+      setAimed(() => {
+        const aimed = gamers.find(
+          (gamer) => gamer.place === (userPlace % gamers.length) + 1
+        );
+        return aimed;
+        // setAimed(aimed);
+      });
+
+      setIsProposed(
+        gameData.senders.some((sender) => sender.name === user.name)
+      );
+
+      setPrevious(() => {
+        const prevPlace = userPlace === 1 ? gamers.length : userPlace - 1;
+        const prev = gamers.find((gamer) => gamer.place === prevPlace);
+        return prev;
+      });
+
+      setShowChoose((prevShow) => {
+        if (senders.some((sender) => sender.name === user.name))
+          return "waiting";
+      });
+
+      setHasReload(true);
+    };
+    reload();
+  }, [
+    gameData,
+    roomId,
+    isAdmin,
+    actions,
+    hasReload,
+    user,
+    senders,
+    gamers,
+    phase,
+  ]);
+  useEffect(() => {
+    if (showChoose === "waiting" && chooseTimeout) clearTimeout(chooseTimeout);
+  }, [showChoose, chooseTimeout]);
+
+  console.log("gameData", gameData);
+  console.log("hasReload", hasReload);
+  console.log("waiting", waiting);
+  console.log("actions", actions);
+  console.log("phase", phase);
+  console.log("isProposed", isProposed);
+  console.log("sentBack", sentBack);
+  console.log("showChoose", showChoose);
 
   return (
     <>
@@ -561,34 +662,35 @@ export default function Triaction({
                         &nbsp;{previous?.name}&nbsp;.
                       </span>
                     </div>
-                    {Object.entries(actions).map((action) => (
-                      <div
-                        key={action[0]}
-                        onClick={() => {
-                          if (
-                            Object.keys(selected)?.length &&
-                            selected.id === action[0]
-                          )
-                            setSelected({});
-                          else if (!Object.keys(selected)?.length)
-                            setSelected({
-                              id: action[0],
-                              aimed: previous,
-                              action: action[1],
-                            });
-                        }}
-                        className={`${
-                          selected?.id === action[0] && "bg-green-100"
-                        } w-full rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center`}
-                      >
-                        <label>Action {action[0]}</label>
+                    {actions &&
+                      Object.entries(actions).map((action) => (
                         <div
-                          className={`${vampiro.className} w-full p-2 m-2 text-center`}
+                          key={action[0]}
+                          onClick={() => {
+                            if (
+                              Object.keys(selected)?.length &&
+                              selected.id === action[0]
+                            )
+                              setSelected({});
+                            else if (!Object.keys(selected)?.length)
+                              setSelected({
+                                id: action[0],
+                                aimed: previous,
+                                action: action[1],
+                              });
+                          }}
+                          className={`${
+                            selected?.id === action[0] && "bg-green-100"
+                          } w-full rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center`}
                         >
-                          {action[1]}
+                          <label>Action {action[0]}</label>
+                          <div
+                            className={`${vampiro.className} w-full p-2 m-2 text-center`}
+                          >
+                            {action[1]}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 ) : (
                   <div className="w-[90%] flex flex-col items-center">
@@ -696,7 +798,7 @@ export default function Triaction({
                   <>
                     <Press />
                     <div className="w-[90%] rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center bg-white">
-                      <label>Action rendue par {aimed.name}</label>
+                      <label>Action rendue par {aimed?.name}</label>
                       <div
                         className={`${vampiro.className} w-full p-2 m-2 text-center`}
                       >
@@ -759,15 +861,15 @@ export default function Triaction({
           (() => {
             const actions = gameData.actions[user.name];
             const backed = {
-              label: `Action renvoyée par ${aimed.name}`,
+              label: `Action renvoyée par ${aimed?.name}`,
               action: actions.backed,
             };
             const kept = {
-              label: `Proposition de ${previous.name} acceptée`,
+              label: `Proposition de ${previous?.name} acceptée`,
               action: actions.kept.action,
             };
             const proposedBack = {
-              label: `Proposition non acceptée par ${aimed.name}`,
+              label: `Proposition non acceptée par ${aimed?.name}`,
               action: actions.proposedBack.action,
             };
 

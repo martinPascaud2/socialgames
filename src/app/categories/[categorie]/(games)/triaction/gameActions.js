@@ -1,5 +1,6 @@
 "use server";
 
+import { saveAndDispatchData } from "@/components/Room/actions";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkPlayers from "@/utils/checkPlayers";
 
@@ -50,18 +51,33 @@ export async function launchGame({
 
   const phase = options.mode === "Triaction (peek)" ? "peek" : "write";
 
+  const newData = {
+    admin: startedRoom.admin,
+    activePlayer: gamersAndGuests[0],
+    gamers: gamersAndGuests,
+    phase,
+    options,
+    actions: {},
+    senders: [],
+  };
+
+  await saveAndDispatchData({ roomId, roomToken, newData });
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
-    gameData: {
-      admin: startedRoom.admin,
-      activePlayer: gamersAndGuests[0],
-      gamers: gamersAndGuests,
-      phase,
-      options,
-      actions: {},
-      senders: [],
-    },
   });
+
+  // await pusher.trigger(`room-${roomToken}`, "room-event", {
+  //   started: startedRoom.started,
+  //   gameData: {
+  //     admin: startedRoom.admin,
+  //     activePlayer: gamersAndGuests[0],
+  //     gamers: gamersAndGuests,
+  //     phase,
+  //     options,
+  //     actions: {},
+  //     senders: [],
+  //   },
+  // });
 
   return {};
 }
@@ -116,31 +132,36 @@ export async function sendActions({
   );
 
   if (newSenders.length === gameData.gamers.length) {
-    setTimeout(async () => {
-      await pusher.trigger(`room-${roomToken}`, "room-event", {
-        gameData: {
-          ...gameData,
-          phase: "exchange",
-          actions: newActions,
-          senders: [],
-        },
-      });
-    }, 2000);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // setTimeout(async () => {
+    await pusher.trigger(`room-${roomToken}`, "room-event", {
+      gameData: {
+        ...gameData,
+        phase: "exchange",
+        actions: newActions,
+        senders: [],
+      },
+    });
+    // }, 2000);
   }
 }
 
-export async function sendActionBack({ backed, roomToken, gameData }) {
+export async function sendActionBack({ backed, roomToken, gameData, sender }) {
+  // const { actions } = gameData;
   const { actions } = gameData;
   const { aimed, action } = backed;
+  const backedActions = gameData.backedActions || {};
 
   const gamerActions = actions[aimed.name];
   const newGamerActions = { ...gamerActions, backed: action };
   const newActions = { ...actions, [aimed.name]: newGamerActions };
+  const newBackedActions = { ...backedActions, [sender]: backed };
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
       actions: newActions,
+      backedActions: newBackedActions,
     },
   });
 }
@@ -171,16 +192,17 @@ export async function proposeAction({
   });
 
   if (newSenders.length === gameData.gamers.length) {
-    setTimeout(async () => {
-      await pusher.trigger(`room-${roomToken}`, "room-event", {
-        gameData: {
-          ...gameData,
-          phase: "choose",
-          propositions: newPropositions,
-          senders: [],
-        },
-      });
-    }, 2000);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // setTimeout(async () => {
+    await pusher.trigger(`room-${roomToken}`, "room-event", {
+      gameData: {
+        ...gameData,
+        phase: "choose",
+        propositions: newPropositions,
+        senders: [],
+      },
+    });
+    // }, 2000);
   }
 }
 
@@ -216,15 +238,16 @@ export async function sendPropositionBack({
   });
 
   if (newSenders.length === gameData.gamers.length) {
-    setTimeout(async () => {
-      await pusher.trigger(`room-${roomToken}`, "room-event", {
-        gameData: {
-          ...gameData,
-          phase: "finalReveal",
-          actions: newActions,
-          senders: newSenders,
-        },
-      });
-    }, 2000);
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // setTimeout(async () => {
+    await pusher.trigger(`room-${roomToken}`, "room-event", {
+      gameData: {
+        ...gameData,
+        phase: "finalReveal",
+        actions: newActions,
+        senders: newSenders,
+      },
+    });
+    // }, 2000);
   }
 }
