@@ -321,8 +321,8 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
   const { id: roomId, adminLocation, multiGuests, options } = room;
 
   const distance = getDistance({ first: adminLocation, second: geoLocation });
-  if (distance > 50)
-    return { error: "Veuillez vous approcher de la zone de jeu" };
+  // if (distance > 50)
+  //   return { error: "Veuillez vous approcher de la zone de jeu" };
 
   const gamerList = Object.keys(room.gamers);
   const guests = Object.keys(room.guests);
