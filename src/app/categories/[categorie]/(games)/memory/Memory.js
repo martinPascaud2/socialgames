@@ -34,7 +34,7 @@ export default function Memory({
   const [initialized, setInitialized] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const [isRevealing, setIsRevealing] = useState(false);
+  // const [isRevealing, setIsRevealing] = useState(false);
   const [triggeredNumber, setTriggeredNumber] = useState(0);
 
   const [isEnded, setIsEnded] = useState(false);
@@ -132,7 +132,7 @@ export default function Memory({
 
     //+ triggeredNumber: no save between reveals
     if (triggered >= 2 || triggeredNumber >= 2) {
-      setIsRevealing(true);
+      // setIsRevealing(true);
       setTimeout(
         async () => {
           isActive && (await hideUndiscovered({ roomId, roomToken, gameData }));
@@ -141,7 +141,7 @@ export default function Memory({
       );
       setTimeout(
         () => {
-          setIsRevealing(false);
+          // setIsRevealing(false);
           setTriggeredNumber(0);
         },
         !success ? 2000 : 400
@@ -151,16 +151,19 @@ export default function Memory({
 
   const reveal = useCallback(
     async ({ index }) => {
-      if (!isActive || isRevealing || triggeredNumber >= 2) return;
+      // if (!isActive || isRevealing || triggeredNumber >= 2) return;
+      if (!isActive || triggeredNumber >= 2) return;
 
       setTriggeredNumber((prevTrigs) => prevTrigs + 1);
-      setIsRevealing(true);
+      // setIsRevealing(true);
 
-      await revealCard({ roomToken, gameData, index });
+      // await revealCard({ roomToken, gameData, index });
+      revealCard({ roomToken, gameData, index });
 
-      setIsRevealing(false);
+      // setIsRevealing(false);
     },
-    [isActive, triggeredNumber, gameData, roomToken, isRevealing]
+    // [isActive, triggeredNumber, gameData, roomToken, isRevealing]
+    [isActive, triggeredNumber, gameData, roomToken]
   );
 
   const roundScoresList = useMemo(
@@ -211,7 +214,8 @@ export default function Memory({
               src={images[imagesNames[icon.key]]}
               triggered={triggered}
               discovered={discovered}
-              isActive={isActive && !isRevealing}
+              // isActive={isActive && !isRevealing}
+              isActive={isActive}
               reveal={
                 !isEnded
                   ? reveal
@@ -224,7 +228,8 @@ export default function Memory({
         })}
       </div>
     );
-  }, [gameData.icons, images, imagesNames, reveal, isActive, isRevealing]);
+    // }, [gameData.icons, images, imagesNames, reveal, isActive, isRevealing]);
+  }, [gameData.icons, images, imagesNames, reveal, isActive]);
 
   useEffect(() => {
     setNewGame(gameData.newGame);
@@ -237,7 +242,7 @@ export default function Memory({
     setImageLength(0);
     setInitialized(false);
     setIsLoaded(false);
-    setIsRevealing(false);
+    // setIsRevealing(false);
     setTriggeredNumber(0);
     setIsEnded(false);
     setServerMessage("");
