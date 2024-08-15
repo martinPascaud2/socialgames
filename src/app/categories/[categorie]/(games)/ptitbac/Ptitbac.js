@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 
+import levenshtein from "@/utils/levenshtein";
 import {
   startCountdown,
   sendResponses,
@@ -16,34 +17,6 @@ import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import CountDown from "@/components/CountDown";
 import NextStep from "@/components/NextStep";
 import NextEndingPossibilities from "@/components/NextEndingPossibilities";
-
-function levenshtein(a, b) {
-  const matrix = [];
-
-  for (let i = 0; i <= b.length; i++) {
-    matrix[i] = [i];
-  }
-
-  for (let j = 0; j <= a.length; j++) {
-    matrix[0][j] = j;
-  }
-
-  for (let i = 1; i <= b.length; i++) {
-    for (let j = 1; j <= a.length; j++) {
-      if (b.charAt(i - 1) === a.charAt(j - 1)) {
-        matrix[i][j] = matrix[i - 1][j - 1];
-      } else {
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j - 1] + 1, // substitution
-          matrix[i][j - 1] + 1, // insertion
-          matrix[i - 1][j] + 1 // deletion
-        );
-      }
-    }
-  }
-
-  return matrix[b.length][a.length];
-}
 
 function gatherGroups({ groups, threshold }) {
   const gatheredGroups = [...groups];
@@ -147,7 +120,9 @@ export default function Ptitbac({
   const handleChange = (e, i) => {
     if (e.target.value.length === 0 || hasValidated) return;
     const newResponses = [...responses];
-    newResponses[i] = e.target.value;
+    newResponses[i] =
+      e.target.value.charAt(0).toUpperCase() +
+      e.target.value.slice(1).toLowerCase();
     setResponses(newResponses);
     setIsCompleted(newResponses.every((res) => res.length >= 2));
   };

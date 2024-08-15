@@ -5,6 +5,7 @@ import prisma from "@/utils/prisma";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkPlayers from "@/utils/checkPlayers";
 import { shuffleObject } from "@/utils/shuffleArray";
+import levenshtein from "@/utils/levenshtein";
 
 export async function launchGame({
   roomId,
@@ -359,7 +360,8 @@ export async function validate({ roomToken, gameData }) {
     const isAlone =
       Object.values(themesResponses[theme]).reduce(
         (times, response) =>
-          response.word === themesResponses[theme][count.name].word
+          levenshtein(response.word, themesResponses[theme][count.name].word) <=
+          1
             ? times + 1
             : times,
         0
