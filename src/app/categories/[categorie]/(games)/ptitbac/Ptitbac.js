@@ -45,6 +45,41 @@ function levenshtein(a, b) {
   return matrix[b.length][a.length];
 }
 
+function gatherGroups({ groups, threshold }) {
+  const gatheredGroups = [...groups];
+
+  let merged = true;
+  while (merged) {
+    merged = false;
+
+    for (let i = 0; i < gatheredGroups.length; i++) {
+      for (let j = i + 1; j < gatheredGroups.length; j++) {
+        if (
+          gatheredGroups[i].some((firstMember) =>
+            gatheredGroups[j].some(
+              (secondMember) =>
+                levenshtein(
+                  firstMember.response.word,
+                  secondMember.response.word
+                ) <= threshold
+            )
+          )
+        ) {
+          gatheredGroups[i] = [
+            ...new Set([...gatheredGroups[i], ...gatheredGroups[j]]),
+          ];
+          gatheredGroups.splice(j, 1);
+          merged = true;
+          break;
+        }
+      }
+      if (merged) break;
+    }
+  }
+
+  return gatheredGroups;
+}
+
 function groupSimilarWords(responses, threshold = 1) {
   const groups = [];
   const visited = new Set();
@@ -68,7 +103,9 @@ function groupSimilarWords(responses, threshold = 1) {
     }
   });
 
-  return groups;
+  const gatheredGroups = gatherGroups({ groups, threshold });
+
+  return gatheredGroups;
 }
 
 export default function Ptitbac({
@@ -192,6 +229,7 @@ export default function Ptitbac({
   }, [gameData.themesResponses, valTheme, phase]);
 
   useEffect(() => {
+    if (phase !== "validating") return;
     gameData.refereeValidation &&
       setRefereeValidation(gameData.refereeValidation);
   }, [gameData.refereeValidation]);
@@ -366,7 +404,7 @@ export default function Ptitbac({
                       <div className="m-1">{theme}</div>
                       <input
                         type="text"
-                        value={responses[i]}
+                        value={responses[i] || ""}
                         onChange={(e) => handleChange(e, i)}
                         onKeyDown={(e) => {
                           if (e.key === "/") {
