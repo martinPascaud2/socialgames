@@ -91,23 +91,20 @@ export default function Categories({
     setBottomSpace((window.innerHeight - bottomSideRect.bottom + 1).toString());
   }, [bottomRect]);
 
-  const onNewScanResult = useCallback(
-    throttle(async (decodedText) => {
-      if (scanLocked) return;
-      let userLocation;
-      setScanLocked(true);
-      userLocation = await getLocation();
-      const { error: addFriendError } = await addFriend({
-        userLocation,
-        friendCode: decodedText,
-      });
-      if (addFriendError) setServerMessage(addFriendError);
-      setTimeout(() => {
-        setScanLocked(false);
-      }, 10000);
-    }, 10000),
-    []
-  );
+  const onNewScanResult = throttle(async (decodedText) => {
+    if (scanLocked) return;
+    let userLocation;
+    setScanLocked(true);
+    userLocation = await getLocation();
+    const { error: addFriendError } = await addFriend({
+      userLocation,
+      friendCode: decodedText,
+    });
+    if (addFriendError) setServerMessage(addFriendError);
+    setTimeout(() => {
+      setScanLocked(false);
+    }, 1000);
+  }, 1000);
 
   const QrCodeScanner = useMemo(() => {
     if (!scanning) return;
