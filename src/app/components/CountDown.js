@@ -7,10 +7,11 @@ export default function CountDown({
   setHasValidated,
   onTimeUp,
 }) {
-  const [leftSeconds, setLeftSeconds] = useState(1);
-  const [leftMinutes, setLeftMinutes] = useState(1);
+  const [leftSeconds, setLeftSeconds] = useState();
+  const [leftMinutes, setLeftMinutes] = useState();
 
   useEffect(() => {
+    if (!finishCountdownDate) return;
     let interval = setInterval(() => {
       const currentTime = Date.now();
       const leftMilliseconds = finishCountdownDate - currentTime;
@@ -20,12 +21,11 @@ export default function CountDown({
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, [finishCountdownDate]);
 
-  if (leftMinutes <= 0 && leftSeconds <= 0) {
+  if (leftMinutes && leftSeconds && leftMinutes <= 0 && leftSeconds <= 0) {
     setHasValidated && setHasValidated(true);
     onTimeUp && onTimeUp();
-    // return;
   }
 
   return (
