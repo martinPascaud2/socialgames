@@ -163,6 +163,7 @@ export default function Memory({
       // setIsRevealing(false);
     },
     // [isActive, triggeredNumber, gameData, roomToken, isRevealing]
+    // [isActive, triggeredNumber, gameData, roomToken]
     [isActive, triggeredNumber, gameData, roomToken]
   );
 
@@ -231,6 +232,39 @@ export default function Memory({
     // }, [gameData.icons, images, imagesNames, reveal, isActive, isRevealing]);
   }, [gameData.icons, images, imagesNames, reveal, isActive]);
 
+  const ActiveCardList = useCallback(() => {
+    if (!gameData.icons || !Object.keys(images).length || !imagesNames.length)
+      return;
+    const icons = gameData.icons;
+    return (
+      <div className="flex flex-wrap justify-center">
+        {gameData?.icons?.map((icon, i) => {
+          const { triggered, discovered } = icon;
+          return (
+            <CardMemo
+              key={i}
+              index={i}
+              src={images[imagesNames[icon.key]]}
+              triggered={triggered}
+              discovered={discovered}
+              // isActive={isActive && !isRevealing}
+              isActive={isActive}
+              reveal={
+                !isEnded
+                  ? reveal
+                  : () => {
+                      return;
+                    }
+              }
+            />
+          );
+        })}
+      </div>
+    );
+  }, [images, imagesNames, reveal, isActive]);
+
+  const RenderedCardList = !isActive ? CardList : ActiveCardList;
+
   useEffect(() => {
     setNewGame(gameData.newGame);
   }, [gameData.newGame]);
@@ -273,7 +307,8 @@ export default function Memory({
           <>
             {roundScoresList}
             <div>C&apos;est au tour de {gameData.activePlayer?.name}</div>
-            {CardList()}
+            {/* {CardList()} */}
+            {RenderedCardList()}
           </>
         )}
 
