@@ -16,11 +16,13 @@ export default function Card({
   const [isRevealed, setIsRevealed] = useState(false);
 
   useEffect(() => {
+    if (isActive) return;
     if (triggered === undefined || discovered === undefined) return;
     if (!triggered) {
       setIsRevealed(false);
     }
-  }, [triggered, discovered]);
+    // }, [triggered, discovered]);
+  }, [triggered, discovered, isActive]);
 
   if (!src) return;
 
@@ -30,7 +32,8 @@ export default function Card({
         onClick={async () => {
           if (triggered || discovered || !isActive) return;
           setIsRevealed(true);
-          await reveal({ index });
+          // await reveal({ index });
+          reveal({ index });
         }}
         className={classNames(
           "flip-card relative w-full h-full rounded-2xl	border-2",
