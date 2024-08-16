@@ -31,9 +31,9 @@ export default function Card({
       <div
         onClick={async () => {
           if (triggered || discovered || !isActive) return;
-          setIsRevealed(true);
           // await reveal({ index });
-          reveal({ index });
+          setIsRevealed(true);
+          reveal && (await reveal({ index }));
         }}
         className={classNames(
           "flip-card relative w-full h-full rounded-2xl	border-2",

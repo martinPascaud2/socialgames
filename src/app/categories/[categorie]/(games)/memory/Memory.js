@@ -42,6 +42,8 @@ export default function Memory({
   const [serverMessage, setServerMessage] = useState("");
   const [newGame, setNewGame] = useState(false);
 
+  const [activeIcons, setActiveIcons] = useState();
+
   useEffect(() => {
     if (!gameData) return;
 
@@ -149,23 +151,33 @@ export default function Memory({
     }
   }, [gameData.icons, isActive]);
 
-  const reveal = useCallback(
-    async ({ index }) => {
-      // if (!isActive || isRevealing || triggeredNumber >= 2) return;
-      if (!isActive || triggeredNumber >= 2) return;
+  // const reveal = useCallback(
+  //   async ({ index }) => {
+  //     // if (!isActive || isRevealing || triggeredNumber >= 2) return;
+  //     if (!isActive || triggeredNumber >= 2) return;
 
-      setTriggeredNumber((prevTrigs) => prevTrigs + 1);
-      // setIsRevealing(true);
+  //     setTriggeredNumber((prevTrigs) => prevTrigs + 1);
+  //     // setIsRevealing(true);
 
-      // await revealCard({ roomToken, gameData, index });
-      revealCard({ roomToken, gameData, index });
+  //     // await revealCard({ roomToken, gameData, index });
+  //     revealCard({ roomToken, gameData, index });
+  //     console.log("activeIcons", activeIcons);
 
-      // setIsRevealing(false);
-    },
-    // [isActive, triggeredNumber, gameData, roomToken, isRevealing]
-    // [isActive, triggeredNumber, gameData, roomToken]
-    [isActive, triggeredNumber, gameData, roomToken]
-  );
+  //     setActiveIcons((prevActive) => {
+  //       const icon = prevActive[index];
+  //       const newIcon = { ...icon, triggered: true };
+  //       const newActiveIcons = [...prevActive];
+  //       newActiveIcons[index] = newIcon;
+  //       return newActiveIcons;
+  //     });
+
+  //     // setIsRevealing(false);
+  //   },
+  //   // [isActive, triggeredNumber, gameData, roomToken, isRevealing]
+  //   // [isActive, triggeredNumber, gameData, roomToken]
+  //   [isActive, triggeredNumber, gameData, roomToken, activeIcons]
+  // );
+  console.log("gameData.icons", gameData.icons);
 
   const roundScoresList = useMemo(
     () => (
@@ -217,28 +229,64 @@ export default function Memory({
               discovered={discovered}
               // isActive={isActive && !isRevealing}
               isActive={isActive}
-              reveal={
-                !isEnded
-                  ? reveal
-                  : () => {
-                      return;
-                    }
-              }
+              // reveal={
+              //   !isEnded
+              //     ? reveal
+              //     : () => {
+              //         return;
+              //       }
+              // }
             />
           );
         })}
       </div>
     );
     // }, [gameData.icons, images, imagesNames, reveal, isActive, isRevealing]);
-  }, [gameData.icons, images, imagesNames, reveal, isActive]);
+    // }, [gameData.icons, images, imagesNames, reveal, isActive]);
+  }, [gameData.icons, images, imagesNames, isActive]);
+
+  useEffect(() => {
+    console.log("triggeredNumber", triggeredNumber);
+    // if (!gameData.icons || triggeredNumber >= 2) return;
+    if (!gameData.icons || triggeredNumber !== 0) return;
+    setActiveIcons(gameData.icons);
+  }, [gameData.icons, triggeredNumber]);
 
   const ActiveCardList = useCallback(() => {
     if (!gameData.icons || !Object.keys(images).length || !imagesNames.length)
       return;
-    const icons = gameData.icons;
+
+    // const reveal = useCallback(
+    const reveal = ({ index }) => {
+      // if (!isActive || isRevealing || triggeredNumber >= 2) return;
+      if (!isActive || triggeredNumber >= 2) return;
+
+      setTriggeredNumber((prevTrigs) => prevTrigs + 1);
+      // setIsRevealing(true);
+
+      // await revealCard({ roomToken, gameData, index });
+      const revealData = { ...gameData, icons: activeIcons };
+      revealCard({ roomToken, gameData: revealData, index });
+      console.log("activeIcons", activeIcons);
+
+      setActiveIcons((prevActive) => {
+        const icon = prevActive[index];
+        const newIcon = { ...icon, triggered: true };
+        const newActiveIcons = [...prevActive];
+        newActiveIcons[index] = newIcon;
+        return newActiveIcons;
+      });
+
+      // setIsRevealing(false);
+    };
+    // [isActive, triggeredNumber, gameData, roomToken, isRevealing]
+    // [isActive, triggeredNumber, gameData, roomToken]
+    // [isActive, triggeredNumber, gameData, roomToken, activeIcons]
+    // );
     return (
       <div className="flex flex-wrap justify-center">
-        {gameData?.icons?.map((icon, i) => {
+        {/* {gameData?.icons?.map((icon, i) => { */}
+        {activeIcons.map((icon, i) => {
           const { triggered, discovered } = icon;
           return (
             <CardMemo
@@ -261,7 +309,7 @@ export default function Memory({
         })}
       </div>
     );
-  }, [images, imagesNames, reveal, isActive]);
+  }, [activeIcons]);
 
   const RenderedCardList = !isActive ? CardList : ActiveCardList;
 
