@@ -21,7 +21,6 @@ export default function Card({
     if (!triggered) {
       setIsRevealed(false);
     }
-    // }, [triggered, discovered]);
   }, [triggered, discovered, isActive]);
 
   if (!src) return;
@@ -31,7 +30,6 @@ export default function Card({
       <div
         onClick={async () => {
           if (triggered || discovered || !isActive) return;
-          // await reveal({ index });
           setIsRevealed(true);
           reveal && (await reveal({ index }));
         }}

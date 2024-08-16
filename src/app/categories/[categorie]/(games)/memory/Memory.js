@@ -33,16 +33,13 @@ export default function Memory({
   const [imageLength, setImageLength] = useState(0);
   const [initialized, setInitialized] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-
-  // const [isRevealing, setIsRevealing] = useState(false);
+  const [activeIcons, setActiveIcons] = useState();
   const [triggeredNumber, setTriggeredNumber] = useState(0);
 
   const [isEnded, setIsEnded] = useState(false);
   const [options, setOptions] = useState(gameData.options);
   const [serverMessage, setServerMessage] = useState("");
   const [newGame, setNewGame] = useState(false);
-
-  const [activeIcons, setActiveIcons] = useState();
 
   useEffect(() => {
     if (!gameData) return;
@@ -134,7 +131,6 @@ export default function Memory({
 
     //+ triggeredNumber: no save between reveals
     if (triggered >= 2 || triggeredNumber >= 2) {
-      // setIsRevealing(true);
       setTimeout(
         async () => {
           isActive && (await hideUndiscovered({ roomId, roomToken, gameData }));
@@ -143,41 +139,12 @@ export default function Memory({
       );
       setTimeout(
         () => {
-          // setIsRevealing(false);
           setTriggeredNumber(0);
         },
         !success ? 2000 : 400
       );
     }
   }, [gameData.icons, isActive]);
-
-  // const reveal = useCallback(
-  //   async ({ index }) => {
-  //     // if (!isActive || isRevealing || triggeredNumber >= 2) return;
-  //     if (!isActive || triggeredNumber >= 2) return;
-
-  //     setTriggeredNumber((prevTrigs) => prevTrigs + 1);
-  //     // setIsRevealing(true);
-
-  //     // await revealCard({ roomToken, gameData, index });
-  //     revealCard({ roomToken, gameData, index });
-  //     console.log("activeIcons", activeIcons);
-
-  //     setActiveIcons((prevActive) => {
-  //       const icon = prevActive[index];
-  //       const newIcon = { ...icon, triggered: true };
-  //       const newActiveIcons = [...prevActive];
-  //       newActiveIcons[index] = newIcon;
-  //       return newActiveIcons;
-  //     });
-
-  //     // setIsRevealing(false);
-  //   },
-  //   // [isActive, triggeredNumber, gameData, roomToken, isRevealing]
-  //   // [isActive, triggeredNumber, gameData, roomToken]
-  //   [isActive, triggeredNumber, gameData, roomToken, activeIcons]
-  // );
-  console.log("gameData.icons", gameData.icons);
 
   const roundScoresList = useMemo(
     () => (
@@ -227,47 +194,30 @@ export default function Memory({
               src={images[imagesNames[icon.key]]}
               triggered={triggered}
               discovered={discovered}
-              // isActive={isActive && !isRevealing}
               isActive={isActive}
-              // reveal={
-              //   !isEnded
-              //     ? reveal
-              //     : () => {
-              //         return;
-              //       }
-              // }
             />
           );
         })}
       </div>
     );
-    // }, [gameData.icons, images, imagesNames, reveal, isActive, isRevealing]);
-    // }, [gameData.icons, images, imagesNames, reveal, isActive]);
   }, [gameData.icons, images, imagesNames, isActive]);
 
   useEffect(() => {
-    console.log("triggeredNumber", triggeredNumber);
-    // if (!gameData.icons || triggeredNumber >= 2) return;
     if (!gameData.icons || triggeredNumber !== 0) return;
     setActiveIcons(gameData.icons);
   }, [gameData.icons, triggeredNumber]);
 
   const ActiveCardList = useCallback(() => {
-    if (!gameData.icons || !Object.keys(images).length || !imagesNames.length)
+    if (!activeIcons || !Object.keys(images).length || !imagesNames.length)
       return;
 
-    // const reveal = useCallback(
     const reveal = ({ index }) => {
-      // if (!isActive || isRevealing || triggeredNumber >= 2) return;
       if (!isActive || triggeredNumber >= 2) return;
 
       setTriggeredNumber((prevTrigs) => prevTrigs + 1);
-      // setIsRevealing(true);
 
-      // await revealCard({ roomToken, gameData, index });
       const revealData = { ...gameData, icons: activeIcons };
       revealCard({ roomToken, gameData: revealData, index });
-      console.log("activeIcons", activeIcons);
 
       setActiveIcons((prevActive) => {
         const icon = prevActive[index];
@@ -276,16 +226,10 @@ export default function Memory({
         newActiveIcons[index] = newIcon;
         return newActiveIcons;
       });
-
-      // setIsRevealing(false);
     };
-    // [isActive, triggeredNumber, gameData, roomToken, isRevealing]
-    // [isActive, triggeredNumber, gameData, roomToken]
-    // [isActive, triggeredNumber, gameData, roomToken, activeIcons]
-    // );
+
     return (
       <div className="flex flex-wrap justify-center">
-        {/* {gameData?.icons?.map((icon, i) => { */}
         {activeIcons.map((icon, i) => {
           const { triggered, discovered } = icon;
           return (
@@ -295,7 +239,6 @@ export default function Memory({
               src={images[imagesNames[icon.key]]}
               triggered={triggered}
               discovered={discovered}
-              // isActive={isActive && !isRevealing}
               isActive={isActive}
               reveal={
                 !isEnded
@@ -309,7 +252,7 @@ export default function Memory({
         })}
       </div>
     );
-  }, [activeIcons]);
+  }, [activeIcons, triggeredNumber]);
 
   const RenderedCardList = !isActive ? CardList : ActiveCardList;
 
@@ -324,7 +267,6 @@ export default function Memory({
     setImageLength(0);
     setInitialized(false);
     setIsLoaded(false);
-    // setIsRevealing(false);
     setTriggeredNumber(0);
     setIsEnded(false);
     setServerMessage("");
@@ -355,7 +297,6 @@ export default function Memory({
           <>
             {roundScoresList}
             <div>C&apos;est au tour de {gameData.activePlayer?.name}</div>
-            {/* {CardList()} */}
             {RenderedCardList()}
           </>
         )}
