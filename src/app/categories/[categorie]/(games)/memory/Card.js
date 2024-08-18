@@ -25,12 +25,12 @@ export default function Card({
 
   useEffect(() => {
     const reSync = async () => {
-      if (isActive && isRevealed && !triggered) {
+      if (isActive && isRevealed && !triggered && !discovered) {
         await reveal({ index });
       }
     };
     reSync();
-  }, [index, isActive, isRevealed, reveal, triggered]);
+  }, [index, isActive, isRevealed, reveal, triggered, discovered]);
 
   if (!src) return;
 
