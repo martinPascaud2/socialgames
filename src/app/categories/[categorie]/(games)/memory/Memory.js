@@ -42,20 +42,6 @@ export default function Memory({
   const [newGame, setNewGame] = useState(false);
 
   useEffect(() => {
-    if (!gameData) return;
-
-    if (
-      (gameData.activePlayer?.id === user.id ||
-        (gameData.activePlayer?.guest && isAdmin)) &&
-      triggeredNumber < 2
-    ) {
-      setIsActive(true);
-    } else {
-      setIsActive(false);
-    }
-  }, [gameData.activePlayer, triggeredNumber, isAdmin]);
-
-  useEffect(() => {
     if (
       !isAdmin ||
       isLoaded ||
@@ -127,10 +113,25 @@ export default function Memory({
   }, [isAdmin, gameData.options, imageLength]);
 
   useEffect(() => {
+    if (!gameData) return;
+
+    if (
+      (gameData.activePlayer?.id === user.id ||
+        (gameData.activePlayer?.guest && isAdmin)) &&
+      triggeredNumber < 2
+    ) {
+      setIsActive(true);
+    } else {
+      setIsActive(false);
+    }
+  }, [gameData.activePlayer, triggeredNumber, isAdmin]);
+
+  useEffect(() => {
     const triggered = gameData.icons?.filter((icon) => icon.triggered).length;
 
     //+ triggeredNumber: no save between reveals
     if (triggered >= 2 || triggeredNumber >= 2) {
+      setIsActive(false);
       setTimeout(
         async () => {
           isActive && (await hideUndiscovered({ roomId, roomToken, gameData }));
@@ -140,6 +141,7 @@ export default function Memory({
       setTimeout(
         () => {
           setTriggeredNumber(0);
+          setIsActive(true);
         },
         !success ? 2000 : 400
       );
