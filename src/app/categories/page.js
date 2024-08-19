@@ -155,6 +155,34 @@ export default async function CategoriesPage() {
     });
   };
 
+  const getCurrentGame = async () => {
+    "use server";
+    const currentRoomId = (
+      await prisma.user.findFirst({
+        where: { id: user.id },
+        select: { roomId: true },
+      })
+    ).roomId;
+
+    if (!currentRoomId) {
+      return null;
+    } else {
+      const {
+        admin,
+        game,
+        token: roomToken,
+        options,
+      } = await prisma.room.findFirst({
+        where: { id: currentRoomId },
+        select: { admin: true, game: true, token: true, options: true },
+      });
+
+      const { categorie } = gamesRefs[game];
+      const path = `/categories/${categorie}/${game}?token=${roomToken}`;
+      return { admin, game, path, mode: options?.mode };
+    }
+  };
+
   const signOut = async () => {
     "use server";
     cookies().delete("SG_token");
@@ -168,6 +196,7 @@ export default async function CategoriesPage() {
         addFriend={addFriend}
         deleteFriend={deleteFriend}
         getPublicRooms={getPublicRooms}
+        getCurrentGame={getCurrentGame}
         updateLastCP={updateLastCP}
         signOut={signOut}
       />

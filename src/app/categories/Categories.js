@@ -10,8 +10,10 @@ import Pusher from "pusher-js";
 import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
 import Html5QrcodePlugin from "@/components/Html5QrcodePlugin";
+import Modal from "@/components/Modal";
 import getLocation from "@/utils/getLocation";
 import getErrorInformations from "@/utils/getErrorInformations";
+import cancelBack from "@/utils/cancelBack";
 
 import { categories, gamesRefs } from "@/assets/globals";
 var pusher = new Pusher("61853af9f30abf9d5b3d", {
@@ -24,6 +26,7 @@ export default function Categories({
   addFriend,
   deleteFriend,
   getPublicRooms,
+  getCurrentGame,
   updateLastCP,
   signOut,
 }) {
@@ -53,6 +56,7 @@ export default function Categories({
   const [invitations, setInvitations] = useState([]);
 
   const [publicRooms, setPublicRooms] = useState({});
+  const [currentGame, setCurrentGame] = useState();
 
   const isGroup = searchParams.get("group") === "true";
   const handleBgClick = () => {
@@ -221,6 +225,14 @@ export default function Categories({
     getRooms();
   }, [getPublicRooms]);
 
+  useEffect(() => {
+    const backToRoom = async () => {
+      const current = await getCurrentGame();
+      current && setCurrentGame(current);
+    };
+    backToRoom();
+  }, [getCurrentGame, router]);
+
   return (
     <>
       <div
@@ -231,6 +243,51 @@ export default function Categories({
         }
         className="z-10 absolute h-[100dvh] w-screen max-h-full"
       />
+
+      {currentGame && !isGroup && (
+        <Modal
+          isOpen={true}
+          onClose={() => {
+            setCurrentGame();
+            return;
+          }}
+        >
+          <div className="flex flex-col items-center gap-2 text-2xl p-2">
+            <div className="w-full">Vous avez une partie en cours !</div>
+            <div>
+              Admin : <span className="font-semibold">{currentGame.admin}</span>
+            </div>
+            {currentGame.game === "grouping" ? (
+              <div>Nouveau groupe de joueurs</div>
+            ) : (
+              <div>
+                Jeu :{" "}
+                <span className="font-semibold">
+                  {currentGame.mode || currentGame.game}
+                </span>
+              </div>
+            )}
+
+            <div className="w-full flex justify-evenly m-2">
+              <Link
+                href={currentGame.path}
+                className="border border-blue-300 bg-blue-100 p-2 rounded-md"
+              >
+                Rejoindre
+              </Link>
+              <button
+                onClick={async () => {
+                  setCurrentGame();
+                  await cancelBack({ userId: user.id });
+                }}
+                className="border border-red-300 bg-red-100 p-2 rounded-md"
+              >
+                Annuler
+              </button>
+            </div>
+          </div>
+        </Modal>
+      )}
 
       <main className="relative h-[100dvh]">
         <div

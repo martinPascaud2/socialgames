@@ -1,5 +1,7 @@
 import { useRouter } from "next/navigation";
 
+import cancelBack from "@/utils/cancelBack";
+
 export default function EndGame({ gameData, user, isFirst = false }) {
   const router = useRouter();
 
@@ -27,7 +29,10 @@ export default function EndGame({ gameData, user, isFirst = false }) {
       )}
       {gameData.admin !== user.name && (
         <button
-          onClick={() => router.push("/categories?control=true")}
+          onClick={async () => {
+            await cancelBack({ userId: user.id });
+            router.push("/categories?control=true");
+          }}
           className="border border-blue-300 bg-blue-100 m-1"
         >
           Quitter le groupe

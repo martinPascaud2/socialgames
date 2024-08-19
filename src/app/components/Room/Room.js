@@ -17,6 +17,7 @@ import getLocation from "@/utils/getLocation";
 import getErrorInformations from "@/utils/getErrorInformations";
 import { getRoomFriendList } from "@/utils/getFriendList";
 import { saveLastParams } from "@/utils/getLastParams";
+import cancelBack from "@/utils/cancelBack";
 import { gamesRefs } from "@/assets/globals";
 
 import DeleteGroup from "@/components/DeleteGroup";
@@ -448,7 +449,11 @@ export default function Room({
   };
 
   useEffect(() => {
-    if (deletedGamer === uniqueName) router.push("/categories?control=true");
+    const backToHome = async () => {
+      await cancelBack({ userId: user.id });
+      router.push("/categories?control=true");
+    };
+    if (deletedGamer === uniqueName) backToHome();
   }, [deletedGamer]);
 
   useEffect(() => {
@@ -490,7 +495,7 @@ export default function Room({
     const storedGroup = JSON.parse(localStorage.getItem("group"));
 
     const go = async () => {
-      if (!storedGroup?.roomToken) return;
+      if (!storedGroup) return;
       try {
         await new Promise((resolve) => setTimeout(resolve, 1500)); // check
         await goOneMoreGame({

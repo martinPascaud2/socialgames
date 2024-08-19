@@ -17,13 +17,11 @@ export default function ChooseAnotherGame({
   const returnLobby = useCallback(async () => {
     const gamers = [...group.gamers];
     const multiGuests = [...group.multiGuests];
-    const guests = [...group.guests];
 
     const stored = {
       roomToken,
       gamers,
       multiGuests,
-      guests,
       privacy: group.privacy,
       lastGame,
       lastPosition,
