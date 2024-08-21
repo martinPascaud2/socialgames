@@ -60,7 +60,7 @@ export default function Dobble({
   }, [gameData.round, gameData.count, gameData.gamers, gameData.nextGame]);
 
   useEffect(() => {
-    if (roundNumber !== gameData.round.number) return;
+    if (roundNumber !== gameData.round?.number) return;
     const goFail = async () => {
       await serverFail({
         roomId,
@@ -73,7 +73,8 @@ export default function Dobble({
 
     if (
       locked &&
-      (!gameData.recRounds[gameData.round.number] ||
+      (!gameData.recRounds ||
+        !gameData.recRounds[gameData.round.number] ||
         !gameData.recRounds[gameData.round.number].failersList.some(
           (failer) => failer === user.name
         ))
@@ -85,7 +86,7 @@ export default function Dobble({
   }, [
     locked,
     gameData.recRounds,
-    gameData.round.number,
+    gameData.round,
     roomId,
     roomToken,
     roundNumber,
