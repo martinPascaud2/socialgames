@@ -155,7 +155,8 @@ export async function serverSucceed({
   if (!recRounds[roundNumber]) {
     newRecRounds = {
       ...recRounds,
-      [roundNumber]: { winner: userId, failers: 0 },
+      // [roundNumber]: { winner: userId, failers: 0 },
+      [roundNumber]: { winner: userId, failers: 0, failersList: [] },
     };
   } else {
     const round = recRounds[roundNumber];
@@ -214,7 +215,11 @@ export async function serverFail({
   roomToken,
   roundNumber,
   imageLength,
+  userName,
 }) {
+  console.log("userName", userName);
+  console.log("roundNumber", roundNumber);
+
   const roomData = (await prisma.room.findFirst({ where: { id: roomId } }))
     .gameData;
 
@@ -223,13 +228,20 @@ export async function serverFail({
   if (!recRounds[roundNumber]) {
     newRecRounds = {
       ...recRounds,
-      [roundNumber]: { failers: 1 },
+      // [roundNumber]: { failers: 1 },
+      [roundNumber]: { failers: 1, failersList: [userName] },
     };
   } else {
     const round = recRounds[roundNumber];
     const failers = round.failers || 0;
-    const updatedRound = { ...round, failers: failers + 1 };
-    if (updatedRound.failers === roomData.gamers.length) {
+    const failersList = round.failersList || [];
+    const updatedRound = {
+      ...round,
+      failers: failers + 1,
+      failersList: [...failersList, userName],
+    };
+    // if (updatedRound.failers === roomData.gamers.length) {
+    if (updatedRound.failersList.length === roomData.gamers.length) {
       await goNewLoosersRound({
         roomId,
         roomToken,

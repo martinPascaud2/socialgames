@@ -59,14 +59,38 @@ export default function Dobble({
     setScores(newScores);
   }, [gameData.round, gameData.count, gameData.gamers, gameData.nextGame]);
 
-  const goFail = () => {
-    serverFail({
-      roomId,
-      roomToken,
-      roundNumber,
-      imageLength,
-    });
-  };
+  useEffect(() => {
+    if (roundNumber !== gameData.round.number) return;
+    const goFail = async () => {
+      await serverFail({
+        roomId,
+        roomToken,
+        roundNumber,
+        imageLength,
+        userName: user.name,
+      });
+    };
+
+    if (
+      locked &&
+      (!gameData.recRounds[gameData.round.number] ||
+        !gameData.recRounds[gameData.round.number].failersList.some(
+          (failer) => failer === user.name
+        ))
+    ) {
+      console.log("coucou");
+      // setLocked(false);
+      goFail();
+    }
+  }, [
+    locked,
+    gameData.recRounds,
+    gameData.round.number,
+    roomId,
+    roomToken,
+    roundNumber,
+    user.name,
+  ]);
 
   const goSucceed = () => {
     serverSucceed({
@@ -87,6 +111,9 @@ export default function Dobble({
   useEffect(() => {
     if (gameData.ended) setIsEnded(true);
   }, [gameData.ended]);
+
+  console.log("gameData", gameData);
+  console.log("locked", locked);
 
   return (
     <>
@@ -149,9 +176,8 @@ export default function Dobble({
                     key={icon.key}
                     onClick={() => {
                       !locked &&
-                        (sameKey === icon.key
-                          ? goSucceed()
-                          : (goFail(), setLocked(true)));
+                        (sameKey === icon.key ? goSucceed() : setLocked(true));
+                      // (goFail(), setLocked(true)));
                     }}
                     style={{
                       transform: `rotate(${icon.rotation}deg)`,
