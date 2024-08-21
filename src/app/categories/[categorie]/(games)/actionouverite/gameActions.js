@@ -3,6 +3,7 @@
 import prisma from "@/utils/prisma";
 import pusher from "@/utils/pusher";
 
+import { saveAndDispatchData } from "@/components/Room/actions";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkPlayers from "@/utils/checkPlayers";
 
@@ -39,14 +40,16 @@ export async function launchGame({
     multiGuests,
   });
 
+  const newData = {
+    admin: startedRoom.admin,
+    activePlayer: gamersAndGuests[0],
+    gamers: gamersAndGuests,
+    card: null,
+  };
+  await saveAndDispatchData({ roomId, roomToken, newData });
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
-    gameData: {
-      admin: startedRoom.admin,
-      activePlayer: gamersAndGuests[0],
-      gamers: gamersAndGuests,
-      card: null,
-    },
   });
 
   return {};
