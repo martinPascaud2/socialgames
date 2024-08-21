@@ -222,6 +222,8 @@ export async function serverFail({
 
   const roomData = (await prisma.room.findFirst({ where: { id: roomId } }))
     .gameData;
+  console.log("roomData", roomData);
+  if (roomData.round.number !== roundNumber) return;
 
   const recRounds = roomData.recRounds || {};
   let newRecRounds = {};
