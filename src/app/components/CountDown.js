@@ -26,6 +26,7 @@ export default function CountDown({
   if (leftMinutes && leftSeconds && leftMinutes <= 0 && leftSeconds <= 0) {
     setHasValidated && setHasValidated(true);
     onTimeUp && onTimeUp();
+    return;
   }
 
   return (

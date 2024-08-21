@@ -31,7 +31,7 @@ export default function GuestConnector() {
       } catch (error) {
         setServerMessage(error.message);
       }
-    }, 10000),
+    }, 1000),
     []
   );
 

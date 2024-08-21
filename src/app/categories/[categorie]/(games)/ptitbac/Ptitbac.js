@@ -153,6 +153,7 @@ export default function Ptitbac({
           setTimeout(async () => {
             await goValidation({
               gamers: gameData.gamers,
+              roomId,
               roomToken,
               gameData,
             });
@@ -266,6 +267,7 @@ export default function Ptitbac({
                     };
                     await refereeTrigger({
                       newRefereeValidation,
+                      roomId,
                       roomToken,
                       gameData,
                     });
@@ -287,9 +289,9 @@ export default function Ptitbac({
             <NextStep
               onClick={async () => {
                 if (allFalse) {
-                  await manageEmptyTheme({ roomToken, gameData });
+                  await manageEmptyTheme({ roomId, roomToken, gameData });
                 } else {
-                  await validate({ roomToken, gameData });
+                  await validate({ roomId, roomToken, gameData });
                 }
               }}
             >
@@ -354,6 +356,7 @@ export default function Ptitbac({
                   onClick={async () =>
                     await startCountdown({
                       time: gameData.options.countDownTime, //remove
+                      roomId,
                       roomToken,
                       gameData,
                     })
