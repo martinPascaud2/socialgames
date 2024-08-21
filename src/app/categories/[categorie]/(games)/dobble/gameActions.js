@@ -42,7 +42,7 @@ export async function launchGame({
   });
 
   if (gamersAndGuests.some((player) => player.guest))
-    return { error: "Ce jeu est incompatible avec les guests monoscreen." };
+    return { error: "Ce jeu est incompatible avec les guests monoscreen." }; //check
 
   const newData = {
     admin: startedRoom.admin,
@@ -155,8 +155,7 @@ export async function serverSucceed({
   if (!recRounds[roundNumber]) {
     newRecRounds = {
       ...recRounds,
-      // [roundNumber]: { winner: userId, failers: 0 },
-      [roundNumber]: { winner: userId, failers: 0, failersList: [] },
+      [roundNumber]: { winner: userId, failersList: [] },
     };
   } else {
     const round = recRounds[roundNumber];
@@ -217,12 +216,8 @@ export async function serverFail({
   imageLength,
   userName,
 }) {
-  console.log("userName", userName);
-  console.log("roundNumber", roundNumber);
-
   const roomData = (await prisma.room.findFirst({ where: { id: roomId } }))
     .gameData;
-  console.log("roomData", roomData);
   if (roomData.round.number !== roundNumber) return;
 
   const recRounds = roomData.recRounds || {};
@@ -230,19 +225,15 @@ export async function serverFail({
   if (!recRounds[roundNumber]) {
     newRecRounds = {
       ...recRounds,
-      // [roundNumber]: { failers: 1 },
-      [roundNumber]: { failers: 1, failersList: [userName] },
+      [roundNumber]: { failersList: [userName] },
     };
   } else {
     const round = recRounds[roundNumber];
-    const failers = round.failers || 0;
     const failersList = round.failersList || [];
     const updatedRound = {
       ...round,
-      failers: failers + 1,
       failersList: [...failersList, userName],
     };
-    // if (updatedRound.failers === roomData.gamers.length) {
     if (updatedRound.failersList.length === roomData.gamers.length) {
       await goNewLoosersRound({
         roomId,
@@ -258,11 +249,4 @@ export async function serverFail({
 
   const newData = { ...roomData, recRounds: newRecRounds };
   await saveAndDispatchData({ roomId, roomToken, newData });
-
-  // await prisma.room.update({
-  //   where: { id: roomId },
-  //   data: {
-  //     gameData: newData,
-  //   },
-  // });
 }
