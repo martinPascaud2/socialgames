@@ -40,15 +40,18 @@ export default function Dobble({
   const sameKey = gameData.round?.sameKey;
 
   useEffect(() => {
-    gameData.round?.number && setRoundNumber(gameData.round.number);
-  }, [gameData.round]);
+    // gameData.round?.number && setRoundNumber(gameData.round.number);
+    gameData.round?.number &&
+      roundNumber !== gameData.round.number &&
+      (setRoundNumber(gameData.round.number), setLocked(false));
+  }, [gameData.round, roundNumber]);
 
   useEffect(() => {
     if (gameData.nextGame) return;
 
     setRandomIcons(gameData.round?.randomIcons);
     setOnlyWithOne(gameData.round?.onlyWithOne);
-    setLocked(false);
+    // setLocked(false);
 
     const newScores = gameData.gamers
       ?.map((gamer) => ({
@@ -79,7 +82,6 @@ export default function Dobble({
           (failer) => failer === user.name
         ))
     ) {
-      console.log("coucou");
       // setLocked(false);
       goFail();
     }
@@ -113,8 +115,8 @@ export default function Dobble({
     if (gameData.ended) setIsEnded(true);
   }, [gameData.ended]);
 
-  console.log("gameData", gameData);
   console.log("locked", locked);
+  console.log("gameData", gameData);
 
   return (
     <>

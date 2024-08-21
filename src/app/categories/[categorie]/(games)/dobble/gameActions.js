@@ -255,11 +255,12 @@ export async function serverFail({
   }
 
   const newData = { ...roomData, recRounds: newRecRounds };
+  await saveAndDispatchData({ roomId, roomToken, newData });
 
-  await prisma.room.update({
-    where: { id: roomId },
-    data: {
-      gameData: newData,
-    },
-  });
+  // await prisma.room.update({
+  //   where: { id: roomId },
+  //   data: {
+  //     gameData: newData,
+  //   },
+  // });
 }
