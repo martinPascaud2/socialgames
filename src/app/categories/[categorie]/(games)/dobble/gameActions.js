@@ -3,6 +3,7 @@
 import pusher from "@/utils/pusher";
 import prisma from "@/utils/prisma";
 
+import { saveAndDispatchData } from "@/components/Room/actions";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkPlayers from "@/utils/checkPlayers";
 
@@ -43,12 +44,14 @@ export async function launchGame({
   if (gamersAndGuests.some((player) => player.guest))
     return { error: "Ce jeu est incompatible avec les guests monoscreen." };
 
+  const newData = {
+    admin: startedRoom.admin,
+    gamers: gamersAndGuests,
+  };
+  await saveAndDispatchData({ roomId, roomToken, newData });
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
-    gameData: {
-      admin: startedRoom.admin,
-      gamers: gamersAndGuests,
-    },
   });
 
   return {};
@@ -115,32 +118,18 @@ export async function goFirstRound({
   imageLength,
 }) {
   const { randomIcons, onlyWithOne, sameKey } = getIconsKeys({ imageLength });
+
   const newData = {
+    ...gameData,
     round: {
       number: 1,
       randomIcons,
       onlyWithOne,
       sameKey,
     },
+    rotation: { top: Math.random() < 0.5, bot: Math.random() < 0.5 },
   };
-
-  await pusher.trigger(`room-${roomToken}`, "room-event", {
-    gameData: {
-      ...gameData,
-      ...newData,
-      rotation: { top: Math.random() < 0.5, bot: Math.random() < 0.5 },
-    },
-  });
-
-  await prisma.room.update({
-    where: {
-      id: roomId,
-    },
-    data: {
-      started: true,
-      gameData: { ...gameData, ...newData },
-    },
-  });
+  await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
 export async function serverSucceed({
@@ -186,26 +175,15 @@ export async function serverSucceed({
   const newPlayerCount = (count[userName] || 0) + 1;
 
   const newData = {
-    ...roomData,
+    ...gameData,
+    ...roomData, //check
     recRounds: newRecRounds,
     round: newRound,
     count: { ...count, [userName]: newPlayerCount },
+    rotation: { top: Math.random() < 0.5, bot: Math.random() < 0.5 },
   };
 
-  await pusher.trigger(`room-${roomToken}`, "room-event", {
-    gameData: {
-      ...gameData,
-      ...newData,
-      rotation: { top: Math.random() < 0.5, bot: Math.random() < 0.5 },
-    },
-  });
-
-  await prisma.room.update({
-    where: { id: roomId },
-    data: {
-      gameData: newData,
-    },
-  });
+  await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
 const goNewLoosersRound = async ({
@@ -216,6 +194,7 @@ const goNewLoosersRound = async ({
   imageLength,
 }) => {
   const { randomIcons, onlyWithOne, sameKey } = getIconsKeys({ imageLength });
+
   const newData = {
     ...roomData,
     round: {
@@ -224,22 +203,10 @@ const goNewLoosersRound = async ({
       onlyWithOne,
       sameKey,
     },
+    rotation: { top: Math.random() < 0.5, bot: Math.random() < 0.5 },
   };
 
-  await pusher.trigger(`room-${roomToken}`, "room-event", {
-    gameData: {
-      ...roomData,
-      ...newData,
-      rotation: { top: Math.random() < 0.5, bot: Math.random() < 0.5 },
-    },
-  });
-
-  await prisma.room.update({
-    where: { id: roomId },
-    data: {
-      gameData: newData,
-    },
-  });
+  await saveAndDispatchData({ roomId, roomToken, newData });
 };
 
 export async function serverFail({
