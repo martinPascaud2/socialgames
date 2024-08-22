@@ -53,6 +53,7 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
         chainRef,
         data,
         type: phase === "drawing" ? "draw" : "word",
+        roomId,
         roomToken,
         gameData,
       });

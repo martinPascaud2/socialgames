@@ -549,6 +549,7 @@ export async function addLink({
   chainRef,
   data,
   type,
+  roomId,
   roomToken,
   gameData,
 }) {
