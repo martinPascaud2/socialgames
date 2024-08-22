@@ -2,6 +2,7 @@
 
 import prisma from "@/utils/prisma";
 
+import { saveAndDispatchData } from "@/components/Room/actions";
 import { makeTeams, makeMinimalTeams } from "@/utils/makeTeams";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkPlayers from "@/utils/checkPlayers";
@@ -152,25 +153,22 @@ export async function launchGame({
       });
     });
   }
-  // const isChainShow =
-  //   options.mode === "chain" && gamersAndGuests.length % 2 === 1;
+
+  const newData = {
+    admin: startedRoom.admin,
+    gamers: gamersAndGuests,
+    teams,
+    counts,
+    activePlayers,
+    phase: "waiting",
+    turn: 0,
+    words,
+    options,
+  };
+  await saveAndDispatchData({ roomId, roomToken, newData });
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
-    gameData: {
-      admin: startedRoom.admin,
-      gamers: gamersAndGuests,
-      teams,
-      counts,
-      activePlayers,
-      phase: "waiting",
-      // phase: isChainShow ? "showing" : "waiting",
-      // turn:
-      //   options.mode === "chain" && gamersAndGuests.length % 2 === 1 ? 1 : 0,
-      turn: 0,
-      words,
-      options,
-    },
   });
 
   return {};
@@ -231,17 +229,23 @@ export async function startDrawing({ roomId, roomToken, gameData }) {
   const freeWord = await getFreeWord({ roomId });
   const finishCountdownDate = Date.now() + gameData.options.countDownTime;
 
-  await pusher.trigger(`room-${roomToken}`, "room-event", {
-    gameData: {
-      ...gameData,
-      phase: "drawing",
-      word: freeWord,
-      finishCountdownDate,
-    },
-  });
+  const newData = {
+    ...gameData,
+    phase: "drawing",
+    word: freeWord,
+    finishCountdownDate,
+    alreadySent: [],
+  };
+  await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
-export async function sendImage({ imgData, roomToken, gameData, user }) {
+export async function sendImage({
+  roomId,
+  imgData,
+  roomToken,
+  gameData,
+  user,
+}) {
   if (user.multiGuest) {
     await prisma.multiguest.upsert({
       where: { id: user.dataId },
@@ -258,20 +262,19 @@ export async function sendImage({ imgData, roomToken, gameData, user }) {
     });
   }
 
-  const alreadySent = gameData.alreadySent || 0;
-  const newAlreadySent = alreadySent + 1;
+  const alreadySent = gameData.alreadySent || [];
+  const newAlreadySent = [...alreadySent, user.name];
 
-  await pusher.trigger(`room-${roomToken}`, "room-event", {
-    gameData: {
-      ...gameData,
-      alreadySent: newAlreadySent,
-      phase:
-        newAlreadySent !== gameData.activePlayers.length &&
-        gameData.phase !== "sending"
-          ? "drawing"
-          : "sending",
-    },
-  });
+  const newData = {
+    ...gameData,
+    alreadySent: newAlreadySent,
+    phase:
+      newAlreadySent.length !== gameData.activePlayers.length &&
+      gameData.phase !== "sending"
+        ? "drawing"
+        : "sending",
+  };
+  await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
 export async function getPng({ activePlayers, userTeam }) {
@@ -297,7 +300,7 @@ export async function getPng({ activePlayers, userTeam }) {
   return png;
 }
 
-export async function goSearch({ roomToken, gameData }) {
+export async function goSearch({ roomId, roomToken, gameData }) {
   const { activePlayers, teams } = gameData;
   const activeIds = activePlayers.map((active) => active.id);
 
@@ -306,14 +309,13 @@ export async function goSearch({ roomToken, gameData }) {
     .flat()
     .filter((g) => !activeIds.some((id) => g.id === id));
 
-  await pusher.trigger(`room-${roomToken}`, "room-event", {
-    gameData: {
-      ...gameData,
-      phase: "searching",
-      activePlayers: newActivePlayers,
-      alreadySent: 0,
-    },
-  });
+  const newData = {
+    ...gameData,
+    phase: "searching",
+    activePlayers: newActivePlayers,
+    alreadySent: [],
+  };
+  await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
 const removeAccents = (str) =>
@@ -360,7 +362,9 @@ const getNextDrawers = ({ teams, activePlayers }) => {
 
 export async function guessWord(
   userTeam,
+  userName,
   gameData,
+  roomId,
   roomToken,
   prevState,
   formData
@@ -409,20 +413,28 @@ export async function guessWord(
     newActivePlayers = activePlayers;
   }
 
-  await pusher.trigger(`room-${roomToken}`, "room-event", {
-    gameData: {
-      ...gameData,
-      phase: nextPhase,
-      counts: newCounts,
-      activePlayers: newActivePlayers,
-      lastWord: word, //only used in waiting phase
-      winners,
-      ended: nextPhase === "ended",
-    },
-  });
+  const alreadySent = nextPhase === "waiting" ? [] : gameData.alreadySent || [];
+  const newAlreadySent = [...alreadySent, userName];
+
+  const newData = {
+    ...gameData,
+    phase: nextPhase,
+    counts: newCounts,
+    activePlayers: newActivePlayers,
+    alreadySent: newAlreadySent,
+    lastWord: word, //only used in waiting phase
+    winners,
+    ended: nextPhase === "ended",
+  };
+  await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
-export async function goNextPhase({ roomToken, gameData, full = false }) {
+export async function goNextPhase({
+  roomId,
+  roomToken,
+  gameData,
+  full = false,
+}) {
   const { phase, gamers, turn } = gameData;
   let newFinishCountdownDate = gameData.finishCountdownDate;
   let nextPhase = "";
@@ -471,16 +483,15 @@ export async function goNextPhase({ roomToken, gameData, full = false }) {
     default:
   }
 
-  await pusher.trigger(`room-${roomToken}`, "room-event", {
-    gameData: {
-      ...gameData,
-      phase: nextPhase,
-      validated,
-      turn: newTurn,
-      finishCountdownDate: newFinishCountdownDate,
-      nextShowedLink,
-    },
-  });
+  const newData = {
+    ...gameData,
+    phase: nextPhase,
+    validated,
+    turn: newTurn,
+    finishCountdownDate: newFinishCountdownDate,
+    nextShowedLink,
+  };
+  await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
 export async function initChain({ userName, chainRef }) {
@@ -571,7 +582,7 @@ export async function addLink({
     });
   }
 
-  await goNextPhase({ roomToken, gameData });
+  await goNextPhase({ roomId, roomToken, gameData });
 }
 
 export async function getLastLink({ chainRef }) {
@@ -602,7 +613,7 @@ export async function getLastLink({ chainRef }) {
   return lastDrawLink.drawChain[0];
 }
 
-export async function goNextShow({ roomToken, gameData }) {
+export async function goNextShow({ roomId, roomToken, gameData }) {
   const { phase, gamers } = gameData;
   let nextPhase;
   let [, gamerIndex, showedIndex] = phase
@@ -626,13 +637,12 @@ export async function goNextShow({ roomToken, gameData }) {
     nextPhase = `showing-${gamerIndex}-${showedIndex}`;
   }
 
-  await pusher.trigger(`room-${roomToken}`, "room-event", {
-    gameData: {
-      ...gameData,
-      phase: nextPhase,
-      ended: nextPhase === "ended",
-    },
-  });
+  const newData = {
+    ...gameData,
+    phase: nextPhase,
+    ended: nextPhase === "ended",
+  };
+  await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
 export async function getNextLink({ shower, showedLinkIndex }) {

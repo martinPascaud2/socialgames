@@ -105,7 +105,8 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
       if (phase === "drawing") {
         setTimeoutId(
           setTimeout(async () => {
-            isAdmin && (await goNextPhase({ roomToken, gameData, full: true }));
+            isAdmin &&
+              (await goNextPhase({ roomId, roomToken, gameData, full: true }));
           }, finishCountdownDate - Date.now() + 2000)
         );
       } else {
@@ -157,7 +158,7 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
                   {!hasValidated ? (
                     <button
                       onClick={() => {
-                        goNextPhase({ roomToken, gameData });
+                        goNextPhase({ roomId, roomToken, gameData });
                         setHasValidated(true);
                       }}
                       className="border border-blue-300 bg-blue-100"
@@ -174,7 +175,12 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
                     <div className="fixed bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-25%]">
                       <NextStep
                         onClick={() =>
-                          goNextPhase({ roomToken, gameData, full: true })
+                          goNextPhase({
+                            roomId,
+                            roomToken,
+                            gameData,
+                            full: true,
+                          })
                         }
                       >
                         Lancer
@@ -316,7 +322,7 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
                 <div className="fixed bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-50%]">
                   <NextStep
                     onClick={() => {
-                      goNextShow({ roomToken, gameData });
+                      goNextShow({ roomId, roomToken, gameData });
                     }}
                   >
                     Suite

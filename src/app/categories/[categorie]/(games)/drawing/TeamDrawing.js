@@ -27,7 +27,14 @@ export default function TeamDrawing({ roomId, roomToken, user, gameData }) {
   const [imgData, setImgData] = useState();
   const [receivedImage, setReceivedImage] = useState();
   const [hasValidated, setHasValidated] = useState(false);
-  const guessWordWithData = guessWord.bind(null, userTeam, gameData, roomToken);
+  const guessWordWithData = guessWord.bind(
+    null,
+    userTeam,
+    user.name,
+    gameData,
+    roomId,
+    roomToken
+  );
   const [state, formAction] = useFormState(guessWordWithData, initialState);
   const [hasProposed, setHasProposed] = useState(false);
 
@@ -60,7 +67,8 @@ export default function TeamDrawing({ roomId, roomToken, user, gameData }) {
       isActive &&
         imgData &&
         hasValidated &&
-        (await sendImage({ imgData, roomToken, gameData, user }));
+        phase === "drawing" &&
+        (await sendImage({ roomId, imgData, roomToken, gameData, user }));
     };
     send();
   }, [imgData, hasValidated]);
@@ -80,7 +88,7 @@ export default function TeamDrawing({ roomId, roomToken, user, gameData }) {
             const png = await getPng({ activePlayers, userTeam });
             setReceivedImage(png);
             setHasValidated(true);
-            isAdmin && (await goSearch({ roomToken, gameData }));
+            isAdmin && (await goSearch({ roomId, roomToken, gameData }));
           }, finishCountdownDate - Date.now() + 1000)
         );
       }
@@ -89,7 +97,7 @@ export default function TeamDrawing({ roomId, roomToken, user, gameData }) {
         const png = await getPng({ activePlayers, userTeam });
         setReceivedImage(png);
         setHasValidated(true);
-        isAdmin && (await goSearch({ roomToken, gameData }));
+        isAdmin && (await goSearch({ roomId, roomToken, gameData }));
       }
       return () => {
         clearTimeout(timeoutId);
@@ -97,6 +105,23 @@ export default function TeamDrawing({ roomId, roomToken, user, gameData }) {
     };
     get();
   }, [phase]);
+
+  useEffect(() => {
+    if (!phase || userTeam === undefined) return;
+
+    const getPngComeback = async () => {
+      if (phase === "searching" && !receivedImage) {
+        const png = await getPng({ activePlayers, userTeam });
+        setReceivedImage(png);
+      }
+    };
+    getPngComeback();
+
+    if (gameData.alreadySent?.some((already) => already === user.name)) {
+      phase === "drawing" && setHasValidated(true);
+      phase === "searching" && setHasProposed(true);
+    }
+  }, [phase, receivedImage, activePlayers, userTeam, gameData.alreadySent]);
 
   return (
     <>
