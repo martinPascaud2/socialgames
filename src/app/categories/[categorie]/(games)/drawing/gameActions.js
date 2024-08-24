@@ -430,6 +430,7 @@ export async function guessWord(
 }
 
 export async function goNextPhase({
+  userName,
   roomId,
   roomToken,
   gameData,
@@ -438,16 +439,23 @@ export async function goNextPhase({
   const { phase, gamers, turn } = gameData;
   let newFinishCountdownDate = gameData.finishCountdownDate;
   let nextPhase = "";
-  let validated;
+  // let validated;
+  let validatedList;
+  let guessers;
   let newTurn = turn;
   let nextShowedLink;
 
+  console.log("userName", userName);
+
   switch (phase) {
     case "waiting":
-      validated = (gameData.validated || 0) + 1;
-      if (validated === gamers.length || full) {
+      // validated = (gameData.validated || 0) + 1;
+      validatedList = [...(gameData.validatedList || []), userName];
+      // if (validated === gamers.length || full) {
+      if (validatedList.length === gamers.length || full) {
         nextPhase = "drawing";
-        validated = 0;
+        // validated = 0;
+        validatedList = [];
         newTurn += 1;
         newFinishCountdownDate = Date.now() + gameData.options.countDownTime;
       } else {
@@ -455,25 +463,35 @@ export async function goNextPhase({
       }
       break;
     case "drawing":
-      validated = gameData.validated + 1;
-      if (validated === gamers.length || full) {
+      // validated = gameData.validated + 1;
+      validatedList = [...gameData.validatedList, userName];
+      // if (validated === gamers.length || full) {
+      if (validatedList.length === gamers.length || full) {
         nextPhase = "guessing";
-        validated = 0;
+        guessers = gamers.map(
+          (gamer) => !validatedList.some((val) => val === gamer.name)
+        );
+        // validated = 0;
+        validatedList = [];
         newTurn += 1;
       } else {
         nextPhase = "drawing";
       }
       break;
     case "guessing":
-      validated = gameData.validated + 1;
-      if (validated === gamers.length || full) {
+      // validated = gameData.validated + 1;
+      validatedList = [...gameData.validatedList, userName];
+      // if (validated === gamers.length || full) {
+      if (validatedList.length === gamers.length || full) {
         const even = gamers.length % 2 === 0 ? 1 : 0;
         newTurn += 1;
         if (newTurn === gamers.length + even) {
           nextPhase = "showing-0-1";
         } else {
           nextPhase = "drawing";
-          validated = 0;
+          // validated = 0;
+          validatedList = [];
+          guessers = [];
           newFinishCountdownDate = Date.now() + gameData.options.countDownTime;
         }
       } else {
@@ -483,10 +501,14 @@ export async function goNextPhase({
     default:
   }
 
+  console.log("validatedList", validatedList);
+
   const newData = {
     ...gameData,
     phase: nextPhase,
-    validated,
+    // validated,
+    validatedList,
+    guessers,
     turn: newTurn,
     finishCountdownDate: newFinishCountdownDate,
     nextShowedLink,
@@ -583,10 +605,10 @@ export async function addLink({
     });
   }
 
-  await goNextPhase({ roomId, roomToken, gameData });
+  await goNextPhase({ userName, roomId, roomToken, gameData });
 }
 
-export async function getLastLink({ chainRef }) {
+export async function getLastLink({ chainRef, skip = 0 }) {
   let lastDrawLink;
 
   if (!chainRef.multiGuest) {
@@ -596,6 +618,7 @@ export async function getLastLink({ chainRef }) {
         drawChain: {
           orderBy: { id: "desc" },
           take: 1,
+          skip,
         },
       },
     });
@@ -606,6 +629,7 @@ export async function getLastLink({ chainRef }) {
         drawChain: {
           orderBy: { id: "desc" },
           take: 1,
+          skip,
         },
       },
     });

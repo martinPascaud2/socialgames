@@ -27,14 +27,35 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
   const [data, setData] = useState();
   const [guess, setGuess] = useState("");
   const [hasValidated, setHasValidated] = useState(false);
+  const [hasComeback, setHasComeback] = useState();
+  const [CBHadValidated, setCBHadValidated] = useState();
   const [timeoutId, setTimeoutId] = useState();
 
   const [showedGamer, setShowedGamer] = useState("");
   const [showedLinks, setShowedLinks] = useState([]);
   const [isShower, setIsShower] = useState(false);
 
+  console.log("gameData", gameData);
+  console.log("isEven", isEven);
+  console.log("chainIndex", chainIndex);
+  console.log("chainRef", chainRef);
+  console.log("lastLink", lastLink);
+  console.log("data", data);
+  console.log("guess", guess);
+  console.log("hasValidated", hasValidated);
+  console.log("CBHadValidated", CBHadValidated);
+  console.log("hasComeback", hasComeback);
+  console.log("timeoutId", timeoutId);
+  console.log("showedGamer", showedGamer);
+  console.log("showedLinks", showedLinks);
+  console.log("isShower", isShower);
+  console.log("user", user);
+  console.log("phase", phase);
+  console.log("turn", turn);
+
   useEffect(() => {
-    if (turn !== 0) return;
+    // if (turn !== 0) return;
+    if (turn !== 0 || !words || !user || hasComeback === true) return;
 
     const index = user.multiGuest
       ? words.findIndex((word) => word.DCuserID === user.dataId)
@@ -74,7 +95,8 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
   }, [chainRef]);
 
   useEffect(() => {
-    if (turn === 0) return;
+    // if (turn === 0) return;
+    if (turn === 0 || hasComeback === true) return;
 
     const newChainIndex =
       isEven && turn === 1 ? chainIndex : (chainIndex + 1) % words.length;
@@ -92,22 +114,38 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
       typeof chainIndex === "undefined" ||
       !chainRef ||
       turn === 0 ||
-      hasValidated
+      hasValidated ||
+      !user ||
+      !gameData ||
+      !roomId ||
+      !roomToken ||
+      isAdmin === undefined ||
+      !phase ||
+      !finishCountdownDate
     )
       return;
 
-    const getLast = async () => {
-      const newLastLink = await getLastLink({ chainRef });
-      setLastLink(newLastLink);
-    };
-    getLast();
+    // const getLast = async () => {
+    //   const newLastLink = await getLastLink({
+    //     chainRef,
+    //     skip: CBHadValidated ? 1 : 0,
+    //   });
+    //   setLastLink(newLastLink);
+    // };
+    // getLast();
 
     const manageDrawing = async () => {
       if (phase === "drawing") {
         setTimeoutId(
           setTimeout(async () => {
             isAdmin &&
-              (await goNextPhase({ roomId, roomToken, gameData, full: true }));
+              (await goNextPhase({
+                userName: user.name,
+                roomId,
+                roomToken,
+                gameData,
+                full: true,
+              }));
           }, finishCountdownDate - Date.now() + 2000)
         );
       } else {
@@ -122,7 +160,10 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
     setGuess("");
     setData();
     setHasValidated(false);
-  }, [chainRef]);
+
+    setHasComeback(false);
+    setCBHadValidated(false);
+  }, [chainRef, user]);
 
   useEffect(() => {
     if (!phase.startsWith("showing")) return;
@@ -144,6 +185,54 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
     get();
   }, [phase]);
 
+  useEffect(() => {
+    if (!words || !user || !gameData.validatedList || isEven === undefined)
+      return;
+    const comeBack = async () => {
+      if (turn !== 0 && (Number.isNaN(chainIndex) || !chainRef)) {
+        console.log("ici", "user.id", user.id);
+        const initialIndex = user.multiGuest
+          ? words.findIndex((word) => word.DCuserID === user.dataId)
+          : words.findIndex((word) => word.DCuserID === user.id);
+        const turnOneIndex = isEven
+          ? initialIndex
+          : (initialIndex + 1) % words.length;
+        const actualIndex =
+          turn === 1 ? turnOneIndex : (turnOneIndex + turn - 1) % words.length;
+        console.log("actualIndex", actualIndex);
+        setChainIndex(actualIndex);
+
+        const actualChainRef = words[actualIndex];
+        setChainRef(actualChainRef);
+
+        setHasComeback(true);
+
+        const hadValidated = gameData.validatedList.some(
+          (val) => val === user.name
+        );
+        setCBHadValidated(hadValidated);
+      }
+    };
+    comeBack();
+  }, [turn, chainIndex, chainRef, user, words, gameData, isEven]);
+  useEffect(() => {
+    if (hasComeback === undefined || CBHadValidated === undefined) return;
+    setHasComeback(false);
+    setCBHadValidated(false);
+  }, [phase]);
+
+  useEffect(() => {
+    if (!chainRef) return;
+    const getLast = async () => {
+      const newLastLink = await getLastLink({
+        chainRef,
+        skip: CBHadValidated ? 1 : 0,
+      });
+      setLastLink(newLastLink);
+    };
+    getLast();
+  }, [chainRef, CBHadValidated]);
+
   return (
     <div className="overflow-y-auto">
       {!gameData.ended && (
@@ -159,7 +248,12 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
                   {!hasValidated ? (
                     <button
                       onClick={() => {
-                        goNextPhase({ roomId, roomToken, gameData });
+                        goNextPhase({
+                          userName: user.name,
+                          roomId,
+                          roomToken,
+                          gameData,
+                        });
                         setHasValidated(true);
                       }}
                       className="border border-blue-300 bg-blue-100"
@@ -177,6 +271,7 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
                       <NextStep
                         onClick={() =>
                           goNextPhase({
+                            userName: user.name,
                             roomId,
                             roomToken,
                             gameData,
@@ -280,9 +375,9 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
               {showedLinks && (
                 <div>
                   {showedLinks.map((link, i) => (
-                    <>
+                    <div key={i}>
                       {link.type === "draw" ? (
-                        <div key={i}>
+                        <div>
                           <div>Dessin de {link.userName}</div>
                           <div
                             style={{
@@ -304,17 +399,17 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
                           </div>
                         </div>
                       ) : showedGamer !== link.userName ? (
-                        <div key={i}>
+                        <div>
                           {link.userName} pense qu&apos;il s&apos;agit de :{" "}
                           {link.data}
                         </div>
                       ) : (
-                        <div key={i}>
+                        <div>
                           Et il s&apos;agissait de :{" "}
                           <span className="font-semibold">{link.data}</span>
                         </div>
                       )}
-                    </>
+                    </div>
                   ))}
                 </div>
               )}
