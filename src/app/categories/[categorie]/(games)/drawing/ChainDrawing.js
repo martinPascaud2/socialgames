@@ -162,7 +162,7 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
     setHasValidated(false);
 
     setHasComeback(false);
-    setCBHadValidated(false);
+    // setCBHadValidated(false);
   }, [chainRef, user]);
 
   useEffect(() => {
@@ -207,22 +207,32 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
 
         setHasComeback(true);
 
-        const hadValidated = gameData.validatedList.some(
-          (val) => val === user.name
-        );
-        setCBHadValidated(hadValidated);
+        // const hadValidated = gameData.validatedList.some(
+        //   (val) => val === user.name
+        // );
+        // setCBHadValidated(hadValidated);
       }
     };
     comeBack();
   }, [turn, chainIndex, chainRef, user, words, gameData, isEven]);
+
   useEffect(() => {
-    if (hasComeback === undefined || CBHadValidated === undefined) return;
+    if (!gameData.validatedList) return;
+    const hadValidated = gameData.validatedList.some(
+      (val) => val === user.name
+    );
+    setCBHadValidated(hadValidated);
+  }, [gameData.validatedList]);
+  useEffect(() => {
+    // if (hasComeback === undefined || CBHadValidated === undefined) return;
+    if (hasComeback === undefined) return;
     setHasComeback(false);
-    setCBHadValidated(false);
+    // setCBHadValidated(false);
   }, [phase]);
 
   useEffect(() => {
-    if (!chainRef) return;
+    // if (!chainRef) return;
+    if (!chainRef || CBHadValidated === undefined) return;
     const getLast = async () => {
       const newLastLink = await getLastLink({
         chainRef,
@@ -292,7 +302,7 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
 
           {phase === "drawing" && lastLink?.type === "word" && (
             <>
-              {!hasValidated ? (
+              {!hasValidated && !CBHadValidated ? (
                 <>
                   <div className="flex justify-center">
                     Mot à dessiner :
@@ -342,7 +352,7 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
                     }}
                   />
                 </div>
-                {!hasValidated ? (
+                {!hasValidated && !CBHadValidated ? (
                   <>
                     <div>Qu&apos;est-ce que ça représente ???</div>
                     <input
