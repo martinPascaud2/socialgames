@@ -449,12 +449,18 @@ export default function Room({
   };
 
   useEffect(() => {
+    if (!deletedGamer || !uniqueName || !router) return;
     const backToHome = async () => {
-      await cancelBack({ userId: user.id });
-      router.push("/categories?control=true");
+      try {
+        //tricky: router before
+        router.push("/categories?control=true");
+        await cancelBack({ userId: user.id });
+      } catch (error) {
+        console.error("Erreur pendant la redirection : ", error);
+      }
     };
     if (deletedGamer === uniqueName) backToHome();
-  }, [deletedGamer]);
+  }, [deletedGamer, uniqueName, router]);
 
   useEffect(() => {
     if (!deletedGamer) return;
