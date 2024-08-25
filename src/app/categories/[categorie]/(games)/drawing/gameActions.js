@@ -439,22 +439,14 @@ export async function goNextPhase({
   const { phase, gamers, turn } = gameData;
   let newFinishCountdownDate = gameData.finishCountdownDate;
   let nextPhase = "";
-  // let validated;
   let validatedList;
-  let guessers;
   let newTurn = turn;
-  let nextShowedLink;
-
-  console.log("userName", userName);
 
   switch (phase) {
     case "waiting":
-      // validated = (gameData.validated || 0) + 1;
       validatedList = [...(gameData.validatedList || []), userName];
-      // if (validated === gamers.length || full) {
       if (validatedList.length === gamers.length || full) {
         nextPhase = "drawing";
-        // validated = 0;
         validatedList = [];
         newTurn += 1;
         newFinishCountdownDate = Date.now() + gameData.options.countDownTime;
@@ -463,15 +455,9 @@ export async function goNextPhase({
       }
       break;
     case "drawing":
-      // validated = gameData.validated + 1;
       validatedList = [...gameData.validatedList, userName];
-      // if (validated === gamers.length || full) {
       if (validatedList.length === gamers.length || full) {
         nextPhase = "guessing";
-        guessers = gamers.map(
-          (gamer) => !validatedList.some((val) => val === gamer.name)
-        );
-        // validated = 0;
         validatedList = [];
         newTurn += 1;
       } else {
@@ -479,9 +465,7 @@ export async function goNextPhase({
       }
       break;
     case "guessing":
-      // validated = gameData.validated + 1;
       validatedList = [...gameData.validatedList, userName];
-      // if (validated === gamers.length || full) {
       if (validatedList.length === gamers.length || full) {
         const even = gamers.length % 2 === 0 ? 1 : 0;
         newTurn += 1;
@@ -489,9 +473,7 @@ export async function goNextPhase({
           nextPhase = "showing-0-1";
         } else {
           nextPhase = "drawing";
-          // validated = 0;
           validatedList = [];
-          guessers = [];
           newFinishCountdownDate = Date.now() + gameData.options.countDownTime;
         }
       } else {
@@ -501,17 +483,12 @@ export async function goNextPhase({
     default:
   }
 
-  console.log("validatedList", validatedList);
-
   const newData = {
     ...gameData,
     phase: nextPhase,
-    // validated,
     validatedList,
-    guessers,
     turn: newTurn,
     finishCountdownDate: newFinishCountdownDate,
-    nextShowedLink,
   };
   await saveAndDispatchData({ roomId, roomToken, newData });
 }

@@ -35,26 +35,7 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
   const [showedLinks, setShowedLinks] = useState([]);
   const [isShower, setIsShower] = useState(false);
 
-  console.log("gameData", gameData);
-  console.log("isEven", isEven);
-  console.log("chainIndex", chainIndex);
-  console.log("chainRef", chainRef);
-  console.log("lastLink", lastLink);
-  console.log("data", data);
-  console.log("guess", guess);
-  console.log("hasValidated", hasValidated);
-  console.log("CBHadValidated", CBHadValidated);
-  console.log("hasComeback", hasComeback);
-  console.log("timeoutId", timeoutId);
-  console.log("showedGamer", showedGamer);
-  console.log("showedLinks", showedLinks);
-  console.log("isShower", isShower);
-  console.log("user", user);
-  console.log("phase", phase);
-  console.log("turn", turn);
-
   useEffect(() => {
-    // if (turn !== 0) return;
     if (turn !== 0 || !words || !user || hasComeback === true) return;
 
     const index = user.multiGuest
@@ -95,12 +76,12 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
   }, [chainRef]);
 
   useEffect(() => {
-    // if (turn === 0) return;
     if (turn === 0 || hasComeback === true) return;
 
     const newChainIndex =
       isEven && turn === 1 ? chainIndex : (chainIndex + 1) % words.length;
     setChainIndex(newChainIndex);
+
     const newChainRef = words[newChainIndex];
     setChainRef(newChainRef);
 
@@ -124,15 +105,6 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
       !finishCountdownDate
     )
       return;
-
-    // const getLast = async () => {
-    //   const newLastLink = await getLastLink({
-    //     chainRef,
-    //     skip: CBHadValidated ? 1 : 0,
-    //   });
-    //   setLastLink(newLastLink);
-    // };
-    // getLast();
 
     const manageDrawing = async () => {
       if (phase === "drawing") {
@@ -160,9 +132,7 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
     setGuess("");
     setData();
     setHasValidated(false);
-
     setHasComeback(false);
-    // setCBHadValidated(false);
   }, [chainRef, user]);
 
   useEffect(() => {
@@ -188,9 +158,9 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
   useEffect(() => {
     if (!words || !user || !gameData.validatedList || isEven === undefined)
       return;
+
     const comeBack = async () => {
       if (turn !== 0 && (Number.isNaN(chainIndex) || !chainRef)) {
-        console.log("ici", "user.id", user.id);
         const initialIndex = user.multiGuest
           ? words.findIndex((word) => word.DCuserID === user.dataId)
           : words.findIndex((word) => word.DCuserID === user.id);
@@ -199,39 +169,28 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
           : (initialIndex + 1) % words.length;
         const actualIndex =
           turn === 1 ? turnOneIndex : (turnOneIndex + turn - 1) % words.length;
-        console.log("actualIndex", actualIndex);
         setChainIndex(actualIndex);
 
         const actualChainRef = words[actualIndex];
         setChainRef(actualChainRef);
 
         setHasComeback(true);
-
-        // const hadValidated = gameData.validatedList.some(
-        //   (val) => val === user.name
-        // );
-        // setCBHadValidated(hadValidated);
       }
     };
     comeBack();
-  }, [turn, chainIndex, chainRef, user, words, gameData, isEven]);
 
-  useEffect(() => {
-    if (!gameData.validatedList) return;
     const hadValidated = gameData.validatedList.some(
       (val) => val === user.name
     );
     setCBHadValidated(hadValidated);
-  }, [gameData.validatedList]);
+  }, [turn, chainIndex, chainRef, user, words, gameData.validatedList, isEven]);
+
   useEffect(() => {
-    // if (hasComeback === undefined || CBHadValidated === undefined) return;
     if (hasComeback === undefined) return;
     setHasComeback(false);
-    // setCBHadValidated(false);
   }, [phase]);
 
   useEffect(() => {
-    // if (!chainRef) return;
     if (!chainRef || CBHadValidated === undefined) return;
     const getLast = async () => {
       const newLastLink = await getLastLink({
