@@ -494,7 +494,8 @@ export default function Room({
       !group?.roomToken ||
       !pathname ||
       !roomToken ||
-      roomToken === null
+      roomToken === null ||
+      gameData.ended
     )
       return;
 
@@ -503,7 +504,7 @@ export default function Room({
     const go = async () => {
       if (!storedGroup) return;
       try {
-        await new Promise((resolve) => setTimeout(resolve, 1500)); // check
+        // await new Promise((resolve) => setTimeout(resolve, 1500)); // check
         await goOneMoreGame({
           pathname,
           oldRoomToken: storedGroup.roomToken,
@@ -516,7 +517,7 @@ export default function Room({
       }
     };
     go();
-  }, [gameName, group, pathname, roomToken]);
+  }, [gameName, group, pathname, roomToken, gameData.ended]);
 
   useEffect(() => {
     const storedGroup = JSON.parse(localStorage.getItem("group"));
@@ -569,23 +570,19 @@ export default function Room({
     }
   };
 
-  if (gameData && gameData.nextGame && user) {
-    if (gameData.nextGame === "deleted group") {
-      return (
-        <>
-          <h1 className="mt-28">Le groupe a été supprimé</h1>
-          <button
-            onClick={async () => {
-              !user.multiGuest && (await deleteInvs());
-              router.push("/categories?control=true");
-            }}
-            className="border border-blue-300 bg-blue-100"
-          >
-            Quitter
-          </button>
-        </>
-      );
-    } else {
+  useEffect(() => {
+    if (
+      !gameData ||
+      !gameData.nextGame ||
+      !gameName ||
+      isStarted === undefined ||
+      !user
+    )
+      return;
+    if (
+      gameData?.nextGame !== "deleted group" &&
+      (gameName === "grouping" || !isStarted)
+    ) {
       const goNewGame = async () => {
         !user.multiGuest && (await deleteInvs());
         const group = { roomToken };
@@ -596,8 +593,25 @@ export default function Room({
           user.multiGuest ? `&guestName=${user.name}` : ""
         }`;
       };
-      if (gameName === "grouping" || !isStarted) goNewGame();
+      goNewGame();
     }
+  }, [gameData, gameName, isStarted, user]);
+
+  if (gameData && gameData?.nextGame === "deleted group" && user) {
+    return (
+      <>
+        <h1 className="mt-28">Le groupe a été supprimé</h1>
+        <button
+          onClick={async () => {
+            !user.multiGuest && (await deleteInvs());
+            router.push("/categories?control=true");
+          }}
+          className="border border-blue-300 bg-blue-100"
+        >
+          Quitter
+        </button>
+      </>
+    );
   }
 
   if (!roomId || !gameData) return null;
