@@ -11,6 +11,7 @@ import { ArrowPathIcon } from "@heroicons/react/24/outline";
 
 import Html5QrcodePlugin from "@/components/Html5QrcodePlugin";
 import Modal from "@/components/Modal";
+import useWake from "@/utils/useWake";
 import getLocation from "@/utils/getLocation";
 import getErrorInformations from "@/utils/getErrorInformations";
 import cancelBack from "@/utils/cancelBack";
@@ -30,6 +31,7 @@ export default function Categories({
   updateLastCP,
   signOut,
 }) {
+  const { isSupported, isVisible, released, request, release } = useWake();
   const router = useRouter();
 
   const [serverMessage, setServerMessage] = useState();
