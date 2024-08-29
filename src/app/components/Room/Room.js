@@ -11,6 +11,8 @@ import {
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import Pusher from "pusher-js";
 import QRCode from "react-qr-code";
+// import { useWakeLock } from "react-screen-wake-lock";
+import useWake from "@/utils/useWake";
 
 import genToken from "@/utils/genToken";
 import getLocation from "@/utils/getLocation";
@@ -100,6 +102,31 @@ export default function Room({
   const [geoLocation, setGeoLocation] = useState(null);
   const [isPrivate, setIsPrivate] = useState();
   const [gameData, setGameData] = useState({});
+
+  const { isSupported, isVisible, released, request, release } = useWake();
+
+  // const [isVisible, setIsVisible] = useState(true);
+  // const { isSupported, released, request, release } = useWakeLock({
+  //   onRequest: () => {},
+  //   // onError: () => alert("WakeLock: error"), //check
+  //   onRelease: () => {},
+  // });
+
+  // useEffect(() => {
+  //   const handleVisibilityChange = () => {
+  //     setIsVisible(document.visibilityState === "visible");
+  //   };
+  //   document.addEventListener("visibilitychange", handleVisibilityChange);
+  //   return () => {
+  //     document.removeEventListener("visibilitychange", handleVisibilityChange);
+  //   };
+  // }, []);
+
+  // useEffect(() => {
+  //   if (request && (released === undefined || released === true) && isVisible) {
+  //     request();
+  //   }
+  // }, [request, released]);
 
   useEffect(() => {
     if (!roomToken) return;
@@ -626,6 +653,20 @@ export default function Room({
                 ? "Lobby"
                 : gamesRefs[gameName].name}
             </div>
+          </div>
+
+          <div>
+            <p>
+              Screen Wake Lock API supported: <b>{`${isSupported}`}</b>
+              <br />
+              Released: <b>{`${released}`}</b>
+            </p>
+            <button
+              type="button"
+              onClick={() => (released === false ? release() : request())}
+            >
+              {released === false ? "Release" : "Request"}
+            </button>
           </div>
 
           {(!isChosen && !group) || isPrivate === undefined ? (
