@@ -37,7 +37,7 @@ export default function Undercover({
   const [isGoddess, setIsGoddess] = useState(false);
   const [isDead, setIsDead] = useState(false);
   const [isWhite, setIsWhite] = useState(false);
-  const whiteGuessWithData = whiteGuess.bind(null, gameData, roomToken);
+  const whiteGuessWithData = whiteGuess.bind(null, gameData, roomId, roomToken);
   const [state, formAction] = useFormState(whiteGuessWithData, initialState); //id
 
   const [isEnded, setIsEnded] = useState(false);
@@ -83,7 +83,13 @@ export default function Undercover({
       <button
         key={gamer.name}
         onClick={() => {
-          voteAgainst(gameData, roomToken, gamer.name);
+          voteAgainst({
+            gameData,
+            roomId,
+            roomToken,
+            voterName: user.name,
+            gamerName: gamer.name,
+          });
           setHasVoted(true);
         }}
         className="border border-blue-300 bg-blue-100"
@@ -130,7 +136,13 @@ export default function Undercover({
                 key={gamer.name}
                 onClick={() => {
                   setAdminVoter(parseInt(voterIndex + 1));
-                  voteAgainst(gameData, roomToken, gamer.name);
+                  voteAgainst({
+                    gameData,
+                    roomId,
+                    roomToken,
+                    voterName: user.name,
+                    gamerName: gamer.name,
+                  });
                 }}
                 className="border border-blue-300 bg-blue-100"
               >
@@ -154,7 +166,7 @@ export default function Undercover({
       <button
         key={gamerName}
         onClick={() => {
-          goddessVote(gameData, roomToken, gamerName);
+          goddessVote({ gameData, roomId, roomToken, gamerName });
         }}
         className="border border-blue-300 bg-blue-100"
       >
@@ -211,6 +223,11 @@ export default function Undercover({
 
   const isAdmin = gameData.admin === user.name;
 
+  useEffect(() => {
+    if (!gameData?.voters) return;
+    if (gameData.voters.some((voter) => voter === user.name)) setHasVoted(true);
+  }, [gameData.voters]);
+
   return (
     <>
       <div className="overflow-y-auto">
@@ -245,7 +262,7 @@ export default function Undercover({
                   <div className="absolute bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-30%]">
                     <NextStep
                       onClick={() =>
-                        launchDescriptions({ gameData, roomToken })
+                        launchDescriptions({ gameData, roomId, roomToken })
                       }
                     >
                       <div className="text-sm">Décrire</div>
@@ -269,7 +286,9 @@ export default function Undercover({
                         <div>C&apos;est à votre tour !</div>
                         <div className="absolute bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-30%]">
                           <NextStep
-                            onClick={() => getNextGamer(gameData, roomToken)}
+                            onClick={() =>
+                              getNextGamer({ gameData, roomId, roomToken })
+                            }
                           >
                             <div className="text-sm">Suivant</div>
                           </NextStep>

@@ -1,5 +1,6 @@
 "use server";
 
+import { saveAndDispatchData } from "@/components/Room/actions";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkPlayers from "@/utils/checkPlayers";
 
@@ -148,33 +149,33 @@ export async function launchGame({
   };
   assignGoddess();
 
+  const newData = {
+    admin: startedRoom.admin,
+    activePlayer: gamersAndGuests[0],
+    gamers: gamersAndGuests,
+    phase: "reveal",
+    voters: [],
+    votes: {},
+    deadMen: [],
+  };
+  await saveAndDispatchData({ roomId, roomToken, newData });
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
-    gameData: {
-      admin: startedRoom.admin,
-      activePlayer: gamersAndGuests[0],
-      gamers: gamersAndGuests,
-      phase: "reveal",
-      votes: {},
-      deadMen: [],
-    },
   });
 
   return {};
 }
 
-export async function launchDescriptions({ gameData, roomToken }) {
+export async function launchDescriptions({ gameData, roomId, roomToken }) {
   const newData = {
     ...gameData,
     phase: "description",
   };
-
-  await pusher.trigger(`room-${roomToken}`, "room-event", {
-    gameData: newData,
-  });
+  await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
-export async function getNextGamer(gameData, roomToken) {
+export async function getNextGamer({ gameData, roomToken, roomId }) {
   const { gamers: gamerList, activePlayer } = gameData;
   const index = gamerList.findIndex(
     (gamer) => gamer.name === activePlayer.name
@@ -202,10 +203,7 @@ export async function getNextGamer(gameData, roomToken) {
     phase,
     activePlayer: nextGamer,
   };
-
-  await pusher.trigger(`room-${roomToken}`, "room-event", {
-    gameData: newData,
-  });
+  await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
 const checkEnd = (newData, deadIndex) => {
@@ -237,8 +235,14 @@ const checkEnd = (newData, deadIndex) => {
   return checkedData;
 };
 
-export async function voteAgainst(gameData, roomToken, gamerName) {
-  const { votes, gamers } = gameData;
+export async function voteAgainst({
+  gameData,
+  roomId,
+  roomToken,
+  voterName,
+  gamerName,
+}) {
+  const { votes, gamers, voters } = gameData;
 
   const stillAlive = gamers.reduce((count, gamer) => {
     return gamer.alive ? count + 1 : count;
@@ -265,6 +269,7 @@ export async function voteAgainst(gameData, roomToken, gamerName) {
       let newData = {
         ...gameData,
         phase: "description",
+        voters: [],
         votes: [],
       };
 
@@ -273,35 +278,31 @@ export async function voteAgainst(gameData, roomToken, gamerName) {
       newData.activePlayer = newData.gamers.find((gamer) => gamer.alive);
 
       newData = checkEnd(newData, deadIndex);
-
-      await pusher.trigger(`room-${roomToken}`, "room-event", {
-        gameData: newData,
-      });
+      await saveAndDispatchData({ roomId, roomToken, newData });
     }
 
     if (deadMen.length > 1) {
       const newData = { ...gameData, phase: "goddess", deadMen };
-      await pusher.trigger(`room-${roomToken}`, "room-event", {
-        gameData: newData,
-      });
+      await saveAndDispatchData({ roomId, roomToken, newData });
     }
   } else {
+    const newVoters = [...voters, voterName];
+
     const newData = {
       ...gameData,
+      voters: newVoters,
       votes: newVotes,
       phase: "vote",
     };
-
-    await pusher.trigger(`room-${roomToken}`, "room-event", {
-      gameData: newData,
-    });
+    await saveAndDispatchData({ roomId, roomToken, newData });
   }
 }
 
-export async function goddessVote(gameData, roomToken, gamerName) {
+export async function goddessVote({ gameData, roomId, roomToken, gamerName }) {
   let newData = {
     ...gameData,
     phase: "description",
+    voters: [],
     votes: [],
   };
 
@@ -312,43 +313,44 @@ export async function goddessVote(gameData, roomToken, gamerName) {
   newData.activePlayer = newData.gamers.find((gamer) => gamer.alive);
 
   newData = checkEnd(newData, deadIndex);
-
-  await pusher.trigger(`room-${roomToken}`, "room-event", {
-    gameData: newData,
-  });
+  await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
-export async function whiteGuess(gameData, roomToken, prevState, formData) {
+export async function whiteGuess(
+  gameData,
+  roomId,
+  roomToken,
+  prevState,
+  formData
+) {
   const guess = formData.get("guess");
   const trueWord = gameData.gamers.find((gamer) => gamer.role === "civil").word;
 
   if (trueWord.toUpperCase() === guess.toUpperCase()) {
-    await pusher.trigger(`room-${roomToken}`, "room-event", {
-      gameData: {
-        ...gameData,
-        phase:
-          gameData.phase === "undercoversWinMaybeWhite"
-            ? "undercoversWinWithWhite"
-            : "whiteWin",
-      },
-    });
+    const newData = {
+      ...gameData,
+      phase:
+        gameData.phase === "undercoversWinMaybeWhite"
+          ? "undercoversWinWithWhite"
+          : "whiteWin",
+    };
+    await saveAndDispatchData({ roomId, roomToken, newData });
   } else {
     const stillUndercover = !!gameData.gamers
       .filter((gamer) => gamer.alive)
       .find((alive) => alive.role === "undercover");
-
-    await pusher.trigger(`room-${roomToken}`, "room-event", {
-      gameData: {
-        ...gameData,
-        phase:
-          gameData.phase === "undercoversWinMaybeWhite"
-            ? "undercoversWin"
-            : stillUndercover
-            ? "description"
-            : "civilsWin",
-        votes: [],
-      },
-    });
+    const newData = {
+      ...gameData,
+      phase:
+        gameData.phase === "undercoversWinMaybeWhite"
+          ? "undercoversWin"
+          : stillUndercover
+          ? "description"
+          : "civilsWin",
+      voters: [],
+      votes: [],
+    };
+    await saveAndDispatchData({ roomId, roomToken, newData });
   }
 
   return { message: null };
