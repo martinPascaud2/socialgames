@@ -65,7 +65,8 @@ export default function ChooseOneMoreGame({
     <>
       <div>
         {privacy && (
-          <div className="absolute right-2 bottom-[2rem]">
+          // <div className="absolute right-2 bottom-[2rem]">
+          <div className="absolute right-2 bottom-[0.2rem]">
             <button
               onClick={() => goChooseGame(privacy)}
               className="border border-blue-300 bg-blue-100"
@@ -74,7 +75,8 @@ export default function ChooseOneMoreGame({
             </button>
           </div>
         )}
-        <div className="absolute left-2 bottom-[2rem]">
+        {/* <div className="absolute left-2 bottom-[2rem]"> */}
+        <div className="absolute left-2 bottom-[0.2rem]">
           <DeleteGroup roomToken={roomToken} roomId={roomId} />
         </div>
       </div>

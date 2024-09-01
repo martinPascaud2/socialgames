@@ -14,37 +14,40 @@ export default function NextEndingPossibilities({
   user,
 }) {
   return (
-    <div className="h-20">
-      <div className="fixed bottom-0 h-20 bg-black w-full">
-        <div className="w-full flex justify-around">
-          {isAdmin ? (
-            !isEnded ? (
-              <div className="absolute bottom-[2rem] left-2">
-                <FinishGame gameData={gameData} roomToken={roomToken} />
+    // <div>
+    <div className="fixed bottom-0 h-8 bg-black w-full">
+      {/* <div className="fixed bottom-0 h-20 bg-black w-full"> */}
+      <div className="w-full flex justify-around">
+        {isAdmin ? (
+          !isEnded ? (
+            // <div className="absolute bottom-[2rem] left-2">
+            <div className="absolute bottom-[0.2rem] left-2">
+              <FinishGame gameData={gameData} roomToken={roomToken} />
+            </div>
+          ) : (
+            <>
+              {/* <div className="absolute bottom-0 left-1/2 translate-x-[-50%] translate-y-[-25%]"> */}
+              <div className="absolute bottom-[2rem] left-1/2 translate-x-[-50%] translate-y-[-25%]">
+                <NextStep onClick={() => reset({ roomToken, gameData })}>
+                  Encore
+                </NextStep>
               </div>
-            ) : (
-              <>
-                <div className="absolute bottom-0 left-1/2 translate-x-[-50%] translate-y-[-25%]">
-                  <NextStep onClick={() => reset({ roomToken, gameData })}>
-                    Encore
-                  </NextStep>
-                </div>
 
-                <div>
-                  <ChooseOneMoreGame
-                    gameData={gameData}
-                    roomToken={roomToken}
-                    roomId={roomId}
-                    storedLocation={storedLocation}
-                  />
-                </div>
-              </>
-            )
-          ) : isEnded ? (
-            <EndGame gameData={gameData} user={user} />
-          ) : null}
-        </div>
+              <div>
+                <ChooseOneMoreGame
+                  gameData={gameData}
+                  roomToken={roomToken}
+                  roomId={roomId}
+                  storedLocation={storedLocation}
+                />
+              </div>
+            </>
+          )
+        ) : isEnded ? (
+          <EndGame gameData={gameData} user={user} />
+        ) : null}
       </div>
     </div>
+    // </div>
   );
 }

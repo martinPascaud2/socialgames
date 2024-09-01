@@ -647,7 +647,8 @@ export default function Room({
     return (
       <div className="absolute h-screen w-full z-50">
         <UserContext.Provider value={"coucou"}>
-          <div className="flex items-end h-20 w-full z-50 bg-black">
+          {/* <div className="flex items-end h-20 w-full z-50 bg-black"> */}
+          <div className="flex items-end h-8 w-full z-50 bg-black">
             <div className="flex justify-center text-white w-full m-1">
               {gamesRefs[gameName].categorie === "grouping"
                 ? "Lobby"
@@ -943,7 +944,8 @@ export default function Room({
                 </div>
               )}
 
-              <div className="absolute bottom-[2rem] left-2">
+              {/* <div className="absolute bottom-[2rem] left-2"> */}
+              <div className="absolute bottom-[0.2rem] left-2">
                 {!user.multiGuest && !isAdmin && (
                   <button
                     onClick={async () => await deleteGamer(uniqueName)}
@@ -1016,17 +1018,20 @@ export default function Room({
                     <div className="flex flex-col">{serverMessage}</div>
                   </div>
 
-                  <div className="absolute bottom-0 w-full bg-black h-20 z-10">
+                  {/* <div className="absolute bottom-0 w-full bg-black h-20 z-10"> */}
+                  <div className="absolute bottom-0 w-full bg-black h-8 z-10">
                     <div className="relative h-full">
                       <div
                         onClick={async () => await deleteInvs()}
-                        className="absolute bottom-[2rem] left-2"
+                        // className="absolute bottom-[2rem] left-2"
+                        className="absolute bottom-[0.2rem] left-2"
                       >
                         <DeleteGroup roomToken={roomToken} roomId={roomId} />
                       </div>
                       <div
                         onClick={async () => await deleteInvs()}
-                        className="absolute bottom-[2rem] right-2"
+                        // className="absolute bottom-[2rem] right-2"
+                        className="absolute bottom-[0.2rem] right-2"
                       >
                         {group?.lastGame &&
                           group.lastGame !== "grouping" &&
@@ -1052,9 +1057,22 @@ export default function Room({
                           </>
                         )}
                       </div>
+                      <div
+                        onClick={async () => await deleteInvs()}
+                        // className="absolute left-1/2 top-[15%] translate-x-[-50%]"
+                        className="absolute left-1/2 bottom-[3rem] translate-x-[-50%]"
+                      >
+                        <NextStep onClick={() => launchRoom()}>
+                          {gameName === "grouping" ? (
+                            <div className="text-xl">Jouer</div>
+                          ) : (
+                            <div className="">Lancer</div>
+                          )}
+                        </NextStep>
+                      </div>
                     </div>
 
-                    <div
+                    {/* <div
                       onClick={async () => await deleteInvs()}
                       className="absolute left-1/2 top-[15%] translate-x-[-50%]"
                     >
@@ -1065,7 +1083,7 @@ export default function Room({
                           <div className="">Lancer</div>
                         )}
                       </NextStep>
-                    </div>
+                    </div> */}
                   </div>
                 </>
               )}
@@ -1089,7 +1107,8 @@ export default function Room({
     return (
       <div className="absolute h-screen w-full z-50">
         <UserContext.Provider value={"coucou"}>
-          <div className="fixed flex items-end h-20 w-full z-[70] bg-black">
+          {/* <div className="fixed flex items-end h-20 w-full z-[70] bg-black"> */}
+          {/* <div className="fixed flex items-end h-8 w-full z-[70] bg-black">
             <div className="flex justify-center w-full text-white m-1">
               {gamesRefs[gameName].categorie === "grouping"
                 ? "Lobby"
@@ -1097,8 +1116,9 @@ export default function Room({
               {gameData.gamers?.length &&
                 `(${gameData.gamers?.length} joueurs)`}
             </div>
-          </div>
-          <div className="mt-20 h-[calc(100vh-5rem)] overflow-y-auto z-[60] w-full">
+          </div> */}
+          {/* <div className="mt-20 h-[calc(100vh-5rem)] overflow-y-auto z-[60] w-full"> */}
+          <div className="mt-8 h-[calc(100vh-5rem)] overflow-y-auto z-[60] w-full">
             <Game
               roomId={roomId}
               roomToken={roomToken}

@@ -6,7 +6,8 @@ export default function EndGame({ gameData, user, isFirst = false }) {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col items-center justify-center">
+    // <div className="flex flex-col items-center justify-center">
+    <div className="flex items-center justify-center">
       {isFirst && <div>Recherche de la prochaine partie...</div>}
 
       {gameData?.nextGame ? (
