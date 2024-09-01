@@ -13,6 +13,7 @@ import Pusher from "pusher-js";
 import QRCode from "react-qr-code";
 // import { useWakeLock } from "react-screen-wake-lock";
 import useWake from "@/utils/useWake";
+import useGetBarsSizes from "@/utils/useGetBarsSizes";
 
 import genToken from "@/utils/genToken";
 import getLocation from "@/utils/getLocation";
@@ -104,6 +105,7 @@ export default function Room({
   const [gameData, setGameData] = useState({});
 
   const { isSupported, isVisible, released, request, release } = useWake();
+  const barsSizes = JSON.stringify(useGetBarsSizes());
 
   // const [isVisible, setIsVisible] = useState(true);
   // const { isSupported, released, request, release } = useWakeLock({
@@ -669,6 +671,8 @@ export default function Room({
               {released === false ? "Release" : "Request"}
             </button>
           </div>
+
+          <div className="break-words">{barsSizes}</div>
 
           {(!isChosen && !group) || isPrivate === undefined ? (
             <div>Chargement...</div>

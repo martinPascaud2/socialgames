@@ -367,7 +367,6 @@ export default function Categories({
             >
               Déconnexion
             </Link>
-            {barsSizes && barsSizes.device.model}
           </div>
 
           <div
