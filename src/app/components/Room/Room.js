@@ -105,7 +105,7 @@ export default function Room({
   const [gameData, setGameData] = useState({});
 
   const { isSupported, isVisible, released, request, release } = useWake();
-  const barsSizes = JSON.stringify(useGetBarsSizes());
+  const barsSizes = useGetBarsSizes();
 
   // const [isVisible, setIsVisible] = useState(true);
   // const { isSupported, released, request, release } = useWakeLock({
@@ -672,7 +672,14 @@ export default function Room({
             </button>
           </div>
 
-          <div className="break-words">{barsSizes}</div>
+          <div className="break-words">
+            {Object.entries(barsSizes).map((value, i) => (
+              <div key={i}>
+                <div className="font-bold">{value[0]}:</div>
+                <div>{JSON.stringify(value[1])}</div>
+              </div>
+            ))}
+          </div>
 
           {(!isChosen && !group) || isPrivate === undefined ? (
             <div>Chargement...</div>
