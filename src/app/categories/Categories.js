@@ -21,6 +21,8 @@ var pusher = new Pusher("61853af9f30abf9d5b3d", {
   cluster: "eu",
 });
 
+import useGetBarsSizes from "@/utils/useGetBarsSizes";
+
 export default function Categories({
   user,
   friendList,
@@ -32,6 +34,7 @@ export default function Categories({
   signOut,
 }) {
   const { isSupported, isVisible, released, request, release } = useWake();
+  const barsSizes = useGetBarsSizes();
   const router = useRouter();
 
   const [serverMessage, setServerMessage] = useState();
@@ -364,6 +367,7 @@ export default function Categories({
             >
               Déconnexion
             </Link>
+            {barsSizes && barsSizes.device.model}
           </div>
 
           <div
