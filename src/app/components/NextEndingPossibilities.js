@@ -1,7 +1,10 @@
+"use client";
+
 import NextStep from "@/components/NextStep";
 import FinishGame from "@/components/FinishGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import EndGame from "@/components/EndGame";
+import { useUserContext } from "./Room/Room";
 
 export default function NextEndingPossibilities({
   isAdmin,
@@ -13,25 +16,29 @@ export default function NextEndingPossibilities({
   storedLocation,
   user,
 }) {
+  const contextValue = useUserContext();
+  const userParams = contextValue.userParams;
+
   return (
-    // <div>
-    <div className="fixed bottom-0 h-8 bg-black w-full">
-      {/* <div className="fixed bottom-0 h-20 bg-black w-full"> */}
+    <div
+      className={`fixed bottom-0 bg-black w-full`}
+      style={{ height: `${userParams?.bottomBarSize / 4 || 2}rem` }}
+    >
       <div className="w-full flex justify-around">
         {isAdmin ? (
           !isEnded ? (
-            // <div className="absolute bottom-[2rem] left-2">
-            <div className="absolute bottom-[0.2rem] left-2">
+            <div
+              className={`absolute bottom-${
+                userParams?.bottomBarSize || 8
+              } left-2`}
+            >
               <FinishGame gameData={gameData} roomToken={roomToken} />
             </div>
           ) : (
             <>
-              {/* <div className="absolute bottom-0 left-1/2 translate-x-[-50%] translate-y-[-25%]"> */}
-              <div className="absolute bottom-[2rem] left-1/2 translate-x-[-50%] translate-y-[-25%]">
-                <NextStep onClick={() => reset({ roomToken, gameData })}>
-                  Encore
-                </NextStep>
-              </div>
+              <NextStep onClick={() => reset({ roomToken, gameData })}>
+                Encore
+              </NextStep>
 
               <div>
                 <ChooseOneMoreGame
@@ -48,6 +55,5 @@ export default function NextEndingPossibilities({
         ) : null}
       </div>
     </div>
-    // </div>
   );
 }

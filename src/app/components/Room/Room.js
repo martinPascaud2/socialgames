@@ -11,9 +11,7 @@ import {
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import Pusher from "pusher-js";
 import QRCode from "react-qr-code";
-// import { useWakeLock } from "react-screen-wake-lock";
 import useWake from "@/utils/useWake";
-import useGetBarsSizes from "@/utils/useGetBarsSizes";
 
 import genToken from "@/utils/genToken";
 import getLocation from "@/utils/getLocation";
@@ -105,30 +103,11 @@ export default function Room({
   const [gameData, setGameData] = useState({});
 
   const { isSupported, isVisible, released, request, release } = useWake();
-  const barsSizes = useGetBarsSizes();
-
-  // const [isVisible, setIsVisible] = useState(true);
-  // const { isSupported, released, request, release } = useWakeLock({
-  //   onRequest: () => {},
-  //   // onError: () => alert("WakeLock: error"), //check
-  //   onRelease: () => {},
-  // });
-
-  // useEffect(() => {
-  //   const handleVisibilityChange = () => {
-  //     setIsVisible(document.visibilityState === "visible");
-  //   };
-  //   document.addEventListener("visibilitychange", handleVisibilityChange);
-  //   return () => {
-  //     document.removeEventListener("visibilitychange", handleVisibilityChange);
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   if (request && (released === undefined || released === true) && isVisible) {
-  //     request();
-  //   }
-  // }, [request, released]);
+  const userParams = user.params;
+  const barsSizes = {
+    bottom: userParams.bottomBarSize || 8,
+    top: userParams.topBarSize || 8,
+  };
 
   useEffect(() => {
     if (!roomToken) return;
@@ -648,9 +627,10 @@ export default function Room({
   if (!isStarted) {
     return (
       <div className="absolute h-screen w-full z-50">
-        <UserContext.Provider value={"coucou"}>
-          {/* <div className="flex items-end h-20 w-full z-50 bg-black"> */}
-          <div className="flex items-end h-8 w-full z-50 bg-black">
+        <UserContext.Provider value={{ userParams }}>
+          <div
+            className={`flex items-end h-${barsSizes.top} w-full z-50 bg-black`}
+          >
             <div className="flex justify-center text-white w-full m-1">
               {gamesRefs[gameName].categorie === "grouping"
                 ? "Lobby"
@@ -670,15 +650,6 @@ export default function Room({
             >
               {released === false ? "Release" : "Request"}
             </button>
-          </div>
-
-          <div className="break-words">
-            {Object.entries(barsSizes).map((value, i) => (
-              <div key={i}>
-                <div className="font-bold">{value[0]}:</div>
-                <div>{JSON.stringify(value[1])}</div>
-              </div>
-            ))}
           </div>
 
           {(!isChosen && !group) || isPrivate === undefined ? (
@@ -718,7 +689,6 @@ export default function Room({
                   </div>
                 </>
               )}
-
               <div>
                 {(() => {
                   if (!gamerList || !multiGuestList) return;
@@ -745,7 +715,6 @@ export default function Room({
                   );
                 })()}
               </div>
-
               {group?.gamers &&
                 group.gamers.map((gamer) => {
                   const gamerName = gamer.name;
@@ -823,7 +792,6 @@ export default function Room({
                     </div>
                   );
                 })}
-
               <div>
                 {gamerList?.map((gamer) => {
                   const gamerNameList =
@@ -889,9 +857,7 @@ export default function Room({
                   );
                 })}
               </div>
-
               <hr />
-
               {!user.multiGuest && (
                 <div className="flex flex-col items-center">
                   <div className="flex mt-1">
@@ -954,27 +920,31 @@ export default function Room({
                   </div>
                 </div>
               )}
-
-              {/* <div className="absolute bottom-[2rem] left-2"> */}
-              <div className="absolute bottom-[0.2rem] left-2">
-                {!user.multiGuest && !isAdmin && (
-                  <button
-                    onClick={async () => await deleteGamer(uniqueName)}
-                    className="border border-blue-300 bg-blue-100"
-                  >
-                    Quitter le groupe
-                  </button>
-                )}
-                {user.multiGuest && (
-                  <button
-                    onClick={async () => await deleteMultiGuest(uniqueName)}
-                    className="border border-blue-300 bg-blue-100"
-                  >
-                    Quitter le groupe
-                  </button>
-                )}
+              <div
+                className={`absolute flex items-end h-${barsSizes.bottom} w-full z-50 bg-black bottom-0`}
+              >
+                <div
+                  className="absolute bottom-[0.2rem] left-2"
+                  style={{ bottom: `${barsSizes.bottom / 4}rem` }}
+                >
+                  {!user.multiGuest && !isAdmin && (
+                    <button
+                      onClick={async () => await deleteGamer(uniqueName)}
+                      className="border border-blue-300 bg-blue-100"
+                    >
+                      Quitter le groupe
+                    </button>
+                  )}
+                  {user.multiGuest && (
+                    <button
+                      onClick={async () => await deleteMultiGuest(uniqueName)}
+                      className="border border-blue-300 bg-blue-100"
+                    >
+                      Quitter le groupe
+                    </button>
+                  )}
+                </div>
               </div>
-
               {isAdmin && (
                 <>
                   <hr />
@@ -1029,20 +999,22 @@ export default function Room({
                     <div className="flex flex-col">{serverMessage}</div>
                   </div>
 
-                  {/* <div className="absolute bottom-0 w-full bg-black h-20 z-10"> */}
-                  <div className="absolute bottom-0 w-full bg-black h-8 z-10">
+                  <div
+                    className={`absolute bottom-0 w-full bg-black z-10`}
+                    style={{ height: `${barsSizes.bottom}` }}
+                  >
                     <div className="relative h-full">
                       <div
                         onClick={async () => await deleteInvs()}
-                        // className="absolute bottom-[2rem] left-2"
-                        className="absolute bottom-[0.2rem] left-2"
+                        className="absolute left-2"
+                        style={{ bottom: `${barsSizes.bottom / 4}rem` }}
                       >
                         <DeleteGroup roomToken={roomToken} roomId={roomId} />
                       </div>
                       <div
                         onClick={async () => await deleteInvs()}
-                        // className="absolute bottom-[2rem] right-2"
-                        className="absolute bottom-[0.2rem] right-2"
+                        className="absolute right-2"
+                        style={{ bottom: `${barsSizes.bottom / 4}rem` }}
                       >
                         {group?.lastGame &&
                           group.lastGame !== "grouping" &&
@@ -1068,11 +1040,7 @@ export default function Room({
                           </>
                         )}
                       </div>
-                      <div
-                        onClick={async () => await deleteInvs()}
-                        // className="absolute left-1/2 top-[15%] translate-x-[-50%]"
-                        className="absolute left-1/2 bottom-[3rem] translate-x-[-50%]"
-                      >
+                      <div onClick={async () => await deleteInvs()}>
                         <NextStep onClick={() => launchRoom()}>
                           {gameName === "grouping" ? (
                             <div className="text-xl">Jouer</div>
@@ -1082,23 +1050,9 @@ export default function Room({
                         </NextStep>
                       </div>
                     </div>
-
-                    {/* <div
-                      onClick={async () => await deleteInvs()}
-                      className="absolute left-1/2 top-[15%] translate-x-[-50%]"
-                    >
-                      <NextStep onClick={() => launchRoom()}>
-                        {gameName === "grouping" ? (
-                          <div className="text-xl">Jouer</div>
-                        ) : (
-                          <div className="">Lancer</div>
-                        )}
-                      </NextStep>
-                    </div> */}
                   </div>
                 </>
               )}
-
               {Options && options && setOptions && setServerMessage && (
                 <Options
                   userId={user.id}
@@ -1117,19 +1071,18 @@ export default function Room({
   } else {
     return (
       <div className="absolute h-screen w-full z-50">
-        <UserContext.Provider value={"coucou"}>
-          {/* <div className="fixed flex items-end h-20 w-full z-[70] bg-black"> */}
-          {/* <div className="fixed flex items-end h-8 w-full z-[70] bg-black">
-            <div className="flex justify-center w-full text-white m-1">
-              {gamesRefs[gameName].categorie === "grouping"
-                ? "Lobby"
-                : gameData.options?.mode || gamesRefs[gameName].name}{" "}
-              {gameData.gamers?.length &&
-                `(${gameData.gamers?.length} joueurs)`}
-            </div>
-          </div> */}
-          {/* <div className="mt-20 h-[calc(100vh-5rem)] overflow-y-auto z-[60] w-full"> */}
-          <div className="mt-8 h-[calc(100vh-5rem)] overflow-y-auto z-[60] w-full">
+        <UserContext.Provider value={{ userParams }}>
+          <div className={`fixed h-${barsSizes.top} w-full z-[70] bg-black`} />
+
+          <div
+            className={`overflow-y-auto z-[60] w-full`}
+            style={{
+              height: `calc(100vh - ${
+                barsSizes.top / 4 + barsSizes.top / 4
+              }rem)`,
+              marginTop: `${barsSizes.top / 4}rem`,
+            }}
+          >
             <Game
               roomId={roomId}
               roomToken={roomToken}

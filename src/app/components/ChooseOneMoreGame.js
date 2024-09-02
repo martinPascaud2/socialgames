@@ -5,6 +5,7 @@ import { useRouter, usePathname } from "next/navigation";
 
 import getRoomPrivacy from "@/utils/getRoomPrivacy";
 import { finishGame } from "./Room/actions";
+import { useUserContext } from "./Room/Room";
 
 import DeleteGroup from "./DeleteGroup";
 
@@ -15,6 +16,8 @@ export default function ChooseOneMoreGame({
   isFirst = false,
   storedLocation,
 }) {
+  const contextValue = useUserContext();
+  const userParams = contextValue.userParams;
   const router = useRouter();
   const [privacy, setPrivacy] = useState(null);
   const path = usePathname();
@@ -65,8 +68,9 @@ export default function ChooseOneMoreGame({
     <>
       <div>
         {privacy && (
-          // <div className="absolute right-2 bottom-[2rem]">
-          <div className="absolute right-2 bottom-[0.2rem]">
+          <div
+            className={`absolute right-0 bottom-${userParams.bottomBarSize}`}
+          >
             <button
               onClick={() => goChooseGame(privacy)}
               className="border border-blue-300 bg-blue-100"
@@ -75,8 +79,7 @@ export default function ChooseOneMoreGame({
             </button>
           </div>
         )}
-        {/* <div className="absolute left-2 bottom-[2rem]"> */}
-        <div className="absolute left-2 bottom-[0.2rem]">
+        <div className={`absolute left-0 bottom-${userParams.bottomBarSize}`}>
           <DeleteGroup roomToken={roomToken} roomId={roomId} />
         </div>
       </div>

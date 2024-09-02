@@ -115,15 +115,13 @@ export default function Dobble({
   return (
     <>
       {isAdmin && roundNumber === 0 && (
-        <div className="absolute bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-25%]">
-          <NextStep
-            onClick={() => {
-              goFirstRound({ roomId, roomToken, gameData, imageLength });
-            }}
-          >
-            Lancer
-          </NextStep>
-        </div>
+        <NextStep
+          onClick={() => {
+            goFirstRound({ roomId, roomToken, gameData, imageLength });
+          }}
+        >
+          Lancer
+        </NextStep>
       )}
 
       <div className="overflow-y-auto">

@@ -285,19 +285,17 @@ export default function Ptitbac({
         })}
 
         {isReferee && (
-          <div className="absolute bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-60%]">
-            <NextStep
-              onClick={async () => {
-                if (allFalse) {
-                  await manageEmptyTheme({ roomId, roomToken, gameData });
-                } else {
-                  await validate({ roomId, roomToken, gameData });
-                }
-              }}
-            >
-              Suite
-            </NextStep>
-          </div>
+          <NextStep
+            onClick={async () => {
+              if (allFalse) {
+                await manageEmptyTheme({ roomId, roomToken, gameData });
+              } else {
+                await validate({ roomId, roomToken, gameData });
+              }
+            }}
+          >
+            Suite
+          </NextStep>
         )}
       </div>
     );
@@ -351,20 +349,18 @@ export default function Ptitbac({
         {!isEnded && (
           <>
             {phase === "waiting" && isAdmin && (
-              <div className="absolute bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-25%]">
-                <NextStep
-                  onClick={async () =>
-                    await startCountdown({
-                      time: gameData.options.countDownTime, //remove
-                      roomId,
-                      roomToken,
-                      gameData,
-                    })
-                  }
-                >
-                  Lancer
-                </NextStep>
-              </div>
+              <NextStep
+                onClick={async () =>
+                  await startCountdown({
+                    time: gameData.options.countDownTime, //remove
+                    roomId,
+                    roomToken,
+                    gameData,
+                  })
+                }
+              >
+                Lancer
+              </NextStep>
             )}
 
             {phase === "searching" && (
@@ -396,11 +392,9 @@ export default function Ptitbac({
                 </div>
 
                 {!hasValidated && isCompleted && (
-                  <div className="absolute bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-25%]">
-                    <NextStep onClick={() => setHasValidated(true)}>
-                      J&apos;ai fini
-                    </NextStep>
-                  </div>
+                  <NextStep onClick={() => setHasValidated(true)}>
+                    J&apos;ai fini
+                  </NextStep>
                 )}
                 <div className="h-fit">
                   <CountDown

@@ -6,11 +6,23 @@ export default function EndGame({ gameData, user, isFirst = false }) {
   const router = useRouter();
 
   return (
-    // <div className="flex flex-col items-center justify-center">
-    <div className="flex items-center justify-center">
+    <div
+      className={`flex items-center justify-center`}
+      style={{
+        marginTop: `${
+          user.params?.topBarSize && isFirst
+            ? `${user.params.topBarSize / 4}`
+            : 2
+        }rem`,
+      }}
+    >
       {isFirst && <div>Recherche de la prochaine partie...</div>}
 
-      {gameData?.nextGame ? (
+      {!isFirst && !gameData?.nextGame && (
+        <div className="text-white">En attente de l&apos;admin...</div>
+      )}
+
+      {gameData?.nextGame && (
         <>
           <button
             onClick={() => {
@@ -20,21 +32,20 @@ export default function EndGame({ gameData, user, isFirst = false }) {
                 }`
               );
             }}
-            className="border border-blue-300 bg-blue-100 m-1"
+            className="border border-blue-300 bg-blue-100"
           >
             Retour au lobby
           </button>
         </>
-      ) : (
-        <div className="text-white m-1">En attente de l&apos;admin...</div>
       )}
+
       {gameData.admin !== user.name && (
         <button
           onClick={async () => {
             await cancelBack({ userId: user.id });
             router.push("/categories?control=true");
           }}
-          className="border border-blue-300 bg-blue-100 m-1"
+          className="border border-blue-300 bg-blue-100"
         >
           Quitter le groupe
         </button>

@@ -259,15 +259,13 @@ export default function Undercover({
                 <div>Phase de découverte des mots</div>
 
                 {user.name === gameData.admin && (
-                  <div className="absolute bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-30%]">
-                    <NextStep
-                      onClick={() =>
-                        launchDescriptions({ gameData, roomId, roomToken })
-                      }
-                    >
-                      <div className="text-sm">Décrire</div>
-                    </NextStep>
-                  </div>
+                  <NextStep
+                    onClick={() =>
+                      launchDescriptions({ gameData, roomId, roomToken })
+                    }
+                  >
+                    <div className="text-sm">Décrire</div>
+                  </NextStep>
                 )}
               </div>
             )}
@@ -284,15 +282,13 @@ export default function Undercover({
                     ) : (
                       <>
                         <div>C&apos;est à votre tour !</div>
-                        <div className="absolute bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-30%]">
-                          <NextStep
-                            onClick={() =>
-                              getNextGamer({ gameData, roomId, roomToken })
-                            }
-                          >
-                            <div className="text-sm">Suivant</div>
-                          </NextStep>
-                        </div>
+                        <NextStep
+                          onClick={() =>
+                            getNextGamer({ gameData, roomId, roomToken })
+                          }
+                        >
+                          <div className="text-sm">Suivant</div>
+                        </NextStep>
                       </>
                     )}
                   </div>

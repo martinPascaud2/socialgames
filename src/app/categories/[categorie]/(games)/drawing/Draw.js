@@ -166,16 +166,15 @@ export default function Draw({
       >
         Envoi paths
       </button> */}
-      <div className="fixed bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-40%]">
-        <NextStep
-          onClick={() => {
-            handleExportImage();
-            setHasValidated(true);
-          }}
-        >
-          Envoi
-        </NextStep>
-      </div>
+
+      <NextStep
+        onClick={() => {
+          handleExportImage();
+          setHasValidated(true);
+        }}
+      >
+        Envoi
+      </NextStep>
     </>
   );
 }

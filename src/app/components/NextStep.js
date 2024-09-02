@@ -4,14 +4,20 @@ import { useUserContext } from "./Room/Room";
 
 export default function NextStep({ onClick, children }) {
   const contextValue = useUserContext();
+  const userParams = contextValue.userParams;
 
   return (
-    <button
-      onClick={onClick}
-      className="border border-red-800 bg-red-600 rotate-45 aspect-square"
+    <div
+      className={`absolute z-10 left-1/2 translate-x-[-50%] translate-y-[-30%]`}
+      style={{ bottom: `${userParams?.bottomBarSize / 4 || 2}rem` }}
     >
-      <div className="rotate-[-45deg]">{children}</div>
-    </button>
+      <button
+        onClick={onClick}
+        className="border border-red-800 bg-red-600 rotate-45 aspect-square"
+      >
+        <div className="rotate-[-45deg]">{children}</div>
+      </button>
+    </div>
   );
 }
 

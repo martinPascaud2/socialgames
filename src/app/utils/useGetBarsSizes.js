@@ -17,8 +17,17 @@ const useDeviceDetector = () => {
 
 export default function useGetBarsSizes() {
   const deviceInfo = useDeviceDetector();
+  let topSize = 8;
+  let bottomSize = 8;
 
-  const barsSizes = { ...deviceInfo, top: 8, bottom: 8 };
+  console.log("deviceInfo", deviceInfo);
+
+  if (deviceInfo?.device.model === "iPhone") {
+    topSize = 20;
+    bottomSize = 20;
+  }
+
+  const barsSizes = { ...deviceInfo, top: topSize, bottom: bottomSize };
   if (!deviceInfo) return null;
 
   return barsSizes;

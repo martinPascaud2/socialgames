@@ -236,21 +236,19 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
               ) : (
                 <>
                   {isAdmin ? (
-                    <div className="fixed bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-25%]">
-                      <NextStep
-                        onClick={() =>
-                          goNextPhase({
-                            userName: user.name,
-                            roomId,
-                            roomToken,
-                            gameData,
-                            full: true,
-                          })
-                        }
-                      >
-                        Lancer
-                      </NextStep>
-                    </div>
+                    <NextStep
+                      onClick={() =>
+                        goNextPhase({
+                          userName: user.name,
+                          roomId,
+                          roomToken,
+                          gameData,
+                          full: true,
+                        })
+                      }
+                    >
+                      Lancer
+                    </NextStep>
                   ) : (
                     <div>Ça va commencer !</div>
                   )}
@@ -384,15 +382,13 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
               )}
 
               {isShower && (
-                <div className="fixed bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-50%]">
-                  <NextStep
-                    onClick={() => {
-                      goNextShow({ roomId, roomToken, gameData });
-                    }}
-                  >
-                    Suite
-                  </NextStep>
-                </div>
+                <NextStep
+                  onClick={() => {
+                    goNextShow({ roomId, roomToken, gameData });
+                  }}
+                >
+                  Suite
+                </NextStep>
               )}
             </>
           )}

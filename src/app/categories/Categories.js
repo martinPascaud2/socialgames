@@ -21,10 +21,9 @@ var pusher = new Pusher("61853af9f30abf9d5b3d", {
   cluster: "eu",
 });
 
-import useGetBarsSizes from "@/utils/useGetBarsSizes";
-
 export default function Categories({
   user,
+  updateParams,
   friendList,
   addFriend,
   deleteFriend,
@@ -34,7 +33,6 @@ export default function Categories({
   signOut,
 }) {
   const { isSupported, isVisible, released, request, release } = useWake();
-  const barsSizes = useGetBarsSizes();
   const router = useRouter();
 
   const [serverMessage, setServerMessage] = useState();
@@ -62,6 +60,39 @@ export default function Categories({
 
   const [publicRooms, setPublicRooms] = useState({});
   const [currentGame, setCurrentGame] = useState();
+
+  const [showParams, setShowParams] = useState(false);
+  const possibleBarValues = [8, 12, 20];
+  const [barValues, setBarValues] = useState();
+
+  useEffect(() => {
+    if (!user?.params) {
+      setBarValues({ bottomBarSize: 8, topBarSize: 8 });
+      return;
+    }
+    const userParams = user.params || {};
+    setBarValues({
+      bottomBarSize: userParams.bottomBarSize,
+      topBarSize: userParams.topBarSize,
+    });
+  }, [user]);
+
+  useEffect(() => {
+    if (!barValues || !user) return;
+    const update = async () => {
+      await updateParams({
+        userId: user.id,
+        param: "topBarSize",
+        value: barValues.topBarSize,
+      });
+      await updateParams({
+        userId: user.id,
+        param: "bottomBarSize",
+        value: barValues.bottomBarSize,
+      });
+    };
+    update();
+  }, [barValues, user]);
 
   const isGroup = searchParams.get("group") === "true";
   const handleBgClick = () => {
@@ -349,10 +380,9 @@ export default function Categories({
           </div>
 
           <div
-            className="z-30 absolute bg-yellow-100 w-[37.5vw] h-36 border-l border-black translate-x-[50vw]"
+            className="z-30 absolute bg-yellow-100 w-[37.5vw] h-36 border-l border-black translate-x-[50vw] flex flex-col"
             style={{ top: `${topRect - 144}px` }}
           >
-            <div>settings</div>
             <Link
               href="/"
               onClick={async () => {
@@ -362,17 +392,63 @@ export default function Categories({
               }}
               className={classNames(
                 { hidden: !togglingParameters && !toggledParameters },
-                "z-20 absolute w-1/3 p-3 text-center border"
+                "z-20 w-1/3 p-3 text-center border"
               )}
             >
               Déconnexion
             </Link>
+            <button
+              onClick={() => {
+                resetPermissions();
+                updateLastCP({ userId: user.id }); //no await
+                setShowParams(true);
+                setShowQrCode(false);
+                setScanning(false);
+                setShowInvitations(false);
+                setServerMessage("");
+              }}
+              className={classNames("p-2 bg-red-100", {
+                "outline outline-black": showParams,
+              })}
+            >
+              Paramètres
+            </button>
           </div>
 
           <div
             id="QR-zone"
             className="z-30 absolute top-[50lvh] left-1/2 -translate-x-1/2	-translate-y-1/2 bg-slate-500 w-[75vw] h-[75vw] border-2 border-black"
           >
+            {showParams &&
+              [
+                { param: "topBarSize", label: "Taille barre sup." },
+                { param: "bottomBarSize", label: "Taille barre inf." },
+              ].map((barParam, i) => (
+                <div key={i}>
+                  <label htmlFor={`slider-${barParam}`}>{barParam.label}</label>
+                  <input
+                    type="range"
+                    id={`slider-${barParam.param}`}
+                    name={`slider-${barParam.param}`}
+                    min="0"
+                    max={possibleBarValues.length - 1}
+                    value={possibleBarValues?.indexOf(
+                      (barValues && barValues[barParam.param]) ||
+                        possibleBarValues[0]
+                    )}
+                    onChange={(event) => {
+                      const valueIndex = event.target.value;
+                      const value = possibleBarValues[valueIndex];
+                      setBarValues((prevValues) => ({
+                        ...prevValues,
+                        [barParam.param]: value,
+                      }));
+                    }}
+                  />
+                  <span>{barValues && barValues[barParam.param]}</span>
+                </div>
+              ))}
+
             {showQrCode && location && (
               <QRCode
                 value={`id=${user.id};mail=${user.email};name=${user.name};{"latitude":"${location?.latitude}","longitude":"${location?.longitude}"}`}
@@ -456,6 +532,7 @@ export default function Categories({
                 onClick={async () => {
                   resetPermissions();
                   updateLastCP({ userId: user.id }); //no await
+                  setShowParams(false);
                   setShowQrCode(false);
                   setScanning(false);
                   setShowInvitations(true);
@@ -478,6 +555,7 @@ export default function Categories({
                 Crée un groupe
               </Link>
             </div>
+
             <div className="flex flex-row m-3">
               <button
                 className={classNames("p-2", {
@@ -503,6 +581,7 @@ export default function Categories({
                     setServerMessage(errorInformations);
                     setLocation();
                   }
+                  setShowParams(false);
                   setShowQrCode(true);
                   setScanning(false);
                   setShowInvitations(false);
@@ -514,6 +593,7 @@ export default function Categories({
                 onClick={() => {
                   resetPermissions();
                   updateLastCP({ userId: user.id }); //no await
+                  setShowParams(false);
                   setShowQrCode(false);
                   setScanning(!scanning);
                   setShowInvitations(false);
@@ -580,13 +660,12 @@ export default function Categories({
           </div>
         )}
 
-        {/* <div className="absolute bottom-0 w-full bg-black h-20 z-40 flex justify-center items-center"> */}
-        <div className="absolute top-0 w-full bg-black h-8 z-40 flex justify-center items-center" />
-        <div className="absolute bottom-0 w-full bg-black h-8 z-40 flex justify-center items-center">
-          {/* <button className="border border-red-800 bg-red-600 text-black h-10 p-2">
-            Joli bouton
-          </button> */}
-        </div>
+        <div
+          className={`absolute top-0 w-full bg-black h-${barValues?.topBarSize} z-40 flex justify-center items-center`}
+        />
+        <div
+          className={`absolute bottom-0 w-full bg-black h-${barValues?.bottomBarSize} z-40 flex justify-center items-center`}
+        />
       </main>
     </>
   );

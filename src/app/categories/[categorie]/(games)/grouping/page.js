@@ -19,11 +19,11 @@ export default async function GroupingPage({ params, searchParams }) {
       />
     );
 
-  const { id, name } = user;
+  const { id, name, params: userParams } = user;
 
   return (
     <Room
-      user={{ id, name }}
+      user={{ id, name, params: userParams }}
       categorie="grouping"
       gameName="grouping"
       Game={Grouping}

@@ -21,11 +21,11 @@ export default async function TriactionPage({ params, searchParams }) {
       />
     );
 
-  const { id, name } = user;
+  const { id, name, params: userParams } = user;
 
   return (
     <Room
-      user={{ id, name }}
+      user={{ id, name, params: userParams }}
       categorie={params?.categorie}
       gameName="triaction"
       Game={Triaction}

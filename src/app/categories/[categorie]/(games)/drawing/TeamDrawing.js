@@ -126,13 +126,9 @@ export default function TeamDrawing({ roomId, roomToken, user, gameData }) {
   return (
     <>
       {phase === "waiting" && !gameData.ended && isAdmin && (
-        <div className="fixed bottom-0 z-10 left-1/2 translate-x-[-50%] translate-y-[-25%]">
-          <NextStep
-            onClick={() => startDrawing({ roomId, roomToken, gameData })}
-          >
-            Lancer
-          </NextStep>
-        </div>
+        <NextStep onClick={() => startDrawing({ roomId, roomToken, gameData })}>
+          Lancer
+        </NextStep>
       )}
 
       <div className="overflow-y-auto">

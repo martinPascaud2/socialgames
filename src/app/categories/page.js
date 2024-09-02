@@ -14,6 +14,22 @@ export default async function CategoriesPage() {
   const user = await getUser();
   const friendList = await getFriendList({ userId: user.id });
 
+  const updateParams = async (up) => {
+    "use server";
+    try {
+      const params =
+        (await prisma.user.findFirst({ where: { id: up.userId } }))?.params ||
+        {};
+      const newParams = { ...params, [up.param]: up.value };
+      await prisma.user.update({
+        where: { id: up.userId },
+        data: { params: newParams },
+      });
+    } catch (error) {
+      console.error("updateParams error", error);
+    }
+  };
+
   const getPublicRooms = async () => {
     "use server";
     const publicRooms = {};
@@ -192,6 +208,7 @@ export default async function CategoriesPage() {
     <>
       <Categories
         user={user}
+        updateParams={updateParams}
         friendList={friendList}
         addFriend={addFriend}
         deleteFriend={deleteFriend}
