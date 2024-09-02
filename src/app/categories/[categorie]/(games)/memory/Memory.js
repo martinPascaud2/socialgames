@@ -164,21 +164,33 @@ export default function Memory({
   const totalScoresList = useMemo(
     () => (
       <div className="flex flex-col items-center m-2">
-        Scores
+        <span className="font-semibold">Scores</span>
         {totalScores?.map((score, i) => {
           const [gamerName, gamerScore] = Object.entries(score)[0];
+          const gamerRoundFound = Object.values(
+            roundScores.find(
+              (roundScore) => Object.keys(roundScore)[0] === user.name
+            )
+          )[0];
           return (
             <div key={i}>
-              {gamerName} : {gamerScore}
+              <span className="font-semibold">{gamerName}</span>
+              &nbsp;:&nbsp;
+              <span>
+                {gamerRoundFound} paire{gamerRoundFound >= 2 ? "s " : " "}
+                {"=> "}
+              </span>
               {scoresEvolution && scoresEvolution[gamerName]
-                ? `(+${scoresEvolution[gamerName]})`
-                : ""}
+                ? `+${scoresEvolution[gamerName]} `
+                : "+0 "}
+              {"=> "}
+              <span className="font-semibold">{gamerScore} &nbsp;</span>
             </div>
           );
         })}
       </div>
     ),
-    [totalScores, scoresEvolution]
+    [totalScores, scoresEvolution, roundScores]
   );
 
   const CardList = useCallback(() => {

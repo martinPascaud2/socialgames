@@ -179,10 +179,6 @@ export async function revealCard({ roomToken, gameData, index }) {
         return score;
       }
     });
-
-    newRoundScores = gamers.map((gamer) => ({
-      [gamer.name]: 0,
-    }));
   }
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
