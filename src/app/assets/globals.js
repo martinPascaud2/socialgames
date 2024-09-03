@@ -38,13 +38,13 @@ export const subCategories = {
       description:
         "À son tour, chaque joueur retourne deux cartes de son choix. S'il découvre deux cartes identiques, il les ramasse et les conserve, ce qui lui permet de rejouer. Si les cartes ne sont pas identiques, il les retourne faces cachées à leur emplacement de départ. Le jeu se termine quand toutes les paires de cartes ont été découvertes et ramassées. Le gagnant est le joueur qui possède le plus de paires.",
     },
-    {
-      name: "Action ou vérité",
-      path: "actionouverite",
-      img: "/actionouverite.png",
-      description:
-        "A tour de rôle, chaque joueur choisit entre une Action à réaliser, ou une Vérité à révéler... surprise !",
-    },
+    // {
+    //   name: "Action ou vérité",
+    //   path: "actionouverite",
+    //   img: "/actionouverite.png",
+    //   description:
+    //     "A tour de rôle, chaque joueur choisit entre une Action à réaliser, ou une Vérité à révéler... surprise !",
+    // },
     {
       name: "Undercover",
       path: "undercover",
@@ -77,12 +77,12 @@ export const subCategories = {
 
 export const gamesRefs = {
   grouping: { name: "un nouveau groupe", categorie: "grouping" },
-  actionouverite: {
-    name: "Action ou Vérité",
-    categorie: "categorie1",
-    limits: { min: 2, max: 15 },
-    isGuestsAllowed: true,
-  },
+  // actionouverite: {
+  //   name: "Action ou Vérité",
+  //   categorie: "categorie1",
+  //   limits: { min: 2, max: 15 },
+  //   isGuestsAllowed: true,
+  // },
   undercover: {
     name: "Undercover",
     categorie: "categorie1",
