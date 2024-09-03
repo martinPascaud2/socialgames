@@ -419,7 +419,14 @@ export default function Triaction({
     const reload = async () => {
       setWaiting(senders.some((sender) => sender.name === user.name));
       setActions((prevActions) => {
-        if (phase === "exchange") {
+        if (phase === "write") {
+          const storedWrittenActions =
+            JSON.parse(localStorage.getItem("SGTriaction_writtenActions")) ||
+            {};
+          const savedToken = storedWrittenActions.roomToken;
+          const savedWrittenActions = storedWrittenActions.actions;
+          if (savedToken === roomToken) return savedWrittenActions;
+        } else if (phase === "exchange") {
           const actions = { ...gameData.actions[user.name] };
           delete actions.backed;
           return actions;
@@ -450,7 +457,11 @@ export default function Triaction({
         return prev;
       });
       setShowChoose((prevShow) => {
-        if (senders.some((sender) => sender.name === user.name))
+        if (
+          senders.some((sender) => sender.name === user.name) &&
+          phase !== "write" &&
+          phase !== "exchange"
+        )
           return "waiting";
         else return prevShow;
       });
@@ -474,395 +485,398 @@ export default function Triaction({
   }, [showChoose, chooseTimeout]);
 
   return (
-    <>
-      <div className="flex flex-col items-center justify-center py-2 h-[calc(100vh-10rem)] w-full relative bg-gradient-to-b from-slate-300 to-amber-300 overflow-y-auto">
-        {phase === "peek" && (
-          <>
-            <div className="mx-3 text-center">
-              <div>Règle peek !</div>
-              <div>Les joueurs choisissent leur cible</div>
-            </div>
-            <div>
-              {isActive ? (
-                <span className="font-bold">A votre tour !</span>
+    <div className="flex flex-col items-center justify-center h-full w-full relative bg-gradient-to-b from-slate-300 to-amber-300 overflow-y-auto">
+      {phase === "peek" && (
+        <>
+          <div className="mx-3 text-center">
+            <div>Règle peek !</div>
+            <div>Les joueurs choisissent leur cible</div>
+          </div>
+          <div>
+            {isActive ? (
+              <span className="font-bold">A votre tour !</span>
+            ) : (
+              <div>
+                Au tour de{" "}
+                <span className="font-bold">{activePlayer.name}</span>
+              </div>
+            )}
+          </div>
+          <div className="flex flex-col">
+            {gamers.map((gamer, i) => {
+              return (
+                <button
+                  key={i}
+                  onClick={() =>
+                    isActive && aim({ aimerPlace: place, aimed: gamer })
+                  }
+                  className={`rounded-md m-2 px-4 py-2 border text-center ${
+                    gamer.place
+                      ? "bg-red-300 border-red-600"
+                      : "bg-green-300 border-green-600"
+                  }`}
+                >
+                  {gamer.name}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+
+      {phase === "write" && (
+        <div className="w-[90%] m-2 flex flex-col items-center">
+          {!waiting ? (
+            <>
+              <RipplingButton
+                onLongPress={validate}
+                isValidated={isValidated}
+                setIsValidated={setIsValidated}
+                isActive={readyActions}
+              />
+
+              {!showConfirm ? (
+                <div className="flex justify-center m-2 text-slate-900">
+                  {!readyActions ? (
+                    <div>
+                      <span className="font-semibold">Ecris</span> tes trois
+                      actions pour{" "}
+                      <span className="font-semibold">{aimed?.name} </span>.
+                    </div>
+                  ) : (
+                    <div>
+                      <span className="font-semibold">Envoyer</span> les trois
+                      actions à{" "}
+                      <span className="font-semibold">{aimed?.name} </span>.
+                    </div>
+                  )}
+                </div>
               ) : (
-                <div>
-                  Au tour de{" "}
-                  <span className="font-bold">{activePlayer.name}</span>
+                <div className="flex flex-col w-[90%]">
+                  <div className="flex justify-center text-center m-2">
+                    Ces trois gages ne seront plus modifiables, tu confirmes ?
+                  </div>
+                  <div className="flex justify-evenly w-full">
+                    <button
+                      onClick={() => confirm()}
+                      className="rounded-md border border-lime-800 bg-lime-600 text-slate-100 font-bold tracking-wide px-4 py-2"
+                    >
+                      Confirmer
+                    </button>
+                    <button
+                      onClick={() => cancel()}
+                      className="rounded-md border border-red-800 bg-red-600 text-slate-100 font-bold tracking-wide px-4 py-2"
+                    >
+                      Modifier
+                    </button>
+                  </div>
                 </div>
               )}
-            </div>
-            <div className="flex flex-col">
-              {gamers.map((gamer, i) => {
-                return (
-                  <button
-                    key={i}
-                    onClick={() =>
-                      isActive && aim({ aimerPlace: place, aimed: gamer })
-                    }
-                    className={`rounded-md m-2 px-4 py-2 border text-center ${
-                      gamer.place
-                        ? "bg-red-300 border-red-600"
-                        : "bg-green-300 border-green-600"
-                    }`}
-                  >
-                    {gamer.name}
-                  </button>
-                );
-              })}
-            </div>
-          </>
-        )}
-
-        {phase === "write" && (
-          <div className="w-[90%] m-2 flex flex-col items-center">
-            {!waiting ? (
-              <>
-                <RipplingButton
-                  onLongPress={validate}
-                  isValidated={isValidated}
-                  setIsValidated={setIsValidated}
-                  isActive={readyActions}
-                />
-
-                {!showConfirm ? (
-                  <div className="flex justify-center m-2 text-slate-900">
-                    {!readyActions ? (
-                      <div>
-                        <span className="font-semibold">Ecris</span> tes trois
-                        actions pour{" "}
-                        <span className="font-semibold">{aimed?.name} </span>.
-                      </div>
-                    ) : (
-                      <div>
-                        <span className="font-semibold">Envoyer</span> les trois
-                        actions à{" "}
-                        <span className="font-semibold">{aimed?.name} </span>.
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="flex flex-col w-[90%]">
-                    <div className="flex justify-center text-center m-2">
-                      Ces trois gages ne seront plus modifiables, tu confirmes ?
-                    </div>
-                    <div className="flex justify-evenly w-full">
-                      <button
-                        onClick={() => confirm()}
-                        className="rounded-md border border-lime-800 bg-lime-600 text-slate-100 font-bold tracking-wide px-4 py-2"
-                      >
-                        Confirmer
-                      </button>
-                      <button
-                        onClick={() => cancel()}
-                        className="rounded-md border border-red-800 bg-red-600 text-slate-100 font-bold tracking-wide px-4 py-2"
-                      >
-                        Modifier
-                      </button>
-                    </div>
-                  </div>
-                )}
-                {[1, 2, 3].map((number) => (
-                  <div
-                    key={number}
-                    className="w-full rounded-md border border-lime-800 my-3 py-2 px-4 flex flex-col items-center shadow-lg shadow-lime-900 bg-lime-700"
-                  >
-                    <label className="font-bold text-slate-100 tracking-wide">
-                      Action {number}
-                    </label>
-                    {!showConfirm ? (
-                      <textarea
-                        rows={2}
-                        value={actions[number]}
-                        onChange={(e) =>
-                          setActions((prevActions) => ({
-                            ...prevActions,
-                            [number]: e.target.value,
-                          }))
-                        }
-                        className={`${vampiro.className} border border-lime-800 focus:outline-none focus:border-lime-800 focus:ring-1 focus:ring-inset focus:ring-lime-800 w-full p-2 m-2 text-center text-lg bg-slate-100 text-slate-900`}
-                      />
-                    ) : (
-                      <div
-                        className={`${vampiro.className} w-full p-2 m-2 text-center text-red-900 text-lg bg-lime-100 border-4 border-double border-lime-800`}
-                      >
-                        {actions[number]}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </>
-            ) : (
-              <>
-                <PendingGamerList gamers={gamers} senders={senders} />
-
-                <div className="m-4">Les joueurs rédigent les actions</div>
-              </>
-            )}
-          </div>
-        )}
-
-        {phase === "exchange" && (
-          <>
-            {!isProposed ? (
-              <>
-                {!Object.keys(sentBack).length ? (
-                  <div className="w-[90%] flex flex-col items-center">
-                    <RipplingButton
-                      onLongPress={sendBack}
-                      isValidated={isValidated}
-                      setIsValidated={setIsValidated}
-                      isActive={!!selected.id}
-                    />
-                    <div className="w-full flex text-center justify-center m-2">
-                      {!selected.id ? (
-                        <div>
-                          <span className="font-semibold">Sélectionne</span> une
-                          action à <span className="font-semibold">rendre</span>{" "}
-                          à
-                        </div>
-                      ) : (
-                        <div>
-                          <span className="font-semibold">Rendre</span> cette
-                          action à
-                        </div>
-                      )}
-                      <span className="font-semibold">
-                        &nbsp;{previous?.name}&nbsp;.
-                      </span>
-                    </div>
-                    {actions &&
-                      Object.entries(actions).map((action) => (
-                        <div
-                          key={action[0]}
-                          onClick={() => {
-                            if (
-                              Object.keys(selected)?.length &&
-                              selected.id === action[0]
-                            )
-                              setSelected({});
-                            else if (!Object.keys(selected)?.length)
-                              setSelected({
-                                id: action[0],
-                                aimed: previous,
-                                action: action[1],
-                              });
-                          }}
-                          className={`${
-                            selected?.id === action[0] && "bg-green-100"
-                          } w-full rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center`}
-                        >
-                          <label>Action {action[0]}</label>
-                          <div
-                            className={`${vampiro.className} w-full p-2 m-2 text-center`}
-                          >
-                            {action[1]}
-                          </div>
-                        </div>
-                      ))}
-                  </div>
-                ) : (
-                  <div className="w-[90%] flex flex-col items-center">
-                    <RipplingButton
-                      onLongPress={propose}
-                      isValidated={isValidated}
-                      setIsValidated={setIsValidated}
-                      isActive={!!selected.id}
-                    />
-                    <div className="w-full flex text-center justify-center flex-wrap m-2">
-                      {!selected.id ? (
-                        <div>
-                          <span className="font-semibold">Sélectionne</span> une
-                          action à{" "}
-                          <span className="font-semibold">proposer</span> à
-                        </div>
-                      ) : (
-                        <div>
-                          <span className="font-semibold">Proposer</span> à
-                        </div>
-                      )}
-                      <span className="font-semibold">
-                        &nbsp;{aimed?.name}&nbsp;.
-                      </span>
-                    </div>
-                    {Object.entries(actions).map((action) => {
-                      if (action[0] === "backed") return;
-                      const isBacked = action[0] === sentBack.id;
-                      return (
-                        <div
-                          key={action[0]}
-                          onClick={() => {
-                            if (isBacked) return;
-                            if (
-                              Object.keys(selected)?.length &&
-                              selected.id === action[0]
-                            )
-                              setSelected({});
-                            else if (!Object.keys(selected)?.length)
-                              setSelected({
-                                //check
-                                id: action[0],
-                                action: action[1],
-                              });
-                          }}
-                          className={`${
-                            isBacked
-                              ? "bg-gray-300"
-                              : selected?.id === action[0] && "bg-green-100"
-                          } w-full rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center`}
-                        >
-                          <label>Action {action[0]}</label>
-                          <div
-                            className={`${vampiro.className} w-full p-2 m-2 text-center`}
-                          >
-                            {action[1]}
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </>
-            ) : (
-              <>
-                <PendingGamerList gamers={gamers} senders={senders} />
-                <div className="m-4 text-center">
-                  Les joueurs renvoient et proposent leurs actions
-                </div>
-              </>
-            )}
-          </>
-        )}
-
-        {phase === "choose" && (
-          <div
-            className="w-full h-full flex flex-col justify-center items-center bg-gray-400"
-            onClick={() => {
-              clearTimeout(chooseTimeout);
-              let newChoose;
-              if (["backed", "long"].some((moment) => moment === showChoose))
-                newChoose = "proposition";
-              else if (
-                ["hiddenReveal", "hiddenLong"].some(
-                  (moment) => moment === showChoose
-                )
-              )
-                newChoose = "waiting";
-              newChoose && setShowChoose(newChoose);
-            }}
-          >
-            {(showChoose === "long" || showChoose === "backed") &&
-              (() => {
-                const backed = gameData.actions[user.name].backed;
-                const Press = () => {
-                  if (showChoose === "backed") return null;
-                  return (
-                    <div className="text-white font-bold animate-bounce m-4">
-                      APPUIE
-                    </div>
-                  );
-                };
-                return (
-                  <>
-                    <Press />
-                    <div className="w-[90%] rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center bg-white">
-                      <label>Action rendue par {aimed?.name}</label>
-                      <div
-                        className={`${vampiro.className} w-full p-2 m-2 text-center`}
-                      >
-                        {backed}
-                      </div>
-                    </div>
-                    <Press />
-                  </>
-                );
-              })()}
-
-            {showChoose === "proposition" && (
-              <SlidingCard
-                onDecision={onDecision}
-                sender={previous}
-                action={gameData.propositions[user.name].proposed.action}
-              />
-            )}
-
-            {(showChoose === "hiddenReveal" || showChoose === "hiddenLong") &&
-              (() => {
-                const hidden = gameData.actions[user.name].kept?.action;
-                const Press = () => {
-                  if (showChoose === "hiddenReveal") return null;
-                  return (
-                    <div className="text-white font-bold animate-bounce m-4">
-                      APPUIE
-                    </div>
-                  );
-                };
-
-                return (
-                  <>
-                    <Press />
-                    <div className="w-[90%] rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center bg-white">
-                      <label>Action cachée de {previous.name}</label>
-                      <div
-                        className={`${vampiro.className} w-full p-2 m-2 text-center`}
-                      >
-                        {hidden}
-                      </div>
-                    </div>
-                    <Press />
-                  </>
-                );
-              })()}
-
-            {showChoose === "waiting" && (
-              <>
-                <PendingGamerList gamers={gamers} senders={senders} />
-                <div className="m-4 text-center">
-                  Les joueurs choissent : l&apos;action visible ou cachée ?
-                </div>
-              </>
-            )}
-          </div>
-        )}
-
-        {phase === "finalReveal" &&
-          (() => {
-            const actions = gameData.actions[user.name];
-            const backed = {
-              label: `Action renvoyée par ${aimed?.name}`,
-              action: actions.backed,
-            };
-            const kept = {
-              label: `Proposition de ${previous?.name} acceptée`,
-              action: actions.kept.action,
-            };
-            const proposedBack = {
-              label: `Proposition non acceptée par ${aimed?.name}`,
-              action: actions.proposedBack.action,
-            };
-
-            const FinalCard = ({ data }) => (
-              <div className="w-[90%] rounded-md border border-lime-800 my-3 py-2 px-4 flex flex-col items-center shadow-lg shadow-lime-900 bg-lime-700">
-                <label className="font-bold text-slate-100 tracking-wide">
-                  {data.label}
-                </label>
+              {[1, 2, 3].map((number) => (
                 <div
-                  className={`${vampiro.className} w-full p-2 m-2 text-center text-red-900 text-lg bg-lime-100 border-4 border-double border-lime-800`}
+                  key={number}
+                  className="w-full rounded-md border border-lime-800 my-3 py-2 px-4 flex flex-col items-center shadow-lg shadow-lime-900 bg-lime-700"
                 >
-                  {data.action}
-                </div>
-              </div>
-            );
+                  <label className="font-bold text-slate-100 tracking-wide">
+                    Action {number}
+                  </label>
+                  {!showConfirm ? (
+                    <textarea
+                      rows={2}
+                      value={actions[number]}
+                      onChange={(e) => {
+                        const newActions = {
+                          ...actions,
+                          [number]: e.target.value,
+                        };
 
-            return (
-              <>
-                <FinalCard data={backed} />
-                <FinalCard data={kept} />
-                <FinalCard data={proposedBack} />
-              </>
-            );
-          })()}
-      </div>
+                        setActions(newActions);
+                        localStorage.setItem(
+                          "SGTriaction_writtenActions",
+                          JSON.stringify({ actions: newActions, roomToken })
+                        );
+                      }}
+                      className={`${vampiro.className} border border-lime-800 focus:outline-none focus:border-lime-800 focus:ring-1 focus:ring-inset focus:ring-lime-800 w-full p-2 m-2 text-center text-lg bg-slate-100 text-slate-900`}
+                    />
+                  ) : (
+                    <div
+                      className={`${vampiro.className} w-full p-2 m-2 text-center text-red-900 text-lg bg-lime-100 border-4 border-double border-lime-800`}
+                    >
+                      {actions[number]}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </>
+          ) : (
+            <>
+              <PendingGamerList gamers={gamers} senders={senders} />
+
+              <div className="m-4">Les joueurs rédigent les actions</div>
+            </>
+          )}
+        </div>
+      )}
+
+      {phase === "exchange" && (
+        <>
+          {!isProposed ? (
+            <>
+              {!Object.keys(sentBack).length ? (
+                <div className="w-[90%] flex flex-col items-center">
+                  <RipplingButton
+                    onLongPress={sendBack}
+                    isValidated={isValidated}
+                    setIsValidated={setIsValidated}
+                    isActive={!!selected.id}
+                  />
+                  <div className="w-full flex text-center justify-center m-2">
+                    {!selected.id ? (
+                      <div>
+                        <span className="font-semibold">Sélectionne</span> une
+                        action à <span className="font-semibold">rendre</span> à
+                      </div>
+                    ) : (
+                      <div>
+                        <span className="font-semibold">Rendre</span> cette
+                        action à
+                      </div>
+                    )}
+                    <span className="font-semibold">
+                      &nbsp;{previous?.name}&nbsp;.
+                    </span>
+                  </div>
+                  {actions &&
+                    Object.entries(actions).map((action) => (
+                      <div
+                        key={action[0]}
+                        onClick={() => {
+                          if (
+                            Object.keys(selected)?.length &&
+                            selected.id === action[0]
+                          )
+                            setSelected({});
+                          else if (!Object.keys(selected)?.length)
+                            setSelected({
+                              id: action[0],
+                              aimed: previous,
+                              action: action[1],
+                            });
+                        }}
+                        className={`${
+                          selected?.id === action[0] && "bg-green-100"
+                        } w-full rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center`}
+                      >
+                        <label>Action {action[0]}</label>
+                        <div
+                          className={`${vampiro.className} w-full p-2 m-2 text-center`}
+                        >
+                          {action[1]}
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              ) : (
+                <div className="w-[90%] flex flex-col items-center">
+                  <RipplingButton
+                    onLongPress={propose}
+                    isValidated={isValidated}
+                    setIsValidated={setIsValidated}
+                    isActive={!!selected.id}
+                  />
+                  <div className="w-full flex text-center justify-center flex-wrap m-2">
+                    {!selected.id ? (
+                      <div>
+                        <span className="font-semibold">Sélectionne</span> une
+                        action à <span className="font-semibold">proposer</span>{" "}
+                        à
+                      </div>
+                    ) : (
+                      <div>
+                        <span className="font-semibold">Proposer</span> à
+                      </div>
+                    )}
+                    <span className="font-semibold">
+                      &nbsp;{aimed?.name}&nbsp;.
+                    </span>
+                  </div>
+                  {Object.entries(actions).map((action) => {
+                    if (action[0] === "backed") return;
+                    const isBacked = action[0] === sentBack.id;
+                    return (
+                      <div
+                        key={action[0]}
+                        onClick={() => {
+                          if (isBacked) return;
+                          if (
+                            Object.keys(selected)?.length &&
+                            selected.id === action[0]
+                          )
+                            setSelected({});
+                          else if (!Object.keys(selected)?.length)
+                            setSelected({
+                              //check
+                              id: action[0],
+                              action: action[1],
+                            });
+                        }}
+                        className={`${
+                          isBacked
+                            ? "bg-gray-300"
+                            : selected?.id === action[0] && "bg-green-100"
+                        } w-full rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center`}
+                      >
+                        <label>Action {action[0]}</label>
+                        <div
+                          className={`${vampiro.className} w-full p-2 m-2 text-center`}
+                        >
+                          {action[1]}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <PendingGamerList gamers={gamers} senders={senders} />
+              <div className="m-4 text-center">
+                Les joueurs renvoient et proposent leurs actions
+              </div>
+            </>
+          )}
+        </>
+      )}
+
+      {phase === "choose" && (
+        <div
+          className="w-full h-full flex flex-col justify-center items-center bg-gray-400"
+          onClick={() => {
+            clearTimeout(chooseTimeout);
+            let newChoose;
+            if (["backed", "long"].some((moment) => moment === showChoose))
+              newChoose = "proposition";
+            else if (
+              ["hiddenReveal", "hiddenLong"].some(
+                (moment) => moment === showChoose
+              )
+            )
+              newChoose = "waiting";
+            newChoose && setShowChoose(newChoose);
+          }}
+        >
+          {(showChoose === "long" || showChoose === "backed") &&
+            (() => {
+              const backed = gameData.actions[user.name].backed;
+              const Press = () => {
+                if (showChoose === "backed") return null;
+                return (
+                  <div className="text-white font-bold animate-bounce m-4">
+                    APPUIE
+                  </div>
+                );
+              };
+              return (
+                <>
+                  <Press />
+                  <div className="w-[90%] rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center bg-white">
+                    <label>Action rendue par {aimed?.name}</label>
+                    <div
+                      className={`${vampiro.className} w-full p-2 m-2 text-center`}
+                    >
+                      {backed}
+                    </div>
+                  </div>
+                  <Press />
+                </>
+              );
+            })()}
+
+          {showChoose === "proposition" && (
+            <SlidingCard
+              onDecision={onDecision}
+              sender={previous}
+              action={gameData.propositions[user.name].proposed.action}
+            />
+          )}
+
+          {(showChoose === "hiddenReveal" || showChoose === "hiddenLong") &&
+            (() => {
+              const hidden = gameData.actions[user.name].kept?.action;
+              const Press = () => {
+                if (showChoose === "hiddenReveal") return null;
+                return (
+                  <div className="text-white font-bold animate-bounce m-4">
+                    APPUIE
+                  </div>
+                );
+              };
+
+              return (
+                <>
+                  <Press />
+                  <div className="w-[90%] rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center bg-white">
+                    <label>Action cachée de {previous.name}</label>
+                    <div
+                      className={`${vampiro.className} w-full p-2 m-2 text-center`}
+                    >
+                      {hidden}
+                    </div>
+                  </div>
+                  <Press />
+                </>
+              );
+            })()}
+
+          {showChoose === "waiting" && (
+            <>
+              <PendingGamerList gamers={gamers} senders={senders} />
+              <div className="m-4 text-center">
+                Les joueurs choissent : l&apos;action visible ou cachée ?
+              </div>
+            </>
+          )}
+        </div>
+      )}
+
+      {phase === "finalReveal" &&
+        (() => {
+          const actions = gameData.actions[user.name];
+          const backed = {
+            label: `Action renvoyée par ${aimed?.name}`,
+            action: actions.backed,
+          };
+          const kept = {
+            label: `Proposition de ${previous?.name} acceptée`,
+            action: actions.kept.action,
+          };
+          const proposedBack = {
+            label: `Proposition non acceptée par ${aimed?.name}`,
+            action: actions.proposedBack.action,
+          };
+
+          const FinalCard = ({ data }) => (
+            <div className="w-[90%] rounded-md border border-lime-800 my-3 py-2 px-4 flex flex-col items-center shadow-lg shadow-lime-900 bg-lime-700">
+              <label className="font-bold text-slate-100 tracking-wide">
+                {data.label}
+              </label>
+              <div
+                className={`${vampiro.className} w-full p-2 m-2 text-center text-red-900 text-lg bg-lime-100 border-4 border-double border-lime-800`}
+              >
+                {data.action}
+              </div>
+            </div>
+          );
+
+          return (
+            <>
+              <FinalCard data={backed} />
+              <FinalCard data={kept} />
+              <FinalCard data={proposedBack} />
+            </>
+          );
+        })()}
       <NextEndingPossibilities
         isAdmin={isAdmin}
         isEnded={isEnded}
@@ -873,6 +887,6 @@ export default function Triaction({
         storedLocation={storedLocation}
         user={user}
       />
-    </>
+    </div>
   );
 }

@@ -12,7 +12,7 @@ export default function EndGame({ gameData, user, isFirst = false }) {
         marginTop: `${
           user.params?.topBarSize && isFirst
             ? `${user.params.topBarSize / 4}`
-            : 2
+            : 0.2
         }rem`,
       }}
     >
