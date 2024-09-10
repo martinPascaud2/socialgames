@@ -1,0 +1,26 @@
+import { NextResponse } from "next/server";
+
+export async function POST(request) {
+  const body = await request.text();
+  const params = new URLSearchParams(body);
+  console.log("params", params);
+
+  const channelName = params.get("channel_name");
+  const socketId = params.get("socket_id");
+  const userId = params.get("userId");
+  const userName = params.get("userName");
+  const multiguest = params.get("multiGuest") === true;
+
+  //to be done?: check user_authorization
+
+  const presenceData = {
+    user_id: userId,
+    user_info: { userId, userName, multiguest },
+  };
+  const authResponse = pusher.authorizeChannel(
+    socketId,
+    channelName,
+    presenceData
+  );
+  return NextResponse.json(authResponse);
+}

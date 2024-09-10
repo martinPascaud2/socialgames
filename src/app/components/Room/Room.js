@@ -34,7 +34,9 @@ import NextStep from "../NextStep";
 
 var pusher = new Pusher("61853af9f30abf9d5b3d", {
   cluster: "eu",
+  useTLS: true,
 });
+var pusherPresence;
 
 const UserContext = createContext();
 
@@ -60,6 +62,41 @@ import {
   retryGamerConnection,
   retryMultiGuestConnection,
 } from "./actions";
+
+function subscribePresenceChannel({
+  userId,
+  userName,
+  status,
+  setOnlineGamers,
+  roomToken,
+}) {
+  pusherPresence = new Pusher("61853af9f30abf9d5b3d", {
+    cluster: "eu",
+    useTLS: true,
+    authEndpoint: "/api/pusherAuth",
+    auth: {
+      params: {
+        userId,
+        userName,
+        multiGuest: status === "multiGuest",
+      },
+    },
+  });
+  const presenceChannel = pusherPresence.subscribe(`presence-${roomToken}`);
+
+  presenceChannel.bind("pusher:subscription_succeeded", ({ members }) => {
+    setOnlineGamers(Object.values(members));
+  });
+  presenceChannel.bind("pusher:subscription_error", (status) => {
+    console.error("Subscription failed:", status);
+  });
+  presenceChannel.bind("pusher:member_added", (member) => {
+    setOnlineGamers(Object.values(presenceChannel.members.members));
+  });
+  presenceChannel.bind("pusher:member_removed", (member) => {
+    setOnlineGamers(Object.values(presenceChannel.members.members));
+  });
+}
 
 export default function Room({
   user,
@@ -101,12 +138,13 @@ export default function Room({
   const [geoLocation, setGeoLocation] = useState(null);
   const [isPrivate, setIsPrivate] = useState();
   const [gameData, setGameData] = useState({});
+  const [onlineGamers, setOnlineGamers] = useState([]);
 
   const { isSupported, isVisible, released, request, release } = useWake();
   const userParams = user.params;
   const barsSizes = {
-    bottom: userParams.bottomBarSize || 8,
-    top: userParams.topBarSize || 8,
+    bottom: userParams?.bottomBarSize || 8,
+    top: userParams?.topBarSize || 8,
   };
 
   useEffect(() => {
@@ -156,16 +194,23 @@ export default function Room({
   }, [gamerList]);
 
   useEffect(() => {
-    user.multiGuest &&
-      gameData.gamers &&
-      uniqueName &&
-      (setMultiGuestId(
-        gameData.gamers.find((gamer) => gamer.name === uniqueName)?.id
-      ),
+    if (user.multiGuest && gameData.gamers && uniqueName && roomToken) {
+      const id = gameData.gamers.find((gamer) => gamer.name === uniqueName)?.id;
+
+      setMultiGuestId(id);
       setMultiGuestDataId(
         gameData.gamers.find((gamer) => gamer.name === uniqueName)?.dataId
-      ));
-  }, [isStarted, gameData, user, uniqueName]);
+      );
+      // check
+      subscribePresenceChannel({
+        userId: id,
+        userName: uniqueName,
+        status: "multiGuest",
+        setOnlineGamers,
+        roomToken,
+      });
+    }
+  }, [isStarted, gameData, uniqueName, roomToken, user]);
 
   const createRoom = useCallback(
     async (privacy, storedLocation) => {
@@ -189,6 +234,7 @@ export default function Room({
         setServerMessage(error);
       } else {
         const channel = pusher.subscribe(`room-${newRoomToken}`);
+
         channel.bind("room-event", function (data) {
           data.clientGamerList &&
             setGamerList([...new Set([...data.clientGamerList, ...gamerList])]);
@@ -210,6 +256,14 @@ export default function Room({
               ),
             })));
           data.privacy !== undefined && setIsPrivate(data.privacy);
+        });
+
+        subscribePresenceChannel({
+          userId: user.id,
+          userName: user.name,
+          status: "standard",
+          setOnlineGamers,
+          roomToken: newRoomToken,
         });
 
         setRoomToken(newRoomToken);
@@ -290,6 +344,14 @@ export default function Room({
 
       joinData.admin !== uniqueUserName &&
         (await triggerGamers({ roomToken: token, gamers }));
+
+      subscribePresenceChannel({
+        userId: user.id,
+        userName: uniqueUserName,
+        status: "standard",
+        setOnlineGamers,
+        roomToken: token,
+      });
 
       setRoomToken(token);
       setUniqueName(uniqueUserName);
@@ -437,6 +499,8 @@ export default function Room({
       token: roomToken,
       gamerName: gamer,
     });
+    if (gamer === uniqueName)
+      pusherPresence.unsubscribe(`presence-${roomToken}`);
     if (!gamers) router.push("/");
 
     setServerMessage(`Joueur ${gamer} retiré`);
@@ -512,7 +576,7 @@ export default function Room({
     const go = async () => {
       if (!storedGroup) return;
       try {
-        // await new Promise((resolve) => setTimeout(resolve, 1500)); // check
+        await new Promise((resolve) => setTimeout(resolve, 1500)); // check
         await goOneMoreGame({
           pathname,
           oldRoomToken: storedGroup.roomToken,
@@ -595,7 +659,6 @@ export default function Room({
         !user.multiGuest && (await deleteInvs());
         const group = { roomToken };
         localStorage.setItem("group", JSON.stringify(group));
-
         // check router.push
         window.location.href = `${gameData.nextGame.path}${
           user.multiGuest ? `&guestName=${user.name}` : ""
@@ -1092,6 +1155,7 @@ export default function Room({
                 ...(!!multiGuestId ? { id: multiGuestId } : {}),
                 ...(!!multiGuestDataId ? { dataId: multiGuestDataId } : {}),
               }}
+              onlineGamers={onlineGamers}
               gameData={gameData}
               storedLocation={geoLocation} //searching game only
             />

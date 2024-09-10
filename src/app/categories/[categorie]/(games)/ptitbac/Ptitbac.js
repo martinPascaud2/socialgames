@@ -17,6 +17,7 @@ import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import CountDown from "@/components/CountDown";
 import NextStep from "@/components/NextStep";
 import NextEndingPossibilities from "@/components/NextEndingPossibilities";
+import Disconnected from "@/components/Disconnected";
 
 function gatherGroups({ groups, threshold }) {
   const gatheredGroups = [...groups];
@@ -85,12 +86,14 @@ export default function Ptitbac({
   roomId,
   roomToken,
   user,
+  onlineGamers,
   gameData,
   storedLocation,
 }) {
   const isAdmin = gameData.admin === user.name;
   const isReferee = isAdmin; //check
   const {
+    gamers,
     phase,
     hasFirstTurn,
     letter,
@@ -439,6 +442,8 @@ export default function Ptitbac({
         storedLocation={storedLocation}
         user={user}
       />
+
+      <Disconnected onlineGamers={onlineGamers} gamers={gamers} />
     </>
   );
 }

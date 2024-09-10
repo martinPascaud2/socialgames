@@ -43,7 +43,7 @@ export default function EndGame({ gameData, user, isFirst = false }) {
         <button
           onClick={async () => {
             await cancelBack({ userId: user.id });
-            router.push("/categories?control=true");
+            window.location.href = "/categories?control=true";
           }}
           className="border border-blue-300 bg-blue-100"
         >
