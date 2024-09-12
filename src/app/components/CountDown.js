@@ -6,6 +6,7 @@ export default function CountDown({
   finishCountdownDate,
   setHasValidated,
   onTimeUp,
+  label,
 }) {
   const [leftSeconds, setLeftSeconds] = useState();
   const [leftMinutes, setLeftMinutes] = useState();
@@ -30,9 +31,21 @@ export default function CountDown({
   }
 
   return (
-    <div>
-      Il vous reste <span className="font-bold">{leftMinutes}</span> minutes et{" "}
-      <span className="font-bold">{leftSeconds}</span> secondes !
+    <div className="flex justify-center">
+      {(leftMinutes || leftSeconds > 0) && (
+        <>
+          {label ? <span>{label}</span> : <span>Il vous reste</span>}
+          &nbsp;
+          {leftMinutes > 0 && (
+            <span>
+              <span className="font-bold">{leftMinutes}</span>
+              &nbsp;minute{leftMinutes >= 2 ? "s" : ""}&nbsp;et&nbsp;
+            </span>
+          )}
+          <span className="font-bold">{leftSeconds}</span>&nbsp;seconde
+          {leftSeconds >= 2 ? "s" : ""}.
+        </>
+      )}
     </div>
   );
 }

@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 export async function POST(request) {
   const body = await request.text();
   const params = new URLSearchParams(body);
-  console.log("params", params);
 
   const channelName = params.get("channel_name");
   const socketId = params.get("socket_id");

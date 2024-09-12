@@ -68,6 +68,7 @@ model Room {
   multiGuests   Json?
   started       Boolean  @default(false)
   gameData      Json?
+  haveLeft      Json?
   User          User[]
 }
 

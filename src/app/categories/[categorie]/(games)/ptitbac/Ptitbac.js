@@ -10,6 +10,7 @@ import {
   refereeTrigger,
   validate,
   manageEmptyTheme,
+  removeGamers,
 } from "./gameActions";
 
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
@@ -17,7 +18,7 @@ import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import CountDown from "@/components/CountDown";
 import NextStep from "@/components/NextStep";
 import NextEndingPossibilities from "@/components/NextEndingPossibilities";
-import Disconnected from "@/components/Disconnected";
+import Disconnected from "@/components/disconnection/Disconnected";
 
 function gatherGroups({ groups, threshold }) {
   const gatheredGroups = [...groups];
@@ -443,7 +444,17 @@ export default function Ptitbac({
         user={user}
       />
 
-      <Disconnected onlineGamers={onlineGamers} gamers={gamers} />
+      <Disconnected
+        roomId={roomId}
+        onlineGamers={onlineGamers}
+        gamers={gamers}
+        isAdmin={isAdmin}
+        onGameBye={() =>
+          removeGamers({ roomId, roomToken, gameData, onlineGamers })
+        }
+        gameName="ptitbac"
+        gameData={gameData}
+      />
     </>
   );
 }

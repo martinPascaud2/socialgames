@@ -226,6 +226,10 @@ export async function serverJoin({ token, user }) {
 
       if (!room) return { error: "Token incorrect" };
 
+      const hasLeft =
+        room.haveLeft && Object.keys(room.haveLeft).includes(user.name);
+      if (hasLeft) return { error: "La partie n'est plus accessible" };
+
       // if (room.started) return { error: "La partie a déjà été lancée" };
       if (Object.values(room.gamers).includes(user.id)) {
         return {

@@ -65,6 +65,7 @@ export async function launchGame({
     hasFirstTurn: true,
     phase: "waiting",
     themes: [],
+    themesResponses: {},
     counts,
     lastTurnCounts,
     options,
@@ -435,4 +436,46 @@ export async function getAllThemes() {
     .map((theme) => theme.theme)
     .sort((a, b) => a.localeCompare(b));
   return allThemes;
+}
+
+export async function removeGamers({
+  roomId,
+  roomToken,
+  gameData,
+  onlineGamers,
+}) {
+  const { gamers, counts, lastTurnCounts, themesResponses } = gameData;
+  const onlineGamersList = onlineGamers.map((gamer) => gamer.userName);
+  const onlineGamersSet = new Set(onlineGamersList);
+
+  const remainingGamers = gamers.filter((gamer) =>
+    onlineGamersSet.has(gamer.name)
+  );
+
+  const remainingCounts = counts.filter((count) =>
+    onlineGamersSet.has(count.name)
+  );
+
+  const remainingLastTurnCounts = lastTurnCounts.filter((lastTurnCount) =>
+    onlineGamersSet.has(lastTurnCount.name)
+  );
+
+  const remainingThemesResponses = Object.fromEntries(
+    Object.entries(themesResponses).map(([theme, responses]) => [
+      theme,
+      Object.fromEntries(
+        Object.entries(responses).filter(([user]) => onlineGamersSet.has(user))
+      ),
+    ])
+  );
+
+  const newData = {
+    ...gameData,
+    gamers: remainingGamers,
+    counts: remainingCounts,
+    lastTurnCounts: remainingLastTurnCounts,
+    themesResponses: remainingThemesResponses,
+  };
+
+  await saveAndDispatchData({ roomId, roomToken, newData });
 }

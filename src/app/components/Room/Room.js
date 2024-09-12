@@ -116,6 +116,7 @@ export default function Room({
   const [inputToken, setInputToken] = useState("");
   const [roomToken, setRoomToken] = useState();
   const [isChosen, setIsChosen] = useState(false);
+  const [joinError, setJoinError] = useState();
   const [showRoomRefs, setShowRoomRefs] = useState(false);
   const [isStarted, setIsStarted] = useState(false);
   const [serverMessage, setServerMessage] = useState("");
@@ -307,7 +308,7 @@ export default function Room({
     });
 
     if (error) {
-      setServerMessage(error);
+      setJoinError(error);
     } else {
       if (joinData === undefined) return;
       if (joinData.isJoinAgain) {
@@ -394,8 +395,7 @@ export default function Room({
     );
 
     if (error) {
-      setServerMessage(error);
-      console.error(error);
+      setJoinError(error);
     } else {
       if (data === undefined) return;
       if (data.isJoinAgain) {
@@ -463,6 +463,13 @@ export default function Room({
     multiGuestList,
     uniqueName,
   ]);
+
+  useEffect(() => {
+    if (!joinError) return;
+    setTimeout(() => {
+      window.location.href = "/";
+    }, 3000);
+  }, [joinError]);
 
   useEffect(() => {
     if (!roomId || isHere || !uniqueName || !roomToken) return;
@@ -604,7 +611,14 @@ export default function Room({
   }, []);
 
   useEffect(() => {
-    if (!isAdmin || !options || !Object.keys(options).length) return;
+    if (
+      !isAdmin ||
+      !options ||
+      !Object.keys(options).length ||
+      !roomId ||
+      !roomToken
+    )
+      return;
     const editOptions = async () => {
       await changeOptions({ roomId, roomToken, options });
     };
@@ -667,6 +681,14 @@ export default function Room({
       goNewGame();
     }
   }, [gameData, gameName, isStarted, user]);
+
+  if (joinError) {
+    return (
+      <div className="h-screen w-screen flex justify-center items-center">
+        {joinError}
+      </div>
+    );
+  }
 
   if (gameData && gameData?.nextGame === "deleted group" && user) {
     return (
