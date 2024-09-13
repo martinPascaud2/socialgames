@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+import pusher from "@/utils/pusher";
+
 export async function POST(request) {
   const body = await request.text();
   const params = new URLSearchParams(body);
