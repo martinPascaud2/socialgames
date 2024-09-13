@@ -73,7 +73,7 @@ function subscribePresenceChannel({
   pusherPresence = new Pusher("61853af9f30abf9d5b3d", {
     cluster: "eu",
     useTLS: true,
-    authEndpoint: "/api/pusherAuth",
+    authEndpoint: "/api/pusherAuth/",
     auth: {
       params: {
         userId,
