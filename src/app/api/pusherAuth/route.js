@@ -11,12 +11,14 @@ export async function POST(request) {
   const userId = params.get("userId");
   const userName = params.get("userName");
   const multiguest = params.get("multiGuest") === true;
+  //   const lastPing = params.get("lastPing");
 
   //to be done?: check user_authorization
 
   const presenceData = {
     user_id: userId,
     user_info: { userId, userName, multiguest },
+    // user_info: { userId, userName, multiguest, lastPing },
   };
   const authResponse = pusher.authorizeChannel(
     socketId,

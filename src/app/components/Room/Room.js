@@ -63,6 +63,8 @@ import {
   retryMultiGuestConnection,
 } from "./actions";
 
+import { presenceTEST } from "./actions";
+
 function subscribePresenceChannel({
   userId,
   userName,
@@ -79,10 +81,12 @@ function subscribePresenceChannel({
         userId,
         userName,
         multiGuest: status === "multiGuest",
+        // lastPing: Date.now(),
       },
     },
   });
   const presenceChannel = pusherPresence.subscribe(`presence-${roomToken}`);
+  let pingTimeStamps = {};
 
   presenceChannel.bind("pusher:subscription_succeeded", ({ members }) => {
     setOnlineGamers(Object.values(members));
@@ -92,9 +96,62 @@ function subscribePresenceChannel({
   });
   presenceChannel.bind("pusher:member_added", (member) => {
     setOnlineGamers(Object.values(presenceChannel.members.members));
+    // setOnlineGamers((prevOnlines) => [
+    //   ...prevOnlines,
+    //   ...Object.values(presenceChannel.members.members),
+    // ]);
   });
   presenceChannel.bind("pusher:member_removed", (member) => {
     setOnlineGamers(Object.values(presenceChannel.members.members));
+  });
+  // presenceChannel.bind("check-presence", (newOnlineGamers) => {
+  //   setOnlineGamers((prevOnlineGamers) => {
+  //     const stillHere = newOnlineGamers.filter(
+  //       (gamer) => parseInt(Date.now()) - parseInt(gamer.lastPing) < 15000
+  //     );
+  //     if (stillHere.length === prevOnlineGamers.length) return newOnlineGamers;
+  //     else return stillHere;
+  //   });
+  //   setOnlineGamers(Object.values(presenceChannel.members.members));
+  // });
+
+  presenceChannel.bind("check-presence", (presence) => {
+    pingTimeStamps[presence.userName] = presence.time;
+
+    Object.entries(pingTimeStamps).forEach((stamp) => {
+      if (Date.now() - stamp[1] > 7000) {
+        delete pingTimeStamps[stamp[0]];
+        setOnlineGamers((prevOnlines) => {
+          const newOnlines = prevOnlines.filter(
+            (online) => online.userName !== stamp[0]
+          );
+          return newOnlines;
+        });
+      } else {
+        const { userId, userName, multiGuest } = presence;
+        setOnlineGamers((prevOnlines) => {
+          if (prevOnlines.some((online) => online.userName === userName))
+            return prevOnlines;
+          else return [...prevOnlines, { userId, userName, multiGuest }];
+        });
+      }
+    });
+
+    // pingTimeStamps[data.userName] = Object.keys(data);
+    // Object.entries(pingTimeStamps).forEach((stamp) => {
+    //   if (
+    //     Date.now() - stamp[1] > 10000 &&
+    //     pingTimeStamps[data.userName] !== undefined
+    //   ) {
+    //     delete pingTimeStamps[data.userName];
+    //     setOnlineGamers((prevOnlines) => {
+    //       const newOnlines = prevOnlines.filter(
+    //         (online) => online.userName !== stamp[0]
+    //       );
+    //       return newOnlines;
+    //     });
+    //   }
+    // });
   });
 }
 
@@ -202,7 +259,7 @@ export default function Room({
       setMultiGuestDataId(
         gameData.gamers.find((gamer) => gamer.name === uniqueName)?.dataId
       );
-      // check
+      // check : gamedata
       subscribePresenceChannel({
         userId: id,
         userName: uniqueName,
@@ -211,7 +268,8 @@ export default function Room({
         roomToken,
       });
     }
-  }, [isStarted, gameData, uniqueName, roomToken, user]);
+    // }, [isStarted, gameData, uniqueName, roomToken, user]);
+  }, [isStarted, gameData.gamers, uniqueName, roomToken, user]);
 
   const createRoom = useCallback(
     async (privacy, storedLocation) => {
@@ -681,6 +739,31 @@ export default function Room({
       goNewGame();
     }
   }, [gameData, gameName, isStarted, user]);
+
+  // useEffect(() => {
+  //   // if (!roomToken || !onlineGamers?.length || !user?.name) return;
+  //   if (!roomToken || !user?.name || !onlineGamers.length) return;
+  //   const interval = setInterval(async () => {
+  //     await presenceTEST({ roomToken, onlineGamers, userName: user.name });
+  //   }, 5000);
+
+  //   return () => clearInterval(interval);
+  //   // }, [roomToken, onlineGamers, user]);
+  // }, [roomToken, user, onlineGamers.length]);
+
+  useEffect(() => {
+    if (!roomToken || !user?.name) return;
+    const interval = setInterval(async () => {
+      await presenceTEST({
+        roomToken,
+        userName: user.name,
+        userId: user.id,
+        multiGuest: !!user.multiGuest,
+      });
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, [roomToken, user]);
 
   if (joinError) {
     return (

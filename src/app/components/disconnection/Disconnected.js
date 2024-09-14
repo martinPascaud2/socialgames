@@ -132,7 +132,7 @@ export default function Disconnected({
   const [finishCountdownDate, setFinishCountdownDate] = useState(null);
 
   useEffect(() => {
-    if (!onlineGamers || !gamers) return;
+    if (!onlineGamers?.length || !gamers) return;
     if (onlineGamers.length !== gamers.length) {
       const onlineGamersSet = new Set(
         onlineGamers.map((online) => online.userName)
@@ -153,7 +153,7 @@ export default function Disconnected({
 
   useEffect(() => {
     if (!disconnectedList.length) setFinishCountdownDate(null);
-    else setFinishCountdownDate(Date.now() + 30000);
+    else setFinishCountdownDate(Date.now() + 3000000);
   }, [disconnectedList]);
 
   useEffect(() => {

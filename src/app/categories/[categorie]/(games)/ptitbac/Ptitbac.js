@@ -419,7 +419,7 @@ export default function Ptitbac({
           </>
         )}
 
-        {phase === "ended" && (
+        {phase === "ended" && winners && (
           <div className="flex justify-center">
             {winners.map((winner, i) => (
               <span key={i}>

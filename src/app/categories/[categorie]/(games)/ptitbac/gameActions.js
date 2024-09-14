@@ -444,13 +444,16 @@ export async function removeGamers({
   gameData,
   onlineGamers,
 }) {
-  const { gamers, counts, lastTurnCounts, themesResponses } = gameData;
+  const { gamers, counts, lastTurnCounts, themesResponses, phase } = gameData;
   const onlineGamersList = onlineGamers.map((gamer) => gamer.userName);
   const onlineGamersSet = new Set(onlineGamersList);
 
   const remainingGamers = gamers.filter((gamer) =>
     onlineGamersSet.has(gamer.name)
   );
+
+  const newPhase = remainingGamers.length < 2 ? "ended" : phase;
+  const ended = remainingGamers.length < 2;
 
   const remainingCounts = counts.filter((count) =>
     onlineGamersSet.has(count.name)
@@ -475,6 +478,8 @@ export async function removeGamers({
     counts: remainingCounts,
     lastTurnCounts: remainingLastTurnCounts,
     themesResponses: remainingThemesResponses,
+    phase: newPhase,
+    ended,
   };
 
   await saveAndDispatchData({ roomId, roomToken, newData });
