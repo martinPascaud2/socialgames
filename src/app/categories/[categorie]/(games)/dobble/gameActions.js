@@ -47,6 +47,8 @@ export async function launchGame({
   const newData = {
     admin: startedRoom.admin,
     gamers: gamersAndGuests,
+    recRounds: {},
+    count: {},
   };
   await saveAndDispatchData({ roomId, roomToken, newData });
 
@@ -248,5 +250,62 @@ export async function serverFail({
   }
 
   const newData = { ...roomData, recRounds: newRecRounds };
+  await saveAndDispatchData({ roomId, roomToken, newData });
+}
+
+export async function removeGamers({
+  roomId,
+  roomToken,
+  gameData,
+  onlineGamers,
+  imageLength,
+}) {
+  const { gamers, count, recRounds } = gameData;
+  const roundNumber = gameData.round?.number || 0;
+
+  const onlineGamersList = onlineGamers.map((gamer) => gamer.userName);
+  const onlineGamersSet = new Set(onlineGamersList);
+
+  const remainingGamers = gamers.filter((gamer) =>
+    onlineGamersSet.has(gamer.name)
+  );
+
+  const newCount = Object.fromEntries(
+    Object.entries(count).filter(([userName]) => onlineGamersSet.has(userName))
+  );
+
+  const newRecrounds = Object.fromEntries(
+    Object.entries(recRounds).map(([roundNumber, data]) => [
+      roundNumber,
+      {
+        failersList: data.failersList.filter((failer) =>
+          onlineGamersSet.has(failer)
+        ),
+        winner: data.winner,
+      },
+    ])
+  );
+
+  const { randomIcons, onlyWithOne, sameKey } = getIconsKeys({ imageLength });
+  const newRound = {
+    number: roundNumber + 1,
+    randomIcons,
+    onlyWithOne,
+    sameKey,
+  };
+  const newRotation = { top: Math.random() < 0.5, bot: Math.random() < 0.5 };
+
+  const ended = remainingGamers.length < 2;
+
+  const newData = {
+    ...gameData,
+    gamers: remainingGamers,
+    recRounds: newRecrounds,
+    count: newCount,
+    round: newRound,
+    rotation: newRotation,
+    ended,
+  };
+
   await saveAndDispatchData({ roomId, roomToken, newData });
 }

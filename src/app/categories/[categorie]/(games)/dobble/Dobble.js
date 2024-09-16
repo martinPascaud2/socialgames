@@ -3,11 +3,17 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
-import { goFirstRound, serverSucceed, serverFail } from "./gameActions";
+import {
+  goFirstRound,
+  serverSucceed,
+  serverFail,
+  removeGamers,
+} from "./gameActions";
 
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import NextStep from "@/components/NextStep";
 import NextEndingPossibilities from "@/components/NextEndingPossibilities";
+import Disconnected from "@/components/disconnection/Disconnected";
 
 const imageContext = require.context("./icons", false, /\.(png)$/);
 
@@ -26,10 +32,12 @@ export default function Dobble({
   roomId,
   roomToken,
   user,
+  onlineGamers,
   gameData,
   storedLocation,
 }) {
   const isAdmin = gameData.admin === user.name;
+  const { gamers } = gameData;
   const [roundNumber, setRoundNumber] = useState(0);
   const [scores, setScores] = useState([]);
   const [isEnded, setIsEnded] = useState(false);
@@ -217,6 +225,24 @@ export default function Dobble({
         reset={() => console.log("to be done")}
         storedLocation={storedLocation}
         user={user}
+      />
+
+      <Disconnected
+        roomId={roomId}
+        onlineGamers={onlineGamers}
+        gamers={gamers}
+        isAdmin={isAdmin}
+        onGameBye={async () => {
+          await removeGamers({
+            roomId,
+            roomToken,
+            gameData,
+            onlineGamers,
+            imageLength,
+          });
+        }}
+        gameName="dobble"
+        gameData={gameData}
       />
     </>
   );
