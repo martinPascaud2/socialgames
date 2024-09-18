@@ -1,25 +1,48 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
+import { removeChainGamers } from "./gameActions";
+
+import { formatWord } from "@/utils/formatWord";
 import TeamDrawing from "./TeamDrawing";
 import ChainDrawing from "./ChainDrawing";
 import NextEndingPossibilities from "@/components/NextEndingPossibilities";
+import Disconnected from "@/components/disconnection/Disconnected";
 
 export default function Drawing({
   roomId,
   roomToken,
   user,
+  onlineGamers,
   gameData,
   storedLocation,
 }) {
   const mode = gameData.options?.mode;
+  const formattedMode = mode && formatWord(mode);
   const isAdmin = gameData.admin === user.name;
 
   const [isEnded, setIsEnded] = useState(false);
   useEffect(() => {
     if (gameData.ended) setIsEnded(true);
   }, [gameData.ended]);
+
+  const removeGamers = useCallback(
+    ({ roomId, roomToken, gameData, onlineGamers }) => {
+      switch (formattedMode) {
+        case "esquisse":
+          return removeChainGamers({
+            roomId,
+            roomToken,
+            gameData,
+            onlineGamers,
+          });
+        case "pictionary":
+          return;
+      }
+    },
+    [formattedMode]
+  );
 
   return (
     <>
@@ -37,6 +60,7 @@ export default function Drawing({
           roomId={roomId}
           roomToken={roomToken}
           user={user}
+          onlineGamers={onlineGamers}
           gameData={gameData}
         />
       )}
@@ -50,6 +74,23 @@ export default function Drawing({
         reset={() => console.log("to be done")}
         storedLocation={storedLocation}
         user={user}
+      />
+
+      <Disconnected
+        roomId={roomId}
+        onlineGamers={onlineGamers}
+        gamers={gameData.gamers}
+        isAdmin={isAdmin}
+        onGameBye={async () => {
+          await removeGamers({
+            roomId,
+            roomToken,
+            gameData,
+            onlineGamers,
+          });
+        }}
+        modeName={formattedMode}
+        gameData={gameData}
       />
     </>
   );

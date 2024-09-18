@@ -241,7 +241,7 @@ export default function Dobble({
             imageLength,
           });
         }}
-        gameName="dobble"
+        modeName="dobble"
         gameData={gameData}
       />
     </>

@@ -75,6 +75,8 @@ export const subCategories = {
   ],
 };
 
+// check : remove isGuestsAllowed, limits in modes
+
 export const gamesRefs = {
   grouping: { name: "un nouveau groupe", categorie: "grouping" },
   // actionouverite: {
@@ -124,5 +126,20 @@ export const gamesRefs = {
     categorie: "categorie1",
     limits: { min: 3, max: 8 },
     isGuestsAllowed: false,
+  },
+};
+
+export const modesRules = {
+  ptitbac: {
+    name: "Quel mot ?",
+    limits: { min: 2, max: 15 },
+  },
+  dobble: {
+    name: "Dobble",
+    limits: { min: 2, max: 15 },
+  },
+  esquisse: {
+    name: "Esquisse",
+    limits: { min: 4, max: 10 },
   },
 };

@@ -2,6 +2,7 @@
 
 import prisma from "@/utils/prisma";
 
+import { formatWord } from "@/utils/formatWord";
 import { saveAndDispatchData } from "@/components/Room/actions";
 import { makeTeams, makeMinimalTeams } from "@/utils/makeTeams";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
@@ -146,9 +147,11 @@ export async function launchGame({
   if (options.mode === "Esquissé") {
     const wordList = await getFreeWords({ gamers: gamersAndGuests });
     gamersAndGuests.map((gamer, i) => {
+      // check forEach
       words.push({
         word: wordList[i],
         DCuserID: gamer.multiGuest ? gamer.dataId : gamer.id,
+        userName: gamer.name,
         multiGuest: gamer.multiGuest,
       });
     });
@@ -224,6 +227,8 @@ const getFreeWord = async ({ roomId }) => {
 
   return freeWord.word;
 };
+
+//TeamDrawing Pictionary
 
 export async function startDrawing({ roomId, roomToken, gameData }) {
   const freeWord = await getFreeWord({ roomId });
@@ -317,17 +322,6 @@ export async function goSearch({ roomId, roomToken, gameData }) {
   };
   await saveAndDispatchData({ roomId, roomToken, newData });
 }
-
-const removeAccents = (str) =>
-  str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-
-const formatWord = (guess) => {
-  const lower = guess.toLowerCase();
-  const trim = lower.trim();
-  const noAccent = removeAccents(trim);
-
-  return noAccent;
-};
 
 const compareWords = (word1, word2) => {
   const formatted1 = formatWord(word1);
@@ -429,6 +423,8 @@ export async function guessWord(
   await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
+//ChainDrawing Esquisse
+
 export async function goNextPhase({
   userName,
   roomId,
@@ -526,7 +522,7 @@ export async function initChain({ userName, chainRef }) {
       },
     });
 
-    await prisma.multiGuest.update({
+    await prisma.multiguest.update({
       where: { id: DCuserID },
       data: {
         drawChain: {
@@ -568,7 +564,7 @@ export async function addLink({
       },
     });
   } else {
-    await prisma.multiGuest.update({
+    await prisma.multiguest.update({
       where: { id: DCuserID },
       data: {
         drawChain: {
@@ -681,4 +677,69 @@ export async function getNextLink({ shower, showedLinkIndex }) {
   }
 
   return newLink;
+}
+
+const deleteLeaverLink = async ({ words, phase }) => {
+  await Promise.all(
+    words.map(async (word) => {
+      const { DCuserID, multiGuest } = word;
+      if (!multiGuest) {
+        const lastLink = (
+          await prisma.user.findUnique({
+            where: { id: DCuserID },
+            select: {
+              drawChain: {
+                orderBy: { id: "desc" },
+                take: 1,
+              },
+            },
+          })
+        ).drawChain[0];
+
+        const isFromCurrentPhase =
+          (lastLink.type === "draw" && phase === "drawing") ||
+          (lastLink.type === "word" && phase === "guessing");
+
+        if (isFromCurrentPhase) {
+          await prisma.drawLink.delete({
+            where: { id: lastLink.id },
+          });
+        }
+      } else {
+        //to be done
+      }
+    })
+  );
+};
+
+export async function removeChainGamers({
+  roomId,
+  roomToken,
+  gameData,
+  onlineGamers,
+}) {
+  const { gamers, words, phase } = gameData;
+
+  const onlineGamersList = onlineGamers.map((gamer) => gamer.userName);
+  const onlineGamersSet = new Set(onlineGamersList);
+
+  const remainingGamers = gamers.filter((gamer) =>
+    onlineGamersSet.has(gamer.name)
+  );
+
+  const newWords = words.filter((word) => onlineGamersSet.has(word.userName));
+
+  await deleteLeaverLink({ words: newWords, phase });
+
+  const newValidatedList = [];
+
+  const newData = {
+    ...gameData,
+    gamers: remainingGamers,
+    words: newWords,
+    validatedList: newValidatedList,
+    isDeletedUser: true,
+  };
+
+  await saveAndDispatchData({ roomId, roomToken, newData });
 }

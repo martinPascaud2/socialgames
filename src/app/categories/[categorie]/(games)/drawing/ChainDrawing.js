@@ -16,7 +16,13 @@ import NextStep from "@/components/NextStep";
 import Draw from "./Draw";
 import CountDown from "@/components/CountDown";
 
-export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
+export default function ChainDrawing({
+  roomId,
+  roomToken,
+  user,
+  onlineGamers,
+  gameData,
+}) {
   const { gamers, phase, turn, words, finishCountdownDate } = gameData;
   const isAdmin = gameData.admin === user.name;
   const isEven = gamers.length % 2 === 0;
@@ -29,6 +35,7 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
   const [hasValidated, setHasValidated] = useState(false);
   const [hasComeback, setHasComeback] = useState();
   const [CBHadValidated, setCBHadValidated] = useState();
+  const [isDeletedUser, setIsDeletedUser] = useState(false);
   const [timeoutId, setTimeoutId] = useState();
 
   const [showedGamer, setShowedGamer] = useState("");
@@ -118,7 +125,7 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
                 gameData,
                 full: true,
               }));
-          }, finishCountdownDate - Date.now() + 2000)
+          }, finishCountdownDate - Date.now() + 3500)
         );
       } else {
         clearTimeout(timeoutId);
@@ -159,8 +166,12 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
     if (!words || !user || !gameData.validatedList || isEven === undefined)
       return;
 
+    //used for afkGamer
     const comeBack = async () => {
-      if (turn !== 0 && (Number.isNaN(chainIndex) || !chainRef)) {
+      if (
+        turn !== 0 &&
+        (Number.isNaN(chainIndex) || !chainRef || isDeletedUser)
+      ) {
         const initialIndex = user.multiGuest
           ? words.findIndex((word) => word.DCuserID === user.dataId)
           : words.findIndex((word) => word.DCuserID === user.id);
@@ -174,7 +185,8 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
         const actualChainRef = words[actualIndex];
         setChainRef(actualChainRef);
 
-        setHasComeback(true);
+        !isDeletedUser && setHasComeback(true);
+        setIsDeletedUser(false);
       }
     };
     comeBack();
@@ -183,7 +195,17 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
       (val) => val === user.name
     );
     setCBHadValidated(hadValidated);
-  }, [turn, chainIndex, chainRef, user, words, gameData.validatedList, isEven]);
+    isDeletedUser && setHasValidated(false);
+  }, [
+    turn,
+    chainIndex,
+    chainRef,
+    user,
+    words,
+    gameData.validatedList,
+    isEven,
+    isDeletedUser,
+  ]);
 
   useEffect(() => {
     if (hasComeback === undefined) return;
@@ -201,6 +223,10 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
     };
     getLast();
   }, [chainRef, CBHadValidated]);
+
+  useEffect(() => {
+    if (gameData.isDeletedUser) setIsDeletedUser(true);
+  }, [gameData.isDeletedUser]);
 
   return (
     <div className="overflow-y-auto">

@@ -4,7 +4,7 @@ import { useState, useMemo, useEffect, useCallback } from "react";
 import { useLongPress, LongPressEventType } from "use-long-press";
 
 import "./ripple.css";
-import { gamesRefs } from "@/assets/globals";
+import { modesRules } from "@/assets/globals";
 
 import convertNameListToString from "@/utils/convertNameListToString";
 import updateRoomLeavers from "./updateRoomLeavers";
@@ -102,15 +102,15 @@ const DisconnectionRipplingButton = ({
 };
 
 const getDiscoWarningMessage = ({
-  gameName,
+  modeName,
   gameData,
   onlineGamers,
   isSeveral,
 }) => {
-  if (gamesRefs[gameName].limits.min > onlineGamers.length)
+  if (modesRules[modeName]?.limits.min > onlineGamers.length)
     return "Attention, ceci mettra fin à la partie.";
 
-  switch (gameName) {
+  switch (modeName) {
     default:
       return `La partie continuera sans ${!isSeveral ? "lui" : "eux"}.`;
   }
@@ -122,7 +122,7 @@ export default function Disconnected({
   gamers,
   isAdmin,
   onGameBye,
-  gameName,
+  modeName,
   gameData,
 }) {
   const [showDiscoModal, setShowDiscoModal] = useState(false);
@@ -169,7 +169,7 @@ export default function Disconnected({
         (await updateRoomLeavers({ roomId, gamers, disconnectedList }));
       isAdmin && (await onGameBye());
     }, 0); //rendering cycle
-  }, [roomId, updateRoomLeavers, onGameBye, gamers, disconnectedList]);
+  }, [roomId, onGameBye, gamers, disconnectedList, isAdmin]);
 
   const Message = useMemo(() => {
     if (!disconnectedList?.length) return null;
@@ -188,7 +188,7 @@ export default function Disconnected({
     const WarningMessage = (
       <div className="m-2 flex justify-center italic">
         {getDiscoWarningMessage({
-          gameName,
+          modeName,
           gameData,
           onlineGamers,
           isSeveral,
@@ -231,8 +231,10 @@ export default function Disconnected({
     onBye,
     isValidated,
     setIsValidated,
-    disconnectedList,
     finishCountdownDate,
+    gameData,
+    isAdmin,
+    modeName,
   ]);
 
   if (!onlineGamers?.length || !gamers?.length || !disconnectedList?.length)

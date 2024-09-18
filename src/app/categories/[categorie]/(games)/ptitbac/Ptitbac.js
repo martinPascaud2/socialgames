@@ -452,7 +452,7 @@ export default function Ptitbac({
         onGameBye={() =>
           removeGamers({ roomId, roomToken, gameData, onlineGamers })
         }
-        gameName="ptitbac"
+        modeName="ptitbac"
         gameData={gameData}
       />
     </>
