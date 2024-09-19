@@ -8,6 +8,7 @@ import {
   hideUndiscovered,
   prepareNewGame,
   goNewMemoryGame,
+  removeGamers,
 } from "./gameActions";
 import { loadImages } from "./loadImages";
 import { syncNewOptions } from "@/components/Room/actions";
@@ -15,16 +16,19 @@ import { syncNewOptions } from "@/components/Room/actions";
 import Card from "./Card";
 const CardMemo = React.memo(Card);
 import NextEndingPossibilities from "@/components/NextEndingPossibilities";
+import Disconnected from "@/components/disconnection/Disconnected";
 import MemoryOptions from "./Options";
 
 export default function Memory({
   roomId,
   roomToken,
   user,
+  onlineGamers,
   gameData,
   storedLocation,
 }) {
-  const { success, roundScores, totalScores, scoresEvolution } = gameData;
+  const { success, roundScores, totalScores, scoresEvolution, gamers } =
+    gameData;
   const isAdmin = gameData.admin === user.name;
   const [isActive, setIsActive] = useState(false);
 
@@ -347,6 +351,18 @@ export default function Memory({
         }}
         storedLocation={storedLocation}
         user={user}
+      />
+
+      <Disconnected
+        roomId={roomId}
+        onlineGamers={onlineGamers}
+        gamers={gamers}
+        isAdmin={isAdmin}
+        onGameBye={() =>
+          removeGamers({ roomId, roomToken, gameData, onlineGamers })
+        }
+        modeName="memory"
+        gameData={gameData}
       />
     </>
   );
