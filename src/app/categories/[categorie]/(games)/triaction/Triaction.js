@@ -11,11 +11,13 @@ import {
   sendActionBack,
   proposeAction,
   sendPropositionBack,
+  removeGamers,
 } from "./gameActions";
 
 import { vampiro } from "@/assets/fonts";
 
 import NextEndingPossibilities from "@/components/NextEndingPossibilities";
+import Disconnected from "@/components/disconnection/Disconnected";
 
 const RipplingButton = ({
   onLongPress,
@@ -242,6 +244,7 @@ export default function Triaction({
   roomId,
   roomToken,
   user,
+  onlineGamers,
   gameData,
   storedLocation,
 }) {
@@ -877,6 +880,7 @@ export default function Triaction({
             </>
           );
         })()}
+
       <NextEndingPossibilities
         isAdmin={isAdmin}
         isEnded={isEnded}
@@ -886,6 +890,18 @@ export default function Triaction({
         reset={() => console.log("to be done")}
         storedLocation={storedLocation}
         user={user}
+      />
+
+      <Disconnected
+        roomId={roomId}
+        onlineGamers={onlineGamers}
+        gamers={gamers}
+        isAdmin={isAdmin}
+        onGameBye={() =>
+          removeGamers({ roomId, roomToken, gameData, onlineGamers })
+        }
+        modeName="triaction"
+        gameData={gameData}
       />
     </div>
   );

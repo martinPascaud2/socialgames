@@ -231,3 +231,22 @@ export async function sendPropositionBack({
     });
   }
 }
+
+export async function removeGamers({
+  roomId,
+  roomToken,
+  gameData,
+  onlineGamers,
+}) {
+  const { gamers } = gameData;
+  const onlineGamersList = onlineGamers.map((gamer) => gamer.userName);
+  const onlineGamersSet = new Set(onlineGamersList);
+
+  const remainingGamers = gamers.filter((gamer) =>
+    onlineGamersSet.has(gamer.name)
+  );
+
+  const newData = { ...gameData, gamers: remainingGamers, ended: true };
+
+  await saveAndDispatchData({ roomId, roomToken, newData });
+}

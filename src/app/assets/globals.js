@@ -146,4 +146,8 @@ export const modesRules = {
     name: "Mémoire",
     limits: { min: 2, max: 2 },
   },
+  triaction: {
+    name: "Triaction",
+    limits: { min: 3, max: 8 },
+  },
 };

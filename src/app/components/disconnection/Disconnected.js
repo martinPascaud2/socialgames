@@ -114,6 +114,7 @@ const getDiscoWarningMessage = ({
     case "esquisse":
       return "La position de certains joueurs pourra être décalée.";
     case "pictionary":
+    case "triaction":
       return "Attention, ceci mettra fin à la partie.";
     default:
       return `La partie continuera sans ${!isSeveral ? "lui" : "eux"}.`;
