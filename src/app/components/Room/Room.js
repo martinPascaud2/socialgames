@@ -806,20 +806,6 @@ export default function Room({
             </div>
           </div>
 
-          <div>
-            <p>
-              Screen Wake Lock API supported: <b>{`${isSupported}`}</b>
-              <br />
-              Released: <b>{`${released}`}</b>
-            </p>
-            <button
-              type="button"
-              onClick={() => (released === false ? release() : request())}
-            >
-              {released === false ? "Release" : "Request"}
-            </button>
-          </div>
-
           {(!isChosen && !group) || isPrivate === undefined ? (
             <div>Chargement...</div>
           ) : (

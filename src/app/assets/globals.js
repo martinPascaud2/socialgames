@@ -100,7 +100,7 @@ export const gamesRefs = {
   memory: {
     name: "Mémoire",
     categorie: "categorie1",
-    limits: { min: 2, max: 6 },
+    limits: { min: 2, max: 2 },
     isGuestsAllowed: true,
   },
   ptitbac: {
@@ -141,5 +141,9 @@ export const modesRules = {
   esquisse: {
     name: "Esquisse",
     limits: { min: 4, max: 10 },
+  },
+  memory: {
+    name: "Mémoire",
+    limits: { min: 2, max: 2 },
   },
 };
