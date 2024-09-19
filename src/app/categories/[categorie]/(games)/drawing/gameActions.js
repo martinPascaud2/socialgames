@@ -515,11 +515,10 @@ export async function initChain({ userName, chainRef }) {
       },
     });
   } else {
-    await prisma.multiguest.update({
+    await prisma.multiguest.upsert({
       where: { id: DCuserID },
-      data: {
-        drawChain: { deleteMany: {} },
-      },
+      update: { drawChain: {} },
+      create: { id: DCuserID, drawChain: {} },
     });
 
     await prisma.multiguest.update({
@@ -683,8 +682,9 @@ const deleteLeaverLink = async ({ words, phase }) => {
   await Promise.all(
     words.map(async (word) => {
       const { DCuserID, multiGuest } = word;
+      let lastLink;
       if (!multiGuest) {
-        const lastLink = (
+        lastLink = (
           await prisma.user.findUnique({
             where: { id: DCuserID },
             select: {
@@ -695,18 +695,28 @@ const deleteLeaverLink = async ({ words, phase }) => {
             },
           })
         ).drawChain[0];
-
-        const isFromCurrentPhase =
-          (lastLink.type === "draw" && phase === "drawing") ||
-          (lastLink.type === "word" && phase === "guessing");
-
-        if (isFromCurrentPhase) {
-          await prisma.drawLink.delete({
-            where: { id: lastLink.id },
-          });
-        }
       } else {
-        //to be done
+        lastLink = (
+          await prisma.multiguest.findUnique({
+            where: { id: DCuserID },
+            select: {
+              drawChain: {
+                orderBy: { id: "desc" },
+                take: 1,
+              },
+            },
+          })
+        ).drawChain[0];
+      }
+
+      const isFromCurrentPhase =
+        (lastLink.type === "draw" && phase === "drawing") ||
+        (lastLink.type === "word" && phase === "guessing");
+
+      if (isFromCurrentPhase) {
+        await prisma.drawLink.delete({
+          where: { id: lastLink.id },
+        });
       }
     })
   );

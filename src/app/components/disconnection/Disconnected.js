@@ -111,6 +111,8 @@ const getDiscoWarningMessage = ({
     return "Attention, ceci mettra fin à la partie.";
 
   switch (modeName) {
+    case "esquisse":
+      return "La position de certains joueurs pourra être décalée.";
     default:
       return `La partie continuera sans ${!isSeveral ? "lui" : "eux"}.`;
   }
@@ -186,7 +188,7 @@ export default function Disconnected({
       </div>
     );
     const WarningMessage = (
-      <div className="m-2 flex justify-center italic">
+      <div className="m-2 flex justify-center italic text-center">
         {getDiscoWarningMessage({
           modeName,
           gameData,
