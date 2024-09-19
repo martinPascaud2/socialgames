@@ -454,6 +454,7 @@ export default function Ptitbac({
         }
         modeName="ptitbac"
         gameData={gameData}
+        userId={user.id}
       />
     </>
   );

@@ -96,6 +96,7 @@ export default function Drawing({
         }}
         modeName={formattedMode}
         gameData={gameData}
+        userId={user.id}
       />
     </>
   );

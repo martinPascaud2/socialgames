@@ -8,6 +8,7 @@ import { modesRules } from "@/assets/globals";
 
 import convertNameListToString from "@/utils/convertNameListToString";
 import updateRoomLeavers from "./updateRoomLeavers";
+import cancelBack from "@/utils/cancelBack";
 
 import { DiscoModal } from "@/components/Modal";
 import CountDown from "@/components/CountDown";
@@ -129,12 +130,14 @@ export default function Disconnected({
   onGameBye,
   modeName,
   gameData,
+  userId,
 }) {
   const [showDiscoModal, setShowDiscoModal] = useState(false);
   const [disconnectedList, setDisconnectedList] = useState([]);
   const [isValidated, setIsValidated] = useState(false);
   const [withoutLabel, setWithoutLabel] = useState("");
   const [finishCountdownDate, setFinishCountdownDate] = useState(null);
+  const [isLeaverAdmin, setIsLeaverAdmin] = useState(false);
 
   useEffect(() => {
     if (!onlineGamers?.length || !gamers) return;
@@ -157,9 +160,19 @@ export default function Disconnected({
   }, [onlineGamers, gamers]);
 
   useEffect(() => {
+    setIsLeaverAdmin(
+      disconnectedList.some((disco) => disco === gameData.admin)
+    );
+  }, [disconnectedList, gameData.admin]);
+
+  useEffect(() => {
     if (!disconnectedList.length) setFinishCountdownDate(null);
-    else setFinishCountdownDate(Date.now() + 3000000);
-  }, [disconnectedList]);
+    else {
+      const newFinishCountdownDate =
+        Date.now() + (isLeaverAdmin ? 120000 : 30000);
+      setFinishCountdownDate(newFinishCountdownDate);
+    }
+  }, [disconnectedList, isLeaverAdmin]);
 
   useEffect(() => {
     if (!isValidated) setWithoutLabel("Reprendre sans");
@@ -170,11 +183,24 @@ export default function Disconnected({
     setTimeout(async () => {
       setFinishCountdownDate(null);
       setIsValidated(true);
-      isAdmin &&
-        (await updateRoomLeavers({ roomId, gamers, disconnectedList }));
-      isAdmin && (await onGameBye());
+
+      if (isAdmin) {
+        await updateRoomLeavers({ roomId, gamers, disconnectedList });
+        await onGameBye();
+      } else if (isLeaverAdmin) {
+        await cancelBack({ userId });
+        window.location.href = "/categories?control=true";
+      }
     }, 0); //rendering cycle
-  }, [roomId, onGameBye, gamers, disconnectedList, isAdmin]);
+  }, [
+    roomId,
+    onGameBye,
+    gamers,
+    disconnectedList,
+    isAdmin,
+    isLeaverAdmin,
+    userId,
+  ]);
 
   const Message = useMemo(() => {
     if (!disconnectedList?.length) return null;

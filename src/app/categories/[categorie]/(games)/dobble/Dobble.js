@@ -243,6 +243,7 @@ export default function Dobble({
         }}
         modeName="dobble"
         gameData={gameData}
+        userId={user.id}
       />
     </>
   );

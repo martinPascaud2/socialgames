@@ -363,6 +363,7 @@ export default function Memory({
         }
         modeName="memory"
         gameData={gameData}
+        userId={user.id}
       />
     </>
   );

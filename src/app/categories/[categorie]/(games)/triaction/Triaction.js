@@ -902,6 +902,7 @@ export default function Triaction({
         }
         modeName="triaction"
         gameData={gameData}
+        userId={user.id}
       />
     </div>
   );
