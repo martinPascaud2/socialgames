@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 
-import { removeChainGamers } from "./gameActions";
+import { removeChainGamers, removeTeamGamers } from "./gameActions";
 
 import { formatWord } from "@/utils/formatWord";
 import TeamDrawing from "./TeamDrawing";
@@ -38,7 +38,12 @@ export default function Drawing({
             onlineGamers,
           });
         case "pictionary":
-          return;
+          return removeTeamGamers({
+            roomId,
+            roomToken,
+            gameData,
+            onlineGamers,
+          });
       }
     },
     [formattedMode]

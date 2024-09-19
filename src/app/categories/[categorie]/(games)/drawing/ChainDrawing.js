@@ -16,13 +16,7 @@ import NextStep from "@/components/NextStep";
 import Draw from "./Draw";
 import CountDown from "@/components/CountDown";
 
-export default function ChainDrawing({
-  roomId,
-  roomToken,
-  user,
-  onlineGamers,
-  gameData,
-}) {
+export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
   const { gamers, phase, turn, words, finishCountdownDate } = gameData;
   const isAdmin = gameData.admin === user.name;
   const isEven = gamers.length % 2 === 0;

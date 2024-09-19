@@ -423,6 +423,25 @@ export async function guessWord(
   await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
+export async function removeTeamGamers({
+  roomId,
+  roomToken,
+  gameData,
+  onlineGamers,
+}) {
+  const { gamers } = gameData;
+
+  const onlineGamersList = onlineGamers.map((gamer) => gamer.userName);
+  const onlineGamersSet = new Set(onlineGamersList);
+
+  const remainingGamers = gamers.filter((gamer) =>
+    onlineGamersSet.has(gamer.name)
+  );
+
+  const newData = { ...gameData, gamers: remainingGamers, ended: true };
+  await saveAndDispatchData({ roomId, roomToken, newData });
+}
+
 //ChainDrawing Esquisse
 
 export async function goNextPhase({

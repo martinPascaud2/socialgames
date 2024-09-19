@@ -103,7 +103,7 @@ const DisconnectionRipplingButton = ({
 
 const getDiscoWarningMessage = ({
   modeName,
-  gameData,
+  gameData, // check
   onlineGamers,
   isSeveral,
 }) => {
@@ -113,6 +113,8 @@ const getDiscoWarningMessage = ({
   switch (modeName) {
     case "esquisse":
       return "La position de certains joueurs pourra être décalée.";
+    case "pictionary":
+      return "Attention, ceci mettra fin à la partie.";
     default:
       return `La partie continuera sans ${!isSeveral ? "lui" : "eux"}.`;
   }
