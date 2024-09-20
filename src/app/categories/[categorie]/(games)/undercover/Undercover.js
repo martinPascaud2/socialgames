@@ -5,6 +5,7 @@ import { useFormState } from "react-dom";
 
 import NextStep from "@/components/NextStep";
 import NextEndingPossibilities from "@/components/NextEndingPossibilities";
+import Disconnected from "@/components/disconnection/Disconnected";
 
 const initialState = {
   message: null,
@@ -17,12 +18,14 @@ import {
   voteAgainst,
   goddessVote,
   whiteGuess,
+  removeGamers,
 } from "./gameActions";
 
 export default function Undercover({
   roomId,
   roomToken,
   user,
+  onlineGamers,
   gameData,
   storedLocation,
 }) {
@@ -119,6 +122,7 @@ export default function Undercover({
       voterIndex++;
     }
 
+    //check
     if (!voter) {
       setAdminVoter(0);
       setHasVoted(true);
@@ -225,8 +229,8 @@ export default function Undercover({
 
   useEffect(() => {
     if (!gameData?.voters) return;
-    if (gameData.voters.some((voter) => voter === user.name)) setHasVoted(true);
-  }, [gameData.voters]);
+    setHasVoted(gameData.voters.some((voter) => voter === user.name));
+  }, [gameData.voters, user.name]);
 
   return (
     <>
@@ -384,6 +388,19 @@ export default function Undercover({
         reset={() => console.log("to be done")}
         storedLocation={storedLocation}
         user={user}
+      />
+
+      <Disconnected
+        roomId={roomId}
+        onlineGamers={onlineGamers}
+        gamers={gamers}
+        isAdmin={isAdmin}
+        onGameBye={() =>
+          removeGamers({ roomId, roomToken, gameData, onlineGamers })
+        }
+        modeName="undercover"
+        gameData={gameData}
+        userId={user.id}
       />
     </>
   );

@@ -150,4 +150,8 @@ export const modesRules = {
     name: "Triaction",
     limits: { min: 3, max: 8 },
   },
+  undercover: {
+    name: "Undercover",
+    limits: { min: 3, max: 15 },
+  },
 };

@@ -206,9 +206,13 @@ export async function getNextGamer({ gameData, roomToken, roomId }) {
   await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
-const checkEnd = (newData, deadIndex) => {
+const checkEnd = ({ newData, deadIndex, removingGamers = false }) => {
   let checkedData = { ...newData };
-  if (checkedData.gamers[deadIndex].role === "white") {
+  if (
+    !removingGamers &&
+    deadIndex &&
+    checkedData.gamers[deadIndex].role === "white"
+  ) {
     checkedData = { ...checkedData, phase: "white" };
   } else {
     const onlyCivils = checkedData.gamers
@@ -217,7 +221,7 @@ const checkEnd = (newData, deadIndex) => {
     if (onlyCivils) checkedData = { ...checkedData, phase: "civilsWin" };
 
     let civilsRemain = 0;
-    checkedData.gamers.map((gamer) => {
+    checkedData.gamers.forEach((gamer) => {
       civilsRemain =
         gamer.role === "civil" && gamer.alive ? civilsRemain + 1 : civilsRemain;
     });
@@ -270,14 +274,14 @@ export async function voteAgainst({
         ...gameData,
         phase: "description",
         voters: [],
-        votes: [],
+        votes: {},
       };
 
       const deadIndex = gamers.findIndex((gamer) => deadMen[0] === gamer.name);
       newData.gamers[deadIndex].alive = false;
       newData.activePlayer = newData.gamers.find((gamer) => gamer.alive);
 
-      newData = checkEnd(newData, deadIndex);
+      newData = checkEnd({ newData, deadIndex });
       await saveAndDispatchData({ roomId, roomToken, newData });
     }
 
@@ -303,7 +307,7 @@ export async function goddessVote({ gameData, roomId, roomToken, gamerName }) {
     ...gameData,
     phase: "description",
     voters: [],
-    votes: [],
+    votes: {},
   };
 
   const deadIndex = gameData.gamers.findIndex(
@@ -312,7 +316,7 @@ export async function goddessVote({ gameData, roomId, roomToken, gamerName }) {
   newData.gamers[deadIndex].alive = false;
   newData.activePlayer = newData.gamers.find((gamer) => gamer.alive);
 
-  newData = checkEnd(newData, deadIndex);
+  newData = checkEnd({ newData, deadIndex });
   await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
@@ -348,10 +352,43 @@ export async function whiteGuess(
           ? "description"
           : "civilsWin",
       voters: [],
-      votes: [],
+      votes: {},
     };
     await saveAndDispatchData({ roomId, roomToken, newData });
   }
 
   return { message: null };
+}
+
+export async function removeGamers({
+  roomId,
+  roomToken,
+  gameData,
+  onlineGamers,
+}) {
+  const { gamers } = gameData;
+  const onlineGamersList = onlineGamers.map((gamer) => gamer.userName);
+  const onlineGamersSet = new Set(onlineGamersList);
+
+  const remainingGamers = gamers.filter((gamer) =>
+    onlineGamersSet.has(gamer.name)
+  );
+
+  const newVoters = [];
+  const newVotes = {};
+  const newDeadmen = [];
+
+  const newData = {
+    ...gameData,
+    gamers: remainingGamers,
+    voters: newVoters,
+    votes: newVotes,
+    deadMen: newDeadmen,
+  };
+
+  const checkedData = checkEnd({ newData, removingGamer: true });
+  ["vote", "goddess"].some((phaseName) => phaseName === checkedData.phase) &&
+    (checkedData.phase = "description");
+
+  await saveAndDispatchData({ roomId, roomToken, newData: checkedData });
 }

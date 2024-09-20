@@ -109,16 +109,30 @@ const getDiscoWarningMessage = ({
   isSeveral,
 }) => {
   if (modesRules[modeName]?.limits.min > onlineGamers.length)
-    return "Attention, ceci mettra fin à la partie.";
+    return <span>Attention, ceci mettra fin à la partie.</span>;
 
   switch (modeName) {
     case "esquisse":
-      return "La position de certains joueurs pourra être décalée.";
+      return <span>La position de certains joueurs pourra être décalée.</span>;
     case "pictionary":
     case "triaction":
-      return "Attention, ceci mettra fin à la partie.";
+      return <span>Attention, ceci mettra fin à la partie.</span>;
+
+    case "undercover":
+      return (
+        <div className="flex flex-col">
+          <span>
+            {!isSeveral
+              ? "Le joueur sera éliminé."
+              : "Les joueurs seront éliminés."}
+          </span>
+          <span>Attention, ceci pourra mettre fin à la partie.</span>
+        </div>
+      );
     default:
-      return `La partie continuera sans ${!isSeveral ? "lui" : "eux"}.`;
+      return (
+        <span>La partie continuera sans {!isSeveral ? "lui" : "eux"}.</span>
+      );
   }
 };
 
