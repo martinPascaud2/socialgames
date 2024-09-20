@@ -99,7 +99,14 @@ export default function Uno({
       let unoPlayerName;
       if (gamerItems.length === 2) unoPlayerName = user.name;
 
-      await playCard({ card, gameData, roomToken, unoPlayerName });
+      await playCard({
+        card,
+        gameData,
+        roomId,
+        roomToken,
+        playerName: user.name,
+        unoPlayerName,
+      });
     }
   };
 
@@ -114,7 +121,9 @@ export default function Uno({
     await playCard({
       card: coloredSpecial,
       gameData,
+      roomId,
       roomToken,
+      playerName: user.name,
       unoPlayerName,
     });
   };
@@ -154,7 +163,7 @@ export default function Uno({
 
   useEffect(() => {
     if (gamerItems.length === 0 && phase !== "start") {
-      goEnd({ roomToken, gameData });
+      goEnd({ roomId, roomToken, gameData });
     }
   }, [gamerItems]);
 
@@ -170,6 +179,9 @@ export default function Uno({
       setNewHand([]);
     }
   }, [phase]);
+
+  console.log("gameData", gameData);
+  console.log("gamerItems", gamerItems);
 
   return (
     <>
@@ -203,7 +215,11 @@ export default function Uno({
                 <button
                   onClick={async () => {
                     if (hasFreelyDrawn) return;
-                    const newCard = await drawCard({ roomToken, gameData });
+                    const newCard = await drawCard({
+                      roomId,
+                      roomToken,
+                      gameData,
+                    });
                     setNewHCs([
                       {
                         ...newCard,
@@ -218,7 +234,7 @@ export default function Uno({
               )}
               {hasFreelyDrawn && (
                 <button
-                  onClick={() => skipTurn({ roomToken, gameData })}
+                  onClick={() => skipTurn({ roomId, roomToken, gameData })}
                   className="p-2 border border-blue-300 bg-blue-100"
                 >
                   Passer votre tour
@@ -278,7 +294,9 @@ export default function Uno({
             <>
               {isUno && (
                 <div
-                  onClick={() => untriggerUnoPhase({ roomToken, gameData })}
+                  onClick={() =>
+                    untriggerUnoPhase({ roomId, roomToken, gameData })
+                  }
                   className="border border-blue-300 bg-blue-100"
                 >
                   Uno !
@@ -286,7 +304,9 @@ export default function Uno({
               )}
               {availableCounter && (
                 <div
-                  onClick={() => triggerUnoFail({ roomToken, gameData })}
+                  onClick={() =>
+                    triggerUnoFail({ roomId, roomToken, gameData })
+                  }
                   className="border border-blue-300 bg-blue-100"
                 >
                   Contre Uno !
