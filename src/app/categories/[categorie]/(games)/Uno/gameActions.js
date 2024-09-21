@@ -72,7 +72,7 @@ export async function launchGame({
   let remainCards = Object.keys(unoCards).map((string) => parseInt(string));
 
   const { randomCard, newRemainCards } = getRandomCard(remainCards);
-  const usedCards = [randomCard.id];
+  const usedCards = [randomCard.data.dataId];
   remainCards = newRemainCards;
 
   const { startedCards, startedRemains } = getStartedCards({
@@ -112,7 +112,7 @@ export async function launchGame({
     card: randomCard,
     remainCards: startedRemains,
     usedCards,
-    startedCards,
+    startedCards, // check
     gamersCards: startedCards,
     mustDraw: false,
     toDraw: 0,
@@ -124,24 +124,6 @@ export async function launchGame({
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
   });
-
-  // await pusher.trigger(`room-${roomToken}`, "room-event", {
-  //   started: startedRoom.started,
-  //   gameData: {
-  //     admin: startedRoom.admin,
-  //     activePlayer: gamersAndGuests[0],
-  //     gamers: gamersAndGuests,
-  //     phase: "start",
-  //     rotation: "clock",
-  //     card: randomCard,
-  //     remainCards: startedRemains,
-  //     usedCards,
-  //     startedCards,
-  //     mustDraw: false,
-  //     toDraw: 0,
-  //     // options,
-  //   },
-  // });
 
   return {};
 }
@@ -188,14 +170,6 @@ export async function skipTurn({ roomId, roomToken, gameData }) {
     hasFreelyDrawn: false,
   };
   await saveAndDispatchData({ roomId, roomToken, newData });
-
-  // await pusher.trigger(`room-${roomToken}`, "room-event", {
-  //   gameData: {
-  //     ...gameData,
-  //     activePlayer: newActivePlayer,
-  //     hasFreelyDrawn: false,
-  //   },
-  // });
 }
 
 export async function playCard({
@@ -206,8 +180,6 @@ export async function playCard({
   playerName,
   unoPlayerName,
 }) {
-  console.log("unoPlayerName", unoPlayerName);
-  console.log("card[0]", card[0]);
   const { newActivePlayer, newRotation } = getNextGamer({
     gameData,
     card: card[0],
@@ -221,19 +193,18 @@ export async function playCard({
 
   const { usedCards } = gameData;
   const newUsedCards = usedCards;
-  newUsedCards.push(card[0].id);
+  newUsedCards.push(card[0].data.dataId);
 
-  console.log("gameData.gamersCards", gameData.gamersCards);
   const gamerCards = gameData.gamersCards[playerName];
   const newGamerCards = gamerCards.filter(
-    (gamerCard) => gamerCard.id !== card[0].id
+    (gamerCard) => gamerCard.data.dataId !== card[0].data.dataId
   );
   const newGamersCards = { ...gameData.gamersCards };
   newGamersCards[playerName] = newGamerCards;
-  console.log("newGamersCards", newGamersCards);
 
   const newData = {
     ...gameData,
+    gamersCards: newGamersCards,
     activePlayer: newActivePlayer,
     card: card[0],
     usedCards: newUsedCards,
@@ -243,27 +214,11 @@ export async function playCard({
     mustDraw,
     toDraw,
     hasFreelyDrawn: false,
-    gamersCards: newGamersCards,
   };
   await saveAndDispatchData({ roomId, roomToken, newData });
-
-  // await pusher.trigger(`room-${roomToken}`, "room-event", {
-  //   gameData: {
-  //     ...gameData,
-  //     activePlayer: newActivePlayer,
-  //     card: card[0],
-  //     usedCards: newUsedCards,
-  //     rotation: newRotation,
-  //     phase: unoPlayerName ? "uno" : "gaming",
-  //     unoPlayerName,
-  //     mustDraw,
-  //     toDraw,
-  //     hasFreelyDrawn: false,
-  //   },
-  // });
 }
 
-export async function drawCard({ roomId, roomToken, gameData }) {
+export async function drawCard({ roomId, roomToken, gameData, playerName }) {
   const { remainCards, mustDraw, toDraw, usedCards } = gameData;
 
   let { randomCard, newRemainCards } = getRandomCard(remainCards);
@@ -286,8 +241,14 @@ export async function drawCard({ roomId, roomToken, gameData }) {
     hasFreelyDrawn = true;
   }
 
+  const gamerCards = gameData.gamersCards[playerName];
+  const newGamerCards = [...gamerCards, { ...randomCard }];
+  const newGamersCards = { ...gameData.gamersCards };
+  newGamersCards[playerName] = newGamerCards;
+
   const newData = {
     ...gameData,
+    gamersCards: newGamersCards,
     remainCards: newRemainCards,
     usedCards: newUsedCards,
     activePlayer: newActivePlayer,
@@ -298,19 +259,6 @@ export async function drawCard({ roomId, roomToken, gameData }) {
   };
   await saveAndDispatchData({ roomId, roomToken, newData });
 
-  // await pusher.trigger(`room-${roomToken}`, "room-event", {
-  //   gameData: {
-  //     ...gameData,
-  //     remainCards: newRemainCards,
-  //     usedCards: newUsedCards,
-  //     activePlayer: newActivePlayer,
-  //     mustDraw: newMustDraw,
-  //     toDraw: newToDraw,
-  //     hasFreelyDrawn,
-  //     phase: "gaming",
-  //   },
-  // });
-
   return randomCard;
 }
 
@@ -320,13 +268,6 @@ export async function untriggerUnoPhase({ roomId, roomToken, gameData }) {
     phase: "gaming",
   };
   await saveAndDispatchData({ roomId, roomToken, newData });
-
-  // await pusher.trigger(`room-${roomToken}`, "room-event", {
-  //   gameData: {
-  //     ...gameData,
-  //     phase: "gaming",
-  //   },
-  // });
 }
 
 export async function triggerUnoFail({ roomId, roomToken, gameData }) {
@@ -343,16 +284,6 @@ export async function triggerUnoFail({ roomId, roomToken, gameData }) {
     phase: "gaming",
   };
   await saveAndDispatchData({ roomId, roomToken, newData });
-
-  // await pusher.trigger(`room-${roomToken}`, "room-event", {
-  //   gameData: {
-  //     ...gameData,
-  //     activePlayer: newActivePlayer,
-  //     mustDraw: true,
-  //     toDraw: 2,
-  //     phase: "gaming",
-  //   },
-  // });
 }
 
 export async function goEnd({ roomId, roomToken, gameData }) {
@@ -361,13 +292,6 @@ export async function goEnd({ roomId, roomToken, gameData }) {
     phase: "ended",
   };
   await saveAndDispatchData({ roomId, roomToken, newData });
-
-  // await pusher.trigger(`room-${roomToken}`, "room-event", {
-  //   gameData: {
-  //     ...gameData,
-  //     phase: "ended",
-  //   },
-  // });
 
   let counts = {};
   setTimeout(async () => {
@@ -395,16 +319,6 @@ export async function goEnd({ roomId, roomToken, gameData }) {
       activePlayer: null,
     };
     await saveAndDispatchData({ roomId, roomToken, newData });
-
-    // await pusher.trigger(`room-${roomToken}`, "room-event", {
-    //   gameData: {
-    //     ...gameData,
-    //     phase: "ended",
-    //     ended: true,
-    //     counts,
-    //     activePlayer: null,
-    //   },
-    // });
   }, 3000);
 }
 
@@ -455,27 +369,11 @@ export async function goNewUnoGame({ roomId, roomToken, gameData }) {
     remainCards: startedRemains,
     usedCards,
     startedCards,
+    gamersCards: startedCards,
     mustDraw: false,
     toDraw: 0,
     ended: false,
     // options,
   };
   await saveAndDispatchData({ roomId, roomToken, newData });
-
-  // await pusher.trigger(`room-${roomToken}`, "room-event", {
-  //   gameData: {
-  //     ...gameData,
-  //     activePlayer: gamers[0],
-  //     phase: "start",
-  //     rotation: "clock",
-  //     card: randomCard,
-  //     remainCards: startedRemains,
-  //     usedCards,
-  //     startedCards,
-  //     mustDraw: false,
-  //     toDraw: 0,
-  //     ended: false,
-  //     // options,
-  //   },
-  // });
 }

@@ -16,6 +16,7 @@ export const DND = ({
   onNewItems,
   newHand,
   setNewHand,
+  dataGamerCards,
 }) => {
   const [handItems, setHandItems] = useState([]);
   const [isNewItemAdding, setNewItemAdding] = useState(false);
@@ -95,6 +96,11 @@ export const DND = ({
       setGamerItems(handItems);
     }
   }, [MemoHand]);
+
+  useEffect(() => {
+    if (!dataGamerCards) return;
+    setHandItems(dataGamerCards);
+  }, [dataGamerCards, handItems]);
 
   return (
     <div style={{ display: "flex flex-col", justifyContent: "space-around" }}>

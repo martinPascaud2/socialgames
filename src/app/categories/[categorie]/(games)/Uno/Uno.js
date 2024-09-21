@@ -44,8 +44,8 @@ export default function Uno({
 
   const [isEnded, setIsEnded] = useState(false);
   useEffect(() => {
-    if (gameData.ended) setIsEnded(true);
-  }, [gameData.ended]);
+    setIsEnded(gameData.ended || gameData.nextGame);
+  }, [gameData.ended, gameData.nextGame]);
 
   const checkIsAllowed = ({
     itemType: newItemType,
@@ -162,10 +162,18 @@ export default function Uno({
   }, [phase]);
 
   useEffect(() => {
-    if (gamerItems.length === 0 && phase !== "start") {
-      goEnd({ roomId, roomToken, gameData });
-    }
-  }, [gamerItems]);
+    const end = async () => {
+      if (
+        gameData.gamersCards &&
+        gameData.gamersCards[user.name].length === 0 &&
+        phase !== "start" &&
+        phase !== "ended"
+      ) {
+        await goEnd({ roomId, roomToken, gameData });
+      }
+    };
+    end();
+  }, [gameData, phase, user, roomId, roomToken]);
 
   useEffect(() => {
     if (phase === "ended") {
@@ -179,9 +187,6 @@ export default function Uno({
       setNewHand([]);
     }
   }, [phase]);
-
-  console.log("gameData", gameData);
-  console.log("gamerItems", gamerItems);
 
   return (
     <>
@@ -202,6 +207,10 @@ export default function Uno({
             onNewItems={onNewCard}
             newHand={newHand}
             setNewHand={setNewHand}
+            // for coming back
+            dataGamerCards={
+              gameData.gamersCards && gameData.gamersCards[user.name]
+            }
           />
 
           {isActive && (
@@ -219,6 +228,7 @@ export default function Uno({
                       roomId,
                       roomToken,
                       gameData,
+                      playerName: user.name,
                     });
                     setNewHCs([
                       {

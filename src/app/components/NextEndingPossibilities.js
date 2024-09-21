@@ -36,7 +36,7 @@ export default function NextEndingPossibilities({
             </div>
           ) : (
             <>
-              <NextStep onClick={() => reset({ roomToken, gameData })}>
+              <NextStep onClick={() => reset({ roomId, roomToken, gameData })}>
                 Encore
               </NextStep>
 
