@@ -20,8 +20,6 @@ export default function useGetBarsSizes() {
   let topSize = 8;
   let bottomSize = 8;
 
-  console.log("deviceInfo", deviceInfo);
-
   if (deviceInfo?.device.model === "iPhone") {
     topSize = 20;
     bottomSize = 20;

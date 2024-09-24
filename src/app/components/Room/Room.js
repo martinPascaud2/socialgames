@@ -317,7 +317,6 @@ export default function Room({
       !roomToken
     )
       return;
-    console.log("coucou");
 
     const editOptions = async () => {
       await changeOptions({ roomId, roomToken, options });
