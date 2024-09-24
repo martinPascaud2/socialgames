@@ -12,6 +12,7 @@ import { ArrowPathIcon } from "@heroicons/react/24/outline";
 import Html5QrcodePlugin from "@/components/Html5QrcodePlugin";
 import Modal from "@/components/Modal";
 import useWake from "@/utils/useWake";
+import { useDeviceDetector } from "@/utils/useGetBarsSizes";
 import getLocation from "@/utils/getLocation";
 import getErrorInformations from "@/utils/getErrorInformations";
 import cancelBack from "@/utils/cancelBack";
@@ -33,6 +34,7 @@ export default function Categories({
   signOut,
 }) {
   const { isSupported, isVisible, released, request, release } = useWake();
+  const deviceInfo = useDeviceDetector();
   const router = useRouter();
 
   const [serverMessage, setServerMessage] = useState();
@@ -362,6 +364,7 @@ export default function Categories({
             style={{ top: `${topRect - 144}px` }}
           >
             <div>joueur {user.name}</div>
+            <div>{deviceInfo?.device?.model}</div>
             <div>infos</div>
             {friendList.map((friend) => (
               <div
@@ -392,7 +395,7 @@ export default function Categories({
               }}
               className={classNames(
                 { hidden: !togglingParameters && !toggledParameters },
-                "z-20 w-1/3 p-3 text-center border"
+                "z-20 w-1/3 p-3 text-center border w-full m-1 p-2"
               )}
             >
               Déconnexion
@@ -407,7 +410,7 @@ export default function Categories({
                 setShowInvitations(false);
                 setServerMessage("");
               }}
-              className={classNames("p-2 bg-red-100", {
+              className={classNames("m-1 p-2 bg-red-100 w-full", {
                 "outline outline-black": showParams,
               })}
             >

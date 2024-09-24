@@ -3,7 +3,7 @@
 import { UAParser } from "ua-parser-js";
 import { useEffect, useState } from "react";
 
-const useDeviceDetector = () => {
+export const useDeviceDetector = () => {
   const [deviceInfo, setDeviceInfo] = useState();
 
   useEffect(() => {
