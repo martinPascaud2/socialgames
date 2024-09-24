@@ -12,6 +12,7 @@ import {
   goEnd,
   addCount,
   goNewUnoGame,
+  removeGamers,
 } from "./gameActions";
 
 import { DND } from "@/components/DND/DND";
@@ -19,11 +20,13 @@ import { HTML5toTouch } from "@/components/DND/HTML5toTouch";
 import { generatePreview } from "@/components/DND/generatePreview";
 
 import NextEndingPossibilities from "@/components/NextEndingPossibilities";
+import Disconnected from "@/components/disconnection/Disconnected";
 
 export default function Uno({
   roomId,
   roomToken,
   user,
+  onlineGamers,
   gameData,
   storedLocation,
 }) {
@@ -346,6 +349,19 @@ export default function Uno({
         reset={goNewUnoGame}
         storedLocation={storedLocation}
         user={user}
+      />
+
+      <Disconnected
+        roomId={roomId}
+        onlineGamers={onlineGamers}
+        gamers={gamers}
+        isAdmin={isAdmin}
+        onGameBye={() =>
+          removeGamers({ roomId, roomToken, gameData, onlineGamers })
+        }
+        modeName="uno"
+        gameData={gameData}
+        userId={user.id}
       />
     </>
   );

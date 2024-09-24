@@ -2,6 +2,7 @@
 
 import pusher from "@/utils/pusher";
 
+import { modesRules } from "@/assets/globals";
 import { saveAndDispatchData } from "@/components/Room/actions";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkPlayers from "@/utils/checkPlayers";
@@ -375,5 +376,65 @@ export async function goNewUnoGame({ roomId, roomToken, gameData }) {
     ended: false,
     // options,
   };
+  await saveAndDispatchData({ roomId, roomToken, newData });
+}
+
+export async function removeGamers({
+  roomId,
+  roomToken,
+  gameData,
+  onlineGamers,
+}) {
+  const { gamers, startedCards, gamersCards, activePlayer, mustDraw, toDraw } =
+    gameData;
+  const onlineGamersList = onlineGamers.map((gamer) => gamer.userName);
+  const onlineGamersSet = new Set(onlineGamersList);
+
+  const remainingGamers = gamers.filter((gamer) =>
+    onlineGamersSet.has(gamer.name)
+  );
+
+  const newStartedCards = Object.fromEntries(
+    Object.entries(startedCards).filter(([gamerName]) =>
+      onlineGamersSet.has(gamerName)
+    )
+  );
+
+  const newGamersCards = Object.fromEntries(
+    Object.entries(gamersCards).filter(([gamerName]) =>
+      onlineGamersSet.has(gamerName)
+    )
+  );
+
+  let newMustDraw;
+  let newToDraw;
+  let newActivePlayer;
+
+  if (!onlineGamersSet.has(activePlayer.name)) {
+    newActivePlayer = getNextGamer({
+      gameData: { ...gameData, gamers: remainingGamers },
+      card: null,
+    }).newActivePlayer;
+    newMustDraw = false;
+    newToDraw = 0;
+  } else {
+    newActivePlayer = activePlayer;
+    newMustDraw = mustDraw;
+    newToDraw = toDraw;
+  }
+
+  const ended = remainingGamers.length < modesRules.uno.limits.min;
+
+  const newData = {
+    ...gameData,
+    gamers: remainingGamers,
+    startedCards: newStartedCards,
+    gamersCards: newGamersCards,
+    activePlayer: newActivePlayer,
+    mustDraw: newMustDraw,
+    toDraw: newToDraw,
+    ended,
+  };
+
   await saveAndDispatchData({ roomId, roomToken, newData });
 }

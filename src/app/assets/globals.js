@@ -154,4 +154,8 @@ export const modesRules = {
     name: "Undercover",
     limits: { min: 3, max: 15 },
   },
+  uno: {
+    name: "Uno",
+    limits: { min: 2, max: 10 },
+  },
 };
