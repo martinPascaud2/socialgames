@@ -66,13 +66,13 @@ export const subCategories = {
       description: "Blablabla eojrnvenrvlejrv ervedv dfvdvf",
     },
   ],
-  categorie2: [
-    { name: "game6", path: "uno", img: "/uno.jpeg" },
-    { name: "game7", path: "uno", img: "/uno.jpeg" },
-    { name: "game8", path: "uno", img: "/uno.jpeg" },
-    { name: "game9", path: "uno", img: "/uno.jpeg" },
-    { name: "game10", path: "uno", img: "/uno.jpeg" },
-  ],
+  // categorie2: [
+  //   { name: "game6", path: "uno", img: "/uno.jpeg" },
+  //   { name: "game7", path: "uno", img: "/uno.jpeg" },
+  //   { name: "game8", path: "uno", img: "/uno.jpeg" },
+  //   { name: "game9", path: "uno", img: "/uno.jpeg" },
+  //   { name: "game10", path: "uno", img: "/uno.jpeg" },
+  // ],
 };
 
 // check : remove isGuestsAllowed, limits in modes

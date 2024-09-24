@@ -549,27 +549,7 @@ export async function saveAndDispatchData({ roomId, roomToken, newData }) {
   });
 }
 
-// export async function presenceTEST({ roomToken, onlineGamers, userName }) {
-//   const gamerIndex = onlineGamers.findIndex(
-//     (gamer) => gamer.userName === userName
-//   );
-//   const gamerPresence = onlineGamers[gamerIndex];
-//   // const gamerPresence = onlineGamers.find(
-//   //   (gamer) => (gamer.userName = userName)
-//   // );
-//   const newGamerPresence = { ...gamerPresence, lastPing: Date.now() };
-
-//   const newOnlineGamers = [...onlineGamers];
-//   newOnlineGamers[gamerIndex] = newGamerPresence;
-
-//   await pusher.trigger(
-//     `presence-${roomToken}`,
-//     "check-presence",
-//     newOnlineGamers
-//   );
-// }
-
-export async function presenceTEST({
+export async function sendPresenceSign({
   roomToken,
   userName,
   userId,

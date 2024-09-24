@@ -61,9 +61,8 @@ import {
   checkConnection,
   retryGamerConnection,
   retryMultiGuestConnection,
+  sendPresenceSign,
 } from "./actions";
-
-import { presenceTEST } from "./actions";
 
 function subscribePresenceChannel({
   userId,
@@ -81,7 +80,6 @@ function subscribePresenceChannel({
         userId,
         userName,
         multiGuest: status === "multiGuest",
-        // lastPing: Date.now(),
       },
     },
   });
@@ -91,35 +89,24 @@ function subscribePresenceChannel({
   presenceChannel.bind("pusher:subscription_succeeded", ({ members }) => {
     setOnlineGamers(Object.values(members));
   });
+
   presenceChannel.bind("pusher:subscription_error", (status) => {
     console.error("Subscription failed:", status);
   });
+
   presenceChannel.bind("pusher:member_added", (member) => {
     setOnlineGamers(Object.values(presenceChannel.members.members));
-    // setOnlineGamers((prevOnlines) => [
-    //   ...prevOnlines,
-    //   ...Object.values(presenceChannel.members.members),
-    // ]);
   });
+
   presenceChannel.bind("pusher:member_removed", (member) => {
     setOnlineGamers(Object.values(presenceChannel.members.members));
   });
-  // presenceChannel.bind("check-presence", (newOnlineGamers) => {
-  //   setOnlineGamers((prevOnlineGamers) => {
-  //     const stillHere = newOnlineGamers.filter(
-  //       (gamer) => parseInt(Date.now()) - parseInt(gamer.lastPing) < 15000
-  //     );
-  //     if (stillHere.length === prevOnlineGamers.length) return newOnlineGamers;
-  //     else return stillHere;
-  //   });
-  //   setOnlineGamers(Object.values(presenceChannel.members.members));
-  // });
 
   presenceChannel.bind("check-presence", (presence) => {
     pingTimeStamps[presence.userName] = presence.time;
 
     Object.entries(pingTimeStamps).forEach((stamp) => {
-      if (Date.now() - stamp[1] > 7000) {
+      if (Date.now() - stamp[1] > 12000) {
         delete pingTimeStamps[stamp[0]];
         setOnlineGamers((prevOnlines) => {
           const newOnlines = prevOnlines.filter(
@@ -136,22 +123,6 @@ function subscribePresenceChannel({
         });
       }
     });
-
-    // pingTimeStamps[data.userName] = Object.keys(data);
-    // Object.entries(pingTimeStamps).forEach((stamp) => {
-    //   if (
-    //     Date.now() - stamp[1] > 10000 &&
-    //     pingTimeStamps[data.userName] !== undefined
-    //   ) {
-    //     delete pingTimeStamps[data.userName];
-    //     setOnlineGamers((prevOnlines) => {
-    //       const newOnlines = prevOnlines.filter(
-    //         (online) => online.userName !== stamp[0]
-    //       );
-    //       return newOnlines;
-    //     });
-    //   }
-    // });
   });
 }
 
@@ -172,14 +143,17 @@ export default function Room({
   const [roomId, setRoomId] = useState(0);
   const [inputToken, setInputToken] = useState("");
   const [roomToken, setRoomToken] = useState();
-  const [isChosen, setIsChosen] = useState(false);
-  const [joinError, setJoinError] = useState();
-  const [showRoomRefs, setShowRoomRefs] = useState(false);
-  const [isStarted, setIsStarted] = useState(false);
-  const [serverMessage, setServerMessage] = useState("");
-
+  const [isChosen, setIsChosen] = useState(false); // gamer has joined
   const [uniqueName, setUniqueName] = useState();
   const [isHere, setIsHere] = useState(false);
+  const [multiGuestId, setMultiGuestId] = useState();
+  const [multiGuestDataId, setMultiGuestDataId] = useState();
+  const [joinError, setJoinError] = useState();
+  const [showRoomRefs, setShowRoomRefs] = useState(false);
+  const [isPrivate, setIsPrivate] = useState();
+  const [geoLocation, setGeoLocation] = useState(null);
+  const [isStarted, setIsStarted] = useState(false);
+  const [serverMessage, setServerMessage] = useState("");
 
   const [friendsList, setFriendsList] = useState();
   const [invitedList, setInvitedList] = useState([]);
@@ -187,90 +161,21 @@ export default function Room({
   const [gamerList, setGamerList] = useState([]);
   const [guestList, setGuestList] = useState([]);
   const [multiGuestList, setMultiGuestList] = useState([]);
-  const [multiGuestId, setMultiGuestId] = useState();
-  const [multiGuestDataId, setMultiGuestDataId] = useState();
   const [deletedGamer, setDeletedGamer] = useState(null);
   const [deletedGamersList, setDeletedGamersList] = useState([]);
 
   const [options, setOptions] = useState({});
-  const [geoLocation, setGeoLocation] = useState(null);
-  const [isPrivate, setIsPrivate] = useState();
   const [gameData, setGameData] = useState({});
   const [onlineGamers, setOnlineGamers] = useState([]);
 
-  const { isSupported, isVisible, released, request, release } = useWake();
+  const { isSupported, isVisible, released, request, release } = useWake(); // check
   const userParams = user.params;
   const barsSizes = {
     bottom: userParams?.bottomBarSize || 8,
     top: userParams?.topBarSize || 8,
   };
 
-  useEffect(() => {
-    if (!roomToken) return;
-    async function get() {
-      const storedGroupPrivacy = JSON.parse(
-        localStorage.getItem("group")
-      )?.privacy;
-      const { id, priv } = await getRoomRefs(roomToken);
-
-      setRoomId(id);
-
-      if (isAdmin && !!storedGroupPrivacy) {
-        setIsPrivate(storedGroupPrivacy === "private");
-      } else {
-        setIsPrivate(priv);
-      }
-    }
-    get();
-
-    return () => {
-      pusher.unsubscribe(`room-${roomToken}`);
-    };
-  }, [roomToken]);
-
-  useEffect(() => {
-    const getMultiLoc = async () => {
-      try {
-        const loc = await getLocation();
-        setGeoLocation(loc);
-      } catch (error) {
-        setServerMessage(error.message);
-      }
-    };
-    user.multiGuest && getMultiLoc();
-  }, [user]);
-
-  const getFriends = useCallback(async () => {
-    const friends = await getRoomFriendList({ userId: user.id });
-    setFriendsList(friends);
-  }, [user.id]);
-
-  useEffect(() => {
-    if (user.multiGuest) return;
-    setTimeout(async () => await getFriends(), !friendsList ? 0 : 2000);
-    getFriends();
-  }, [gamerList]);
-
-  useEffect(() => {
-    if (user.multiGuest && gameData.gamers && uniqueName && roomToken) {
-      const id = gameData.gamers.find((gamer) => gamer.name === uniqueName)?.id;
-
-      setMultiGuestId(id);
-      setMultiGuestDataId(
-        gameData.gamers.find((gamer) => gamer.name === uniqueName)?.dataId
-      );
-      // check : gamedata
-      subscribePresenceChannel({
-        userId: id,
-        userName: uniqueName,
-        status: "multiGuest",
-        setOnlineGamers,
-        roomToken,
-      });
-    }
-    // }, [isStarted, gameData, uniqueName, roomToken, user]);
-  }, [isStarted, gameData.gamers, uniqueName, roomToken, user]);
-
+  // admin room_creation
   const createRoom = useCallback(
     async (privacy, storedLocation) => {
       if (isChosen) return;
@@ -337,7 +242,124 @@ export default function Room({
     },
     [user, gameName, gamerList, invitedList]
   );
+  // ------------------------------
 
+  // admin group_management
+  useEffect(() => {
+    const storedGroup = JSON.parse(localStorage.getItem("group"));
+    const storedGroupPrivacy = storedGroup?.privacy;
+    const storedLocation = storedGroup?.lastPosition;
+
+    const init = async () => {
+      await createRoom(storedGroupPrivacy || "private", storedLocation);
+      storedLocation && setGeoLocation(storedLocation);
+    };
+    !searchToken && init();
+  }, []);
+
+  useEffect(() => {
+    const storedGroup = JSON.parse(localStorage.getItem("group"));
+    if (!roomToken && storedGroup) {
+      setGroup(storedGroup);
+    }
+  }, [roomToken, gameName]);
+
+  useEffect(() => {
+    if (
+      !gameName ||
+      !group?.roomToken ||
+      !pathname ||
+      !roomToken ||
+      roomToken === null ||
+      gameData.ended
+    )
+      return;
+
+    const storedGroup = JSON.parse(localStorage.getItem("group"));
+
+    const go = async () => {
+      if (!storedGroup) return;
+      try {
+        await new Promise((resolve) => setTimeout(resolve, 1500)); // check
+        await goOneMoreGame({
+          pathname,
+          oldRoomToken: storedGroup.roomToken,
+          newRoomToken: roomToken,
+          gameName,
+        });
+        localStorage.removeItem("group");
+      } catch (error) {
+        console.error("error", error);
+      }
+    };
+    go();
+  }, [gameName, group, pathname, roomToken, gameData.ended]);
+  // ------------------------------
+
+  //admin privacy_management
+  const togglePriv = useCallback(async () => {
+    await togglePrivacy({ roomId, roomToken, privacy: isPrivate });
+    group &&
+      setGroup((prevGroup) => ({
+        ...prevGroup,
+        privacy: !isPrivate ? "private" : "public",
+      }));
+  }, [isPrivate, roomId]);
+  // ------------------------------
+
+  //admin options_management
+  useEffect(() => {
+    if (
+      !isAdmin ||
+      !options ||
+      !Object.keys(options).length ||
+      !roomId ||
+      !roomToken
+    )
+      return;
+    console.log("coucou");
+
+    const editOptions = async () => {
+      await changeOptions({ roomId, roomToken, options });
+    };
+    editOptions();
+  }, [options]);
+  // ------------------------------
+
+  // admin launch_room
+  const launchRoom = useCallback(async () => {
+    gameName !== "grouping" &&
+      Object.keys(options).length &&
+      (await saveLastParams({ userId: user.id, options }));
+    const { error } = await launchGame({
+      roomId,
+      roomToken,
+      adminId: user.id,
+      gamers: gamerList,
+      guests: guestList,
+      multiGuests: multiGuestList,
+      options,
+    });
+
+    if (error) {
+      setServerMessage(error);
+    } else {
+      setServerMessage("");
+      setIsStarted(true);
+    }
+  }, [
+    gameName,
+    options,
+    roomId,
+    roomToken,
+    user.id,
+    gamerList,
+    guestList,
+    multiGuestList,
+  ]);
+  // ------------------------------
+
+  // join Room
   const joinRoom = useCallback(async () => {
     if (!isChosen || !inputToken) {
       setIsChosen(true);
@@ -379,6 +401,7 @@ export default function Room({
         setOptions(joinData.options);
       }
       const { gamers, guests, multiGuests, options } = joinData;
+      const isBackedAdmin = joinData.admin === uniqueUserName;
 
       const channel = pusher.subscribe(`room-${token}`);
       channel.bind("room-event", function (data) {
@@ -397,12 +420,11 @@ export default function Room({
           setInvitedList((prevInv) =>
             prevInv.filter((inv) => inv !== data.deleted)
           ));
-        data.options && setOptions(data.options);
+        !isBackedAdmin && data.options && setOptions(data.options);
         data.privacy !== undefined && setIsPrivate(data.privacy);
       });
 
-      joinData.admin !== uniqueUserName &&
-        (await triggerGamers({ roomToken: token, gamers }));
+      !isBackedAdmin && (await triggerGamers({ roomToken: token, gamers }));
 
       subscribePresenceChannel({
         userId: user.id,
@@ -498,7 +520,7 @@ export default function Room({
         if (
           !user.multiGuest &&
           !uniqueName &&
-          !gamerList?.some((multiName) => multiName === uniqueName) &&
+          !gamerList?.some((gamerName) => gamerName === uniqueName) &&
           deletedGamer !== uniqueName
         )
           await joinRoom();
@@ -528,7 +550,93 @@ export default function Room({
       window.location.href = "/";
     }, 3000);
   }, [joinError]);
+  // ------------------------------
 
+  // get [roomId + privacy]
+  useEffect(() => {
+    if (!roomToken) return;
+    async function get() {
+      const storedGroupPrivacy = JSON.parse(
+        localStorage.getItem("group")
+      )?.privacy;
+      const { id, priv } = await getRoomRefs(roomToken);
+
+      setRoomId(id);
+
+      if (isAdmin && !!storedGroupPrivacy) {
+        setIsPrivate(storedGroupPrivacy === "private");
+      } else {
+        setIsPrivate(priv);
+      }
+    }
+    get();
+
+    return () => {
+      pusher.unsubscribe(`room-${roomToken}`);
+    };
+  }, [roomToken, isAdmin]);
+  // ------------------------------
+
+  // CP friends
+  const getFriends = useCallback(async () => {
+    const friends = await getRoomFriendList({ userId: user.id });
+    setFriendsList(friends);
+  }, [user.id]);
+
+  useEffect(() => {
+    if (user.multiGuest) return;
+    setTimeout(async () => await getFriends(), !friendsList ? 0 : 2000);
+    getFriends();
+  }, [gamerList]);
+  // ------------------------------
+
+  // delete CP_invitations when going out
+  const deleteInvs = useCallback(async () => {
+    await deleteInvitations({
+      userId: user.id,
+      categorie,
+      gameName,
+      roomToken,
+    });
+  }, [user.id, categorie, gameName, roomToken]);
+  // ------------------------------
+
+  // multiGuest: get Location
+  useEffect(() => {
+    const getMultiLoc = async () => {
+      try {
+        const loc = await getLocation();
+        setGeoLocation(loc);
+      } catch (error) {
+        setServerMessage(error.message);
+      }
+    };
+    user.multiGuest && getMultiLoc();
+  }, [user]);
+  // ------------------------------
+
+  // init multiGuest: id, dataId, presence
+  useEffect(() => {
+    if (user.multiGuest && gameData.gamers && uniqueName && roomToken) {
+      const id = gameData.gamers.find((gamer) => gamer.name === uniqueName)?.id;
+
+      setMultiGuestId(id);
+      setMultiGuestDataId(
+        gameData.gamers.find((gamer) => gamer.name === uniqueName)?.dataId
+      );
+      // check : gamedata
+      subscribePresenceChannel({
+        userId: id,
+        userName: uniqueName,
+        status: "multiGuest",
+        setOnlineGamers,
+        roomToken,
+      });
+    }
+  }, [isStarted, gameData.gamers, uniqueName, roomToken, user]);
+  // ------------------------------
+
+  // check connection
   useEffect(() => {
     if (!roomId || isHere || !uniqueName || !roomToken) return;
     let connectInterval = setInterval(() => {
@@ -540,6 +648,7 @@ export default function Room({
         });
         if (isConnected) {
           setIsHere(true);
+          clearInterval(connectInterval);
         } else {
           if (!user.multiGuest)
             await retryGamerConnection({
@@ -558,7 +667,9 @@ export default function Room({
       clearInterval(connectInterval);
     };
   }, [isHere, roomId, uniqueName, roomToken, user.id, user.multiGuest]);
+  // ------------------------------
 
+  // deletions
   const deleteGamer = async (gamer) => {
     const gamers = await serverDeleteGamer({
       token: roomToken,
@@ -608,112 +719,9 @@ export default function Room({
       prevMultiGuests.filter((multiGuest) => multiGuest !== deletedGamer)
     );
   }, [deletedGamer]);
+  // ------------------------------
 
-  const deleteInvs = useCallback(async () => {
-    await deleteInvitations({
-      userId: user.id,
-      categorie,
-      gameName,
-      roomToken,
-    });
-  }, [user.id, categorie, gameName, roomToken]);
-
-  useEffect(() => {
-    const storedGroup = JSON.parse(localStorage.getItem("group"));
-    if (!roomToken && storedGroup) {
-      setGroup(storedGroup);
-    }
-  }, [roomToken, gameName]);
-
-  useEffect(() => {
-    if (
-      !gameName ||
-      !group?.roomToken ||
-      !pathname ||
-      !roomToken ||
-      roomToken === null ||
-      gameData.ended
-    )
-      return;
-
-    const storedGroup = JSON.parse(localStorage.getItem("group"));
-
-    const go = async () => {
-      if (!storedGroup) return;
-      try {
-        await new Promise((resolve) => setTimeout(resolve, 1500)); // check
-        await goOneMoreGame({
-          pathname,
-          oldRoomToken: storedGroup.roomToken,
-          newRoomToken: roomToken,
-          gameName,
-        });
-        localStorage.removeItem("group");
-      } catch (error) {
-        console.error("error", error);
-      }
-    };
-    go();
-  }, [gameName, group, pathname, roomToken, gameData.ended]);
-
-  useEffect(() => {
-    const storedGroup = JSON.parse(localStorage.getItem("group"));
-    const storedGroupPrivacy = storedGroup?.privacy;
-    const storedLocation = storedGroup?.lastPosition;
-
-    const init = async () => {
-      await createRoom(storedGroupPrivacy || "private", storedLocation);
-      storedLocation && setGeoLocation(storedLocation);
-    };
-    !searchToken && init();
-  }, []);
-
-  useEffect(() => {
-    if (
-      !isAdmin ||
-      !options ||
-      !Object.keys(options).length ||
-      !roomId ||
-      !roomToken
-    )
-      return;
-    const editOptions = async () => {
-      await changeOptions({ roomId, roomToken, options });
-    };
-    editOptions();
-  }, [options]);
-
-  const togglePriv = useCallback(async () => {
-    await togglePrivacy({ roomId, roomToken, privacy: isPrivate });
-    group &&
-      setGroup((prevGroup) => ({
-        ...prevGroup,
-        privacy: !isPrivate ? "private" : "public",
-      }));
-  }, [isPrivate, roomId]);
-
-  const launchRoom = async () => {
-    gameName !== "grouping" &&
-      Object.keys(options).length &&
-      (await saveLastParams({ userId: user.id, options }));
-    const { error } = await launchGame({
-      roomId,
-      roomToken,
-      adminId: user.id,
-      gamers: gamerList,
-      guests: guestList,
-      multiGuests: multiGuestList,
-      options,
-    });
-
-    if (error) {
-      setServerMessage(error);
-    } else {
-      setServerMessage("");
-      setIsStarted(true);
-    }
-  };
-
+  // not_admins redirections
   useEffect(() => {
     if (
       !gameData ||
@@ -739,31 +747,23 @@ export default function Room({
       goNewGame();
     }
   }, [gameData, gameName, isStarted, user]);
+  // ------------------------------
 
-  // useEffect(() => {
-  //   // if (!roomToken || !onlineGamers?.length || !user?.name) return;
-  //   if (!roomToken || !user?.name || !onlineGamers.length) return;
-  //   const interval = setInterval(async () => {
-  //     await presenceTEST({ roomToken, onlineGamers, userName: user.name });
-  //   }, 5000);
-
-  //   return () => clearInterval(interval);
-  //   // }, [roomToken, onlineGamers, user]);
-  // }, [roomToken, user, onlineGamers.length]);
-
+  // send presence_sign
   useEffect(() => {
     if (!roomToken || !user?.name) return;
     const interval = setInterval(async () => {
-      await presenceTEST({
+      await sendPresenceSign({
         roomToken,
         userName: user.name,
         userId: user.id,
         multiGuest: !!user.multiGuest,
       });
-    }, 3000);
+    }, 7000);
 
     return () => clearInterval(interval);
   }, [roomToken, user]);
+  // ------------------------------
 
   if (joinError) {
     return (

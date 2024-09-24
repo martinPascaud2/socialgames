@@ -4,7 +4,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { useCallback, useState } from "react";
 
-import { subCategories } from "@/assets/globals";
+import { subCategories } from "@/assets/globals.js";
 
 import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 

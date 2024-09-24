@@ -94,7 +94,7 @@ export default function Categories({
       });
     };
     update();
-  }, [barValues, user]);
+  }, [barValues, user, updateParams]);
 
   const isGroup = searchParams.get("group") === "true";
   const handleBgClick = () => {
@@ -239,7 +239,7 @@ export default function Categories({
     return () => {
       pusher.unsubscribe(`user-${user.email}`);
     };
-  }, [user.email]);
+  }, [user, router, updateLastCP]);
 
   useEffect(() => {
     setPublicRooms((prevPublics) => {
