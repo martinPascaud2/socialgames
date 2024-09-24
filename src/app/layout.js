@@ -22,7 +22,7 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
-      <meta name="apple-mobile-web-app-capable" content="yes"></meta>
+      <meta name="mobile-web-app-capable" content="yes"></meta>
       <meta
         name="apple-mobile-web-app-status-bar-style"
         content="black-translucent"
