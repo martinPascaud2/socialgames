@@ -60,10 +60,16 @@ export const subCategories = {
         "Découvrez l’unique symbole identique entre deux cartes... avant les autres !",
     },
     {
-      name: "Triaction ",
+      name: "Triaction",
       path: "triaction",
       img: "/triathlon.jpeg",
       description: "Blablabla eojrnvenrvlejrv ervedv dfvdvf",
+    },
+    {
+      name: "Triage",
+      path: "sort",
+      img: "/timeline.png",
+      description: "Description du jeu de tri",
     },
   ],
   // categorie2: [
@@ -127,6 +133,12 @@ export const gamesRefs = {
     limits: { min: 3, max: 8 },
     isGuestsAllowed: false,
   },
+  sort: {
+    name: "Triage",
+    categorie: "categorie1",
+    limits: { min: 2, max: 8 },
+    isGuestsAllowed: false,
+  },
 };
 
 export const modesRules = {
@@ -157,5 +169,9 @@ export const modesRules = {
   uno: {
     name: "Uno",
     limits: { min: 2, max: 10 },
+  },
+  sort: {
+    name: "Triage",
+    limits: { min: 2, max: 8 },
   },
 };

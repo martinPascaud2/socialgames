@@ -13,6 +13,7 @@ export const initGamersAndGuests = ({
     multiGuest: false,
   }));
 
+  // check forEach
   guests.map((guest) => {
     gamersAndGuests.push({
       id: adminId,
@@ -26,6 +27,8 @@ export const initGamersAndGuests = ({
   gamersAndGuests.map((gamer) => {
     if (gamer.id >= startIndex) startIndex = gamer.id + 1;
   });
+
+  // check forEach
   multiGuests.map((multiGuest) => {
     gamersAndGuests.push({
       id: startIndex,
