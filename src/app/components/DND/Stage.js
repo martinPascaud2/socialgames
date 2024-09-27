@@ -4,8 +4,7 @@ import isEqual from "lodash.isequal";
 import update from "immutability-helper";
 
 import { StageItem } from "./StageItem";
-
-import { ITEM_TYPES } from "./ITEM_TYPES";
+import useTypes from "./ITEM_TYPES/useTypes";
 
 export const Stage = ({
   items,
@@ -14,7 +13,9 @@ export const Stage = ({
   isNewItemAdding,
   setSelectedItem,
   selectedItem,
+  gameName,
 }) => {
+  const itemTypes = useTypes({ gameName });
   const [stageItems, setStageItems] = useState(items);
   const [newAddingItemProps, setNewAddingItemProps] = useState({
     hoveredIndex: 0,
@@ -85,7 +86,7 @@ export const Stage = ({
   ]);
 
   const [{ isOver, draggingItemType }, dropRef] = useDrop({
-    accept: ITEM_TYPES,
+    accept: itemTypes || [],
     drop: (droppedItem) => {
       const { id, type, data, gameName, index } = droppedItem;
       if (!id) {

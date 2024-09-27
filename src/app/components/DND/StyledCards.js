@@ -139,4 +139,28 @@ export const StyledCards = {
       </div>
     ),
   },
+  sort: {
+    date: ({ ref, index, handlerId, onClick, data }) => (
+      <div
+        ref={ref}
+        index={index}
+        data-handler-id={handlerId}
+        type="button"
+        onClick={onClick}
+        style={{
+          width: "50px",
+          height: "50px",
+          padding: "5px",
+          margin: "10px",
+          backgroundImage: `url('/timeline.png')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="w-full h-full flex flex-col justify-center align-center">
+          {data.date}
+        </div>
+      </div>
+    ),
+  },
 };

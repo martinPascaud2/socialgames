@@ -11,6 +11,7 @@ export const DND = ({
   newHCs,
   setNewHCs,
   maxStageCards,
+  gameName,
   isLocked,
   checkIsAllowed,
   onNewItems,
@@ -34,7 +35,7 @@ export const DND = ({
       if (
         isLocked ||
         !checkIsAllowed({ itemType: type, itemData: data, handItems }) ||
-        !items //check
+        !items // check
       )
         return;
       const startIndex = shouldAddBelow ? hoveredIndex + 1 : hoveredIndex;
@@ -111,6 +112,7 @@ export const DND = ({
         isNewItemAdding={isNewItemAdding}
         setSelectedItem={setSelectedItem}
         selectedItem={selectedItem}
+        gameName={gameName}
       />
       <MemoHand />
     </div>

@@ -2,7 +2,7 @@ import { useRef, useEffect } from "react";
 import { useDrag, useDrop } from "react-dnd";
 
 import { StyledCards } from "./StyledCards";
-import { ITEM_TYPES } from "./ITEM_TYPES";
+import useTypes from "./ITEM_TYPES/useTypes";
 
 export const HandCard = ({
   index,
@@ -14,9 +14,10 @@ export const HandCard = ({
   gameName,
 }) => {
   const cardRef = useRef(null);
+  const itemTypes = useTypes({ gameName });
 
   const [collected, drop] = useDrop({
-    accept: ITEM_TYPES,
+    accept: itemTypes || [],
     collect(monitor) {
       return {
         handlerId: monitor.getHandlerId(),

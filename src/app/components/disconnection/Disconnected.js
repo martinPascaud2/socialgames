@@ -183,7 +183,8 @@ export default function Disconnected({
     if (!disconnectedList.length) setFinishCountdownDate(null);
     else {
       const newFinishCountdownDate =
-        Date.now() + (isLeaverAdmin ? 120000 : 30000);
+        // Date.now() + (isLeaverAdmin ? 120000 : 30000);
+        Date.now() + (isLeaverAdmin ? 120000 : 3000000);
       setFinishCountdownDate(newFinishCountdownDate);
     }
   }, [disconnectedList, isLeaverAdmin]);
