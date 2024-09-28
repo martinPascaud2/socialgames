@@ -393,12 +393,19 @@ export default function Categories({
                 await signOut();
                 window.location.reload();
               }}
+              // check
               className={classNames(
                 { hidden: !togglingParameters && !toggledParameters },
-                "z-20 w-1/3 p-3 text-center border w-full m-1 p-2"
+                "z-20 w-1/3 text-center text-slate-300 border border-slate-300 w-full m-1 p-1"
               )}
             >
               Déconnexion
+            </Link>
+            <Link
+              href={"/post-game/"}
+              className="w-full m-1 p-1 bg-red-100 border border-red-300 text-center"
+            >
+              Post game
             </Link>
             <button
               onClick={() => {
@@ -410,9 +417,12 @@ export default function Categories({
                 setShowInvitations(false);
                 setServerMessage("");
               }}
-              className={classNames("m-1 p-2 bg-red-100 w-full", {
-                "outline outline-black": showParams,
-              })}
+              className={classNames(
+                "m-1 p-1 bg-red-100 border border-red-300 w-full",
+                {
+                  "outline outline-black": showParams,
+                }
+              )}
             >
               Paramètres
             </button>

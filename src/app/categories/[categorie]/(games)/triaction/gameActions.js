@@ -137,7 +137,10 @@ export async function sendActionBack({ backed, roomToken, gameData, sender }) {
   const backedActions = gameData.backedActions || {};
 
   const gamerActions = actions[aimed.name];
-  const newGamerActions = { ...gamerActions, backed: action };
+  const newGamerActions = {
+    ...gamerActions,
+    backed: { action, from: sender },
+  };
   const newActions = { ...actions, [aimed.name]: newGamerActions };
   const newBackedActions = { ...backedActions, [sender]: backed };
 
@@ -188,6 +191,30 @@ export async function proposeAction({
   }
 }
 
+const createPostGame = async ({ gameData, gameName }) => {
+  const { gamers, actions } = gameData;
+  const standardGamers = gamers.filter((gamer) => !gamer.multiGuest);
+  const userIds = standardGamers.map((standard) => standard.id);
+
+  const data_PG = {
+    actions,
+  };
+
+  await prisma.postGame.create({
+    data: {
+      gameName,
+      gameData: data_PG,
+      users: {
+        create: userIds.map((userId) => ({
+          user: {
+            connect: { id: userId },
+          },
+        })),
+      },
+    },
+  });
+};
+
 export async function sendPropositionBack({
   proposer,
   keeper,
@@ -201,8 +228,16 @@ export async function sendPropositionBack({
   const proposerActions = actions[proposer];
   const keeperActions = actions[keeper.name];
 
-  const newProposerActions = { ...proposerActions, proposedBack: backed };
-  const newKeeperActions = { ...keeperActions, kept };
+  const newProposerActions = {
+    ...proposerActions,
+    proposedBack: { ...backed, from: keeper.name },
+  };
+
+  const newKeeperActions = {
+    ...keeperActions,
+    kept: { ...kept, from: proposer },
+  };
+
   const newActions = {
     ...actions,
     [proposer]: newProposerActions,
@@ -220,14 +255,18 @@ export async function sendPropositionBack({
   });
 
   if (newSenders.length === gameData.gamers.length) {
+    const finalData = {
+      ...gameData,
+      phase: "finalReveal",
+      actions: newActions,
+      senders: newSenders,
+    };
+
+    await createPostGame({ gameData: finalData, gameName: "triaction" });
+
     await new Promise((resolve) => setTimeout(resolve, 2000));
     await pusher.trigger(`room-${roomToken}`, "room-event", {
-      gameData: {
-        ...gameData,
-        phase: "finalReveal",
-        actions: newActions,
-        senders: newSenders,
-      },
+      gameData: finalData,
     });
   }
 }

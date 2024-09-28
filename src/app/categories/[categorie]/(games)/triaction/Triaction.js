@@ -16,6 +16,7 @@ import {
 
 import { vampiro } from "@/assets/fonts";
 
+import WrittenCard from "./WrittenCard";
 import NextEndingPossibilities from "@/components/NextEndingPossibilities";
 import Disconnected from "@/components/disconnection/Disconnected";
 
@@ -255,7 +256,7 @@ export default function Triaction({
   const [showConfirm, setShowConfirm] = useState(false);
 
   const [aimed, setAimed] = useState();
-  const place = gamers?.find((gamer) => gamer.name === user.name).place;
+  const place = gamers?.find((gamer) => gamer.name === user.name)?.place;
 
   const [actions, setActions] = useState({});
   const [readyActions, setReadyActions] = useState(false);
@@ -298,7 +299,8 @@ export default function Triaction({
   };
 
   useEffect(() => {
-    const userPlace = gamers?.find((gamer) => gamer.name === user.name).place;
+    if (!gamers) return;
+    const userPlace = gamers?.find((gamer) => gamer.name === user.name)?.place;
     if (phase === "write") {
       const aimed = gamers.find(
         (gamer) => gamer.place === (userPlace % gamers.length) + 1
@@ -311,7 +313,7 @@ export default function Triaction({
       setPrevious(prev);
       setIsValidated(false);
     }
-  }, [phase]);
+  }, [phase, gamers]);
 
   useEffect(() => {
     if (phase !== "write") return;
@@ -420,7 +422,7 @@ export default function Triaction({
     if (hasReload || !gameData) return;
 
     const reload = async () => {
-      setWaiting(senders.some((sender) => sender.name === user.name));
+      setWaiting(senders?.some((sender) => sender.name === user.name));
       setActions((prevActions) => {
         if (phase === "write") {
           const storedWrittenActions =
@@ -650,34 +652,37 @@ export default function Triaction({
                     </span>
                   </div>
                   {actions &&
-                    Object.entries(actions).map((action) => (
-                      <div
-                        key={action[0]}
-                        onClick={() => {
-                          if (
-                            Object.keys(selected)?.length &&
-                            selected.id === action[0]
-                          )
-                            setSelected({});
-                          else if (!Object.keys(selected)?.length)
-                            setSelected({
-                              id: action[0],
-                              aimed: previous,
-                              action: action[1],
-                            });
-                        }}
-                        className={`${
-                          selected?.id === action[0] && "bg-green-100"
-                        } w-full rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center`}
-                      >
-                        <label>Action {action[0]}</label>
+                    Object.entries(actions).map((action) => {
+                      if (action[0] === "backed") return;
+                      return (
                         <div
-                          className={`${vampiro.className} w-full p-2 m-2 text-center`}
+                          key={action[0]}
+                          onClick={() => {
+                            if (
+                              Object.keys(selected)?.length &&
+                              selected.id === action[0]
+                            )
+                              setSelected({});
+                            else if (!Object.keys(selected)?.length)
+                              setSelected({
+                                id: action[0],
+                                aimed: previous,
+                                action: action[1],
+                              });
+                          }}
+                          className={`${
+                            selected?.id === action[0] && "bg-green-100"
+                          } w-full rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center`}
                         >
-                          {action[1]}
+                          <label>Action {action[0]}</label>
+                          <div
+                            className={`${vampiro.className} w-full p-2 m-2 text-center`}
+                          >
+                            {action[1]}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                 </div>
               ) : (
                 <div className="w-[90%] flex flex-col items-center">
@@ -771,7 +776,7 @@ export default function Triaction({
         >
           {(showChoose === "long" || showChoose === "backed") &&
             (() => {
-              const backed = gameData.actions[user.name].backed;
+              const backed = gameData.actions[user.name].backed.action;
               const Press = () => {
                 if (showChoose === "backed") return null;
                 return (
@@ -848,7 +853,7 @@ export default function Triaction({
           const actions = gameData.actions[user.name];
           const backed = {
             label: `Action renvoyée par ${aimed?.name}`,
-            action: actions.backed,
+            action: actions.backed.action,
           };
           const kept = {
             label: `Proposition de ${previous?.name} acceptée`,
@@ -859,24 +864,11 @@ export default function Triaction({
             action: actions.proposedBack.action,
           };
 
-          const FinalCard = ({ data }) => (
-            <div className="w-[90%] rounded-md border border-lime-800 my-3 py-2 px-4 flex flex-col items-center shadow-lg shadow-lime-900 bg-lime-700">
-              <label className="font-bold text-slate-100 tracking-wide">
-                {data.label}
-              </label>
-              <div
-                className={`${vampiro.className} w-full p-2 m-2 text-center text-red-900 text-lg bg-lime-100 border-4 border-double border-lime-800`}
-              >
-                {data.action}
-              </div>
-            </div>
-          );
-
           return (
             <>
-              <FinalCard data={backed} />
-              <FinalCard data={kept} />
-              <FinalCard data={proposedBack} />
+              <WrittenCard data={backed} />
+              <WrittenCard data={kept} />
+              <WrittenCard data={proposedBack} />
             </>
           );
         })()}

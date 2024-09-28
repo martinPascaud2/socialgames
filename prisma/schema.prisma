@@ -36,6 +36,24 @@ model User {
   drawChain                   DrawLink[]
   alreadyDrawingWords         DrawingWordsOnUsers[]
   unoCount                    Int?
+  postGames                   UserPostGame[]
+}
+
+model PostGame {
+  id        Int            @id @default(autoincrement())
+  gameName  String
+  gameData  Json?
+  createdAt DateTime       @default(now())
+  users     UserPostGame[]
+}
+
+model UserPostGame {
+  userId     Int
+  postGameId Int
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postGame   PostGame @relation(fields: [postGameId], references: [id], onDelete: Cascade)
+
+  @@id([userId, postGameId])
 }
 
 model Multiguest {

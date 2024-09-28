@@ -62,7 +62,7 @@ export default function OneCategoriePage({ params }) {
       }
       setActiveIndex(newIndex);
     },
-    [games.length]
+    [games?.length]
   );
 
   const { onTouchStart, onTouchMove, onTouchEnd, isSwiping } = useSwipe(
@@ -71,7 +71,7 @@ export default function OneCategoriePage({ params }) {
   );
 
   const divNavs = [];
-  for (let i = 0; i < games.length; i++) {
+  for (let i = 0; i < games?.length; i++) {
     divNavs.push(
       <div
         key={i}
@@ -103,7 +103,7 @@ export default function OneCategoriePage({ params }) {
                 transform: `translateX(-${activeIndex * 100}%) translateZ(0)`,
               }}
             >
-              {games.map((game) => (
+              {games?.map((game) => (
                 <div key={game.name} className="inline-flex">
                   <Image
                     alt={`Image du jeu ${game.name}`}
@@ -128,7 +128,7 @@ export default function OneCategoriePage({ params }) {
               ))}
             </div>
           </div>
-          <div>{games[activeIndex].name}</div>
+          <div>{games && games[activeIndex]?.name}</div>
           <div className="flex justify-between">{divNavs}</div>
 
           <button
