@@ -203,6 +203,7 @@ const createPostGame = async ({ gameData, gameName }) => {
   await prisma.postGame.create({
     data: {
       gameName,
+      admin: gameData.admin,
       gameData: data_PG,
       users: {
         create: userIds.map((userId) => ({
