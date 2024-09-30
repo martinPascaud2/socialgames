@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 
 import getLastParams from "@/utils/getLastParams";
 
+import Spinner from "@/components/spinners/Spinner";
+
 import Countdown from "@/components/Options/Countdown";
 import ModeSelector from "@/components/Options/ModeSelector";
 import AimPoints from "@/components/Options/AimPoints";
@@ -22,17 +24,30 @@ export default function PtitbacOptions({
   );
   const [lastParams, setLastParams] = useState();
   const [modeList, setModeList] = useState([]);
+  const [lastLoaded, setLastLoaded] = useState(false);
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     const loadLasts = async () => {
       const params = await getLastParams({ userId, mode });
       setLastParams(params);
       setOptions({ ...params, mode });
+      setLastLoaded(true);
     };
     isAdmin && loadLasts();
 
     setModeList([{ mode: "P'tit bac", text: "P'tit bac" }]);
   }, [mode, setOptions, isAdmin, userId]);
+
+  useEffect(() => {
+    if (!lastLoaded && isAdmin) return;
+    const timer = setTimeout(() => {
+      setShow(true);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [lastLoaded, isAdmin]);
+
+  if (!show) return <Spinner />;
 
   return (
     <div>

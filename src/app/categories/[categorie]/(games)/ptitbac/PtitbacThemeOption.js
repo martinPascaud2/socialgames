@@ -14,26 +14,25 @@ export default function PtitbacThemeOption({
   lastParams,
   setServerMessage,
 }) {
-  const defaultThemes = useMemo(
-    () => [
+  const [themes, setThemes] = useState();
+  const [selectedThemes, setSelectedThemes] = useState();
+  const [random, setRandom] = useState(0);
+  const [allRandomLength, setAllRandomLength] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
+  const [isFetched, setIsFetched] = useState(false);
+
+  useEffect(() => {
+    if (!lastParams && isAdmin) return;
+    const defaultThemes = [
       { theme: "Animal", selected: true },
       { theme: "Pays/ville", selected: true },
       { theme: "Métier", selected: true },
       { theme: "Prénom", selected: true },
       { theme: "Sport/loisir", selected: true },
       { theme: "Végétal", selected: true },
-    ],
-    []
-  );
-  const [themes, setThemes] = useState([]);
-  const [selectedThemes, setSelectedThemes] = useState([]);
-  const [random, setRandom] = useState(0);
-  const [allRandomLength, setAllRandomLength] = useState(0);
-  const [showModal, setShowModal] = useState(false);
-  const [modalMessage, setModalMessage] = useState("");
+    ];
 
-  useEffect(() => {
-    if (!defaultThemes) return;
     const fetchThemes = async () => {
       const allThemes = await getAllThemes();
 
@@ -56,9 +55,10 @@ export default function PtitbacThemeOption({
       );
       setAllRandomLength(statusAllThemes.length);
       lastParams && lastParams.random && setRandom(lastParams.random);
+      !isAdmin && setIsFetched(true);
     };
-    setTimeout(() => fetchThemes(), 1000); // tricky
-  }, [defaultThemes, lastParams, isAdmin]);
+    fetchThemes();
+  }, [lastParams, isAdmin]);
 
   useEffect(() => {
     if (!themes || !setOptions || !isAdmin) return;
@@ -71,6 +71,7 @@ export default function PtitbacThemeOption({
       themes: newSelected.map((sel) => sel.theme),
       allRandomLength,
     }));
+    setIsFetched(true);
   }, [themes, allRandomLength, setOptions, isAdmin]);
 
   const closeModal = () => {
@@ -96,7 +97,7 @@ export default function PtitbacThemeOption({
       setThemes(newThemes.sort((a, b) => a.theme.localeCompare(b.theme)));
       setModalMessage("");
     },
-    [max, selectedThemes, themes, random]
+    [max, selectedThemes, themes, random, isAdmin, setServerMessage]
   );
 
   useEffect(() => {
@@ -112,6 +113,8 @@ export default function PtitbacThemeOption({
     setSelectedThemes(options.themes);
     setRandom(options.random);
   }, [options, isAdmin]);
+
+  if (!isFetched) return null;
 
   return (
     <div className="flex flex-col justify-center items-center mb-4">
