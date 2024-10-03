@@ -4,8 +4,9 @@ import pusher from "@/utils/pusher";
 import prisma from "@/utils/prisma";
 
 import { saveAndDispatchData } from "@/components/Room/actions";
-import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkPlayers from "@/utils/checkPlayers";
+import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
+import checkViceAdmin from "@/utils/checkViceAdmin";
 
 export async function launchGame({
   roomId,
@@ -40,12 +41,19 @@ export async function launchGame({
     guests,
     multiGuests,
   });
+  const viceAdmin = await checkViceAdmin({
+    roomId,
+    admin: startedRoom.admin,
+    viceAdmin: startedRoom.viceAdmin,
+    gamersAndGuests,
+  });
 
   if (gamersAndGuests.some((player) => player.guest))
     return { error: "Ce jeu est incompatible avec les guests monoscreen." }; //check
 
   const newData = {
     admin: startedRoom.admin,
+    viceAdmin,
     gamers: gamersAndGuests,
     recRounds: {},
     count: {},
@@ -259,6 +267,7 @@ export async function removeGamers({
   gameData,
   onlineGamers,
   imageLength,
+  admins,
 }) {
   const { gamers, count, recRounds } = gameData;
   const roundNumber = gameData.round?.number || 0;
@@ -305,6 +314,8 @@ export async function removeGamers({
     round: newRound,
     rotation: newRotation,
     ended,
+    admin: admins.newAdmin,
+    viceAdmin: admins.newViceAdmin,
   };
 
   await saveAndDispatchData({ roomId, roomToken, newData });

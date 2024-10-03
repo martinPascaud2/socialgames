@@ -11,6 +11,7 @@ export default function ChooseAnotherGame({
   gameData,
   lastGame,
   lastPosition,
+  viceAdmin,
 }) {
   const router = useRouter();
 
@@ -25,13 +26,14 @@ export default function ChooseAnotherGame({
       privacy: group.privacy,
       lastGame,
       lastPosition,
+      viceAdmin,
     };
     localStorage.setItem("group", JSON.stringify(stored));
 
     await finishGame({ gameData, roomToken });
 
     router.push("/categories?group=true");
-  }, [gameData, roomToken, router, group, lastGame, lastPosition]);
+  }, [gameData, roomToken, router, group, lastGame, lastPosition, viceAdmin]);
 
   return (
     <button

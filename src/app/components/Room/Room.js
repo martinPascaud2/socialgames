@@ -177,7 +177,7 @@ export default function Room({
 
   // admin room_creation
   const createRoom = useCallback(
-    async (privacy, storedLocation) => {
+    async (privacy, storedLocation, storedViceAdmin) => {
       if (isChosen) return;
       const newRoomToken = genToken(10);
 
@@ -191,7 +191,8 @@ export default function Room({
         privacy,
         user,
         gameName,
-        storedLocation
+        storedLocation,
+        storedViceAdmin
       );
 
       if (error) {
@@ -249,9 +250,14 @@ export default function Room({
     const storedGroup = JSON.parse(localStorage.getItem("group"));
     const storedGroupPrivacy = storedGroup?.privacy;
     const storedLocation = storedGroup?.lastPosition;
+    const storedViceAdmin = storedGroup?.viceAdmin;
 
     const init = async () => {
-      await createRoom(storedGroupPrivacy || "private", storedLocation);
+      await createRoom(
+        storedGroupPrivacy || "private",
+        storedLocation,
+        storedViceAdmin
+      );
       storedLocation && setGeoLocation(storedLocation);
     };
     !searchToken && init();
@@ -366,7 +372,7 @@ export default function Room({
     }
 
     const token = inputToken.toUpperCase();
-    const id = await getRoomId(token);
+    const room_id = await getRoomId(token);
 
     const reserved = JSON.parse(localStorage.getItem("reservedName"));
     const reservedToken = reserved?.roomToken;
@@ -375,7 +381,7 @@ export default function Room({
       reservedToken === token ||
       (reservedToken === group?.roomToken && reservedToken && group);
     const wantedName = isReserved ? reservedName : user.name;
-    const uniqueUserName = await getUniqueName(id, wantedName, isReserved);
+    const uniqueUserName = await getUniqueName(room_id, wantedName, isReserved);
     localStorage.setItem(
       "reservedName",
       JSON.stringify({ roomToken: token, name: uniqueUserName })
@@ -1189,6 +1195,7 @@ export default function Room({
                               gameData={gameData}
                               lastGame={group.lastGame}
                               lastPosition={geoLocation}
+                              viceAdmin={group.viceAdmin}
                             />
                           </>
                         )}

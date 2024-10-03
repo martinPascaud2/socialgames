@@ -2,8 +2,9 @@
 
 import prisma from "@/utils/prisma";
 
-import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkPlayers from "@/utils/checkPlayers";
+import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
+import checkViceAdmin from "@/utils/checkViceAdmin";
 import { saveAndDispatchData } from "@/components/Room/actions";
 
 import { shuffleObject } from "@/utils/shuffleArray";
@@ -48,6 +49,12 @@ export async function launchGame({
     guests,
     multiGuests,
   });
+  const viceAdmin = await checkViceAdmin({
+    roomId,
+    admin: startedRoom.admin,
+    viceAdmin: startedRoom.viceAdmin,
+    gamersAndGuests,
+  });
 
   const counts = gamersAndGuests.map((gamer) => ({
     name: gamer.name,
@@ -60,6 +67,7 @@ export async function launchGame({
 
   const newData = {
     admin: startedRoom.admin,
+    viceAdmin,
     activePlayer: gamersAndGuests[0],
     gamers: gamersAndGuests,
     hasFirstTurn: true,
@@ -443,6 +451,7 @@ export async function removeGamers({
   roomToken,
   gameData,
   onlineGamers,
+  admins,
 }) {
   const { gamers, counts, lastTurnCounts, themesResponses, phase } = gameData;
   const onlineGamersList = onlineGamers.map((gamer) => gamer.userName);
@@ -480,6 +489,8 @@ export async function removeGamers({
     themesResponses: remainingThemesResponses,
     phase: newPhase,
     ended,
+    admin: admins.newAdmin,
+    viceAdmin: admins.newViceAdmin,
   };
 
   await saveAndDispatchData({ roomId, roomToken, newData });

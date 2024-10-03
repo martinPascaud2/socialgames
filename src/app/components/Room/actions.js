@@ -5,7 +5,14 @@ import pusher from "@/utils/pusher";
 import getDistance from "@/utils/getDistance";
 import { getRoomFriendList } from "@/utils/getFriendList";
 
-export async function serverCreate(token, privacy, user, game, geoLocation) {
+export async function serverCreate(
+  token,
+  privacy,
+  user,
+  game,
+  geoLocation,
+  viceAdmin
+) {
   const roomId = (
     await prisma.room.create({
       data: {
@@ -20,6 +27,7 @@ export async function serverCreate(token, privacy, user, game, geoLocation) {
         creationDate: new Date(),
         gameData: {},
         options: {},
+        viceAdmin: viceAdmin || null,
       },
     })
   ).id;
@@ -230,6 +238,15 @@ export async function serverJoin({ token, user }) {
         room.haveLeft && Object.keys(room.haveLeft).includes(user.name);
       if (hasLeft) return { error: "La partie n'est plus accessible" };
 
+      if (!room.viceAdmin && user.name !== room.admin) {
+        await prisma.room.update({
+          where: { id: room.id },
+          data: {
+            viceAdmin: user.name,
+          },
+        });
+      }
+
       // if (room.started) return { error: "La partie a déjà été lancée" };
       if (Object.values(room.gamers).includes(user.id)) {
         return {
@@ -304,6 +321,15 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
   });
 
   if (!room) return { error: "Token incorrect" };
+
+  if (!room.viceAdmin) {
+    await prisma.room.update({
+      where: { id: room.id },
+      data: {
+        viceAdmin: multiGuestName,
+      },
+    });
+  }
 
   // if (room.started) return { error: "La partie a déjà été lancée" };
   if (room.started) {

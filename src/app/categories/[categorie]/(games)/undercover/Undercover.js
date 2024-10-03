@@ -395,12 +395,12 @@ export default function Undercover({
         onlineGamers={onlineGamers}
         gamers={gamers}
         isAdmin={isAdmin}
-        onGameBye={() =>
-          removeGamers({ roomId, roomToken, gameData, onlineGamers })
+        onGameBye={({ admins }) =>
+          removeGamers({ roomId, roomToken, gameData, onlineGamers, admins })
         }
         modeName="undercover"
         gameData={gameData}
-        userId={user.id}
+        user={user}
       />
     </>
   );

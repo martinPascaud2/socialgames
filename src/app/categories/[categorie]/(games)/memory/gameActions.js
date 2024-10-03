@@ -1,8 +1,9 @@
 "use server";
 
 import shuffleArray from "@/utils/shuffleArray";
-import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkPlayers from "@/utils/checkPlayers";
+import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
+import checkViceAdmin from "@/utils/checkViceAdmin";
 import { saveLastParams } from "@/utils/getLastParams";
 import { saveAndDispatchData } from "@/components/Room/actions";
 
@@ -38,6 +39,12 @@ export async function launchGame({
     guests,
     multiGuests,
   });
+  const viceAdmin = await checkViceAdmin({
+    roomId,
+    admin: startedRoom.admin,
+    viceAdmin: startedRoom.viceAdmin,
+    gamersAndGuests,
+  });
 
   const roundScores = gamersAndGuests.map((gamer) => ({
     [gamer.name]: 0,
@@ -48,6 +55,7 @@ export async function launchGame({
     started: startedRoom.started,
     gameData: {
       admin: startedRoom.admin,
+      viceAdmin,
       activePlayer: gamersAndGuests[0],
       gamers: gamersAndGuests,
       roundScores,
@@ -247,6 +255,7 @@ export async function removeGamers({
   roomToken,
   gameData,
   onlineGamers,
+  admins,
 }) {
   const { gamers } = gameData;
   const onlineGamersList = onlineGamers.map((gamer) => gamer.userName);
@@ -256,7 +265,13 @@ export async function removeGamers({
     onlineGamersSet.has(gamer.name)
   );
 
-  const newData = { ...gameData, gamers: remainingGamers, ended: true };
+  const newData = {
+    ...gameData,
+    gamers: remainingGamers,
+    ended: true,
+    admin: admins.newAdmin,
+    viceAdmin: admins.newViceAdmin,
+  };
 
   await saveAndDispatchData({ roomId, roomToken, newData });
 }

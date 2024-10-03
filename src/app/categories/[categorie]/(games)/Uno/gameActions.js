@@ -4,8 +4,9 @@ import pusher from "@/utils/pusher";
 
 import { modesRules } from "@/assets/globals";
 import { saveAndDispatchData } from "@/components/Room/actions";
-import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkPlayers from "@/utils/checkPlayers";
+import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
+import checkViceAdmin from "@/utils/checkViceAdmin";
 
 import { unoCards } from "./cardsData";
 
@@ -69,6 +70,12 @@ export async function launchGame({
     guests,
     multiGuests,
   });
+  const viceAdmin = await checkViceAdmin({
+    roomId,
+    admin: startedRoom.admin,
+    viceAdmin: startedRoom.viceAdmin,
+    gamersAndGuests,
+  });
 
   let remainCards = Object.keys(unoCards).map((string) => parseInt(string));
 
@@ -106,6 +113,7 @@ export async function launchGame({
 
   const newData = {
     admin: startedRoom.admin,
+    viceAdmin,
     activePlayer: gamersAndGuests[0],
     gamers: gamersAndGuests,
     phase: "start",
@@ -384,6 +392,7 @@ export async function removeGamers({
   roomToken,
   gameData,
   onlineGamers,
+  admins,
 }) {
   const { gamers, startedCards, gamersCards, activePlayer, mustDraw, toDraw } =
     gameData;
@@ -434,6 +443,8 @@ export async function removeGamers({
     mustDraw: newMustDraw,
     toDraw: newToDraw,
     ended,
+    admin: admins.newAdmin,
+    viceAdmin: admins.newViceAdmin,
   };
 
   await saveAndDispatchData({ roomId, roomToken, newData });

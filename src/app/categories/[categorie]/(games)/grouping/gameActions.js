@@ -1,6 +1,7 @@
 "use server";
 
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
+import checkViceAdmin from "@/utils/checkViceAdmin";
 
 export async function launchGame({
   roomId,
@@ -25,11 +26,18 @@ export async function launchGame({
     guests,
     multiGuests,
   });
+  const viceAdmin = await checkViceAdmin({
+    roomId,
+    admin: startedRoom.admin,
+    viceAdmin: startedRoom.viceAdmin,
+    gamersAndGuests,
+  });
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     started: startedRoom.started,
     gameData: {
       admin: startedRoom.admin,
+      viceAdmin,
       gamers: gamersAndGuests,
       ended: true,
     },
@@ -37,3 +45,5 @@ export async function launchGame({
 
   return {};
 }
+
+// check: no removeGamers

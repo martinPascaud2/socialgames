@@ -40,6 +40,7 @@ export default function ChooseOneMoreGame({
         lastGame: gameName,
         lastMode: { mode: gameData.options?.mode, options: gameData.options }, // options to remove ?
         lastPosition: storedLocation,
+        viceAdmin: gameData.viceAdmin,
       };
       localStorage.setItem("group", JSON.stringify(group));
 

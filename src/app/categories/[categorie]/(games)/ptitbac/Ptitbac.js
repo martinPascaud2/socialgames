@@ -449,12 +449,12 @@ export default function Ptitbac({
         onlineGamers={onlineGamers}
         gamers={gamers}
         isAdmin={isAdmin}
-        onGameBye={() =>
-          removeGamers({ roomId, roomToken, gameData, onlineGamers })
+        onGameBye={({ admins }) =>
+          removeGamers({ roomId, roomToken, gameData, onlineGamers, admins })
         }
         modeName="ptitbac"
         gameData={gameData}
-        userId={user.id}
+        user={user}
       />
     </>
   );

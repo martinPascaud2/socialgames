@@ -889,12 +889,12 @@ export default function Triaction({
         onlineGamers={onlineGamers}
         gamers={gamers}
         isAdmin={isAdmin}
-        onGameBye={() =>
-          removeGamers({ roomId, roomToken, gameData, onlineGamers })
+        onGameBye={({ admins }) =>
+          removeGamers({ roomId, roomToken, gameData, onlineGamers, admins })
         }
         modeName="triaction"
         gameData={gameData}
-        userId={user.id}
+        user={user}
       />
     </div>
   );

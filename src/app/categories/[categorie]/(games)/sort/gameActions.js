@@ -4,8 +4,9 @@ import pusher from "@/utils/pusher";
 import prisma from "@/utils/prisma";
 
 import { saveAndDispatchData } from "@/components/Room/actions";
-import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkPlayers from "@/utils/checkPlayers";
+import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
+import checkViceAdmin from "@/utils/checkViceAdmin";
 
 import { sortCards } from "./cardsData";
 
@@ -70,6 +71,12 @@ export async function launchGame({
     guests,
     multiGuests,
   });
+  const viceAdmin = await checkViceAdmin({
+    roomId,
+    admin: startedRoom.admin,
+    viceAdmin: startedRoom.viceAdmin,
+    gamersAndGuests,
+  });
 
   let remainCards = Object.keys(sortCards).map((string) => parseInt(string));
   const { randomCard, newRemainCards } = getRandomCard(remainCards);
@@ -81,6 +88,7 @@ export async function launchGame({
 
   const newData = {
     admin: startedRoom.admin,
+    viceAdmin,
     gamers: gamersAndGuests,
     activePlayer: gamersAndGuests[0],
     stageCards: [randomCard],
@@ -118,3 +126,5 @@ export async function playCard({
   };
   await saveAndDispatchData({ roomId, roomToken, newData });
 }
+
+// to be done: removeGamers

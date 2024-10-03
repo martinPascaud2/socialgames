@@ -232,18 +232,19 @@ export default function Dobble({
         onlineGamers={onlineGamers}
         gamers={gamers}
         isAdmin={isAdmin}
-        onGameBye={async () => {
+        onGameBye={async ({ admins }) => {
           await removeGamers({
             roomId,
             roomToken,
             gameData,
             onlineGamers,
             imageLength,
+            admins,
           });
         }}
         modeName="dobble"
         gameData={gameData}
-        userId={user.id}
+        user={user}
       />
     </>
   );

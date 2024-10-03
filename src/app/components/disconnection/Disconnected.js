@@ -136,6 +136,45 @@ const getDiscoWarningMessage = ({
   }
 };
 
+const checkAdmins_gameData = ({ gameData, onlineGamers }) => {
+  const { admin, viceAdmin, gamers } = gameData;
+  const onlineGamersList = onlineGamers.map((gamer) => gamer.userName);
+  const onlineGamersSet = new Set(onlineGamersList);
+  const remainingGamers = gamers.filter((gamer) =>
+    onlineGamersSet.has(gamer.name)
+  );
+  let newAdmin;
+  let newViceAdmin;
+
+  const adminIndex = remainingGamers.findIndex((gamer) => gamer.name === admin);
+  const viceAdminIndex = remainingGamers.findIndex(
+    (gamer) => gamer.name === viceAdmin
+  );
+
+  if (adminIndex >= 0) {
+    newAdmin = remainingGamers[adminIndex].name;
+    if (viceAdminIndex >= 0) {
+      newViceAdmin = viceAdmin;
+    } else {
+      newViceAdmin = remainingGamers.find(
+        (gamer) => gamer.name !== admin
+      )?.name;
+    }
+  } else {
+    if (viceAdminIndex >= 0) {
+      newAdmin = viceAdmin;
+      newViceAdmin = remainingGamers.find(
+        (gamer) => gamer.name !== newAdmin
+      )?.name;
+    } else {
+      newAdmin = remainingGamers[0].name;
+      newViceAdmin = remainingGamers[1]?.name;
+    }
+  }
+
+  return { newAdmin, newViceAdmin };
+};
+
 export default function Disconnected({
   roomId,
   onlineGamers,
@@ -144,7 +183,7 @@ export default function Disconnected({
   onGameBye,
   modeName,
   gameData,
-  userId,
+  user,
 }) {
   const [showDiscoModal, setShowDiscoModal] = useState(false);
   const [disconnectedList, setDisconnectedList] = useState([]);
@@ -183,7 +222,6 @@ export default function Disconnected({
     if (!disconnectedList.length) setFinishCountdownDate(null);
     else {
       const newFinishCountdownDate =
-        // Date.now() + (isLeaverAdmin ? 120000 : 30000);
         Date.now() + (isLeaverAdmin ? 120000 : 3000000);
       setFinishCountdownDate(newFinishCountdownDate);
     }
@@ -196,25 +234,28 @@ export default function Disconnected({
 
   const onBye = useCallback(async () => {
     setTimeout(async () => {
+      const { newAdmin, newViceAdmin } = checkAdmins_gameData({
+        gameData,
+        onlineGamers,
+      });
+
+      const isNewAdmin = newAdmin === user.name;
+      if (isNewAdmin) {
+        await updateRoomLeavers({ roomId, gamers, disconnectedList });
+        await onGameBye({ admins: { newAdmin, newViceAdmin } });
+      }
+
       setFinishCountdownDate(null);
       setIsValidated(true);
-
-      if (isAdmin) {
-        await updateRoomLeavers({ roomId, gamers, disconnectedList });
-        await onGameBye();
-      } else if (isLeaverAdmin) {
-        await cancelBack({ userId });
-        window.location.href = "/categories?control=true";
-      }
     }, 0); //rendering cycle
   }, [
     roomId,
     onGameBye,
     gamers,
     disconnectedList,
-    isAdmin,
-    isLeaverAdmin,
-    userId,
+    user,
+    gameData,
+    onlineGamers,
   ]);
 
   const Message = useMemo(() => {

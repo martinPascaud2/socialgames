@@ -5,8 +5,9 @@ import prisma from "@/utils/prisma";
 import { formatWord } from "@/utils/formatWord";
 import { saveAndDispatchData } from "@/components/Room/actions";
 import { makeTeams, makeMinimalTeams } from "@/utils/makeTeams";
-import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkPlayers from "@/utils/checkPlayers";
+import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
+import checkViceAdmin from "@/utils/checkViceAdmin";
 
 const getFreeWords = async ({ gamers }) => {
   const userIds = gamers.map((gamer) => gamer.id);
@@ -115,6 +116,12 @@ export async function launchGame({
     guests,
     multiGuests,
   });
+  const viceAdmin = await checkViceAdmin({
+    roomId,
+    admin: startedRoom.admin,
+    viceAdmin: startedRoom.viceAdmin,
+    gamersAndGuests,
+  });
 
   const { error, teams } =
     options.mode === "Pictionary"
@@ -159,6 +166,7 @@ export async function launchGame({
 
   const newData = {
     admin: startedRoom.admin,
+    viceAdmin,
     gamers: gamersAndGuests,
     teams,
     counts,
@@ -428,6 +436,7 @@ export async function removeTeamGamers({
   roomToken,
   gameData,
   onlineGamers,
+  admins,
 }) {
   const { gamers } = gameData;
 
@@ -746,6 +755,7 @@ export async function removeChainGamers({
   roomToken,
   gameData,
   onlineGamers,
+  admins,
 }) {
   const { gamers, words, phase } = gameData;
 
@@ -768,6 +778,8 @@ export async function removeChainGamers({
     words: newWords,
     validatedList: newValidatedList,
     isDeletedUser: true,
+    admin: admins.newAdmin,
+    viceAdmin: admins.newViceAdmin,
   };
 
   await saveAndDispatchData({ roomId, roomToken, newData });

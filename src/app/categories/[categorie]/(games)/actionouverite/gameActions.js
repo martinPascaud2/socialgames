@@ -42,6 +42,7 @@ export async function launchGame({
 
   const newData = {
     admin: startedRoom.admin,
+    viceAdmin: startedRoom.viceAdmin,
     activePlayer: gamersAndGuests[0],
     gamers: gamersAndGuests,
     card: null,
