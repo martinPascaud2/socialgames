@@ -441,10 +441,11 @@ export default function Room({
         data.started && setIsStarted(true);
         data.gameData && setGameData(data.gameData);
         if (data.deleted) {
-          await removeArrival({
-            roomId: room_id,
-            deletedGamer: data.deleted,
-          });
+          isBackedAdmin &&
+            (await removeArrival({
+              roomId: room_id,
+              deletedGamer: data.deleted,
+            }));
 
           setDeletedGamer(data.deleted);
           setInvitedList((prevInv) =>
