@@ -11,7 +11,8 @@ export async function serverCreate(
   user,
   game,
   geoLocation,
-  viceAdmin
+  viceAdmin,
+  arrivalsOrder
 ) {
   const roomId = (
     await prisma.room.create({
@@ -32,6 +33,27 @@ export async function serverCreate(
     })
   ).id;
 
+  if (!arrivalsOrder) {
+    await prisma.roomArrival.create({
+      data: {
+        roomId,
+        userName: user.name,
+      },
+    });
+  } else {
+    await Promise.all(
+      arrivalsOrder.map(async (arrival) => {
+        await prisma.roomArrival.create({
+          data: {
+            roomId,
+            userName: arrival.userName,
+            arrivalTime: arrival.arrivalTime,
+          },
+        });
+      })
+    );
+  }
+
   await prisma.user.update({
     where: {
       id: user.id,
@@ -41,7 +63,7 @@ export async function serverCreate(
     },
   });
 
-  return { gamers: [user.name] };
+  return { gamers: [user.name], roomId };
 }
 
 export async function saveLocation({ geoLocation, roomId }) {
@@ -69,6 +91,7 @@ export async function goOneMoreGame({
   oldRoomToken,
   newRoomToken,
   gameName,
+  roomId,
 }) {
   try {
     await pusher.trigger(`room-${oldRoomToken}`, "room-event", {
@@ -76,6 +99,7 @@ export async function goOneMoreGame({
         nextGame: {
           name: gameName,
           path: `${pathname}?token=${newRoomToken}`,
+          roomId,
         },
       },
     });
@@ -189,7 +213,23 @@ export async function deleteInvitations({
   );
 }
 
+export async function removeArrival({ roomId, deletedGamer }) {
+  try {
+    await prisma.roomArrival.delete({
+      where: {
+        roomId_userName: {
+          roomId: roomId,
+          userName: deletedGamer,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("removeArrival error", error);
+  }
+}
+
 export async function deleteRoom({ roomId }) {
+  await prisma.roomArrival.deleteMany({ where: { roomId } });
   await prisma.room.delete({ where: { id: roomId } });
 }
 
@@ -246,6 +286,19 @@ export async function serverJoin({ token, user }) {
           },
         });
       }
+      await prisma.roomArrival.upsert({
+        where: {
+          roomId_userName: {
+            roomId: room.id,
+            userName: user.name,
+          },
+        },
+        create: {
+          roomId: room.id,
+          userName: user.name,
+        },
+        update: {},
+      });
 
       // if (room.started) return { error: "La partie a déjà été lancée" };
       if (Object.values(room.gamers).includes(user.id)) {
@@ -330,6 +383,19 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
       },
     });
   }
+  await prisma.roomArrival.upsert({
+    where: {
+      roomId_userName: {
+        roomId: room.id,
+        userName: multiGuestName,
+      },
+    },
+    create: {
+      roomId: room.id,
+      userName: multiGuestName,
+    },
+    update: {},
+  });
 
   // if (room.started) return { error: "La partie a déjà été lancée" };
   if (room.started) {
@@ -597,6 +663,12 @@ export async function getAllRoomData({ roomId }) {
 }
 
 export async function getAllRoom({ roomId }) {
-  const room = await prisma.room.findFirst({ where: { id: roomId } });
+  const room = await prisma.room.findFirst({
+    where: { id: roomId },
+    include: {
+      arrivalsOrder: true,
+      // User: true,
+    },
+  });
   console.log("room", room);
 }

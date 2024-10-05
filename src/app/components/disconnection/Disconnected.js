@@ -8,7 +8,6 @@ import { modesRules } from "@/assets/globals";
 
 import convertNameListToString from "@/utils/convertNameListToString";
 import updateRoomLeavers from "./updateRoomLeavers";
-import cancelBack from "@/utils/cancelBack";
 
 import { DiscoModal } from "@/components/Modal";
 import CountDown from "@/components/CountDown";
@@ -137,42 +136,44 @@ const getDiscoWarningMessage = ({
 };
 
 const checkAdmins_gameData = ({ gameData, onlineGamers }) => {
-  const { admin, viceAdmin, gamers } = gameData;
+  const { admin, viceAdmin, gamers, arrivalsOrder } = gameData;
   const onlineGamersList = onlineGamers.map((gamer) => gamer.userName);
   const onlineGamersSet = new Set(onlineGamersList);
   const remainingGamers = gamers.filter((gamer) =>
     onlineGamersSet.has(gamer.name)
   );
-  let newAdmin;
-  let newViceAdmin;
-
+  const newArrivalsOrder = arrivalsOrder.filter((arrival) =>
+    onlineGamersSet.has(arrival.userName)
+  );
   const adminIndex = remainingGamers.findIndex((gamer) => gamer.name === admin);
   const viceAdminIndex = remainingGamers.findIndex(
     (gamer) => gamer.name === viceAdmin
   );
 
+  let newAdmin;
+  let newViceAdmin;
   if (adminIndex >= 0) {
     newAdmin = remainingGamers[adminIndex].name;
     if (viceAdminIndex >= 0) {
       newViceAdmin = viceAdmin;
     } else {
-      newViceAdmin = remainingGamers.find(
-        (gamer) => gamer.name !== admin
-      )?.name;
+      newViceAdmin = newArrivalsOrder.find(
+        (gamer) => gamer.userName !== admin
+      )?.userName;
     }
   } else {
     if (viceAdminIndex >= 0) {
       newAdmin = viceAdmin;
-      newViceAdmin = remainingGamers.find(
-        (gamer) => gamer.name !== newAdmin
-      )?.name;
+      newViceAdmin = newArrivalsOrder.find(
+        (gamer) => gamer.userName !== newAdmin
+      )?.userName;
     } else {
-      newAdmin = remainingGamers[0].name;
-      newViceAdmin = remainingGamers[1]?.name;
+      newAdmin = newArrivalsOrder[0].userName;
+      newViceAdmin = newArrivalsOrder[1]?.userName;
     }
   }
 
-  return { newAdmin, newViceAdmin };
+  return { newAdmin, newViceAdmin, newArrivalsOrder };
 };
 
 export default function Disconnected({
@@ -234,15 +235,20 @@ export default function Disconnected({
 
   const onBye = useCallback(async () => {
     setTimeout(async () => {
-      const { newAdmin, newViceAdmin } = checkAdmins_gameData({
-        gameData,
-        onlineGamers,
-      });
+      const { newAdmin, newViceAdmin, newArrivalsOrder } = checkAdmins_gameData(
+        {
+          gameData,
+          onlineGamers,
+        }
+      );
 
       const isNewAdmin = newAdmin === user.name;
       if (isNewAdmin) {
         await updateRoomLeavers({ roomId, gamers, disconnectedList });
-        await onGameBye({ admins: { newAdmin, newViceAdmin } });
+        await onGameBye({
+          admins: { newAdmin, newViceAdmin },
+          arrivalsOrder: newArrivalsOrder,
+        });
       }
 
       setFinishCountdownDate(null);

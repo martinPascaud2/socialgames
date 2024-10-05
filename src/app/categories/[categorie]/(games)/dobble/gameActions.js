@@ -6,7 +6,7 @@ import prisma from "@/utils/prisma";
 import { saveAndDispatchData } from "@/components/Room/actions";
 import checkPlayers from "@/utils/checkPlayers";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
-import checkViceAdmin from "@/utils/checkViceAdmin";
+import checkViceAdminAndArrivals from "@/utils/checkViceAdminAndArrivals";
 
 export async function launchGame({
   roomId,
@@ -41,12 +41,13 @@ export async function launchGame({
     guests,
     multiGuests,
   });
-  const viceAdmin = await checkViceAdmin({
-    roomId,
-    admin: startedRoom.admin,
-    viceAdmin: startedRoom.viceAdmin,
-    gamersAndGuests,
-  });
+  const { newViceAdmin: viceAdmin, arrivalsOrder } =
+    await checkViceAdminAndArrivals({
+      roomId,
+      admin: startedRoom.admin,
+      viceAdmin: startedRoom.viceAdmin,
+      gamersAndGuests,
+    });
 
   if (gamersAndGuests.some((player) => player.guest))
     return { error: "Ce jeu est incompatible avec les guests monoscreen." }; //check
@@ -54,6 +55,7 @@ export async function launchGame({
   const newData = {
     admin: startedRoom.admin,
     viceAdmin,
+    arrivalsOrder,
     gamers: gamersAndGuests,
     recRounds: {},
     count: {},
@@ -268,6 +270,7 @@ export async function removeGamers({
   onlineGamers,
   imageLength,
   admins,
+  arrivalsOrder,
 }) {
   const { gamers, count, recRounds } = gameData;
   const roundNumber = gameData.round?.number || 0;
@@ -316,6 +319,7 @@ export async function removeGamers({
     ended,
     admin: admins.newAdmin,
     viceAdmin: admins.newViceAdmin,
+    arrivalsOrder,
   };
 
   await saveAndDispatchData({ roomId, roomToken, newData });

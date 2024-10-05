@@ -3,7 +3,7 @@
 import shuffleArray from "@/utils/shuffleArray";
 import checkPlayers from "@/utils/checkPlayers";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
-import checkViceAdmin from "@/utils/checkViceAdmin";
+import checkViceAdminAndArrivals from "@/utils/checkViceAdminAndArrivals";
 import { saveLastParams } from "@/utils/getLastParams";
 import { saveAndDispatchData } from "@/components/Room/actions";
 
@@ -39,12 +39,13 @@ export async function launchGame({
     guests,
     multiGuests,
   });
-  const viceAdmin = await checkViceAdmin({
-    roomId,
-    admin: startedRoom.admin,
-    viceAdmin: startedRoom.viceAdmin,
-    gamersAndGuests,
-  });
+  const { newViceAdmin: viceAdmin, arrivalsOrder } =
+    await checkViceAdminAndArrivals({
+      roomId,
+      admin: startedRoom.admin,
+      viceAdmin: startedRoom.viceAdmin,
+      gamersAndGuests,
+    });
 
   const roundScores = gamersAndGuests.map((gamer) => ({
     [gamer.name]: 0,
@@ -56,6 +57,7 @@ export async function launchGame({
     gameData: {
       admin: startedRoom.admin,
       viceAdmin,
+      arrivalsOrder,
       activePlayer: gamersAndGuests[0],
       gamers: gamersAndGuests,
       roundScores,
@@ -256,6 +258,7 @@ export async function removeGamers({
   gameData,
   onlineGamers,
   admins,
+  arrivalsOrder,
 }) {
   const { gamers } = gameData;
   const onlineGamersList = onlineGamers.map((gamer) => gamer.userName);
@@ -271,6 +274,7 @@ export async function removeGamers({
     ended: true,
     admin: admins.newAdmin,
     viceAdmin: admins.newViceAdmin,
+    arrivalsOrder,
   };
 
   await saveAndDispatchData({ roomId, roomToken, newData });

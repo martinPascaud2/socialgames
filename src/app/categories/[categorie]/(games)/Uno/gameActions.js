@@ -6,7 +6,7 @@ import { modesRules } from "@/assets/globals";
 import { saveAndDispatchData } from "@/components/Room/actions";
 import checkPlayers from "@/utils/checkPlayers";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
-import checkViceAdmin from "@/utils/checkViceAdmin";
+import checkViceAdminAndArrivals from "@/utils/checkViceAdminAndArrivals";
 
 import { unoCards } from "./cardsData";
 
@@ -70,12 +70,13 @@ export async function launchGame({
     guests,
     multiGuests,
   });
-  const viceAdmin = await checkViceAdmin({
-    roomId,
-    admin: startedRoom.admin,
-    viceAdmin: startedRoom.viceAdmin,
-    gamersAndGuests,
-  });
+  const { newViceAdmin: viceAdmin, arrivalsOrder } =
+    await checkViceAdminAndArrivals({
+      roomId,
+      admin: startedRoom.admin,
+      viceAdmin: startedRoom.viceAdmin,
+      gamersAndGuests,
+    });
 
   let remainCards = Object.keys(unoCards).map((string) => parseInt(string));
 
@@ -114,6 +115,7 @@ export async function launchGame({
   const newData = {
     admin: startedRoom.admin,
     viceAdmin,
+    arrivalsOrder,
     activePlayer: gamersAndGuests[0],
     gamers: gamersAndGuests,
     phase: "start",
@@ -393,6 +395,7 @@ export async function removeGamers({
   gameData,
   onlineGamers,
   admins,
+  arrivalsOrder,
 }) {
   const { gamers, startedCards, gamersCards, activePlayer, mustDraw, toDraw } =
     gameData;
@@ -445,6 +448,7 @@ export async function removeGamers({
     ended,
     admin: admins.newAdmin,
     viceAdmin: admins.newViceAdmin,
+    arrivalsOrder,
   };
 
   await saveAndDispatchData({ roomId, roomToken, newData });

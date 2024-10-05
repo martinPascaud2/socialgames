@@ -6,7 +6,7 @@ import prisma from "@/utils/prisma";
 import { saveAndDispatchData } from "@/components/Room/actions";
 import checkPlayers from "@/utils/checkPlayers";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
-import checkViceAdmin from "@/utils/checkViceAdmin";
+import checkViceAdminAndArrivals from "@/utils/checkViceAdminAndArrivals";
 
 import { sortCards } from "./cardsData";
 
@@ -71,12 +71,13 @@ export async function launchGame({
     guests,
     multiGuests,
   });
-  const viceAdmin = await checkViceAdmin({
-    roomId,
-    admin: startedRoom.admin,
-    viceAdmin: startedRoom.viceAdmin,
-    gamersAndGuests,
-  });
+  const { newViceAdmin: viceAdmin, arrivalsOrder } =
+    await checkViceAdminAndArrivals({
+      roomId,
+      admin: startedRoom.admin,
+      viceAdmin: startedRoom.viceAdmin,
+      gamersAndGuests,
+    });
 
   let remainCards = Object.keys(sortCards).map((string) => parseInt(string));
   const { randomCard, newRemainCards } = getRandomCard(remainCards);
@@ -89,6 +90,7 @@ export async function launchGame({
   const newData = {
     admin: startedRoom.admin,
     viceAdmin,
+    arrivalsOrder,
     gamers: gamersAndGuests,
     activePlayer: gamersAndGuests[0],
     stageCards: [randomCard],

@@ -1,6 +1,11 @@
 import { useRouter } from "next/navigation";
 
 import cancelBack from "@/utils/cancelBack";
+import {
+  removeArrival,
+  serverDeleteGamer,
+  serverDeleteMultiGuest,
+} from "./Room/actions";
 
 export default function EndGame({ gameData, user, isFirst = false }) {
   const router = useRouter();
@@ -43,6 +48,22 @@ export default function EndGame({ gameData, user, isFirst = false }) {
         <button
           onClick={async () => {
             await cancelBack({ userId: user.id });
+
+            if (gameData?.nextGame) {
+              await removeArrival({
+                roomId: gameData.nextGame.roomId,
+                deletedGamer: user.name,
+              });
+              const token = gameData.nextGame.path.split("token=")[1];
+              if (!user.multiGuest)
+                await serverDeleteGamer({ token, gamerName: user.name });
+              else
+                await serverDeleteMultiGuest({
+                  token,
+                  multiGuestName: user.name,
+                });
+            }
+
             window.location.href = "/categories?control=true";
           }}
           className="border border-blue-300 bg-blue-100"

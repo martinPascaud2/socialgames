@@ -46,6 +46,7 @@ import {
   inviteFriend,
   inviteAll,
   deleteInvitations,
+  removeArrival,
   serverJoin,
   triggerGamers,
   triggerMultiguests,
@@ -177,7 +178,7 @@ export default function Room({
 
   // admin room_creation
   const createRoom = useCallback(
-    async (privacy, storedLocation, storedViceAdmin) => {
+    async (privacy, storedLocation, storedViceAdmin, storedArrivalsOrder) => {
       if (isChosen) return;
       const newRoomToken = genToken(10);
 
@@ -186,13 +187,18 @@ export default function Room({
         JSON.stringify({ roomToken: newRoomToken, name: user.name })
       );
 
-      const { error, gamers } = await serverCreate(
+      const {
+        error,
+        gamers,
+        roomId: room_id,
+      } = await serverCreate(
         newRoomToken,
         privacy,
         user,
         gameName,
         storedLocation,
-        storedViceAdmin
+        storedViceAdmin,
+        storedArrivalsOrder
       );
 
       if (error) {
@@ -200,7 +206,7 @@ export default function Room({
       } else {
         const channel = pusher.subscribe(`room-${newRoomToken}`);
 
-        channel.bind("room-event", function (data) {
+        channel.bind("room-event", async function (data) {
           data.clientGamerList &&
             setGamerList([...new Set([...data.clientGamerList, ...gamerList])]);
           data.multiGuestList &&
@@ -209,17 +215,27 @@ export default function Room({
               ...new Set([...data.multiGuestList, ...multiGuestList]),
             ]);
           data.gameData && setGameData(data.gameData);
-          data.deleted && setDeletedGamer(data.deleted),
-            (setInvitedList((prevInv) =>
+          if (data.deleted) {
+            await removeArrival({
+              roomId: room_id,
+              deletedGamer: data.deleted,
+            });
+
+            setDeletedGamer(data.deleted);
+            setInvitedList((prevInv) =>
               prevInv.filter((inv) => inv !== data.deleted)
-            ),
+            );
             setGroup((prevGroup) => ({
               ...prevGroup,
               gamers: gamerList.filter((gamer) => gamer !== data.deleted),
               multiGuests: multiGuestList.filter(
                 (multiGuest) => multiGuest !== data.deleted
               ),
-            })));
+              arrivalsOrder: prevGroup?.arrivalsOrder?.filter(
+                (arrival) => arrival.userName !== data.deleted
+              ),
+            }));
+          }
           data.privacy !== undefined && setIsPrivate(data.privacy);
         });
 
@@ -251,12 +267,14 @@ export default function Room({
     const storedGroupPrivacy = storedGroup?.privacy;
     const storedLocation = storedGroup?.lastPosition;
     const storedViceAdmin = storedGroup?.viceAdmin;
+    const storedArrivalsOrder = storedGroup?.arrivalsOrder;
 
     const init = async () => {
       await createRoom(
         storedGroupPrivacy || "private",
         storedLocation,
-        storedViceAdmin
+        storedViceAdmin,
+        storedArrivalsOrder
       );
       storedLocation && setGeoLocation(storedLocation);
     };
@@ -277,7 +295,8 @@ export default function Room({
       !pathname ||
       !roomToken ||
       roomToken === null ||
-      gameData.ended
+      gameData.ended ||
+      !roomId
     )
       return;
 
@@ -292,6 +311,7 @@ export default function Room({
           oldRoomToken: storedGroup.roomToken,
           newRoomToken: roomToken,
           gameName,
+          roomId,
         });
         localStorage.removeItem("group");
       } catch (error) {
@@ -299,7 +319,7 @@ export default function Room({
       }
     };
     go();
-  }, [gameName, group, pathname, roomToken, gameData.ended]);
+  }, [gameName, group, pathname, roomToken, gameData.ended, roomId]);
   // ------------------------------
 
   //admin privacy_management
@@ -409,7 +429,7 @@ export default function Room({
       const isBackedAdmin = joinData.admin === uniqueUserName;
 
       const channel = pusher.subscribe(`room-${token}`);
-      channel.bind("room-event", function (data) {
+      channel.bind("room-event", async function (data) {
         data.clientGamerList &&
           data.clientGamerList.length &&
           setGamerList([...new Set([...data.clientGamerList, ...gamerList])]);
@@ -420,11 +440,29 @@ export default function Room({
           ]);
         data.started && setIsStarted(true);
         data.gameData && setGameData(data.gameData);
-        data.deleted &&
-          (setDeletedGamer(data.deleted),
+        if (data.deleted) {
+          await removeArrival({
+            roomId: room_id,
+            deletedGamer: data.deleted,
+          });
+
+          setDeletedGamer(data.deleted);
           setInvitedList((prevInv) =>
             prevInv.filter((inv) => inv !== data.deleted)
-          ));
+          );
+          if (isBackedAdmin) {
+            setGroup((prevGroup) => ({
+              ...prevGroup,
+              gamers: gamerList.filter((gamer) => gamer !== data.deleted),
+              multiGuests: multiGuestList.filter(
+                (multiGuest) => multiGuest !== data.deleted
+              ),
+              arrivalsOrder: prevGroup?.arrivalsOrder?.filter(
+                (arrival) => arrival.userName !== data.deleted
+              ),
+            }));
+          }
+        }
         !isBackedAdmin && data.options && setOptions(data.options);
         data.privacy !== undefined && setIsPrivate(data.privacy);
       });
@@ -1196,6 +1234,7 @@ export default function Room({
                               lastGame={group.lastGame}
                               lastPosition={geoLocation}
                               viceAdmin={group.viceAdmin}
+                              arrivalsOrder={group.arrivalsOrder}
                             />
                           </>
                         )}

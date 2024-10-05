@@ -12,6 +12,7 @@ export default function ChooseAnotherGame({
   lastGame,
   lastPosition,
   viceAdmin,
+  arrivalsOrder,
 }) {
   const router = useRouter();
 
@@ -27,13 +28,23 @@ export default function ChooseAnotherGame({
       lastGame,
       lastPosition,
       viceAdmin,
+      arrivalsOrder,
     };
     localStorage.setItem("group", JSON.stringify(stored));
 
     await finishGame({ gameData, roomToken });
 
     router.push("/categories?group=true");
-  }, [gameData, roomToken, router, group, lastGame, lastPosition, viceAdmin]);
+  }, [
+    gameData,
+    roomToken,
+    router,
+    group,
+    lastGame,
+    lastPosition,
+    viceAdmin,
+    arrivalsOrder,
+  ]);
 
   return (
     <button

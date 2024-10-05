@@ -9,6 +9,7 @@ import { useUserContext } from "./Room/Room";
 
 import DeleteGroup from "./DeleteGroup";
 
+// isFirst when lobby
 export default function ChooseOneMoreGame({
   gameData,
   roomToken,
@@ -41,6 +42,7 @@ export default function ChooseOneMoreGame({
         lastMode: { mode: gameData.options?.mode, options: gameData.options }, // options to remove ?
         lastPosition: storedLocation,
         viceAdmin: gameData.viceAdmin,
+        arrivalsOrder: gameData.arrivalsOrder,
       };
       localStorage.setItem("group", JSON.stringify(group));
 

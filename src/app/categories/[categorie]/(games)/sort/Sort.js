@@ -125,7 +125,7 @@ export default function Sort({
         onlineGamers={onlineGamers}
         gamers={gamers}
         isAdmin={isAdmin}
-        onGameBye={async ({ admins }) => {
+        onGameBye={async ({ admins, arrivalsOrder }) => {
           await removeGamers({
             roomId,
             roomToken,
@@ -133,6 +133,7 @@ export default function Sort({
             onlineGamers,
             imageLength,
             admins,
+            arrivalsOrder,
           });
         }}
         modeName="sort"

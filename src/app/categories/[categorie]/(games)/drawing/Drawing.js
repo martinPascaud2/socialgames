@@ -28,7 +28,7 @@ export default function Drawing({
   }, [gameData.ended]);
 
   const removeGamers = useCallback(
-    ({ roomId, roomToken, gameData, onlineGamers, admins }) => {
+    ({ roomId, roomToken, gameData, onlineGamers, admins, arrivalsOrder }) => {
       switch (formattedMode) {
         case "esquisse":
           return removeChainGamers({
@@ -37,6 +37,7 @@ export default function Drawing({
             gameData,
             onlineGamers,
             admins,
+            arrivalsOrder,
           });
         case "pictionary":
           return removeTeamGamers({
@@ -45,6 +46,7 @@ export default function Drawing({
             gameData,
             onlineGamers,
             admins,
+            arrivalsOrder,
           });
       }
     },

@@ -7,7 +7,7 @@ import { saveAndDispatchData } from "@/components/Room/actions";
 import { makeTeams, makeMinimalTeams } from "@/utils/makeTeams";
 import checkPlayers from "@/utils/checkPlayers";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
-import checkViceAdmin from "@/utils/checkViceAdmin";
+import checkViceAdminAndArrivals from "@/utils/checkViceAdminAndArrivals";
 
 const getFreeWords = async ({ gamers }) => {
   const userIds = gamers.map((gamer) => gamer.id);
@@ -116,12 +116,13 @@ export async function launchGame({
     guests,
     multiGuests,
   });
-  const viceAdmin = await checkViceAdmin({
-    roomId,
-    admin: startedRoom.admin,
-    viceAdmin: startedRoom.viceAdmin,
-    gamersAndGuests,
-  });
+  const { newViceAdmin: viceAdmin, arrivalsOrder } =
+    await checkViceAdminAndArrivals({
+      roomId,
+      admin: startedRoom.admin,
+      viceAdmin: startedRoom.viceAdmin,
+      gamersAndGuests,
+    });
 
   const { error, teams } =
     options.mode === "Pictionary"
@@ -167,6 +168,7 @@ export async function launchGame({
   const newData = {
     admin: startedRoom.admin,
     viceAdmin,
+    arrivalsOrder,
     gamers: gamersAndGuests,
     teams,
     counts,
@@ -756,6 +758,7 @@ export async function removeChainGamers({
   gameData,
   onlineGamers,
   admins,
+  arrivalsOrder,
 }) {
   const { gamers, words, phase } = gameData;
 
@@ -780,6 +783,7 @@ export async function removeChainGamers({
     isDeletedUser: true,
     admin: admins.newAdmin,
     viceAdmin: admins.newViceAdmin,
+    arrivalsOrder,
   };
 
   await saveAndDispatchData({ roomId, roomToken, newData });
