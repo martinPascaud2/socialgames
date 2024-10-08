@@ -25,25 +25,41 @@ export async function loadImages({
   const numberByTheme = Math.floor(pairsNumber / prefixes.length);
   const remainings = {};
   prefixes.forEach((theme) => {
-    remainings[theme] = numberByTheme;
+    remainings[theme.theme] = numberByTheme;
+  });
+  prefixes.forEach((prefix) => {
+    if (!prefix.enhanced)
+      remainings[prefix.theme] = Math.ceil(remainings[prefix.theme] / 1.5);
   });
 
-  let missings = pairsNumber % prefixes.length;
+  const totalRemainings = Object.values(remainings).reduce(
+    (acc, number) => acc + number,
+    0
+  );
+
+  let missings = pairsNumber - totalRemainings;
   let index = 0;
+  const isThereEnhanced = prefixes.some((prefix) => prefix.enhanced);
   while (missings > 0) {
-    remainings[shufflePrefixes[index]]++;
-    index++;
-    missings--;
+    if (isThereEnhanced) {
+      if (shufflePrefixes[index].enhanced) {
+        remainings[shufflePrefixes[index].theme]++;
+        missings--;
+      }
+    } else {
+      remainings[shufflePrefixes[index].theme]++;
+      missings--;
+    }
+    index = (index + 1) % shufflePrefixes.length;
   }
 
   const shuffledImageContextKeys = shuffleArray(imageContext.keys());
-
   shuffledImageContextKeys.forEach((path) => {
     const imageName = path.replace(/^\.\/(.*)\.png$/, "$1");
 
     if (
       !imageName.startsWith("src") &&
-      prefixes.some((prefix) => imageName.startsWith(prefix)) &&
+      prefixes.some((prefix) => imageName.startsWith(prefix.theme)) &&
       remainings[imageName.split(" ")[0]] > 0
     ) {
       imagesNames.push(imageName);

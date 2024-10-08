@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import compareState from "@/utils/compareState";
 
 //modeList [{mode: "mode1", text: "text1"}, ...]
 export default function ModeSelector({
@@ -28,7 +29,10 @@ export default function ModeSelector({
             defaultValue={value}
             onChange={(e) => (
               setMode(e.target.value),
-              setOptions((options) => ({ ...options, mode: e.target.value }))
+              setOptions((prevOptions) => {
+                const newOptions = { ...options, mode: e.target.value };
+                return compareState(prevOptions, newOptions);
+              })
             )}
             className="border border-blue-300 bg-blue-100 p-1"
           >

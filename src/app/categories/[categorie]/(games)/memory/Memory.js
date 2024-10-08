@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useCallback, useMemo } from "react";
+import isEqual from "lodash.isequal";
 
 import {
   getIcons,
@@ -292,8 +293,7 @@ export default function Memory({
   }, [newGame]);
   useEffect(() => {
     setOptions((prevOptions) => {
-      const isOptionsDifferent =
-        JSON.stringify(prevOptions) !== JSON.stringify(gameData.options);
+      const isOptionsDifferent = !isEqual(prevOptions, gameData.options);
       if (isOptionsDifferent) return gameData.options;
       else return prevOptions;
     });
@@ -302,11 +302,27 @@ export default function Memory({
   //sync new game options
   useEffect(() => {
     if (!isAdmin) return;
+    const gameDataOptions = gameData.options;
+    if (isEqual(gameDataOptions, options)) return;
     const syncOptions = async () => {
       await syncNewOptions({ roomToken, gameData, options });
     };
     syncOptions();
   }, [options]);
+
+  const Options = useCallback(
+    () => (
+      <MemoryOptions
+        isAdmin={isAdmin}
+        options={options}
+        setOptions={setOptions}
+        userId={user.id}
+        setServerMessage={setServerMessage}
+        modeSelector={false}
+      />
+    ),
+    [isAdmin, options, user.id]
+  );
 
   return (
     <>
@@ -322,14 +338,7 @@ export default function Memory({
         {isEnded && (
           <>
             {totalScoresList}
-            <MemoryOptions
-              isAdmin={isAdmin}
-              options={options}
-              setOptions={setOptions}
-              userId={user.id}
-              setServerMessage={setServerMessage}
-              modeSelector={false}
-            />
+            {Options()}
           </>
         )}
       </div>

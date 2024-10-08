@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import compareState from "@/utils/compareState";
 import getLastParams from "@/utils/getLastParams";
 
 import ModeSelector from "@/components/Options/ModeSelector";
@@ -28,17 +29,27 @@ export default function MemoryOptions({
   const [isFetched, setIsFetched] = useState(false);
 
   useEffect(() => {
+    if (isFetched) return;
+
     const loadLasts = async () => {
       const params = await getLastParams({ userId, mode });
-      setLastParams(params);
-      setOptions({ ...params, mode });
+      setLastParams((prevParams) => compareState(prevParams, params));
+
+      setOptions((prevOptions) => {
+        const newOptions = { ...params, mode };
+        return compareState(prevOptions, newOptions);
+      });
+
       setIsFetched(true);
     };
     isAdmin && setOptions && loadLasts();
     !isAdmin && setIsFetched(true);
 
-    setModeList([{ mode: "Memory", text: "Memory" }]);
-  }, [mode, setOptions, isAdmin, userId]);
+    setModeList((prevModeList) => {
+      const newModeList = [{ mode: "Memory", text: "Memory" }];
+      return compareState(prevModeList, newModeList);
+    });
+  }, [mode, setOptions, isAdmin, userId, isFetched]);
 
   useEffect(() => {
     if (pairsNumber < 8) setPairsNumber(8);
@@ -46,19 +57,25 @@ export default function MemoryOptions({
 
     isAdmin &&
       setOptions &&
-      setOptions((options) => ({ ...options, pairsNumber }));
+      setOptions((options) => {
+        const newOptions = { ...options, pairsNumber };
+        return compareState(options, newOptions);
+      });
   }, [pairsNumber, isAdmin, setOptions]);
 
   useEffect(() => {
     if (!lastParams || !isAdmin) return;
-    lastParams.pairsNumber && setPairsNumber(lastParams.pairsNumber);
+
+    lastParams.pairsNumber !== pairsNumber &&
+      setPairsNumber(lastParams.pairsNumber);
   }, [lastParams, isAdmin]);
 
   useEffect(() => {
     if (isAdmin || !options) return;
+
     setMode(options.mode);
     setPairsNumber(options.pairsNumber);
-    setSelectedThemes(options.themes);
+    setSelectedThemes((prevThemes) => compareState(prevThemes, options.themes));
   }, [isAdmin, options]);
 
   return (

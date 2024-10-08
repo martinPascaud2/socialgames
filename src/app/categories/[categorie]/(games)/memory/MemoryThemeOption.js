@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import compareState from "@/utils/compareState";
 
 export default function MemoryThemeOption({
   isAdmin,
@@ -12,9 +13,14 @@ export default function MemoryThemeOption({
   lastParams,
 }) {
   const [themes, setThemes] = useState([
-    { theme: "ObjectBall", label: "Ballons", selected: true },
-    { theme: "AnimalDog", label: "Chiens", selected: true },
-    { theme: "ObjectAll", label: "Objets divers", selected: true },
+    { theme: "ObjectBall", label: "Ballons", selected: true, enhanced: false },
+    { theme: "AnimalDog", label: "Chiens", selected: true, enhanced: false },
+    {
+      theme: "ObjectAll",
+      label: "Objets divers",
+      selected: true,
+      enhanced: false,
+    },
   ]);
   const [show, setShow] = useState(false);
 
@@ -23,30 +29,36 @@ export default function MemoryThemeOption({
 
     setThemes((prevThemes) => {
       const lastThemes = lastParams.themes;
-      const newThemes = prevThemes.map((theme) => {
-        if (lastThemes?.some((lastTheme) => lastTheme === theme.theme)) {
-          return theme;
-        } else {
-          return { ...theme, selected: false };
-        }
+      const newThemes = prevThemes.map((prevTheme) => {
+        const lastTheme = lastThemes?.find(
+          (lastTheme) => lastTheme.theme === prevTheme.theme
+        );
+        if (lastTheme) return lastTheme;
+        else return { ...prevTheme, selected: false };
       });
-      const themesChanged =
-        JSON.stringify(prevThemes) !== JSON.stringify(newThemes);
-      return themesChanged ? newThemes : prevThemes;
+      return compareState(prevThemes, newThemes);
     });
-  }, [lastParams]);
+  }, [lastParams, isAdmin]);
 
   useEffect(() => {
     if (!themes || !setOptions || !isAdmin) return;
+
     const newSelected = themes.filter((theme) => theme.selected);
-    setSelectedThemes(
-      newSelected.sort((a, b) => a.label.localeCompare(b.label))
-    );
-    setOptions((options) => ({
-      ...options,
-      themes: newSelected.map((sel) => sel.theme),
-    }));
-  }, [themes, setOptions]);
+    setSelectedThemes((prevSelectedThemes) => {
+      const newSelectedThemes = newSelected.sort((a, b) =>
+        a.label.localeCompare(b.label)
+      );
+      return compareState(prevSelectedThemes, newSelectedThemes);
+    });
+
+    setOptions((prevOptions) => {
+      const newOptions = {
+        ...prevOptions,
+        themes: newSelected,
+      };
+      return compareState(prevOptions, newOptions);
+    });
+  }, [themes, setOptions, isAdmin, setSelectedThemes]);
 
   const handleCheck = useCallback(
     (theme) => {
@@ -55,7 +67,8 @@ export default function MemoryThemeOption({
       const themeIndex = themes.findIndex((th) => th.theme === theme.theme);
       const newTheme = {
         ...themes[themeIndex],
-        selected: !themes[themeIndex].selected,
+        selected: !themes[themeIndex].selected || !themes[themeIndex].enhanced,
+        enhanced: themes[themeIndex].selected && !themes[themeIndex].enhanced,
       };
       const newThemes = [...themes];
 
@@ -71,39 +84,48 @@ export default function MemoryThemeOption({
     <div className="flex flex-col justify-center items-center mb-4">
       <button
         onClick={() => setShow(!show)}
-        className="flex justify-center border border-blue-300 bg-blue-100 w-4/5"
+        className="flex justify-center border border-blue-400 bg-blue-100 w-4/5"
       >
         <div className="">
-          {selectedThemes.length} catégorie
-          {selectedThemes.length >= 2 ? "s" : ""}
+          {selectedThemes?.length} catégorie
+          {selectedThemes?.length >= 2 ? "s" : ""}
         </div>
       </button>
 
       {show && (
-        <div className="border border-blue-300 border-t-0 w-4/5 flex justify-center items-center px-2">
+        <div className="border border-blue-400 border-t-0 w-4/5 flex justify-center items-center px-2 bg-gray-500">
           {themes &&
             themes.map((theme, i) => {
-              const isSelected =
+              const selected =
                 (isAdmin &&
-                  selectedThemes.some((sel) => sel.theme === theme.theme)) ||
-                (!isAdmin && selectedThemes.some((sel) => sel === theme.theme));
+                  selectedThemes.find((sel) => sel.theme === theme.theme)) ||
+                (!isAdmin &&
+                  selectedThemes.find((sel) => sel.theme === theme.theme));
+              const isSelected = !!selected;
+              const isEnhanced = selected?.enhanced;
+
               return (
                 <div
                   key={i}
-                  className={`w-full flex ml-2 py-2 ${
-                    selectedThemes.length === max && "bg-gray-100"
+                  className={`m-1 p-0.5 flex justify-center ${
+                    isSelected &&
+                    "bg-white shadow-[inset_0_0_0_1px_black] bg-white"
                   }`}
                 >
-                  <div className="w-full">
-                    {theme.label.split().map((lettre) => lettre)}
+                  <div
+                    onClick={() => handleCheck(theme)}
+                    className={`w-full flex text-center m-1 p-1 ${
+                      isEnhanced && "bg-white shadow-[inset_0_0_0_1px_black]"
+                    } ${selectedThemes.length === max && "bg-gray-100"}`}
+                  >
+                    <div
+                      className={`w-full p-0.5 ${
+                        !isSelected ? "text-white" : "text-black"
+                      }`}
+                    >
+                      {theme.label}
+                    </div>
                   </div>
-                  <input
-                    type="checkbox"
-                    checked={isSelected}
-                    onChange={() => handleCheck(theme)}
-                    className="mr-2"
-                    disabled={selectedThemes.length === max && !isSelected}
-                  />
                 </div>
               );
             })}
