@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 
-import { getAllThemes } from "./gameActions";
+import { getAllUndefaultThemes } from "./gameActions";
 
 import Modal from "@/components/Modal";
 
@@ -16,43 +16,72 @@ export default function PtitbacThemeOption({
 }) {
   const [themes, setThemes] = useState();
   const [selectedThemes, setSelectedThemes] = useState();
+  const [enhancedLength, setEnhancedLength] = useState();
+  const [unenhancedLength, setunenhancedLenght] = useState();
   const [random, setRandom] = useState(0);
   const [allRandomLength, setAllRandomLength] = useState(0);
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [isFetched, setIsFetched] = useState(false);
 
+  const getUnAndEnhancedLength = (themes) => {
+    let unenhancedLength = 0;
+    let enhancedLength = 0;
+    themes.forEach((theme) => {
+      if (!theme.enhanced && theme.selected) unenhancedLength++;
+      else if (theme.selected) enhancedLength++;
+    });
+    return { unenhancedLength, enhancedLength };
+  };
+
   useEffect(() => {
     if (!lastParams && isAdmin) return;
     const defaultThemes = [
-      { theme: "Animal", selected: true },
-      { theme: "Pays/ville", selected: true },
-      { theme: "Métier", selected: true },
-      { theme: "Prénom", selected: true },
-      { theme: "Sport/loisir", selected: true },
-      { theme: "Végétal", selected: true },
+      { theme: "Animal", selected: true, enhanced: false },
+      { theme: "Métier", selected: true, enhanced: false },
+      { theme: "Pays/ville", selected: true, enhanced: false },
+      { theme: "Prénom", selected: true, enhanced: false },
+      { theme: "Sport/loisir", selected: true, enhanced: false },
+      { theme: "Végétal", selected: true, enhanced: false },
     ];
 
     const fetchThemes = async () => {
-      const allThemes = await getAllThemes();
-
+      const allUndefault = await getAllUndefaultThemes();
       const lastThemes = lastParams?.themes;
-      const statusAllThemes = allThemes.map((theme) => ({
-        theme,
-        selected: lastThemes?.some((last) => last === theme) || false,
-      }));
-      const unselectedDefaults = lastThemes
-        ? defaultThemes.map((def) => ({
-            ...def,
-            selected: lastThemes.some((last) => last === def.theme),
-          }))
-        : defaultThemes;
 
-      setThemes(
-        [...statusAllThemes, ...unselectedDefaults].sort((a, b) =>
-          a.theme.localeCompare(b.theme)
-        )
-      );
+      const statusAllThemes = allUndefault.map((theme) => {
+        const last = lastThemes?.find((last) => last.theme === theme);
+        if (last) return last;
+        else return { theme, selected: false, enhanced: false };
+      });
+
+      let unselectedDefaults = [];
+      let selectedDefaults = [];
+      if (!lastThemes) unselectedDefaults = defaultThemes;
+      else {
+        defaultThemes.forEach((def) => {
+          const theme = lastThemes.find((last) => last.theme === def.theme);
+          console.log("theme", theme);
+          if (theme) selectedDefaults.push({ ...theme });
+          else unselectedDefaults.push({ ...def, selected: false });
+        });
+      }
+
+      const allThemes = [
+        ...statusAllThemes,
+        ...selectedDefaults,
+        ...unselectedDefaults,
+      ].sort((a, b) => a.theme.localeCompare(b.theme));
+
+      setThemes(allThemes);
+
+      // tricky condition
+      if (isAdmin) {
+        const { enhancedLength: enhanced, unenhancedLength: unenhanced } =
+          getUnAndEnhancedLength(allThemes);
+        setEnhancedLength(enhanced);
+        setunenhancedLenght(unenhanced);
+      }
       setAllRandomLength(statusAllThemes.length);
       lastParams && lastParams.random && setRandom(lastParams.random);
       !isAdmin && setIsFetched(true);
@@ -68,7 +97,7 @@ export default function PtitbacThemeOption({
     );
     setOptions((options) => ({
       ...options,
-      themes: newSelected.map((sel) => sel.theme),
+      themes: newSelected,
       allRandomLength,
     }));
     setIsFetched(true);
@@ -82,19 +111,39 @@ export default function PtitbacThemeOption({
     (theme) => {
       if (!isAdmin) return;
 
-      setServerMessage("");
-      if (!theme.selected && selectedThemes.length + random === max) {
-        setModalMessage("Nombre maximal de catégories atteint");
-        return;
-      }
       const themeIndex = themes.findIndex((th) => th.theme === theme.theme);
+      const isSelected =
+        !themes[themeIndex].selected || !themes[themeIndex].enhanced;
+      const isEnhanced =
+        themes[themeIndex].selected && !themes[themeIndex].enhanced;
+
       const newTheme = {
         ...themes[themeIndex],
-        selected: !themes[themeIndex].selected,
+        selected: isSelected,
+        enhanced: isEnhanced,
       };
       const newThemes = [...themes];
       newThemes[themeIndex] = newTheme;
       setThemes(newThemes.sort((a, b) => a.theme.localeCompare(b.theme)));
+
+      const { enhancedLength: enhanced, unenhancedLength: unenhanced } =
+        getUnAndEnhancedLength(newThemes);
+      setEnhancedLength(enhanced);
+      setunenhancedLenght(unenhanced);
+
+      if (isSelected && !isEnhanced)
+        setRandom((prevRan) => {
+          if (prevRan + 1 + enhanced > max || prevRan === max) return prevRan;
+          return prevRan;
+        });
+      else
+        setRandom((prevRan) => {
+          if (unenhanced === 0) return 0;
+          else if (unenhanced <= prevRan) return unenhanced - 1;
+          else return prevRan;
+        });
+
+      setServerMessage("");
       setModalMessage("");
     },
     [max, selectedThemes, themes, random, isAdmin, setServerMessage]
@@ -110,8 +159,14 @@ export default function PtitbacThemeOption({
 
   useEffect(() => {
     if (isAdmin) return;
+
+    const { enhancedLength: enhanced, unenhancedLength: unenhanced } =
+      getUnAndEnhancedLength(options.themes);
+
     setSelectedThemes(options.themes);
     setRandom(options.random);
+    setEnhancedLength(enhanced);
+    setunenhancedLenght(unenhanced);
   }, [options, isAdmin]);
 
   if (!isFetched) return null;
@@ -120,11 +175,11 @@ export default function PtitbacThemeOption({
     <div className="flex flex-col justify-center items-center mb-4">
       <button
         onClick={() => setShowModal(true)}
-        className="flex justify-center border border-blue-300 bg-blue-100 w-2/3"
+        className="flex justify-center border border-blue-500 bg-blue-100 w-2/3"
       >
         <div className="">
-          {selectedThemes.length + random} catégorie
-          {selectedThemes.length + random >= 2 ? "s" : ""}
+          {enhancedLength + random} catégorie
+          {enhancedLength + random >= 2 ? "s" : ""}
         </div>
       </button>
 
@@ -132,60 +187,73 @@ export default function PtitbacThemeOption({
         <div className="py-2">
           <div
             onClick={() => closeModal()}
-            className="flex justify-center border border-blue-300 bg-blue-100 w-full py-1"
+            className="flex justify-center border border-blue-500 bg-blue-100 w-full py-1"
           >
-            <button className="">
-              {selectedThemes.length + random} catégorie
-              {selectedThemes.length + random >= 2 ? "s" : ""}
+            <button className="font-semibold text-gray-950">
+              {enhancedLength + random} catégorie
+              {enhancedLength + random >= 2 ? "s" : ""}
             </button>
           </div>
-          <div className="text-center">
-            <div className="border border-blue-300 w-full flex flex-col items-center">
-              <div className="columns-2 gap-0">
+          <div className="text-center bg-gray-100">
+            <div className="border border-blue-500 w-full flex flex-col items-center">
+              <div className="columns-2 gap-0 bg-gray-400">
                 {themes.map((theme, i) => {
-                  const isSelected =
+                  const selected =
                     (isAdmin &&
-                      selectedThemes.some(
+                      selectedThemes.find(
                         (sel) => sel.theme === theme.theme
                       )) ||
                     (!isAdmin &&
-                      selectedThemes.some((sel) => sel === theme.theme));
+                      selectedThemes.find((sel) => sel.theme === theme.theme));
+                  const isSelected = !!selected;
+                  const isEnhanced = selected?.enhanced;
+
                   return (
                     <div
                       key={i}
-                      className={`w-full flex items-center py-2 ${
-                        selectedThemes.length + random === max &&
-                        !isSelected &&
-                        "bg-gray-100"
-                      }`}
-                    >
-                      <div className="w-full">
-                        {theme.theme.split().map((lettre) => lettre)}
-                      </div>
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => handleCheck(theme)}
-                        className="mr-2"
-                        disabled={
-                          selectedThemes.length + random === max && !isSelected
+                      className={`w-full flex items-center p-2 
+                        ${
+                          isSelected &&
+                          "bg-gray-100 shadow-[inset_0_0_0_1px_black] text-gray-950"
                         }
-                      />
+                        ${isEnhanced && "shadow-[inset_0_0_0_2px_black]"}
+                        ${!isSelected && "text-gray-100"}
+                      `}
+                    >
+                      <div
+                        className={`w-full flex justify-center p-1 ${
+                          isSelected && "font-semibold"
+                        } ${isEnhanced && "shadow-[inset_0_0_0_1px_black]"}`}
+                      >
+                        <div
+                          onClick={() => {
+                            handleCheck(theme);
+                          }}
+                          className="w-full p-1"
+                        >
+                          {theme.theme}
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
               </div>
 
-              <div className="font-semibold border-t-2 border-black w-full py-2 relative h-12">
-                <div className="flex gap-2 absolute right-2 top-2">
-                  <div className="mr-2">Aléatoires : {random}</div>
+              <div className="font-semibold border-t-2 border-black w-full py-2 relative h-12 text-sm flex items-center">
+                <div className="flex absolute left-2 items-center h-full">
+                  Constants : {enhancedLength}
+                </div>
+                <div className="flex gap-2 absolute right-2 items-center h-full">
+                  <div className="text-gray-950">
+                    Aléatoires : {random} parmi {unenhancedLength}
+                  </div>
                   <button
                     onClick={() => {
                       setRandom((prevRan) => (prevRan !== 0 ? prevRan - 1 : 0));
                       setModalMessage("");
                       setServerMessage("");
                     }}
-                    className={`border border-blue-300 bg-blue-100 w-6 ${
+                    className={`border border-blue-500 bg-blue-100 w-6 ${
                       !isAdmin ? "hidden" : ""
                     }`}
                   >
@@ -193,15 +261,17 @@ export default function PtitbacThemeOption({
                   </button>
                   <button
                     onClick={() => {
-                      if (random + selectedThemes.length === max)
+                      if (random + enhancedLength === max)
                         setModalMessage("Nombre maximal de catégories atteint");
                       else {
-                        setRandom((prevRan) => prevRan + 1);
+                        setRandom((prevRan) =>
+                          prevRan + 2 > unenhancedLength ? prevRan : prevRan + 1
+                        );
                         setModalMessage("");
                         setServerMessage("");
                       }
                     }}
-                    className={`border border-blue-300 bg-blue-100 w-6 ${
+                    className={`border border-blue-500 bg-blue-100 w-6 ${
                       !isAdmin ? "hidden" : ""
                     }`}
                   >

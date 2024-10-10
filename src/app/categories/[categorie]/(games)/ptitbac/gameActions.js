@@ -5,6 +5,7 @@ import prisma from "@/utils/prisma";
 import checkPlayers from "@/utils/checkPlayers";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkViceAdminAndArrivals from "@/utils/checkViceAdminAndArrivals";
+import { saveLastParams } from "@/utils/getLastParams";
 import { saveAndDispatchData } from "@/components/Room/actions";
 
 import { shuffleObject } from "@/utils/shuffleArray";
@@ -65,6 +66,8 @@ export async function launchGame({
     name: gamer.name,
     gold: 0,
   }));
+
+  await saveLastParams({ userId: adminId, options });
 
   const newData = {
     admin: startedRoom.admin,
@@ -165,19 +168,43 @@ export async function launchGame({
 //   return themeList;
 // };
 
+export async function getAllUndefaultThemes() {
+  const allThemes = (await prisma.ptitbactheme.findMany({ where: {} }))
+    .map((theme) => theme.theme)
+    .sort((a, b) => a.localeCompare(b));
+  return allThemes;
+}
+export async function getAllThemes() {
+  const allUndefault = await getAllUndefaultThemes();
+  const allDefault = [
+    "Animal",
+    "Métier",
+    "Pays/ville",
+    "Prénom",
+    "Sport/loisir",
+    "Végétal",
+  ];
+  const allThemes = [...allUndefault, ...allDefault].sort();
+  return allThemes;
+}
+
 async function getThemes({ gameData }) {
   const { options } = gameData;
-  const { themes } = options;
+  const enhancedThemes = options.themes
+    .filter((theme) => theme.enhanced)
+    .map((theme) => theme.theme);
 
   const getRandoms = async () => {
-    const allThemes = await getAllThemes();
+    const randomThemes = options.themes
+      .filter((theme) => !theme.enhanced)
+      .map((theme) => theme.theme);
     let newStatusRandoms;
 
     if (gameData.statusRandoms) {
       newStatusRandoms = { ...gameData.statusRandoms };
     } else {
       newStatusRandoms = {};
-      allThemes.forEach((theme) => {
+      randomThemes.forEach((theme) => {
         newStatusRandoms[theme] = gameData.options.random;
       });
     }
@@ -197,7 +224,7 @@ async function getThemes({ gameData }) {
         cumulativeWeight += weight;
         if (
           newRandoms.some((newRandom) => newRandom === key) ||
-          themes.some((theme) => theme === key)
+          enhancedThemes.some((theme) => theme === key)
         )
           continue;
         if (randomWeight < cumulativeWeight) {
@@ -219,7 +246,7 @@ async function getThemes({ gameData }) {
   };
 
   const { newRandoms, newStatusRandoms } = await getRandoms();
-  const newThemes = [...themes, ...newRandoms];
+  const newThemes = [...enhancedThemes, ...newRandoms];
 
   return { newThemes, newStatusRandoms };
 }
@@ -439,13 +466,6 @@ export async function manageEmptyTheme({ roomId, roomToken, gameData }) {
     phase: nextPhase,
   };
   await saveAndDispatchData({ roomId, roomToken, newData });
-}
-
-export async function getAllThemes() {
-  const allThemes = (await prisma.ptitbactheme.findMany({ where: {} }))
-    .map((theme) => theme.theme)
-    .sort((a, b) => a.localeCompare(b));
-  return allThemes;
 }
 
 export async function removeGamers({

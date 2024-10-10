@@ -24,7 +24,9 @@ export default function Modal({ children, isOpen, onClose }) {
           />
           <div className="z-1 relative w-auto max-w-lg mx-auto my-6">
             <div className="relative flex w-full bg-white border-0 rounded-lg shadow-lg outline-none focus:outline-none">
-              <div className="relative p-4 flex-auto">{children}</div>
+              <div className="relative p-4 flex-auto bg-gray-100 rounded-lg">
+                {children}
+              </div>
             </div>
           </div>
         </div>
