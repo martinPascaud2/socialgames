@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback } from "react";
 import compareState from "@/utils/compareState";
 
+import Modal from "@/components/Modal";
+
 export default function MemoryThemeOption({
   isAdmin,
   setOptions,
@@ -22,7 +24,11 @@ export default function MemoryThemeOption({
       enhanced: false,
     },
   ]);
-  const [show, setShow] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
 
   useEffect(() => {
     if (!lastParams || !isAdmin) return;
@@ -83,17 +89,27 @@ export default function MemoryThemeOption({
   return (
     <div className="flex flex-col justify-center items-center mb-4">
       <button
-        onClick={() => setShow(!show)}
-        className="flex justify-center border border-blue-400 bg-blue-100 w-4/5"
+        onClick={() => setShowModal(true)}
+        className="flex justify-center border border-gray-950 bg-blue-100 w-4/5"
       >
-        <div className="">
+        <div className="text-gray-950">
           {selectedThemes?.length} catégorie
           {selectedThemes?.length >= 2 ? "s" : ""}
         </div>
       </button>
 
-      {show && (
-        <div className="border border-blue-400 border-t-0 w-4/5 flex justify-center items-center px-2 bg-gray-500">
+      <Modal isOpen={showModal} onClose={closeModal} message="">
+        <div
+          onClick={() => closeModal()}
+          className="flex justify-center border border-2 border-b-0 border-gray-950 bg-gray-100 w-full py-1"
+        >
+          <button className="font-semibold text-gray-950">
+            {selectedThemes?.length} catégorie
+            {selectedThemes?.length >= 2 ? "s" : ""}
+          </button>
+        </div>
+        {/* bg-gray-450 */}
+        <div className="border border-2 border-gray-950 w-full flex justify-center items-center p-2 bg-[#848b98]">
           {themes &&
             themes.map((theme, i) => {
               const selected =
@@ -107,21 +123,30 @@ export default function MemoryThemeOption({
               return (
                 <div
                   key={i}
-                  className={`m-1 p-0.5 flex justify-center ${
-                    isSelected &&
-                    "bg-white shadow-[inset_0_0_0_1px_black] bg-white"
+                  className={`m-1 p-[1px] flex justify-center ${
+                    isEnhanced &&
+                    "shadow-[inset_0_0_0_1px_#15803d] rounded-full bg-green-700" // green 700
                   }`}
                 >
                   <div
                     onClick={() => handleCheck(theme)}
-                    className={`w-full flex text-center m-1 p-1 ${
-                      isEnhanced && "bg-white shadow-[inset_0_0_0_1px_black]"
-                    } ${selectedThemes.length === max && "bg-gray-100"}`}
+                    className={`w-full flex text-center p-1 ${
+                      isSelected && "rounded-full bg-gray-100"
+                    }
+                    ${
+                      isSelected &&
+                      !isEnhanced &&
+                      "shadow-[inset_0_0_0_1px_#16a34a]"
+                    }
+                    ${isEnhanced && "shadow-[inset_0_0_0_1px_#15803d]"}
+
+                    ${selectedThemes.length === max && "bg-gray-100"}`}
                   >
                     <div
                       className={`w-full p-0.5 ${
-                        !isSelected ? "text-white" : "text-black"
-                      }`}
+                        !isSelected ? "text-gray-100" : "text-green-700"
+                      }
+                      ${isEnhanced && "font-semibold"}`}
                     >
                       {theme.label}
                     </div>
@@ -130,7 +155,7 @@ export default function MemoryThemeOption({
               );
             })}
         </div>
-      )}
+      </Modal>
     </div>
   );
 }
