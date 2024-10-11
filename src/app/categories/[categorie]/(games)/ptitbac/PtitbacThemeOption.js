@@ -172,31 +172,30 @@ export default function PtitbacThemeOption({
   if (!isFetched) return null;
 
   return (
-    <div className="flex flex-col justify-center items-center mb-4">
+    <div className="flex flex-col justify-center items-center my-4">
       <button
         onClick={() => setShowModal(true)}
-        className="flex justify-center border border-blue-500 bg-blue-100 w-2/3"
+        className="flex justify-center border border-gray-950 text-gray-950 bg-blue-100 w-2/3"
       >
-        <div className="">
-          {enhancedLength + random} catégorie
-          {enhancedLength + random >= 2 ? "s" : ""}
-        </div>
+        {enhancedLength + random} catégorie
+        {enhancedLength + random >= 2 ? "s" : ""}
       </button>
 
       <Modal isOpen={showModal} onClose={closeModal} message={modalMessage}>
-        <div className="py-2">
+        <div className="py-2 bg-gray-100">
           <div
             onClick={() => closeModal()}
-            className="flex justify-center border border-blue-500 bg-blue-100 w-full py-1"
+            className="flex justify-center border border-2 border-b-0 border-gray-950 bg-gray-100 w-full py-1"
           >
             <button className="font-semibold text-gray-950">
               {enhancedLength + random} catégorie
               {enhancedLength + random >= 2 ? "s" : ""}
             </button>
           </div>
+
           <div className="text-center bg-gray-100">
-            <div className="border border-blue-500 w-full flex flex-col items-center">
-              <div className="columns-2 gap-0 bg-gray-400">
+            <div className="border border-2 border-gray-950 w-full flex flex-col items-center">
+              <div className="columns-2 gap-2 bg-[#848b98] (gray-450)">
                 {themes.map((theme, i) => {
                   const selected =
                     (isAdmin &&
@@ -209,29 +208,32 @@ export default function PtitbacThemeOption({
                   const isEnhanced = selected?.enhanced;
 
                   return (
-                    <div
-                      key={i}
-                      className={`w-full flex items-center p-2 
-                        ${
-                          isSelected &&
-                          "bg-gray-100 shadow-[inset_0_0_0_1px_black] text-gray-950"
-                        }
-                        ${isEnhanced && "shadow-[inset_0_0_0_2px_black]"}
-                        ${!isSelected && "text-gray-100"}
-                      `}
-                    >
+                    <div key={i} className="p-2">
                       <div
-                        className={`w-full flex justify-center p-1 ${
-                          isSelected && "font-semibold"
-                        } ${isEnhanced && "shadow-[inset_0_0_0_1px_black]"}`}
+                        className={`w-full flex items-center p-0 ${
+                          !isSelected && "text-gray-100"
+                        } ${
+                          isEnhanced && "bg-green-700 text-gray-950 bg-gray-100"
+                        }
+                      `}
                       >
                         <div
-                          onClick={() => {
-                            handleCheck(theme);
-                          }}
-                          className="w-full p-1"
+                          className={`w-full flex justify-center p-[2px] ${
+                            isSelected && !isEnhanced && "text-green-600"
+                          } ${isEnhanced && "text-green-700"}`}
                         >
-                          {theme.theme}
+                          <div
+                            onClick={() => {
+                              handleCheck(theme);
+                            }}
+                            className={`w-full p-1 ${
+                              isSelected &&
+                              "bg-gray-100 shadow-[inset_0_0_0_1px_#16a34a] (green 600)"
+                            } ${isEnhanced && "font-semibold"}
+                            `}
+                          >
+                            {theme.theme}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -239,7 +241,7 @@ export default function PtitbacThemeOption({
                 })}
               </div>
 
-              <div className="font-semibold border-t-2 border-black w-full py-2 relative h-12 text-sm flex items-center">
+              <div className="font-semibold border-t-2 border-black w-full py-2 relative h-12 text-sm flex items-center bg-gray-100">
                 <div className="flex absolute left-2 items-center h-full">
                   Constants : {enhancedLength}
                 </div>
@@ -253,7 +255,7 @@ export default function PtitbacThemeOption({
                       setModalMessage("");
                       setServerMessage("");
                     }}
-                    className={`border border-blue-500 bg-blue-100 w-6 ${
+                    className={`border border-gray-950 bg-blue-100 w-6 ${
                       !isAdmin ? "hidden" : ""
                     }`}
                   >
@@ -271,7 +273,7 @@ export default function PtitbacThemeOption({
                         setServerMessage("");
                       }
                     }}
-                    className={`border border-blue-500 bg-blue-100 w-6 ${
+                    className={`border border-gray-950 bg-blue-100 w-6 ${
                       !isAdmin ? "hidden" : ""
                     }`}
                   >

@@ -101,15 +101,15 @@ export default function MemoryThemeOption({
       <Modal isOpen={showModal} onClose={closeModal} message="">
         <div
           onClick={() => closeModal()}
-          className="flex justify-center border border-2 border-b-0 border-gray-950 bg-gray-100 w-full py-1"
+          className="flex justify-center border border-2 border-b-0 rounded-t-lg border-gray-950 bg-gray-100 w-full py-1"
         >
           <button className="font-semibold text-gray-950">
             {selectedThemes?.length} catégorie
             {selectedThemes?.length >= 2 ? "s" : ""}
           </button>
         </div>
-        {/* bg-gray-450 */}
-        <div className="border border-2 border-gray-950 w-full flex justify-center items-center p-2 bg-[#848b98]">
+
+        <div className="border border-2 rounded-b-lg border-gray-950 w-full flex justify-center items-center p-2 bg-[#848b98] (gray 450)">
           {themes &&
             themes.map((theme, i) => {
               const selected =
@@ -125,7 +125,7 @@ export default function MemoryThemeOption({
                   key={i}
                   className={`m-1 p-[1px] flex justify-center ${
                     isEnhanced &&
-                    "shadow-[inset_0_0_0_1px_#15803d] rounded-full bg-green-700" // green 700
+                    "shadow-[inset_0_0_0_2px_#15803d] (green 700) rounded-full bg-green-700"
                   }`}
                 >
                   <div
@@ -135,18 +135,15 @@ export default function MemoryThemeOption({
                     }
                     ${
                       isSelected &&
-                      !isEnhanced &&
-                      "shadow-[inset_0_0_0_1px_#16a34a]"
-                    }
-                    ${isEnhanced && "shadow-[inset_0_0_0_1px_#15803d]"}
-
-                    ${selectedThemes.length === max && "bg-gray-100"}`}
+                      "shadow-[inset_0_0_0_2px_#16a34a] (green 600)"
+                    }`}
                   >
                     <div
                       className={`w-full p-0.5 ${
-                        !isSelected ? "text-gray-100" : "text-green-700"
-                      }
-                      ${isEnhanced && "font-semibold"}`}
+                        !isSelected && "text-gray-100"
+                      } ${isSelected && !isEnhanced && "text-green-600"} ${
+                        isEnhanced && "font-semibold text-green-700"
+                      }`}
                     >
                       {theme.label}
                     </div>
