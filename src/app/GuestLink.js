@@ -2,17 +2,16 @@
 
 import { useRouter } from "next/navigation";
 
-export default function GuestLink({ setCookieToken }) {
+export default function GuestLink() {
   const router = useRouter();
   return (
     <button
-      onClick={async () => {
-        await setCookieToken("Guest", "guest");
+      onClick={() => {
         router.push("/guest");
       }}
       className="border border-blue-300 bg-blue-100"
     >
-      J&apos;essaie comme Guest
+      J&apos;essaie comme invité
     </button>
   );
 }

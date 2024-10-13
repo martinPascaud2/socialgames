@@ -745,8 +745,9 @@ export default function Room({
     const backToHome = async () => {
       try {
         //tricky: router before
+        localStorage.removeItem("reservedName");
         router.push("/categories?control=true");
-        await cancelBack({ userId: user.id });
+        !user.multiGuest && (await cancelBack({ userId: user.id }));
       } catch (error) {
         console.error("Erreur pendant la redirection : ", error);
       }
@@ -1186,7 +1187,7 @@ export default function Room({
                     </button>
                     {showRoomRefs && geoLocation && (
                       <QRCode
-                        value={`/categories/${categorie}/${gameName}?token=${roomToken}`}
+                        value={`${process.env.NEXT_PUBLIC_APP_URL}/invitation/?categorie=${categorie}&gameName=${gameName}&token=${roomToken}`}
                       />
                     )}
 

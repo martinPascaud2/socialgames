@@ -8,12 +8,12 @@ import getLocation from "@/utils/getLocation";
 
 import GuestScanner from "./GuestScanner";
 
-export default function GuestConnector() {
+export default function GuestConnector({ setCookieToken }) {
   const router = useRouter();
   const [serverMessage, setServerMessage] = useState("");
   const [scanning, setScanning] = useState(false);
   const [scanLocked, setScanLocked] = useState(false);
-  const [gameUrl, setGameUrl] = useState("");
+  const [qrData, setQrData] = useState("");
   const [toggleInput, setToggleInput] = useState(false);
   const [guestName, setGuestName] = useState("");
 
@@ -25,7 +25,7 @@ export default function GuestConnector() {
     throttle(async (decodedText) => {
       if (scanLocked) return;
       try {
-        setGameUrl(decodedText);
+        setQrData(decodedText);
         setScanLocked(true);
         setToggleInput(true);
       } catch (error) {
@@ -38,16 +38,20 @@ export default function GuestConnector() {
   const joinGame = async () => {
     try {
       await getLocation();
+      if (guestName.length < 3) {
+        setServerMessage("Nom trop court");
+      } else {
+        await setCookieToken("Guest", "guest");
+        const data = qrData.split("?")[1];
+        const [categoriePath, gameNamePath, tokenPath] = data.split("&");
+        const categorie = categoriePath.split("=")[1];
+        const gameName = gameNamePath.split("=")[1];
+        const guestUrl = `/categories/${categorie}/${gameName}/?${tokenPath}&guestName=${guestName}`;
+        router.push(guestUrl);
+      }
     } catch (error) {
       setServerMessage(error.message);
       return;
-    }
-
-    if (guestName.length < 3) {
-      setServerMessage("Nom trop court");
-    } else {
-      const guestUrl = `${gameUrl}&guestName=${guestName}`;
-      router.push(guestUrl);
     }
   };
 
@@ -74,7 +78,7 @@ export default function GuestConnector() {
             className="outline m-4"
           />
           <button
-            onClick={async () => await joinGame()}
+            onClick={() => joinGame()}
             className="self-center border border-blue-300 bg-blue-100 w-1/2"
           >
             Rejoindre la partie

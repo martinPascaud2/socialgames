@@ -23,7 +23,9 @@ export async function middleware(request) {
     !token &&
     request.nextUrl.pathname !== "/" &&
     request.nextUrl.pathname !== "/signin/" &&
-    request.nextUrl.pathname !== "/admin/"
+    request.nextUrl.pathname !== "/admin/" &&
+    request.nextUrl.pathname !== "/invitation/" &&
+    request.nextUrl.pathname !== "/guest/"
   ) {
     return NextResponse.redirect(new URL("/", request.url));
   }
