@@ -185,7 +185,7 @@ export default function PtitbacThemeOption({
         <div className="py-2 bg-gray-100">
           <div
             onClick={() => closeModal()}
-            className="flex justify-center border border-2 border-b-0 border-gray-950 bg-gray-100 w-full py-1"
+            className="flex justify-center border border-2 border-b-0 border-gray-950 bg-gray-100 w-full py-1 rounded-t-lg"
           >
             <button className="font-semibold text-gray-950">
               {enhancedLength + random} catégorie
@@ -194,7 +194,7 @@ export default function PtitbacThemeOption({
           </div>
 
           <div className="text-center bg-gray-100">
-            <div className="border border-2 border-gray-950 w-full flex flex-col items-center">
+            <div className="border border-2 border-gray-950 w-full flex flex-col items-center rounded-b-lg">
               <div className="columns-2 gap-2 bg-[#848b98] (gray-450)">
                 {themes.map((theme, i) => {
                   const selected =
@@ -210,7 +210,7 @@ export default function PtitbacThemeOption({
                   return (
                     <div key={i} className="p-2">
                       <div
-                        className={`w-full flex items-center p-0 ${
+                        className={`w-full flex items-center p-0 rounded-full ${
                           !isSelected && "text-gray-100"
                         } ${
                           isEnhanced && "bg-green-700 text-gray-950 bg-gray-100"
@@ -218,7 +218,7 @@ export default function PtitbacThemeOption({
                       `}
                       >
                         <div
-                          className={`w-full flex justify-center p-[2px] ${
+                          className={`w-full flex justify-center p-[3px] ${
                             isSelected && !isEnhanced && "text-green-600"
                           } ${isEnhanced && "text-green-700"}`}
                         >
@@ -226,11 +226,10 @@ export default function PtitbacThemeOption({
                             onClick={() => {
                               handleCheck(theme);
                             }}
-                            className={`w-full p-1 ${
+                            className={`w-full p-1.5 ${
                               isSelected &&
-                              "bg-gray-100 shadow-[inset_0_0_0_1px_#16a34a] (green 600)"
-                            } ${isEnhanced && "font-semibold"}
-                            `}
+                              "bg-gray-100 shadow-[inset_0_0_0_2px_#16a34a] (green 600) rounded-full"
+                            }`}
                           >
                             {theme.theme}
                           </div>
@@ -241,7 +240,7 @@ export default function PtitbacThemeOption({
                 })}
               </div>
 
-              <div className="font-semibold border-t-2 border-black w-full py-2 relative h-12 text-sm flex items-center bg-gray-100">
+              <div className="font-semibold border-t-2 border-black w-full py-2 relative h-12 text-sm flex items-center bg-gray-100 rounded-b-lg">
                 <div className="flex absolute left-2 items-center h-full">
                   Constants : {enhancedLength}
                 </div>

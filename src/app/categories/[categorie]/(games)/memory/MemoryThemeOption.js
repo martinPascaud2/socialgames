@@ -101,7 +101,7 @@ export default function MemoryThemeOption({
       <Modal isOpen={showModal} onClose={closeModal} message="">
         <div
           onClick={() => closeModal()}
-          className="flex justify-center border border-2 border-b-0 rounded-t-lg border-gray-950 bg-gray-100 w-full py-1"
+          className="flex justify-center border border-2 border-b-0  border-gray-950 bg-gray-100 w-full py-1"
         >
           <button className="font-semibold text-gray-950">
             {selectedThemes?.length} catégorie
@@ -109,7 +109,7 @@ export default function MemoryThemeOption({
           </button>
         </div>
 
-        <div className="border border-2 rounded-b-lg border-gray-950 w-full flex justify-center items-center p-2 bg-[#848b98] (gray 450)">
+        <div className="border border-2 border-gray-950 w-full flex justify-center items-center p-2 bg-[#848b98] (gray 450)">
           {themes &&
             themes.map((theme, i) => {
               const selected =
@@ -123,15 +123,15 @@ export default function MemoryThemeOption({
               return (
                 <div
                   key={i}
-                  className={`m-1 p-[1px] flex justify-center ${
+                  className={`m-1 p-[2px] flex justify-center ${
                     isEnhanced &&
-                    "shadow-[inset_0_0_0_2px_#15803d] (green 700) rounded-full bg-green-700"
+                    "shadow-[inset_0_0_0_2px_#15803d] (green 700) bg-green-700"
                   }`}
                 >
                   <div
                     onClick={() => handleCheck(theme)}
-                    className={`w-full flex text-center p-1 ${
-                      isSelected && "rounded-full bg-gray-100"
+                    className={`w-full flex text-center p-[2px] ${
+                      isSelected && "bg-gray-100"
                     }
                     ${
                       isSelected &&
@@ -139,10 +139,10 @@ export default function MemoryThemeOption({
                     }`}
                   >
                     <div
-                      className={`w-full p-0.5 ${
+                      className={`w-full py-1 px-2 ${
                         !isSelected && "text-gray-100"
                       } ${isSelected && !isEnhanced && "text-green-600"} ${
-                        isEnhanced && "font-semibold text-green-700"
+                        isEnhanced && "text-green-700"
                       }`}
                     >
                       {theme.label}
