@@ -28,9 +28,8 @@ export default function NextEndingPossibilities({
         {isAdmin ? (
           !isEnded ? (
             <div
-              className={`absolute bottom-${
-                userParams?.bottomBarSize || 8
-              } left-2`}
+              className={`absolute left-2`}
+              style={{ bottom: `${userParams?.bottomBarSize / 4 || 2}rem` }}
             >
               <FinishGame gameData={gameData} roomToken={roomToken} />
             </div>

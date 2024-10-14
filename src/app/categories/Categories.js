@@ -64,7 +64,7 @@ export default function Categories({
   const [currentGame, setCurrentGame] = useState();
 
   const [showParams, setShowParams] = useState(false);
-  const possibleBarValues = [8, 12, 16, 20];
+  const possibleBarValues = [8, 12, 14, 16, 18, 20];
   const [barValues, setBarValues] = useState();
 
   useEffect(() => {
@@ -437,8 +437,10 @@ export default function Categories({
                 { param: "topBarSize", label: "Taille barre sup." },
                 { param: "bottomBarSize", label: "Taille barre inf." },
               ].map((barParam, i) => (
-                <div key={i}>
-                  <label htmlFor={`slider-${barParam}`}>{barParam.label}</label>
+                <div key={i} className="w-full flex justify-around">
+                  <label htmlFor={`slider-${barParam}`} className="w-[40%]">
+                    {barParam.label}
+                  </label>
                   <input
                     type="range"
                     id={`slider-${barParam.param}`}
@@ -674,10 +676,12 @@ export default function Categories({
         )}
 
         <div
-          className={`absolute top-0 w-full bg-black h-${barValues?.topBarSize} z-40 flex justify-center items-center`}
+          className={`absolute top-0 w-full bg-black z-40 flex justify-center items-center`}
+          style={{ height: `${barValues?.topBarSize / 4}rem` }}
         />
         <div
-          className={`absolute bottom-0 w-full bg-black h-${barValues?.bottomBarSize} z-40 flex justify-center items-center`}
+          className={`absolute bottom-0 w-full bg-black z-40 flex justify-center items-center`}
+          style={{ height: `${barValues?.bottomBarSize / 4}rem` }}
         />
       </main>
     </>

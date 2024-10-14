@@ -842,7 +842,8 @@ export default function Room({
       <div className="absolute h-screen w-full z-50">
         <UserContext.Provider value={{ userParams }}>
           <div
-            className={`flex items-end h-${barsSizes.top} w-full z-50 bg-black`}
+            className={`flex items-end w-full z-50 bg-black`}
+            style={{ height: `${barsSizes.top / 4}rem` }}
           >
             <div className="flex justify-center text-white w-full m-1">
               {gamesRefs[gameName].categorie === "grouping"
@@ -1120,7 +1121,8 @@ export default function Room({
                 </div>
               )}
               <div
-                className={`absolute flex items-end h-${barsSizes.bottom} w-full z-50 bg-black bottom-0`}
+                className={`absolute flex items-end w-full z-50 bg-black bottom-0`}
+                style={{ height: `${barsSizes.bottom / 4}rem` }}
               >
                 <div
                   className="absolute bottom-[0.2rem] left-2"
@@ -1198,10 +1200,7 @@ export default function Room({
                     <div className="flex flex-col">{serverMessage}</div>
                   </div>
 
-                  <div
-                    className={`absolute bottom-0 w-full bg-black z-10`}
-                    style={{ height: `${barsSizes.bottom}` }}
-                  >
+                  <div className={`absolute bottom-0 w-full bg-black z-10`}>
                     <div className="relative h-full">
                       <div
                         onClick={async () => await deleteInvs()}
@@ -1273,7 +1272,10 @@ export default function Room({
     return (
       <div className="absolute h-screen w-full z-50">
         <UserContext.Provider value={{ userParams }}>
-          <div className={`fixed h-${barsSizes.top} w-full z-[70] bg-black`} />
+          <div
+            className={`fixed w-full z-[70] bg-black`}
+            style={{ height: `${barsSizes.top / 4}rem` }}
+          />
 
           <div
             className={`overflow-y-auto z-[60] w-full`}
