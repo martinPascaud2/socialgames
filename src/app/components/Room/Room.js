@@ -1276,6 +1276,10 @@ export default function Room({
             className={`fixed w-full z-[70] bg-black`}
             style={{ height: `${barsSizes.top / 4}rem` }}
           />
+          <div
+            className={`fixed bottom-0 w-full z-0 bg-black`}
+            style={{ height: `${barsSizes.bottom / 4}rem` }}
+          />
 
           <div
             className={`overflow-y-auto z-[60] w-full`}
