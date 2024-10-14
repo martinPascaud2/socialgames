@@ -64,7 +64,7 @@ export default function Categories({
   const [currentGame, setCurrentGame] = useState();
 
   const [showParams, setShowParams] = useState(false);
-  const possibleBarValues = [8, 12, 20];
+  const possibleBarValues = [8, 12, 16, 20];
   const [barValues, setBarValues] = useState();
 
   useEffect(() => {
