@@ -1,8 +1,9 @@
 "use client";
 import { useEffect, useState, useMemo, useCallback } from "react";
 import { throttle } from "lodash";
-import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
 import classNames from "classnames";
 import QRCode from "react-qr-code";
 import Pusher from "pusher-js";
@@ -655,19 +656,26 @@ export default function Categories({
                     await updateLastCP({ userId: user.id, out: true });
                   }}
                   href={`${categorie.href}${isGroup ? "?group=true" : ""}`}
-                  className={classNames(`z-20 absolute  max-h-[15dvh] border`, {
+                  className={classNames(`z-20 absolute  max-h-[15dvh]`, {
                     hidden: togglingParameters && toggledParameters,
                   })}
                   style={{
                     top: `${Math.floor(index / 2) * 20 + 12.5}dvh`,
-                    left: index % 2 === 0 && "8%",
+                    left: !isLast ? index % 2 === 0 && "8%" : "33%",
                     right: index % 2 === 1 && "8%",
-                    width: !isLast ? "33.333333%" : "84%",
+                    width: "33.333333%",
                     aspectRatio: !isLast ? "1 / 1" : "auto",
                   }}
                 >
-                  <div className="flex items-center justify-center h-[15dvh]">
-                    {categorie.name}
+                  <div className="flex items-center justify-center h-[15dvh] p-1">
+                    <Image
+                      src={categorie.src}
+                      alt={`${categorie.name} image`}
+                      className="max-h-full aspect-square"
+                      style={{ objectFit: "contain" }}
+                      width={500}
+                      height={500}
+                    />
                   </div>
                 </Link>
               );
