@@ -81,6 +81,12 @@ export const subCategories = {
   ],
   categorie5: [
     {
+      name: "Connaissance des autres",
+      path: "socialknowledge",
+      img: "/socialknowledge.png",
+      description: "La description de connaissance des autres",
+    },
+    {
       name: "Triaction",
       path: "triaction",
       img: "/triathlon.jpeg",
@@ -170,6 +176,12 @@ export const gamesRefs = {
     limits: { min: 2, max: 8 },
     isGuestsAllowed: false,
   },
+  socialknowledge: {
+    name: "Connaissance des autres",
+    categorie: "categorie5",
+    limits: { min: 1, max: 10 }, // check
+    isGuestsAllowed: false,
+  },
 };
 
 export const modesRules = {
@@ -204,5 +216,9 @@ export const modesRules = {
   sort: {
     name: "Placement",
     limits: { min: 2, max: 8 },
+  },
+  tableau: {
+    name: "Tableau",
+    limits: { min: 4, max: 10 },
   },
 };

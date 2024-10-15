@@ -191,7 +191,6 @@ export default function Disconnected({
   const [isValidated, setIsValidated] = useState(false);
   const [withoutLabel, setWithoutLabel] = useState("");
   const [finishCountdownDate, setFinishCountdownDate] = useState(null);
-  const [isLeaverAdmin, setIsLeaverAdmin] = useState(false);
 
   useEffect(() => {
     if (!onlineGamers?.length || !gamers) return;
@@ -214,19 +213,16 @@ export default function Disconnected({
   }, [onlineGamers, gamers]);
 
   useEffect(() => {
-    setIsLeaverAdmin(
-      disconnectedList.some((disco) => disco === gameData.admin)
-    );
-  }, [disconnectedList, gameData.admin]);
-
-  useEffect(() => {
     if (!disconnectedList.length) setFinishCountdownDate(null);
-    else {
+    else if (!finishCountdownDate) {
+      const isLeaverAdmin = disconnectedList.some(
+        (disco) => disco === gameData.admin
+      );
       const newFinishCountdownDate =
         Date.now() + (isLeaverAdmin ? 120000 : 30000);
       setFinishCountdownDate(newFinishCountdownDate);
     }
-  }, [disconnectedList, isLeaverAdmin]);
+  }, [disconnectedList]);
 
   useEffect(() => {
     if (!isValidated) setWithoutLabel("Reprendre sans");

@@ -32,6 +32,7 @@ model User {
   ptitbacLastParams           Json?
   triaction_random_LastParams Json?
   triaction_peek_LastParams   Json?
+  tableauLastParams           Json?
   png                         String                    @default("") @db.Text
   drawChain                   DrawLink[]
   alreadyDrawingWords         DrawingWordsOnUsers[]

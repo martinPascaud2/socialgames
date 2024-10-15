@@ -3,14 +3,13 @@
 import { useEffect, useState, useCallback } from "react";
 
 import { formatWord } from "@/utils/formatWord";
-import { removeChainGamers, removeTeamGamers } from "./gameActions";
+import { removeTableauGamers } from "./gameActions";
 
-import TeamDrawing from "./TeamDrawing";
-import ChainDrawing from "./ChainDrawing";
+import Tableau from "./Tableau";
 import NextEndingPossibilities from "@/components/NextEndingPossibilities";
 import Disconnected from "@/components/disconnection/Disconnected";
 
-export default function Drawing({
+export default function SocialKnowledge({
   roomId,
   roomToken,
   user,
@@ -30,17 +29,8 @@ export default function Drawing({
   const removeGamers = useCallback(
     ({ roomId, roomToken, gameData, onlineGamers, admins, arrivalsOrder }) => {
       switch (formattedMode) {
-        case "esquisse":
-          return removeChainGamers({
-            roomId,
-            roomToken,
-            gameData,
-            onlineGamers,
-            admins,
-            arrivalsOrder,
-          });
-        case "pictionary":
-          return removeTeamGamers({
+        case "tableau":
+          return removeTableauGamers({
             roomId,
             roomToken,
             gameData,
@@ -55,17 +45,8 @@ export default function Drawing({
 
   return (
     <>
-      {mode === "Pictionary" && (
-        <TeamDrawing
-          roomId={roomId}
-          roomToken={roomToken}
-          user={user}
-          gameData={gameData}
-        />
-      )}
-
-      {mode === "Esquissé" && (
-        <ChainDrawing
+      {mode === "Tableau" && (
+        <Tableau
           roomId={roomId}
           roomToken={roomToken}
           user={user}
@@ -89,13 +70,14 @@ export default function Drawing({
         onlineGamers={onlineGamers}
         gamers={gameData.gamers}
         isAdmin={isAdmin}
-        onGameBye={async ({ admins }) => {
+        onGameBye={async ({ admins, arrivalsOrder }) => {
           await removeGamers({
             roomId,
             roomToken,
             gameData,
             onlineGamers,
             admins,
+            arrivalsOrder,
           });
         }}
         modeName={formattedMode}
