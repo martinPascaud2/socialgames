@@ -18,3 +18,18 @@ export default async function getUser() {
 
   return user;
 }
+
+export async function getUserParams() {
+  const token = cookies().get("SG_token");
+  const { userMail } = await jwtVerify(token);
+
+  const userParams = (
+    await prisma.user.findFirst({
+      where: {
+        email: userMail,
+      },
+    })
+  ).params;
+
+  return userParams;
+}
