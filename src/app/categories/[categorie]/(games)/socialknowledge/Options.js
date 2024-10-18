@@ -4,29 +4,49 @@ import { useEffect, useState } from "react";
 
 import getLastParams from "@/utils/getLastParams";
 
+import Spinner from "@/components/spinners/Spinner";
 import ModeSelector from "@/components/Options/ModeSelector";
+import PresetCountdown from "@/components/Options/PresetCountdown";
+import OptionsLabel from "@/components/Options/OptionsLabel";
+import TableauThemeOption from "./TableauThemeOption";
 
 export default function SocialKnowledgeOptions({
   userId,
   isAdmin,
   options,
-  lastMode,
   setOptions,
+  lastMode,
+  setServerMessage,
 }) {
   const [mode, setMode] = useState(
     (isAdmin && lastMode?.mode) || options.mode || "Tableau"
   );
   const [modeList, setModeList] = useState([]);
+  const [lastParams, setLastParams] = useState();
+  const [lastLoaded, setLastLoaded] = useState(false);
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     const loadLasts = async () => {
       const params = await getLastParams({ userId, mode });
+      setLastParams(params);
       setOptions({ ...params, mode });
+      setLastLoaded(true);
     };
     isAdmin && loadLasts();
 
     setModeList([{ mode: "Tableau", text: "Tableau" }]);
   }, [mode, setOptions, isAdmin, userId]);
+
+  useEffect(() => {
+    if (!lastLoaded && isAdmin) return;
+    const timer = setTimeout(() => {
+      setShow(true);
+    }, 1000);
+    return () => clearTimeout(timer);
+  }, [lastLoaded, isAdmin]);
+
+  if (!show) return <Spinner />;
 
   return (
     <>
@@ -38,6 +58,42 @@ export default function SocialKnowledgeOptions({
         setMode={setMode}
         setOptions={setOptions}
       />
+      {mode === "Tableau" && (
+        <>
+          <PresetCountdown
+            isAdmin={isAdmin}
+            options={options}
+            setOptions={setOptions}
+            times={{ values: [1, 2, 5, 10, 20, 30, 0], default: 5 }}
+            last={lastParams?.countDownTime}
+          />
+
+          <OptionsLabel
+            isAdmin={isAdmin}
+            options={options}
+            setOptions={setOptions}
+            param={{ value: "secondChance", label: "Seconde chance" }}
+            values={{
+              possibles: [
+                { value: "no", label: "Non" },
+                { value: "without correction", label: "Sans correction" },
+                { value: "with correction", label: "Avec correction" },
+              ],
+              default: "no",
+            }}
+            last={lastParams?.["secondChance"]}
+          />
+
+          <TableauThemeOption
+            lastParams={lastParams}
+            options={options}
+            setOptions={setOptions}
+            isAdmin={isAdmin}
+            max={5}
+            setServerMessage={setServerMessage}
+          />
+        </>
+      )}
     </>
   );
 }
