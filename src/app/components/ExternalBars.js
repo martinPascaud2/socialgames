@@ -3,7 +3,10 @@ import { getUserParams } from "@/utils/getUser";
 // to be done: use ExternalBars in Layouts
 export default async function ExternalBars() {
   const userParams = await getUserParams();
-  const { bottomBarSize, topBarSize } = userParams;
+
+  const bottomBarSize = userParams?.bottomBarSize || 8;
+  const topBarSize = userParams?.topBarSize || 8;
+
   const ExternalBars = (
     <>
       <div
@@ -16,5 +19,6 @@ export default async function ExternalBars() {
       />
     </>
   );
+
   return ExternalBars;
 }

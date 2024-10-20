@@ -25,6 +25,7 @@ model User {
   alreadyActionouverite       Json?
   alreadyUndercovertheme      UndercoverthemesOnUsers[]
   alreadyPtitbactheme         PtitbacthemesOnUsers[]
+  alreadyDrawingWords         DrawingWordsOnUsers[]
   ptitbacResponses            String                    @default("")
   pictionaryLastParams        Json?
   esquisseLastParams          Json?
@@ -35,9 +36,17 @@ model User {
   tableauLastParams           Json?
   png                         String                    @default("") @db.Text
   drawChain                   DrawLink[]
-  alreadyDrawingWords         DrawingWordsOnUsers[]
   unoCount                    Int?
+  tableauResponses            TableauResponse[]
   postGames                   UserPostGame[]
+}
+
+model Multiguest {
+  id               String            @id
+  png              String            @default("") @db.Text
+  drawChain        DrawLink[]
+  unoCount         Int?
+  tableauResponses TableauResponse[]
 }
 
 model PostGame {
@@ -56,13 +65,6 @@ model UserPostGame {
   postGame   PostGame @relation(fields: [postGameId], references: [id], onDelete: Cascade)
 
   @@id([userId, postGameId])
-}
-
-model Multiguest {
-  id        String     @id
-  png       String     @default("") @db.Text
-  drawChain DrawLink[]
-  unoCount  Int?
 }
 
 model Friend {
@@ -178,4 +180,14 @@ model DrawLink {
 model triactionAction {
   id     Int    @id @default(autoincrement())
   action String
+}
+
+model TableauResponse {
+  id           Int         @id @default(autoincrement())
+  theme        String
+  response     String
+  User         User?       @relation(fields: [userId], references: [id])
+  userId       Int?
+  Multiguest   Multiguest? @relation(fields: [multiguestId], references: [id])
+  multiguestId String?
 }

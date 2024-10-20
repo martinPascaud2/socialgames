@@ -493,6 +493,7 @@ export default function Room({
       setIsChosen(true);
       return;
     }
+
     const token = inputToken.toUpperCase();
     const id = await getRoomId(token);
 
@@ -661,13 +662,15 @@ export default function Room({
 
   // init multiGuest: id, dataId, presence
   useEffect(() => {
-    if (user.multiGuest && gameData.gamers && uniqueName && roomToken) {
+    if (
+      user.multiGuest &&
+      gameData.gamers &&
+      uniqueName &&
+      roomToken &&
+      isStarted
+    ) {
       const id = gameData.gamers.find((gamer) => gamer.name === uniqueName)?.id;
 
-      setMultiGuestId(id);
-      setMultiGuestDataId(
-        gameData.gamers.find((gamer) => gamer.name === uniqueName)?.dataId
-      );
       // check : gamedata
       subscribePresenceChannel({
         userId: id,
@@ -676,6 +679,11 @@ export default function Room({
         setOnlineGamers,
         roomToken,
       });
+
+      setMultiGuestId(id);
+      setMultiGuestDataId(
+        gameData.gamers.find((gamer) => gamer.name === uniqueName)?.dataId
+      );
     }
   }, [isStarted, gameData.gamers, uniqueName, roomToken, user]);
   // ------------------------------

@@ -29,7 +29,7 @@ export async function getUserParams() {
         email: userMail,
       },
     })
-  ).params;
+  )?.params;
 
   return userParams;
 }

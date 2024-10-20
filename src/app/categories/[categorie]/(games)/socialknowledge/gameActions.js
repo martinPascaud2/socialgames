@@ -46,17 +46,21 @@ export async function launchGame({
       gamersAndGuests,
     });
 
-  if (options.mode === "Tableau") {
-  }
+  let newData;
 
-  const newData = {
-    admin: startedRoom.admin,
-    viceAdmin,
-    arrivalsOrder,
-    gamers: gamersAndGuests,
-    activePlayer: gamersAndGuests[0],
-    options,
-  };
+  if (options.mode === "Tableau") {
+    newData = {
+      admin: startedRoom.admin,
+      viceAdmin,
+      arrivalsOrder,
+      gamers: gamersAndGuests,
+      // activePlayer: gamersAndGuests[0],
+      enhanced: [],
+      randoms: [],
+      options,
+      phase: "waiting",
+    };
+  }
 
   await saveAndDispatchData({ roomId, roomToken, newData });
   await pusher.trigger(`room-${roomToken}`, "room-event", {
@@ -64,6 +68,143 @@ export async function launchGame({
   });
 
   return {};
+}
+
+const deleteAllTableauResponse = async ({ gamers }) => {
+  await Promise.all(
+    gamers.map(async (gamer) => {
+      if (!gamer.multiGuest) {
+        await prisma.tableauResponse.deleteMany({
+          where: { userId: gamer.id },
+        });
+      } else {
+        await prisma.tableauResponse.deleteMany({
+          where: { multiguestId: gamer.dataId },
+        });
+      }
+    })
+  );
+};
+
+export async function startGame({ gameData, roomId, roomToken }) {
+  const { options, gamers } = gameData;
+  const { themes, randoms: randomsNumber } = options;
+
+  await deleteAllTableauResponse({ gamers });
+
+  let enhanced = [];
+  let onlySelected = [];
+  let randoms = [];
+
+  themes.forEach((theme) => {
+    if (theme.enhanced) enhanced.push(theme.theme);
+    else if (theme.selected) onlySelected.push(theme.theme);
+  });
+  let selectedRandomIndexes = new Set();
+  while (selectedRandomIndexes.size < randomsNumber) {
+    const randomIndex = Math.floor(Math.random() * onlySelected.length);
+    selectedRandomIndexes.add(randomIndex);
+  }
+  selectedRandomIndexes = Array.from(selectedRandomIndexes);
+  selectedRandomIndexes.forEach((randomIndex) => {
+    randoms.push(onlySelected[randomIndex]);
+  });
+
+  const newData = { ...gameData, phase: "writing", enhanced, randoms };
+  await saveAndDispatchData({ roomId, roomToken, newData });
+}
+
+export async function sendResponse({
+  theme,
+  response,
+  gameData,
+  roomId,
+  roomToken,
+  user,
+  isLast,
+}) {
+  if (!user.multiGuest) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        tableauResponses: {
+          create: {
+            theme: theme,
+            response: response,
+          },
+        },
+      },
+    });
+  } else {
+    await prisma.multiguest.upsert({
+      where: { id: user.dataId },
+      update: {
+        tableauResponses: {
+          create: {
+            theme: theme,
+            response: response,
+          },
+        },
+      },
+      create: {
+        id: user.dataId,
+        tableauResponses: {
+          create: {
+            theme: theme,
+            response: response,
+          },
+        },
+      },
+    });
+  }
+
+  if (isLast) {
+    const { gamers, enhanced, randoms } = gameData;
+    const themesNumber = enhanced.length + randoms.length;
+    let responsesGamerCounts = [];
+
+    await Promise.all(
+      gamers.map(async (gamer) => {
+        if (!gamer.multiGuest) {
+          const count = await prisma.tableauResponse.count({
+            where: {
+              userId: gamer.id,
+            },
+          });
+          responsesGamerCounts.push(count);
+        } else {
+          const count = await prisma.tableauResponse.count({
+            where: {
+              multiguestId: gamer.dataId,
+            },
+          });
+          responsesGamerCounts.push(count);
+        }
+      })
+    );
+    if (responsesGamerCounts.every((count) => count === themesNumber)) {
+      const newData = { ...gameData, phase: "sorting" };
+      await saveAndDispatchData({ roomId, roomToken, newData });
+    }
+  }
+}
+
+export async function writtingComeBack({ user }) {
+  if (!user.multiGuest) {
+    const writtenIndex = await prisma.tableauResponse.count({
+      where: {
+        userId: user.id,
+      },
+    });
+    return writtenIndex;
+  } else {
+    const writtenIndex = await prisma.tableauResponse.count({
+      where: {
+        multiguestId: user.dataId,
+      },
+    });
+    return writtenIndex;
+  }
 }
 
 export async function removeTableauGamers({
