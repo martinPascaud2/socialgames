@@ -182,8 +182,57 @@ export async function sendResponse({
         }
       })
     );
+
     if (responsesGamerCounts.every((count) => count === themesNumber)) {
-      const newData = { ...gameData, phase: "sorting" };
+      let allResponsesByUser = {};
+
+      await Promise.all(
+        gamers.map(async (gamer) => {
+          let tableauResponses;
+          if (!gamer.multiGuest) {
+            tableauResponses = (
+              await prisma.user.findFirst({
+                where: { id: gamer.id },
+                select: { tableauResponses: true },
+              })
+            ).tableauResponses;
+          } else {
+            tableauResponses = (
+              await prisma.multiguest.findFirst({
+                where: { id: gamer.dataId },
+                select: { tableauResponses: true },
+              })
+            ).tableauResponses;
+          }
+
+          let gamerResponses = {};
+          tableauResponses.forEach(
+            (response) => (gamerResponses[response.theme] = response.response)
+          );
+          allResponsesByUser[gamer.name] = gamerResponses;
+        })
+      );
+
+      const allResponsesByTheme = {};
+      const gamersNames = [];
+      for (const [user, themes] of Object.entries(allResponsesByUser)) {
+        gamersNames.push(user);
+        for (const [theme, response] of Object.entries(themes)) {
+          if (!allResponsesByTheme[theme]) {
+            allResponsesByTheme[theme] = {};
+          }
+          allResponsesByTheme[theme][user] = response;
+        }
+      }
+
+      gamersNames.sort();
+
+      const newData = {
+        ...gameData,
+        allResponses: allResponsesByTheme,
+        gamersNames,
+        phase: "sorting",
+      };
       await saveAndDispatchData({ roomId, roomToken, newData });
     }
   }
