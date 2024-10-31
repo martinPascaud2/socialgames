@@ -179,7 +179,7 @@ export const gamesRefs = {
   socialknowledge: {
     name: "Connaissance des autres",
     categorie: "categorie5",
-    limits: { min: 1, max: 10 }, // check
+    limits: { min: 4, max: 10 },
     isGuestsAllowed: false,
   },
 };
