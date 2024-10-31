@@ -17,7 +17,7 @@ export default function OptionsLabel({
   );
 
   useEffect(() => {
-    if (!isAdmin) return;
+    if (!isAdmin || !value) return;
     setOptions((prevOptions) => {
       const newOptions = {
         ...options,

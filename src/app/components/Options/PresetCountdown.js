@@ -48,6 +48,17 @@ export default function PresetCountdown({
     setCountDownTime(options.countDownTime / 60 / 1000);
   }, [options, isAdmin]);
 
+  // setOptions concurrence
+  useEffect(() => {
+    if (!times) return;
+    if (!options.countDownTime) {
+      setOptions((options) => ({
+        ...options,
+        countDownTime: times.default * 60 * 1000,
+      }));
+    }
+  }, [options.countDownTime, times]);
+
   return (
     <div className="m-1 flex flex-col items-center justify-center">
       <div>Temps des tours</div>
