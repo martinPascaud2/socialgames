@@ -43,21 +43,21 @@ export default function PresetCountdown({
   }, [timeIndex, setOptions]);
 
   useEffect(() => {
-    if (isAdmin || !options.countDownTime) return;
+    if (isAdmin || Number.isNaN(options.countDownTime)) return;
 
     setCountDownTime(options.countDownTime / 60 / 1000);
   }, [options, isAdmin]);
 
   // setOptions concurrence
   useEffect(() => {
-    if (!times) return;
-    if (!options.countDownTime) {
+    if (!times || !isAdmin) return;
+    if (Number.isNaN(options.countDownTime)) {
       setOptions((options) => ({
         ...options,
         countDownTime: times.default * 60 * 1000,
       }));
     }
-  }, [options.countDownTime, times]);
+  }, [options.countDownTime, times, isAdmin]);
 
   return (
     <div className="m-1 flex flex-col items-center justify-center">
