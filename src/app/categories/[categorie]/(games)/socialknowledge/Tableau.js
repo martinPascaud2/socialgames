@@ -58,7 +58,7 @@ const MyPreview = ({ dimensions }) => {
 
   return (
     <td
-      className="item-list__item flex justify-center items-center w-fit border border-black bg-green-100 p-2 text-center h-16 shadow-[inset_0_0_0_1px_#16a34a]"
+      className="item-list__item flex justify-center items-center w-fit border border-black bg-green-100 p-2 text-center h-16 shadow-[inset_0_0_0_1px_#16a34a] z-20"
       style={{
         ...style,
         width: dimensions.width,
@@ -78,6 +78,7 @@ const DraggableItem = ({
   goodResponse,
   isBlocked,
   correctionLocked,
+  firstTurnName,
 }) => {
   const [{ isDragging }, ref] = useDrag({
     type: ItemType,
@@ -129,13 +130,15 @@ const DraggableItem = ({
               ? "#dcfce7"
               : "#fee2e2",
           borderBottomWidth: "0px",
+          zIndex: 10,
 
           // #f0fdf4
         }}
-        className={`flex flex-col text-center items-center justify-center w-full h-16 overflow-hidden mt-6 border border-black`}
+        className={`flex flex-col text-center items-center justify-center w-full h-16 overflow-hidden mt-6 border border-black relative`}
         onClick={() => moveByClick()}
       >
         {item}
+        <div className="absolute bottom-0 right-0 text-xs">{firstTurnName}</div>
       </td>
     </>
   );
@@ -150,6 +153,7 @@ const DraggableColumn = ({
   phase,
   theme,
   firstTurnSorted,
+  previousFirstNamesByTheme,
 }) => {
   const [dimensions, setDimensions] = useState();
   const dimensionsRef = useRef(null);
@@ -272,6 +276,10 @@ const DraggableColumn = ({
                   goodResponse={goodResponse}
                   isBlocked={phase === "no_chance"}
                   correctionLocked={correctionLockeds?.[index]}
+                  firstTurnName={
+                    previousFirstNamesByTheme &&
+                    previousFirstNamesByTheme[theme]?.[index]
+                  }
                 />
               </React.Fragment>
             );
@@ -547,6 +555,7 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
   const [isValidationSaved, setIsValidationSaved] = useState(false);
   const [isWantNext, setIsWantNext] = useState(false);
   const [firstTurnSorted, setFirstTurnSorted] = useState();
+  const [previousFirstNamesByTheme, setPreviousFirstNamesByTheme] = useState();
 
   const [isComingBack, setIsComingBack] = useState(true);
   const [message, setMessage] = useState("");
@@ -659,22 +668,59 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
     comeBack();
   }, [phase, isComingBack, user]);
 
+  const otherGamersNames = gamersNames?.filter((name) => name !== user.name);
+
+  useEffect(() => {
+    if (
+      !allResponses ||
+      !["secondChance_withoutCorrection", "secondChance_withCorrection"].some(
+        (phaseName) => phaseName === phase
+      )
+    )
+      return;
+    let previousFirstNamesByTheme = {};
+    Object.keys(allResponses).forEach((theme) => {
+      previousFirstNamesByTheme[theme] = otherGamersNames;
+    });
+    setPreviousFirstNamesByTheme(previousFirstNamesByTheme);
+  }, [allResponses, phase]);
+
   const TableauTable = useCallback(
     ({ allResponses, phase, firstTurnSorted }) => {
+      // const otherGamersNames = gamersNames.filter((name) => name !== user.name);
+
       const moveItemInColumn = (columnKey, fromIndex, toIndex) => {
         const updatedColumn = [...otherGamersResponses[columnKey]];
         const [movedItem] = updatedColumn.slice(fromIndex, fromIndex + 1);
         const [exchangedItem] = updatedColumn.slice(toIndex, toIndex + 1);
         updatedColumn.splice(toIndex, 1, movedItem);
         updatedColumn.splice(fromIndex, 1, exchangedItem);
-
         setOtherGamersReponses((prevColumns) => ({
           ...prevColumns,
           [columnKey]: updatedColumn,
         }));
-      };
 
-      const otherGamersNames = gamersNames.filter((name) => name !== user.name);
+        setPreviousFirstNamesByTheme((prevNamesColumns) => {
+          if (!prevNamesColumns) return prevNamesColumns;
+          else {
+            const updatedNamesColumn = [...prevNamesColumns[columnKey]];
+            const [movedName] = updatedNamesColumn.slice(
+              fromIndex,
+              fromIndex + 1
+            );
+            const [exchangedName] = updatedNamesColumn.slice(
+              toIndex,
+              toIndex + 1
+            );
+            updatedNamesColumn.splice(toIndex, 1, movedName);
+            updatedNamesColumn.splice(fromIndex, 1, exchangedName);
+            return {
+              ...prevNamesColumns,
+              [columnKey]: updatedNamesColumn,
+            };
+          }
+        });
+      };
 
       return (
         <table className="flex flex-col items-center justify-center w-full border-b border-black">
@@ -707,13 +753,14 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
                   phase={phase}
                   theme={theme}
                   firstTurnSorted={firstTurnSorted}
+                  previousFirstNamesByTheme={previousFirstNamesByTheme}
                 />
               ))}
           </tbody>
         </table>
       );
     },
-    [gamersNames, otherGamersResponses, user.name]
+    [gamersNames, otherGamersResponses, user.name, previousFirstNamesByTheme]
   );
 
   return (
