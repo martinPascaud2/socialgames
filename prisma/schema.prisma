@@ -38,15 +38,21 @@ model User {
   drawChain                   DrawLink[]
   unoCount                    Int?
   tableauResponses            TableauResponse[]
+  tableauSortedResponses      Json?
+  tableauSecondSorted         Json?
+  tableauRevelationSeen       Boolean                   @default(false)
   postGames                   UserPostGame[]
 }
 
 model Multiguest {
-  id               String            @id
-  png              String            @default("") @db.Text
-  drawChain        DrawLink[]
-  unoCount         Int?
-  tableauResponses TableauResponse[]
+  id                     String            @id
+  png                    String            @default("") @db.Text
+  drawChain              DrawLink[]
+  unoCount               Int?
+  tableauResponses       TableauResponse[]
+  tableauSortedResponses Json?
+  tableauSecondSorted    Json?
+  tableauRevelationSeen  Boolean           @default(false)
 }
 
 model PostGame {

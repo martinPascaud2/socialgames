@@ -23,7 +23,7 @@ export default function PresetCountdown({
   }, [last, isAdmin]);
 
   useEffect(() => {
-    if (!isAdmin) return;
+    if (!isAdmin || !times || Number.isNaN(timeIndex) || !setOptions) return;
 
     if (timeIndex < 0) {
       setTimeIndex(0);
@@ -40,10 +40,10 @@ export default function PresetCountdown({
       ...options,
       countDownTime: newCountDownTime * 60 * 1000,
     }));
-  }, [timeIndex]);
+  }, [timeIndex, setOptions]);
 
   useEffect(() => {
-    if (isAdmin) return;
+    if (isAdmin || !options.countDownTime) return;
 
     setCountDownTime(options.countDownTime / 60 / 1000);
   }, [options, isAdmin]);
