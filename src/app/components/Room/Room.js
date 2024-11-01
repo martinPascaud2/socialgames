@@ -65,22 +65,25 @@ import {
   sendPresenceSign,
 } from "./actions";
 
-function subscribePresenceChannel({
+const subscribePresenceChannel = ({
   userId,
   userName,
   status,
   setOnlineGamers,
   roomToken,
-}) {
+}) => {
   pusherPresence = new Pusher("61853af9f30abf9d5b3d", {
     cluster: "eu",
     useTLS: true,
     authEndpoint: "/api/pusherAuth/",
     auth: {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
       params: {
         userId,
         userName,
-        multiGuest: status === "multiGuest",
+        multiGuest: (status === "multiGuest").toString(),
       },
     },
   });
@@ -125,7 +128,7 @@ function subscribePresenceChannel({
       }
     });
   });
-}
+};
 
 export default function Room({
   user,
@@ -662,16 +665,16 @@ export default function Room({
 
   // init multiGuest: id, dataId, presence
   useEffect(() => {
+    const id = gameData?.gamers?.find((gamer) => gamer.name === uniqueName)?.id;
     if (
+      id &&
       user.multiGuest &&
       gameData.gamers &&
       uniqueName &&
       roomToken &&
-      isStarted
+      isStarted &&
+      setOnlineGamers
     ) {
-      const id = gameData.gamers.find((gamer) => gamer.name === uniqueName)?.id;
-
-      // check : gamedata
       subscribePresenceChannel({
         userId: id,
         userName: uniqueName,
@@ -685,7 +688,14 @@ export default function Room({
         gameData.gamers.find((gamer) => gamer.name === uniqueName)?.dataId
       );
     }
-  }, [isStarted, gameData.gamers, uniqueName, roomToken, user]);
+  }, [
+    isStarted,
+    gameData.gamers,
+    uniqueName,
+    roomToken,
+    user,
+    setOnlineGamers,
+  ]);
   // ------------------------------
 
   // check connection

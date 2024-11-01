@@ -18,6 +18,7 @@ export async function POST(request) {
     user_id: userId,
     user_info: { userId, userName, multiguest },
   };
+
   const authResponse = pusher.authorizeChannel(
     socketId,
     channelName,
