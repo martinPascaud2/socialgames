@@ -614,7 +614,7 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
           roomToken,
         });
       } else if (
-        phase == "secondChance_withoutCorrection" ||
+        phase === "secondChance_withoutCorrection" ||
         phase === "secondChance_withCorrection"
       ) {
         await sendSecondSorted({

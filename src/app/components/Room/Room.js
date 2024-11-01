@@ -917,7 +917,7 @@ export default function Room({
                     gamersNumber > gamesRefs[gameName].limits?.max;
 
                   return (
-                    <div>
+                    <div className="flex justify-center">
                       Liste des joueurs [
                       <span
                         className={`${
@@ -938,8 +938,8 @@ export default function Room({
                   const gamerName = gamer.name;
                   const isHere = gamerList?.includes(gamerName);
                   return (
-                    <div key={gamerName} className="flex">
-                      <div className="flex">
+                    <div key={gamerName} className="w-full">
+                      <div className="flex justify-center">
                         <div
                           className={
                             gamerName === uniqueName ? "font-semibold" : ""
@@ -980,8 +980,8 @@ export default function Room({
                   const multiName = multi.name;
                   const isHere = multiGuestList?.includes(multiName);
                   return (
-                    <div key={multiName} className="flex">
-                      <div className="flex">
+                    <div key={multiName} className="w-full">
+                      <div className="flex justify-center">
                         {multiName}{" "}
                         <span className="italic text-sm">(guest externe)</span>
                         {isHere ? (
@@ -1010,7 +1010,7 @@ export default function Room({
                     </div>
                   );
                 })}
-              <div>
+              <div className="w-full">
                 {gamerList?.map((gamer) => {
                   const gamerNameList =
                     group?.gamers?.map((gamer) => gamer.name) || [];
@@ -1022,7 +1022,7 @@ export default function Room({
                   )
                     return;
                   return (
-                    <div key={gamer} className="flex">
+                    <div key={gamer} className="flex justify-center">
                       <div
                         className={gamer === uniqueName ? "font-semibold" : ""}
                       >
@@ -1050,7 +1050,7 @@ export default function Room({
                   )
                     return;
                   return (
-                    <div key={i} className="flex">
+                    <div key={i} className="flex justify-center">
                       <div>
                         <div
                           className={
@@ -1075,7 +1075,9 @@ export default function Room({
                   );
                 })}
               </div>
+
               <hr />
+
               {!user.multiGuest && (
                 <div className="flex flex-col items-center">
                   <div className="flex mt-1">
@@ -1168,7 +1170,7 @@ export default function Room({
                 <>
                   <hr />
 
-                  <>
+                  <div className="flex flex-col items-center">
                     <h1>Invite des Guests multi-screen !</h1>
                     <h2 className="text-sm italic">
                       Ils joueront sur leur propre écran.
@@ -1210,9 +1212,9 @@ export default function Room({
                         value={`${process.env.NEXT_PUBLIC_APP_URL}/invitation/?categorie=${categorie}&gameName=${gameName}&token=${roomToken}`}
                       />
                     )}
+                  </div>
 
-                    <hr />
-                  </>
+                  <hr />
 
                   <div className="flex justify-center">
                     <div className="flex flex-col">{serverMessage}</div>
