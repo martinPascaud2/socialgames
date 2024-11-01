@@ -600,6 +600,10 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
 
   useEffect(() => {
     if (!hasValidated || !user || !phase || hasClickedOnCountdown) return;
+
+    setHasValidated(false);
+    setIsValidationSaved(true);
+
     const send = async () => {
       if (phase === "sorting") {
         await sendSortedResponses({
@@ -621,8 +625,6 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
           roomToken,
         });
       }
-      setHasValidated(false);
-      setIsValidationSaved(true);
     };
     send();
   }, [hasValidated, user, phase, hasClickedOnCountdown]);
@@ -939,24 +941,24 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
         <>
           <div className="font-bold m-2 text-lg">Résultats</div>
           <table>
-            {Object.entries(gameData.results)
-              .sort(([, scoreA], [, scoreB]) => scoreB - scoreA)
-              .map(([name, score], i) => (
-                <tr key={i} className="gap-8 my-2">
-                  <td className="p-4">{i + 1}</td>
-                  <td className="p-4">{name}</td>
-                  <td className="p-4">
+            <tbody>
+              {Object.entries(gameData.results)
+                .sort(([, scoreA], [, scoreB]) => scoreB - scoreA)
+                .map(([name, score], i) => (
+                  <tr key={i} className="gap-8 my-2">
+                    <td className="p-4">{i + 1}</td>
+                    <td className="p-4 text-center">{name}</td>
                     {gameData.firstTurnResults && (
-                      <td>
+                      <td className="p-4">
                         {"("}
                         {gameData.firstTurnResults[name]}
                         {")"}
                       </td>
                     )}
-                  </td>
-                  <td className="p-4 font-bold">{score}</td>
-                </tr>
-              ))}
+                    <td className="p-4 font-bold">{score}</td>
+                  </tr>
+                ))}
+            </tbody>
           </table>
         </>
       )}
