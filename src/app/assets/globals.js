@@ -219,6 +219,6 @@ export const modesRules = {
   },
   tableau: {
     name: "Tableau",
-    limits: { min: 4, max: 10 },
+    limits: { min: 1, max: 10 },
   },
 };

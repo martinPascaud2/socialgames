@@ -128,43 +128,46 @@ export async function sendResponse({
   roomToken,
   user,
   isLast,
+  isDeletedUser = false,
 }) {
-  if (!user.multiGuest) {
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        tableauResponses: {
-          create: {
-            theme: theme,
-            response: response,
+  if (!isDeletedUser) {
+    if (!user.multiGuest) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          tableauResponses: {
+            create: {
+              theme: theme,
+              response: response,
+            },
           },
         },
-      },
-    });
-  } else {
-    await prisma.multiguest.upsert({
-      where: { id: user.dataId },
-      update: {
-        tableauResponses: {
-          create: {
-            theme: theme,
-            response: response,
+      });
+    } else {
+      await prisma.multiguest.upsert({
+        where: { id: user.dataId },
+        update: {
+          tableauResponses: {
+            create: {
+              theme: theme,
+              response: response,
+            },
           },
         },
-      },
-      create: {
-        id: user.dataId,
-        tableauResponses: {
-          create: {
-            theme: theme,
-            response: response,
+        create: {
+          id: user.dataId,
+          tableauResponses: {
+            create: {
+              theme: theme,
+              response: response,
+            },
           },
         },
-      },
-    });
+      });
+    }
   }
 
-  if (isLast) {
+  if (isLast || isDeletedUser) {
     const { gamers, enhanced, randoms } = gameData;
     const themesNumber = enhanced.length + randoms.length;
     let responsesGamerCounts = [];
@@ -269,6 +272,7 @@ export async function sendResponse({
         gamersNames,
         finishCountdownDate,
         phase: "sorting",
+        isDeletedUser: false,
       };
       await saveAndDispatchData({ roomId, roomToken, newData });
     }
@@ -717,6 +721,7 @@ export async function firstSubmitComeBack({ user }) {
       })
     ).tableauSortedResponses;
   }
+
   return sortedResponses;
 }
 
@@ -728,7 +733,14 @@ export async function removeTableauGamers({
   admins,
   arrivalsOrder,
 }) {
-  const { gamers } = gameData;
+  const {
+    gamers,
+    allResponses,
+    allResponsesByUser,
+    gamersNames,
+    results,
+    phase,
+  } = gameData;
 
   const onlineGamersList = onlineGamers.map((gamer) => gamer.userName);
   const onlineGamersSet = new Set(onlineGamersList);
@@ -737,14 +749,93 @@ export async function removeTableauGamers({
     onlineGamersSet.has(gamer.name)
   );
 
+  const newAllResponses = allResponses
+    ? Object.fromEntries(
+        Object.entries(allResponses).map(([theme, responses]) => {
+          const newResponses = { ...responses };
+          Object.keys(responses).forEach((name) => {
+            if (!onlineGamersSet.has(name)) {
+              delete newResponses[name];
+            }
+          });
+          return [theme, newResponses];
+        })
+      )
+    : undefined;
+
+  let newAllResponsesByUser = { ...allResponsesByUser };
+  allResponsesByUser &&
+    Object.keys(allResponsesByUser).forEach((name) => {
+      if (!onlineGamersSet.has(name)) {
+        delete newAllResponsesByUser[name];
+      }
+    });
+  if (!Object.keys(newAllResponsesByUser).length)
+    newAllResponsesByUser = undefined;
+
+  const newGamersNames = gamersNames?.filter((name) =>
+    onlineGamersSet.has(name)
+  );
+
+  let newResults = { ...results };
+  results &&
+    Object.keys(results).forEach((name) => {
+      if (!onlineGamersSet.has(name)) {
+        delete newResults[name];
+      }
+    });
+  if (!Object.keys(newResults).length) newResults = undefined;
+
+  const isEnded = !["waiting", "writing", "sorting", "results"].some(
+    (phaseName) => phaseName === phase
+  );
+  const newPhase = !isEnded ? phase : "end";
+
   const newData = {
     ...gameData,
     gamers: remainingGamers,
-    //   isDeletedUser: true,
     admin: admins.newAdmin,
     viceAdmin: admins.newViceAdmin,
     arrivalsOrder,
+    isDeletedUser: true,
+    allResponses: newAllResponses,
+    allResponsesByUser: newAllResponsesByUser,
+    gamersNames: newGamersNames,
+    results: newResults,
+    revelationIndexes: undefined,
+    ended: isEnded,
+    phase: newPhase,
   };
 
+  await saveAndDispatchData({ roomId, roomToken, newData });
+}
+
+export async function resetAllSorted({ gameData, roomId, roomToken }) {
+  const { gamers } = gameData;
+
+  await Promise.all(
+    gamers.map(async (gamer) => {
+      if (!gamer.multiGuest) {
+        await prisma.user.update({
+          where: { id: gamer.id },
+          data: {
+            tableauSortedResponses: null,
+          },
+        });
+      } else {
+        await prisma.multiguest.update({
+          where: { id: gamer.dataId },
+          data: {
+            tableauSortedResponses: null,
+          },
+        });
+      }
+    })
+  );
+
+  const newData = {
+    ...gameData,
+    isDeletedUser: false,
+  };
   await saveAndDispatchData({ roomId, roomToken, newData });
 }

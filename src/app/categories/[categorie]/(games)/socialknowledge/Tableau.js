@@ -16,6 +16,7 @@ import {
   adminRevelate,
   getAllSortedResponses,
   goResult,
+  resetAllSorted,
 } from "./gameActions";
 
 import getAreSimilar from "./getAreSimilar";
@@ -686,6 +687,32 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
     });
     setPreviousFirstNamesByTheme(previousFirstNamesByTheme);
   }, [allResponses, phase]);
+
+  useEffect(() => {
+    if (!gameData || !roomId || !roomToken || !phase) return;
+
+    const checkAllWritingSent = async () => {
+      if (gameData.isDeletedUser && isAdmin && phase === "writing") {
+        await sendResponse({
+          isDeletedUser: true,
+          gameData,
+          roomId,
+          roomToken,
+        });
+      }
+    };
+    const resetSorted = async () => {
+      if (gameData.isDeletedUser && phase === "sorting") {
+        setHasValidated(false);
+        setHasClickedOnCountdown(false);
+        setIsValidationSaved(false);
+        isAdmin && (await resetAllSorted({ gameData, roomId, roomToken }));
+      }
+    };
+
+    checkAllWritingSent();
+    resetSorted();
+  }, [gameData, isAdmin, roomId, roomToken, phase]);
 
   const TableauTable = useCallback(
     ({ allResponses, phase, firstTurnSorted }) => {
