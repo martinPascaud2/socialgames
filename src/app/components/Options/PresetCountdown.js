@@ -36,6 +36,7 @@ export default function PresetCountdown({
 
     const newCountDownTime = times.values[timeIndex];
     setCountDownTime(newCountDownTime);
+
     setOptions((options) => ({
       ...options,
       countDownTime: newCountDownTime * 60 * 1000,

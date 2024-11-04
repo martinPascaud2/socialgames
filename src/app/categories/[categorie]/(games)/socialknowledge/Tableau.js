@@ -1,9 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, useRef, use } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import React from "react";
 
 import shuffleArray from "@/utils/shuffleArray";
+import getAreSimilar from "./getAreSimilar";
+
 import {
   startGame,
   sendResponse,
@@ -19,20 +21,11 @@ import {
   resetAllSorted,
 } from "./gameActions";
 
-import getAreSimilar from "./getAreSimilar";
-
+import ClickableCountDown from "@/components/ClickableCountdown";
 import NextStep from "@/components/NextStep";
 
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-// import { DndProvider, useDrag, useDrop } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { MultiBackend } from "react-dnd-multi-backend";
-import { TouchBackend } from "react-dnd-touch-backend"; // For touch support
-// import { MultiBackend, DndProvider, Preview } from "react-dnd-multi-backend";
-// import { Preview } from "react-dnd-multi-backend";
-import { DndProvider } from "react-dnd";
-import { useDrag, useDrop } from "react-dnd";
-// import { generatePreview } from "@/components/DND/generatePreview";
+import { TouchBackend } from "react-dnd-touch-backend";
+import { DndProvider, useDrag, useDrop } from "react-dnd";
 import { HTML5toTouch } from "@/components/DND/HTML5toTouch";
 import { usePreview } from "react-dnd-preview";
 
@@ -43,8 +36,6 @@ import {
   ChevronDoubleRightIcon,
   PauseIcon,
 } from "@heroicons/react/24/outline";
-
-import ClickableCountDown from "@/components/ClickableCountdown";
 
 const ItemType = "COLUMN_ITEM";
 
@@ -117,23 +108,16 @@ const DraggableItem = ({
         style={{
           padding: "0px",
           margin: "",
-          // border:
-          //   clickMoveFromIndex !== index && !isDragging
-          //     ? "1px solid black"
-          //     : "2px solid #16a34a",
           backgroundColor:
             goodResponse === undefined
               ? clickMoveFromIndex === index || correctionLocked === true
-                ? // clickMoveFromIndex === index
-                  "#dcfce7"
+                ? "#dcfce7"
                 : "#f3f4f6"
               : goodResponse
               ? "#dcfce7"
               : "#fee2e2",
           borderBottomWidth: "0px",
           zIndex: 10,
-
-          // #f0fdf4
         }}
         className={`flex flex-col text-center items-center justify-center w-full h-16 overflow-hidden mt-6 border border-black relative`}
         onClick={() => moveByClick()}
@@ -158,7 +142,6 @@ const DraggableColumn = ({
 }) => {
   const [dimensions, setDimensions] = useState();
   const dimensionsRef = useRef(null);
-
   const [clickMoveFromIndex, setClickMoveFromIndex] = useState();
 
   const [badResponses, setBadResponses] = useState();
@@ -174,14 +157,12 @@ const DraggableColumn = ({
   useEffect(() => {
     if (!firstTurnSorted || !gamersNames || !allResponses) return;
 
-    // let badResponses = 0;
     let badResponses = {};
     gamersNames.forEach((name) => {
       badResponses[name] = 0;
     });
 
     let correctionLockeds = {};
-
     Object.entries(firstTurnSorted).forEach(([th, responses]) => {
       let passedGamerIndex = 0;
       responses.forEach((response, gamerIndex) => {
@@ -193,24 +174,12 @@ const DraggableColumn = ({
             if (th === theme)
               correctionLockeds[gamerIndex - passedGamerIndex] = false;
           } else {
-            // correctionLockeds[theme] = false;
             if (th === theme)
               correctionLockeds[gamerIndex - passedGamerIndex] = true;
           }
         } else {
           passedGamerIndex = 1;
         }
-
-        // if (
-        //   response !== null &&
-        //   !getAreSimilar(response, allResponses[theme][gamersNames[gamerIndex]])
-        //   // response !== allResponses[theme][gamersNames[gamerIndex]]
-        // ) {
-        //   badResponses[gamersNames[gamerIndex]] += 1;
-        //   correctionLockeds[gamerIndex] = true;
-        // } else {
-        //   correctionLockeds[gamerIndex] = false;
-        // }
       });
     });
     setBadResponses(badResponses);
@@ -220,23 +189,11 @@ const DraggableColumn = ({
 
   return (
     <>
-      {/* <DndProvider backend={MultiBackend} options={HTML5toTouch}> */}
       <DndProvider backend={TouchBackend} options={{ HTML5toTouch }}>
-        {/* <tr className="absolute top-0 h-4 w-full flex justify-center border border-b-0 border-black">
-          <th className="h-full flex justify-center items-center">coucou</th>
-        </tr> */}
-        {/* <tr className="flex flex-col w-0">
-          <th className="h-full flex justify-center items-center">coucou</th>
-        </tr> */}
-        {/* <tr>
-          <th colspan="2">Titre fusionné</th>
-        </tr> */}
         <tr ref={dimensionsRef} className="w-full h-full">
           {items.map((item, index) => {
             let goodResponse;
             if (phase === "no_chance") {
-              // goodResponse =
-              //   item === allResponses[theme][otherGamersNames[index]];
               goodResponse = getAreSimilar(
                 item,
                 allResponses[theme][otherGamersNames[index]]
@@ -244,12 +201,8 @@ const DraggableColumn = ({
             }
             return (
               <React.Fragment key={index}>
-                {/* <th className="absolute">coucou</th> */}
-                {/* <td className="absolute left-[50%] translate-x-[-50%] w-full h-[25px] px-[9px] text-center bg-gradient-to-r bg-blue-300 from-gray-100 to-gray-100 via-transparent"> */}
                 <td className="absolute left-[50%] translate-x-[-50%] w-full h-[25px] px-[9px] bg-gradient-to-r bg-blue-300 from-gray-100 to-gray-100 via-transparent">
-                  {/* <div className="outline outline-1 outline-gray-300"> */}
                   <div className="flex outline outline-1 outline-black justify-center w-full">
-                    {/* {gamersNames[index]} */}
                     <div className="text-center relative">
                       {otherGamersNames[index]}
                       <div className="absolute top-0 translate-x-[100%] w-full flex">
@@ -266,6 +219,7 @@ const DraggableColumn = ({
                     </div>
                   </div>
                 </td>
+
                 <DraggableItem
                   key={index}
                   item={item}
@@ -273,7 +227,6 @@ const DraggableColumn = ({
                   moveItem={moveItem}
                   clickMoveFromIndex={clickMoveFromIndex}
                   setClickMoveFromIndex={setClickMoveFromIndex}
-                  // setDimensions={setDimensions}
                   goodResponse={goodResponse}
                   isBlocked={phase === "no_chance"}
                   correctionLocked={correctionLockeds?.[index]}
@@ -314,7 +267,6 @@ const Revelator = ({
     if (!isRunning || !isAdmin) return;
 
     const interval = setInterval(async () => {
-      // setCurrentThemeIndex((prevIndex) => prevIndex + 1);
       await adminRevelate({ roomId, roomToken, gameData });
     }, 2000);
 
@@ -367,14 +319,8 @@ const Revelator = ({
           .forEach(([theme, responses], themeIndex) => {
             responses.forEach((response, forThisGamerIndex) => {
               const countThisOne =
-                // forThisGamerIndex < currentGamerIndex ||
                 forThisGamerIndex === currentGamerIndex &&
                 themeIndex <= currentThemeIndex;
-              // if (
-              //   response ===
-              //     allResponsesByUser[gamersNames[forThisGamerIndex]][theme] &&
-              //   countThisOne
-              // ) {
               if (
                 getAreSimilar(
                   response,
@@ -427,26 +373,14 @@ const Revelator = ({
           </button>
         ))}
 
-      {/* <button
-        onClick={() => setIsRunning(!isRunning)}
-        className="border border-blue-400 bg-blue-100 p-2 text-blue-400"
-      >
-        {!isRunning ? "Afficher" : "Pause"}
-      </button> */}
-
-      {/* <div className="w-full flex justify-around"> */}
       <div className="flex w-full justify-around flex-wrap p-2 m-2">
         {allSortedResponses &&
           gamersNames.map((name, index) => {
-            const isWaitingBeginning =
-              currentGamerIndex === undefined ||
-              currentThemeIndex === undefined;
             const gamerResponseForCurrent =
               allSortedResponses[name]?.[allThemes[currentThemeIndex]]?.[
                 currentGamerIndex
               ];
             const isTheOne = gamerResponseForCurrent === null;
-            // const isRight = gamerResponseForCurrent === actualResponse;
             const isRight = getAreSimilar(
               gamerResponseForCurrent,
               actualResponse
@@ -457,16 +391,15 @@ const Revelator = ({
                 <div
                   className={`text-center ${
                     isTheOne || !actualResponse
-                      ? // isTheOne
-                        "text-black"
+                      ? "text-black"
                       : isRight
                       ? "text-green-600"
                       : "text-red-600"
                   }`}
-                  // className={`text-center`}
                 >
                   {name}
                 </div>
+
                 <div className="flex h-6">
                   {Array.from({ length: goodResponses[name] }, (_, i) => (
                     <div key={`${index}-${i}`}>
@@ -493,6 +426,7 @@ const Revelator = ({
             ))}
           </tr>
         </thead>
+
         <tbody className="w-full flex flex-col">
           {Object.entries(allResponsesByUser)
             .sort(([userNameA], [userNameB]) =>
@@ -656,7 +590,6 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
         const savedWrittenIndex = await writtingComeBack({ user });
         setWrittenIndex(savedWrittenIndex);
         setIsComingBack(false);
-        //to do: sorting phase
       } else if (
         (phase === "no_chance" ||
           phase === "secondChance_withoutCorrection" ||
@@ -716,8 +649,6 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
 
   const TableauTable = useCallback(
     ({ allResponses, phase, firstTurnSorted }) => {
-      // const otherGamersNames = gamersNames.filter((name) => name !== user.name);
-
       const moveItemInColumn = (columnKey, fromIndex, toIndex) => {
         const updatedColumn = [...otherGamersResponses[columnKey]];
         const [movedItem] = updatedColumn.slice(fromIndex, fromIndex + 1);
@@ -767,6 +698,7 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
                 ))}
             </tr>
           </thead>
+
           <tbody className="flex w-full">
             {otherGamersResponses &&
               Object.keys(otherGamersResponses).map((theme, i) => (
@@ -866,7 +798,6 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
               <ClickableCountDown
                 finishCountdownDate={finishCountdownDate}
                 onTimeUp={onValidate}
-                // setHasValidated={setHasValidated}
                 onClick={() => setHasClickedOnCountdown(true)}
                 isValidationSaved={isValidationSaved}
               />
@@ -923,7 +854,6 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
               <ClickableCountDown
                 finishCountdownDate={finishCountdownDate}
                 onTimeUp={onValidate}
-                // setHasValidated={setHasValidated}
                 onClick={() => setHasClickedOnCountdown(true)}
                 isValidationSaved={isValidationSaved}
               />

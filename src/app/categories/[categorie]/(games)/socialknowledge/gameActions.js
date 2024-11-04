@@ -1,16 +1,12 @@
 "use server";
 
 import sortByKeys from "@/utils/sortByKeys";
-import levenshtein from "@/utils/levenshtein";
-import { formatWord } from "@/utils/formatWord";
-
 import checkPlayers from "@/utils/checkPlayers";
+import getAreSimilar from "./getAreSimilar";
+
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkViceAdminAndArrivals from "@/utils/checkViceAdminAndArrivals";
-
 import { saveAndDispatchData } from "@/components/Room/actions";
-
-import getAreSimilar from "./getAreSimilar";
 
 export async function launchGame({
   roomId,
@@ -53,7 +49,6 @@ export async function launchGame({
     });
 
   let newData;
-
   if (options.mode === "Tableau") {
     newData = {
       admin: startedRoom.admin,
@@ -106,6 +101,7 @@ export async function startGame({ gameData, roomId, roomToken }) {
     if (theme.enhanced) enhanced.push(theme.theme);
     else if (theme.selected) onlySelected.push(theme.theme);
   });
+
   let selectedRandomIndexes = new Set();
   while (selectedRandomIndexes.size < randomsNumber) {
     const randomIndex = Math.floor(Math.random() * onlySelected.length);
@@ -268,7 +264,6 @@ export async function sendResponse({
         ...gameData,
         allResponses: allResponsesByTheme,
         allResponsesByUser: sortedResponsesByUser,
-        // allResponses: sortedResponses,
         gamersNames,
         finishCountdownDate,
         phase: "sorting",
@@ -377,7 +372,6 @@ export async function sendSortedResponses({
         break;
     }
 
-    // const newData = { ...gameData, phase: "no_chance" };
     const newData = {
       ...gameData,
       phase: newPhase,
@@ -493,11 +487,9 @@ export async function adminRevelate({ roomId, roomToken, gameData }) {
 
   if (currentThemeIndex >= themesNumber - 1) currentThemeIndex = -1;
   const newCurrentThemeIndex = currentThemeIndex + 1;
-  // const newCurrentThemeIndex = -1;
 
   const newCurrentGamerIndex =
     newCurrentThemeIndex === 0 ? currentGamerIndex + 1 : currentGamerIndex;
-  // const newCurrentGamerIndex = -1;
 
   const newRevelationsIndexes = {
     currentThemeIndex: newCurrentThemeIndex,
@@ -546,6 +538,7 @@ export async function getGamerFirstTurnSorted({ gamer, gamersNames }) {
         select: { tableauSortedResponses: true },
       })
     ).tableauSortedResponses;
+
     const filledSortedResponses = fillResponses(
       sortedResponses,
       gamer.name,
@@ -634,7 +627,6 @@ export async function goResult({ roomId, roomToken, gameData }) {
   Object.entries(allSortedResponses).forEach(([sorter, responses]) => {
     Object.entries(responses).forEach(([theme, sortedResponses]) => {
       sortedResponses.forEach((response, gamerIndex) => {
-        // if (response === allResponsesByUser[gamersNames[gamerIndex]][theme]) {
         if (
           getAreSimilar(
             response,
@@ -653,6 +645,7 @@ export async function goResult({ roomId, roomToken, gameData }) {
     gamersNames.forEach((name) => {
       firstTurnResults[name] = 0;
     });
+
     const allFirstSorted = await getAllSortedResponses({
       gamers,
       gamersNames,
@@ -662,7 +655,6 @@ export async function goResult({ roomId, roomToken, gameData }) {
     Object.entries(allFirstSorted).forEach(([sorter, responses]) => {
       Object.entries(responses).forEach(([theme, sortedResponses]) => {
         sortedResponses.forEach((response, gamerIndex) => {
-          // if (response === allResponsesByUser[gamersNames[gamerIndex]][theme]) {
           if (
             getAreSimilar(
               response,
@@ -682,7 +674,6 @@ export async function goResult({ roomId, roomToken, gameData }) {
     firstTurnResults,
     phase: "results",
   };
-
   await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
