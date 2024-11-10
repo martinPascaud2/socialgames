@@ -8,7 +8,16 @@ export default async function getFriendList({ userId }) {
         id: userId,
       },
       select: {
-        friends: true,
+        friends: {
+          include: {
+            friend: true,
+          },
+          orderBy: {
+            friend: {
+              name: "asc",
+            },
+          },
+        },
       },
     })
   ).friends;

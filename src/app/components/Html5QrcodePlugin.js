@@ -4,6 +4,8 @@ import { Html5QrcodeScanType, Html5Qrcode } from "html5-qrcode";
 
 import "./Html5QrcodePlugin.css";
 
+import Spinner from "./spinners/Spinner";
+
 const createConfig = (props) => {
   let config = {};
 
@@ -51,8 +53,16 @@ export default function Html5QrcodePlugin(props) {
 
   useEffect(() => {
     const stop = () => scan?.stop();
-    stop && props.setStopScan(() => stop);
-  }, [scan]);
+    // stop && props.setStopScan && props.setStopScan(() => stop);
+    stop &&
+      props.setStopScan &&
+      props.setStopScan((prevStop) => {
+        if (prevStop) return prevStop;
+        // else return () => stop;
+        else return stop;
+      });
+    // }, [scan]);
+  }, [scan, props]);
 
-  return <div id="reader" />;
+  return <div id="reader" className="border border-black" />;
 }

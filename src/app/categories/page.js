@@ -12,7 +12,7 @@ import { gamesRefs } from "@/assets/globals";
 
 export default async function CategoriesPage() {
   const user = await getUser();
-  const friendList = await getFriendList({ userId: user.id });
+  const friendList = user?.id ? await getFriendList({ userId: user.id }) : [];
 
   const updateParams = async (up) => {
     "use server";

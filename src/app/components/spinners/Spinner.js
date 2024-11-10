@@ -1,6 +1,6 @@
 export default function Spinner() {
   return (
-    <div role="status" className="flex justify-center mt-12">
+    <div role="status" className="flex justify-center">
       <div role="status">
         <svg
           aria-hidden="true"
