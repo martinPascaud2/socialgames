@@ -725,7 +725,7 @@ const SettingsButtons = ({
   user,
   setServerMessage,
   resetPermissions,
-  // setScanning,
+  setScanning,
 }) => {
   return (
     <>
@@ -777,6 +777,7 @@ const SettingsButtons = ({
           onClick={(event) => {
             setSetting("camera");
             // setScanning((prevScanning) => !prevScanning);
+            setScanning(true);
             // resetPermissions();
             event.stopPropagation();
           }}
@@ -840,7 +841,7 @@ const CentralZone = ({ children, onClick }) => {
   );
 };
 
-const Friends = ({ friendList, user }) => {
+const Friends = ({ friendList, user, deleteFriend, updateLastCP }) => {
   return (
     <div className="py-6">
       {friendList.map((friend) => (
@@ -1019,58 +1020,58 @@ const Invitations = ({
   // const [publicRooms, setPublicRooms] = useState({});
   // const [invitations, setInvitations] = useState([]);
 
-  useEffect(() => {
-    const channel = pusher.subscribe(`user-${user.email}`);
-    channel.bind("user-event", function (data) {
-      if (data.message) {
-        setServerMessage(data.message);
-        router.refresh();
-      }
-      if (data.invitation) {
-        if (data.invitation.deleted) {
-          setPublicRooms((prevPublics) => {
-            const prevPubs = { ...prevPublics };
-            let deletedId;
-            Object.entries(prevPubs).find((pub) => {
-              if (pub[1].link === data.invitation.link) deletedId = pub[0];
-            });
-            if (deletedId) delete prevPubs[deletedId];
-            return prevPubs;
-          });
-        }
-        setInvitations((prevInvitations) => {
-          const prevInvs = [...prevInvitations];
-          if (data.invitation.deleted) {
-            const deletedInvs = prevInvs.filter(
-              (inv) => inv.link !== data.invitation.link
-            );
-            return deletedInvs;
-          }
+  // useEffect(() => {
+  //   const channel = pusher.subscribe(`user-${user.email}`);
+  //   channel.bind("user-event", function (data) {
+  //     if (data.message) {
+  //       setServerMessage(data.message);
+  //       router.refresh();
+  //     }
+  //     if (data.invitation) {
+  //       if (data.invitation.deleted) {
+  //         setPublicRooms((prevPublics) => {
+  //           const prevPubs = { ...prevPublics };
+  //           let deletedId;
+  //           Object.entries(prevPubs).find((pub) => {
+  //             if (pub[1].link === data.invitation.link) deletedId = pub[0];
+  //           });
+  //           if (deletedId) delete prevPubs[deletedId];
+  //           return prevPubs;
+  //         });
+  //       }
+  //       setInvitations((prevInvitations) => {
+  //         const prevInvs = [...prevInvitations];
+  //         if (data.invitation.deleted) {
+  //           const deletedInvs = prevInvs.filter(
+  //             (inv) => inv.link !== data.invitation.link
+  //           );
+  //           return deletedInvs;
+  //         }
 
-          const alreadyInviterIndex = prevInvs.findIndex(
-            (inv) => inv.userName === data.invitation.userName
-          );
-          if (alreadyInviterIndex !== -1) {
-            prevInvs.splice(alreadyInviterIndex, 1);
-            return [...prevInvs, data.invitation];
-          }
+  //         const alreadyInviterIndex = prevInvs.findIndex(
+  //           (inv) => inv.userName === data.invitation.userName
+  //         );
+  //         if (alreadyInviterIndex !== -1) {
+  //           prevInvs.splice(alreadyInviterIndex, 1);
+  //           return [...prevInvs, data.invitation];
+  //         }
 
-          const sameInvLink = prevInvs.some(
-            (inv) => inv.link === data.invitation.link
-          );
-          if (sameInvLink) return [...prevInvs];
+  //         const sameInvLink = prevInvs.some(
+  //           (inv) => inv.link === data.invitation.link
+  //         );
+  //         if (sameInvLink) return [...prevInvs];
 
-          return [...prevInvs, data.invitation];
-        });
-      }
-    });
+  //         return [...prevInvs, data.invitation];
+  //       });
+  //     }
+  //   });
 
-    updateLastCP({ userId: user.id }); //no await
+  //   updateLastCP({ userId: user.id }); //no await
 
-    return () => {
-      pusher.unsubscribe(`user-${user.email}`);
-    };
-  }, [user, router, updateLastCP]);
+  //   return () => {
+  //     pusher.unsubscribe(`user-${user.email}`);
+  //   };
+  // }, [user, router, updateLastCP]);
 
   useEffect(() => {
     setPublicRooms((prevPublics) => {
@@ -1182,11 +1183,28 @@ const Invitations = ({
 
 const QrCodeScanner = ({
   setting,
-  onNewScanResult,
+  // onNewScanResult,
   setStopScan,
   setServerMessage,
 }) => {
   // if (!scanning) return;
+
+  const onNewScanResult = () =>
+    throttle(async (decodedText) => {
+      console.log("coucou");
+      if (scanLocked) return;
+      let userLocation;
+      setScanLocked(true);
+      userLocation = await getLocation();
+      const { error: addFriendError } = await addFriend({
+        userLocation,
+        friendCode: decodedText,
+      });
+      if (addFriendError) setServerMessage(addFriendError);
+      setTimeout(() => {
+        setScanLocked(false);
+      }, 1000);
+    }, 1000);
 
   const requestCameraAccess = useCallback(async () => {
     // if (setting !== "camera") return;
@@ -1209,9 +1227,29 @@ const QrCodeScanner = ({
   }, [setServerMessage]);
 
   useEffect(() => {
-    if (!requestCameraAccess) return;
+    // if (!requestCameraAccess) return;
+    const requestCameraAccess = async () => {
+      // if (setting !== "camera") return;
+      try {
+        await navigator.mediaDevices.getUserMedia({ video: true });
+      } catch (error) {
+        console.error("Erreur lors de l'accès à la caméra :", error);
+        const errorInformations = getErrorInformations({
+          window,
+          fail: "camera_permission",
+        }).map((info, i) => (
+          <div key={i} className={`${i === 0 && "font-bold"}`}>
+            {i !== 0 && "=>"}
+            {info}
+          </div>
+        ));
+        setServerMessage(errorInformations);
+        // setScanning(false);
+      }
+    };
     requestCameraAccess();
-  }, [requestCameraAccess]);
+    // }, [requestCameraAccess]);
+  }, [setServerMessage]);
 
   return (
     <>
@@ -1256,7 +1294,7 @@ export default function Categories({
   const [location, setLocation] = useState(null);
   const [scanLocked, setScanLocked] = useState(false);
   const [stopScan, setStopScan] = useState();
-  // const [scanning, setScanning] = useState(false);
+  const [scanning, setScanning] = useState(false);
 
   const [serverMessage, setServerMessage] = useState();
 
@@ -1269,63 +1307,131 @@ export default function Categories({
     return user;
   };
 
-  const onNewScanResult = useCallback(
-    () =>
-      throttle(async (decodedText) => {
-        if (scanLocked) return;
-        let userLocation;
-        setScanLocked(true);
-        userLocation = await getLocation();
-        const { error: addFriendError } = await addFriend({
-          userLocation,
-          friendCode: decodedText,
+  console.log("serverMessage", serverMessage);
+  useEffect(() => {
+    const channel = pusher.subscribe(`user-${user.email}`);
+    channel.bind("user-event", function (data) {
+      if (data.message) {
+        setServerMessage(data.message);
+        router.refresh();
+      }
+      if (data.invitation) {
+        if (data.invitation.deleted) {
+          setPublicRooms((prevPublics) => {
+            const prevPubs = { ...prevPublics };
+            let deletedId;
+            Object.entries(prevPubs).find((pub) => {
+              if (pub[1].link === data.invitation.link) deletedId = pub[0];
+            });
+            if (deletedId) delete prevPubs[deletedId];
+            return prevPubs;
+          });
+        }
+        setInvitations((prevInvitations) => {
+          const prevInvs = [...prevInvitations];
+          if (data.invitation.deleted) {
+            const deletedInvs = prevInvs.filter(
+              (inv) => inv.link !== data.invitation.link
+            );
+            return deletedInvs;
+          }
+
+          const alreadyInviterIndex = prevInvs.findIndex(
+            (inv) => inv.userName === data.invitation.userName
+          );
+          if (alreadyInviterIndex !== -1) {
+            prevInvs.splice(alreadyInviterIndex, 1);
+            return [...prevInvs, data.invitation];
+          }
+
+          const sameInvLink = prevInvs.some(
+            (inv) => inv.link === data.invitation.link
+          );
+          if (sameInvLink) return [...prevInvs];
+
+          return [...prevInvs, data.invitation];
         });
-        if (addFriendError) setServerMessage(addFriendError);
-        setTimeout(() => {
-          setScanLocked(false);
-        }, 1000);
-      }, 1000),
-    [addFriend, scanLocked]
-  );
+      }
+    });
 
-  // const QrCodeScanner = useMemo(() => {
-  //   if (setting !== "camera") return;
-  //   // if (!scanning) return;
-  //   const requestCameraAccess = async () => {
-  //     try {
-  //       await navigator.mediaDevices.getUserMedia({ video: true });
-  //     } catch (error) {
-  //       console.error("Erreur lors de l'accès à la caméra :", error);
-  //       const errorInformations = getErrorInformations({
-  //         window,
-  //         fail: "camera_permission",
-  //       }).map((info, i) => (
-  //         <div key={i} className={`${i === 0 && "font-bold"}`}>
-  //           {i !== 0 && "=>"}
-  //           {info}
-  //         </div>
-  //       ));
-  //       setServerMessage(errorInformations);
-  //       // setScanning(false);
-  //     }
-  //   };
-  //   requestCameraAccess();
+    updateLastCP({ userId: user.id }); //no await
 
-  //   return (
-  //     <div
-  //       onClick={(event) => event.stopPropagation()}
-  //       className="h-full w-full"
-  //     >
-  //       <Html5QrcodePlugin
-  //         // scanning={setting === "camera"}
-  //         fps={10}
-  //         qrCodeSuccessCallback={onNewScanResult}
-  //         setStopScan={setStopScan}
-  //       />
-  //     </div>
-  //   );
-  //   // }, [onNewScanResult, scanning]);
-  // }, [setting, onNewScanResult]);
+    return () => {
+      pusher.unsubscribe(`user-${user.email}`);
+    };
+  }, [user, router, updateLastCP]);
+
+  // const onNewScanResult = () =>
+  //   throttle(async (decodedText) => {
+  //     console.log("coucou");
+  //     if (scanLocked) return;
+  //     let userLocation;
+  //     setScanLocked(true);
+  //     userLocation = await getLocation();
+  //     const { error: addFriendError } = await addFriend({
+  //       userLocation,
+  //       friendCode: decodedText,
+  //     });
+  //     if (addFriendError) setServerMessage(addFriendError);
+  //     setTimeout(() => {
+  //       setScanLocked(false);
+  //     }, 1000);
+  //   }, 1000);
+
+  const onNewScanResult = throttle(async (decodedText) => {
+    if (scanLocked) return;
+    let userLocation;
+    setScanLocked(true);
+    userLocation = await getLocation();
+    const { error: addFriendError } = await addFriend({
+      userLocation,
+      friendCode: decodedText,
+    });
+    if (addFriendError) setServerMessage(addFriendError);
+    setTimeout(() => {
+      setScanLocked(false);
+    }, 1000);
+  }, 1000);
+
+  const QrCodeScanner = useMemo(() => {
+    if (setting !== "camera") return;
+    if (!scanning || !setting) return;
+    const requestCameraAccess = async () => {
+      try {
+        await navigator.mediaDevices.getUserMedia({ video: true });
+      } catch (error) {
+        console.error("Erreur lors de l'accès à la caméra :", error);
+        const errorInformations = getErrorInformations({
+          window,
+          fail: "camera_permission",
+        }).map((info, i) => (
+          <div key={i} className={`${i === 0 && "font-bold"}`}>
+            {i !== 0 && "=>"}
+            {info}
+          </div>
+        ));
+        setServerMessage(errorInformations);
+        setScanning(false);
+      }
+    };
+    requestCameraAccess();
+
+    return (
+      <div
+        onClick={(event) => event.stopPropagation()}
+        className="h-full w-full"
+      >
+        <Html5QrcodePlugin
+          // scanning={setting === "camera"}
+          fps={10}
+          qrCodeSuccessCallback={onNewScanResult}
+          setStopScan={setStopScan}
+        />
+      </div>
+    );
+    // }, [onNewScanResult, scanning]);
+    // }, [setting, onNewScanResult, scanning]);
+  }, [setting, scanning]);
 
   const resetPermissions = useCallback(() => {
     stopScan && stopScan();
@@ -1385,12 +1491,17 @@ export default function Categories({
                 setLocation={setLocation}
                 setServerMessage={setServerMessage}
                 resetPermissions={resetPermissions}
-                // setScanning={setScanning}
+                setScanning={setScanning}
               />
 
               {setting === "friends" && (
                 <CentralZone onClick={handleOctaClick}>
-                  <Friends friendList={friendList} user={user} />
+                  <Friends
+                    friendList={friendList}
+                    user={user}
+                    deleteFriend={deleteFriend}
+                    updateLastCP={updateLastCP}
+                  />
                 </CentralZone>
               )}
 
@@ -1424,13 +1535,13 @@ export default function Categories({
 
               {setting === "camera" && (
                 <CentralZone onClick={handleOctaClick}>
-                  {/* {QrCodeScanner} */}
-                  <QrCodeScanner
+                  {QrCodeScanner}
+                  {/* <QrCodeScanner
                     setting={setting}
-                    onNewScanResult={onNewScanResult}
+                    // onNewScanResult={onNewScanResult}
                     setStopScan={setStopScan}
                     setServerMessage={setServerMessage}
-                  />
+                  /> */}
                 </CentralZone>
               )}
             </>
@@ -1454,10 +1565,10 @@ export default function Categories({
           {toggledPrelobby && !toggledSettings && (
             <CentralZone onClick={handleOctaClick}>
               <div className="flex w-full h-full justify-around items-center">
-                <div>
+                <div onClick={(event) => event.stopPropagation()}>
                   <GoTools className="w-8 h-8 text-purple-100" />
                 </div>
-                <div>
+                <div onClick={(event) => event.stopPropagation()}>
                   <Link
                     onClick={async () => {
                       resetPermissions();
@@ -1468,7 +1579,7 @@ export default function Categories({
                     <FaPlay className="w-8 h-8 text-purple-100" />
                   </Link>
                 </div>
-                <div>
+                <div onClick={(event) => event.stopPropagation()}>
                   <Link href="/post-game/">
                     <FaRegFloppyDisk className="w-8 h-8 text-purple-100" />
                   </Link>
@@ -1476,6 +1587,10 @@ export default function Categories({
               </div>
             </CentralZone>
           )}
+
+          <div className="absolute top-full z-10 left-1/2 translate-x-[-50%]">
+            {serverMessage}
+          </div>
         </div>
       </main>
     </div>
