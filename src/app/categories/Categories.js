@@ -1603,6 +1603,10 @@ export default function Categories({
         </main>
       ) : (
         <main>
+          <div
+            onClick={() => router.push("/categories/grouping/grouping")}
+            className="z-10 absolute h-[100dvh] w-screen max-h-full"
+          />
           <div className="m-auto">
             {categories.map((categorie, index) => {
               const isLast = index === 6;
