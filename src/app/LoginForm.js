@@ -68,9 +68,9 @@ export function LoginForm({}) {
         <p aria-live="polite" className="sr-only">
           {state?.srMessage}
         </p>
-        <Link href="/signin" className="border border-blue-300 bg-blue-100">
+        {/* <Link href="/signin" className="border border-blue-300 bg-blue-100">
           Pas encore de compte ?
-        </Link>
+        </Link> */}
       </form>
     </>
   );
