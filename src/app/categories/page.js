@@ -109,7 +109,7 @@ export default async function CategoriesPage() {
       first: userLocation,
       second: friendLocation,
     });
-    if (distance > 500) return { error: "Vous êtes trop loin !" };
+    // if (distance > 500) return { error: "Vous êtes trop loin !" };
 
     const friendList = await getFriendList({ userId: user.id });
     const isAlreadyFriend = friendList.some(
