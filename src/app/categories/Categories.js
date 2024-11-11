@@ -1292,6 +1292,7 @@ export default function Categories({
   updateLastCP,
   signOut,
 }) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const urlControl = searchParams.get("control") === "true";
   const isGroup = searchParams.get("group") === "true";
@@ -1309,7 +1310,7 @@ export default function Categories({
 
   const [publicRooms, setPublicRooms] = useState({});
   const [invitations, setInvitations] = useState([]);
-  const router = useRouter();
+  const [currentGame, setCurrentGame] = useState();
 
   const fetchUser = async () => {
     const user = await getUser();
@@ -1471,6 +1472,14 @@ export default function Categories({
     [toggledPrelobby, toggledSettings, resetPermissions]
   );
 
+  useEffect(() => {
+    const backToRoom = async () => {
+      const current = await getCurrentGame();
+      current && setCurrentGame(current);
+    };
+    backToRoom();
+  }, [getCurrentGame, router]);
+
   const showInvitations = !toggledSettings && !toggledPrelobby;
 
   console.log("friendList", friendList);
@@ -1620,6 +1629,53 @@ export default function Categories({
                   </div>
                 </div>
               </CentralZone>
+            )}
+
+            {currentGame && (
+              <Modal
+                isOpen={true}
+                onClose={() => {
+                  setCurrentGame();
+                  cancelBack({ userId: user.id }); //no await
+                  return;
+                }}
+              >
+                <div className="flex flex-col items-center gap-2 text-2xl p-2 text-black">
+                  <div className="w-full">Vous avez une partie en cours !</div>
+                  <div>
+                    Admin :{" "}
+                    <span className="font-semibold">{currentGame.admin}</span>
+                  </div>
+                  {currentGame.game === "grouping" ? (
+                    <div>Nouveau groupe de joueurs</div>
+                  ) : (
+                    <div>
+                      Jeu :{" "}
+                      <span className="font-semibold">
+                        {currentGame.mode || currentGame.game}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="w-full flex justify-evenly m-2">
+                    <Link
+                      href={currentGame.path}
+                      className="border border-blue-300 bg-blue-100 p-2 rounded-md"
+                    >
+                      Rejoindre
+                    </Link>
+                    <button
+                      onClick={async () => {
+                        setCurrentGame();
+                        await cancelBack({ userId: user.id });
+                      }}
+                      className="border border-red-300 bg-red-100 p-2 rounded-md"
+                    >
+                      Annuler
+                    </button>
+                  </div>
+                </div>
+              </Modal>
             )}
 
             <div className="absolute top-full z-10 left-1/2 translate-x-[-50%]">
