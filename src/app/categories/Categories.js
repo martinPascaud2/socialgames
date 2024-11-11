@@ -1292,6 +1292,7 @@ export default function Categories({
   updateLastCP,
   signOut,
 }) {
+  const { isSupported, isVisible, released, request, release } = useWake();
   const router = useRouter();
   const searchParams = useSearchParams();
   const urlControl = searchParams.get("control") === "true";
