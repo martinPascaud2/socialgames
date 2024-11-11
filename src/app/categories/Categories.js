@@ -1287,6 +1287,10 @@ export default function Categories({
   updateLastCP,
   signOut,
 }) {
+  const searchParams = useSearchParams();
+  const urlControl = searchParams.get("control") === "true";
+  const isGroup = searchParams.get("group") === "true";
+
   const [toggledSettings, setToggledSettings] = useState(false);
   const [setting, setSetting] = useState("");
   const [toggledPrelobby, setToggledPrelobby] = useState(false);
@@ -1467,132 +1471,174 @@ export default function Categories({
   console.log("friendList", friendList);
   console.log("stopScan", stopScan);
   console.log("showInvitations", showInvitations);
+  console.log("urlControl", urlControl);
 
   return (
     <div
       onClick={(event) => {
         handleBgClick(event);
       }}
-      className="h-screen flex items-center bg-black text-white"
+      className={`h-screen flex items-center ${
+        !isGroup ? "bg-black" : "bg-white"
+      } text-white`}
     >
-      <main className="relative h-[100dvh] w-screen">
-        <div
-          onClick={handleOctaClick}
-          className="octagon left-5 top-[50dvh] translate-y-[-50%] relative z-0"
-        >
-          <OctagonBackground handleBgClick={handleBgClick} />
+      {!isGroup ? (
+        <main className="relative h-[100dvh] w-screen">
+          <div
+            onClick={handleOctaClick}
+            className="octagon left-5 top-[50dvh] translate-y-[-50%] relative z-0"
+          >
+            <OctagonBackground handleBgClick={handleBgClick} />
 
-          {toggledSettings && (
-            <>
-              <SettingsButtons
-                updateLastCP={updateLastCP}
-                user={user}
-                setSetting={setSetting}
-                setLocation={setLocation}
-                setServerMessage={setServerMessage}
-                resetPermissions={resetPermissions}
-                setScanning={setScanning}
-              />
+            {toggledSettings && (
+              <>
+                <SettingsButtons
+                  updateLastCP={updateLastCP}
+                  user={user}
+                  setSetting={setSetting}
+                  setLocation={setLocation}
+                  setServerMessage={setServerMessage}
+                  resetPermissions={resetPermissions}
+                  setScanning={setScanning}
+                />
 
-              {setting === "friends" && (
-                <CentralZone onClick={handleOctaClick}>
-                  <Friends
-                    friendList={friendList}
-                    user={user}
-                    deleteFriend={deleteFriend}
-                    updateLastCP={updateLastCP}
-                  />
-                </CentralZone>
-              )}
-
-              {setting === "params" && (
-                <CentralZone onClick={handleOctaClick}>
-                  <Params
-                    updateParams={updateParams}
-                    // user={user}
-                    updateLastCP={updateLastCP}
-                    signOut={signOut}
-                    fetchUser={fetchUser}
-                  />
-                </CentralZone>
-              )}
-
-              {setting === "qrCode" && (
-                <CentralZone onClick={handleOctaClick}>
-                  {location ? (
-                    <QRCode
-                      value={`id=${user.id};mail=${user.email};name=${user.name};{"latitude":"${location?.latitude}","longitude":"${location?.longitude}"}`}
-                      className="mx-auto w-fit h-full border border-black"
-                      onClick={(event) => event.stopPropagation()}
+                {setting === "friends" && (
+                  <CentralZone onClick={handleOctaClick}>
+                    <Friends
+                      friendList={friendList}
+                      user={user}
+                      deleteFriend={deleteFriend}
+                      updateLastCP={updateLastCP}
                     />
-                  ) : (
-                    <div className="h-full w-full flex justify-center items-center">
-                      <Spinner />
-                    </div>
-                  )}
-                </CentralZone>
-              )}
+                  </CentralZone>
+                )}
 
-              {setting === "camera" && (
-                <CentralZone onClick={handleOctaClick}>
-                  {QrCodeScanner}
-                  {/* <QrCodeScanner
+                {setting === "params" && (
+                  <CentralZone onClick={handleOctaClick}>
+                    <Params
+                      updateParams={updateParams}
+                      // user={user}
+                      updateLastCP={updateLastCP}
+                      signOut={signOut}
+                      fetchUser={fetchUser}
+                    />
+                  </CentralZone>
+                )}
+
+                {setting === "qrCode" && (
+                  <CentralZone onClick={handleOctaClick}>
+                    {location ? (
+                      <QRCode
+                        value={`id=${user.id};mail=${user.email};name=${user.name};{"latitude":"${location?.latitude}","longitude":"${location?.longitude}"}`}
+                        className="mx-auto w-fit h-full border border-black"
+                        onClick={(event) => event.stopPropagation()}
+                      />
+                    ) : (
+                      <div className="h-full w-full flex justify-center items-center">
+                        <Spinner />
+                      </div>
+                    )}
+                  </CentralZone>
+                )}
+
+                {setting === "camera" && (
+                  <CentralZone onClick={handleOctaClick}>
+                    {QrCodeScanner}
+                    {/* <QrCodeScanner
                     setting={setting}
                     // onNewScanResult={onNewScanResult}
                     setStopScan={setStopScan}
                     setServerMessage={setServerMessage}
                   /> */}
-                </CentralZone>
-              )}
-            </>
-          )}
+                  </CentralZone>
+                )}
+              </>
+            )}
 
-          {showInvitations && (
-            <CentralZone onClick={handleOctaClick}>
-              <Invitations
-                user={user}
-                router={router}
-                updateLastCP={updateLastCP}
-                getPublicRooms={getPublicRooms}
-                publicRooms={publicRooms}
-                setPublicRooms={setPublicRooms}
-                invitations={invitations}
-                setInvitations={setInvitations}
-              />
-            </CentralZone>
-          )}
+            {showInvitations && (
+              <CentralZone onClick={handleOctaClick}>
+                <Invitations
+                  user={user}
+                  router={router}
+                  updateLastCP={updateLastCP}
+                  getPublicRooms={getPublicRooms}
+                  publicRooms={publicRooms}
+                  setPublicRooms={setPublicRooms}
+                  invitations={invitations}
+                  setInvitations={setInvitations}
+                />
+              </CentralZone>
+            )}
 
-          {toggledPrelobby && !toggledSettings && (
-            <CentralZone onClick={handleOctaClick}>
-              <div className="flex w-full h-full justify-around items-center">
-                <div onClick={(event) => event.stopPropagation()}>
-                  <GoTools className="w-8 h-8 text-purple-100" />
+            {toggledPrelobby && !toggledSettings && (
+              <CentralZone onClick={handleOctaClick}>
+                <div className="flex w-full h-full justify-around items-center">
+                  <div onClick={(event) => event.stopPropagation()}>
+                    <GoTools className="w-8 h-8 text-purple-100" />
+                  </div>
+                  <div onClick={(event) => event.stopPropagation()}>
+                    <Link
+                      onClick={async () => {
+                        resetPermissions();
+                        await updateLastCP({ userId: user.id, out: true });
+                      }}
+                      href="/categories/grouping/grouping"
+                    >
+                      <FaPlay className="w-8 h-8 text-purple-100" />
+                    </Link>
+                  </div>
+                  <div onClick={(event) => event.stopPropagation()}>
+                    <Link href="/post-game/">
+                      <FaRegFloppyDisk className="w-8 h-8 text-purple-100" />
+                    </Link>
+                  </div>
                 </div>
-                <div onClick={(event) => event.stopPropagation()}>
-                  <Link
-                    onClick={async () => {
-                      resetPermissions();
-                      await updateLastCP({ userId: user.id, out: true });
-                    }}
-                    href="/categories/grouping/grouping"
-                  >
-                    <FaPlay className="w-8 h-8 text-purple-100" />
-                  </Link>
-                </div>
-                <div onClick={(event) => event.stopPropagation()}>
-                  <Link href="/post-game/">
-                    <FaRegFloppyDisk className="w-8 h-8 text-purple-100" />
-                  </Link>
-                </div>
-              </div>
-            </CentralZone>
-          )}
+              </CentralZone>
+            )}
 
-          <div className="absolute top-full z-10 left-1/2 translate-x-[-50%]">
-            {serverMessage}
+            <div className="absolute top-full z-10 left-1/2 translate-x-[-50%]">
+              {serverMessage}
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      ) : (
+        <main>
+          <div className="m-auto">
+            {categories.map((categorie, index) => {
+              const isLast = index === 6;
+              return (
+                <Link
+                  key={index}
+                  onClick={async () => {
+                    resetPermissions();
+                    await updateLastCP({ userId: user.id, out: true });
+                  }}
+                  href={`${categorie.href}${isGroup ? "?group=true" : ""}`}
+                  className={classNames(`z-20 absolute  max-h-[15dvh]`)}
+                  style={{
+                    top: `${Math.floor(index / 2) * 20 + 12.5}dvh`,
+                    left: !isLast ? index % 2 === 0 && "8%" : "33%",
+                    right: index % 2 === 1 && "8%",
+                    width: "33.333333%",
+                    aspectRatio: !isLast ? "1 / 1" : "auto",
+                  }}
+                >
+                  <div className="flex items-center justify-center h-[15dvh] p-1">
+                    <Image
+                      src={categorie.src}
+                      alt={`${categorie.name} image`}
+                      className="max-h-full aspect-square"
+                      style={{ objectFit: "contain" }}
+                      width={500}
+                      height={500}
+                    />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </main>
+      )}
     </div>
   );
 }
