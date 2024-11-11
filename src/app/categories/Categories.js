@@ -1115,14 +1115,15 @@ const Invitations = ({
       )}
 
       {invitations.map((invitation, i) => (
-        <Link
+        <div
           key={i}
           onClick={async (event) => {
             event.stopPropagation();
-            resetPermissions();
+            // resetPermissions();
             await updateLastCP({ userId: user.id, out: true });
+            window.location.href = invitation.link;
           }}
-          href={invitation.link}
+          // href={invitation.link}
           className="w-[90%]"
         >
           <div
@@ -1144,15 +1145,19 @@ const Invitations = ({
               {`${invitation.mode || gamesRefs[invitation.gameName].name}`}
             </div>
           </div>
-        </Link>
+        </div>
       ))}
       {Object.entries(publicRooms).map((room) => {
         const { friendName, gameName, gamersNumber } = room[1];
         return (
-          <Link
+          <div
             key={room[0]}
-            href={`${room[1].link}`}
-            onClick={(event) => event.stopPropagation()}
+            // href={`${room[1].link}`}
+            onClick={async (event) => {
+              event.stopPropagation();
+              await updateLastCP({ userId: user.id, out: true });
+              window.location.href = room[1].link;
+            }}
             className="w-[90%]"
           >
             <div
@@ -1174,7 +1179,7 @@ const Invitations = ({
                 {gamersNumber > 1 && `(+${gamersNumber - 1})`} pour {gameName}
               </div>
             </div>
-          </Link>
+          </div>
         );
       })}
     </div>
@@ -1576,7 +1581,7 @@ export default function Categories({
                   <div onClick={(event) => event.stopPropagation()}>
                     <GoTools className="w-8 h-8 text-purple-100" />
                   </div>
-                  <div onClick={(event) => event.stopPropagation()}>
+                  {/* <div onClick={(event) => event.stopPropagation()}>
                     <Link
                       onClick={async () => {
                         resetPermissions();
@@ -1586,11 +1591,32 @@ export default function Categories({
                     >
                       <FaPlay className="w-8 h-8 text-purple-100" />
                     </Link>
+                  </div> */}
+                  <div
+                    onClick={async (event) => {
+                      event.stopPropagation();
+                      resetPermissions();
+                      await updateLastCP({ userId: user.id, out: true });
+                      window.location.href = "/categories/grouping/grouping";
+                    }}
+                  >
+                    <FaPlay className="w-8 h-8 text-purple-100" />
                   </div>
-                  <div onClick={(event) => event.stopPropagation()}>
+                  {/* <div onClick={(event) => event.stopPropagation()}>
                     <Link href="/post-game/">
                       <FaRegFloppyDisk className="w-8 h-8 text-purple-100" />
                     </Link>
+                  </div> */}
+
+                  <div
+                    onClick={async (event) => {
+                      event.stopPropagation();
+                      resetPermissions();
+                      await updateLastCP({ userId: user.id, out: true });
+                      window.location.href = "/post-game/";
+                    }}
+                  >
+                    <FaRegFloppyDisk className="w-8 h-8 text-purple-100" />
                   </div>
                 </div>
               </CentralZone>
