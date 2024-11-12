@@ -1,7 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef, useMemo } from "react";
 import React from "react";
+import { useFormState } from "react-dom";
 
 import shuffleArray from "@/utils/shuffleArray";
 import getAreSimilar from "./getAreSimilar";
@@ -9,6 +10,7 @@ import getAreSimilar from "./getAreSimilar";
 import {
   startGame,
   sendResponse,
+  checkResponses,
   sendSortedResponses,
   sendSecondSorted,
   writtingComeBack,
@@ -471,6 +473,94 @@ const Revelator = ({
   );
 };
 
+const ResponseForm = ({
+  writtenIndex,
+  setWrittenIndex,
+  allThemes,
+  response,
+  setResponse,
+  message,
+  setMessage,
+  gameData,
+  roomId,
+  roomToken,
+  user,
+}) => {
+  const sendResponseWith = sendResponse.bind(null, {
+    gameData,
+    roomId,
+    roomToken,
+    user,
+  });
+  const innerHeight = useMemo(() => window.innerHeight, []);
+  const [state, formAction] = useFormState(sendResponseWith, {});
+  const refForm = useRef();
+  const inputRef = useRef();
+
+  useEffect(() => {
+    inputRef?.current?.focus();
+  }, [writtenIndex]);
+
+  return (
+    <div
+      className="flex flex-col justify-center items-center fixed"
+      style={{ top: innerHeight / 2 }}
+    >
+      {writtenIndex < allThemes.length ? (
+        <>
+          <form
+            ref={refForm}
+            action={(formData) => {
+              if (response.length < 4) {
+                setMessage("Réponse trop courte");
+                return;
+              }
+              formAction(formData);
+              setWrittenIndex((prevIndex) => prevIndex + 1);
+              setResponse("");
+              setMessage("");
+              refForm.current?.reset();
+            }}
+            className="flex flex-col justify-center items-center"
+          >
+            <label htmlFor="response">{allThemes[writtenIndex]}</label>
+            <input
+              ref={inputRef}
+              onChange={(e) => {
+                setResponse(e.target.value);
+                setMessage("");
+              }}
+              type="text"
+              name="response"
+              id="response"
+              defaultValue=""
+              className="border focus:outline-none focus:border-2"
+            />
+
+            <input type="hidden" name="theme" value={allThemes[writtenIndex]} />
+            <input
+              type="hidden"
+              name="isLast"
+              value={writtenIndex === allThemes.length - 1}
+            />
+
+            <button
+              type="submit"
+              className="border border-blue-300 bg-blue-100"
+            >
+              Envoyer
+            </button>
+          </form>
+
+          <div className="w-full text-center italic">{message}</div>
+        </>
+      ) : (
+        <div>En attente des autres joueurs...</div>
+      )}
+    </div>
+  );
+};
+
 export default function Tableau({ roomId, roomToken, user, gameData }) {
   const {
     phase,
@@ -626,8 +716,7 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
 
     const checkAllWritingSent = async () => {
       if (gameData.isDeletedUser && isAdmin && phase === "writing") {
-        await sendResponse({
-          isDeletedUser: true,
+        await checkResponses({
           gameData,
           roomId,
           roomToken,
@@ -740,49 +829,21 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
       )}
 
       {phase === "writing" && (
-        <div className="flex flex-col justify-center items-center h-full">
-          {writtenIndex < allThemes.length ? (
-            <>
-              <div className="font-semibold m-2">{allThemes[writtenIndex]}</div>
-              <input
-                value={response}
-                onChange={(e) => {
-                  setResponse(e.target.value);
-                  setMessage("");
-                }}
-                className="border text-center m-2 w-full"
-              />
-              <div className="w-full m-2 relative">
-                <button
-                  onClick={() => {
-                    if (response.length < 4) setMessage("Réponse trop courte");
-                    else {
-                      sendResponse({
-                        theme: allThemes[writtenIndex],
-                        response,
-                        gameData,
-                        roomId,
-                        roomToken,
-                        user,
-                        isLast: writtenIndex === allThemes.length - 1,
-                      });
-                      setWrittenIndex((prevIndex) => prevIndex + 1);
-                      setResponse("");
-                    }
-                  }}
-                  className="border border-blue-300 bg-blue-100 w-full"
-                >
-                  Envoyer
-                </button>
-                <div className="w-full text-center absolute top-8 italic">
-                  {message}
-                </div>
-              </div>
-            </>
-          ) : (
-            <div>En attente des autres joueurs...</div>
-          )}
-        </div>
+        <>
+          <ResponseForm
+            writtenIndex={writtenIndex}
+            setWrittenIndex={setWrittenIndex}
+            allThemes={allThemes}
+            response={response}
+            setResponse={setResponse}
+            message={message}
+            setMessage={setMessage}
+            gameData={gameData}
+            roomId={roomId}
+            roomToken={roomToken}
+            user={user}
+          />
+        </>
       )}
 
       {phase === "sorting" && (

@@ -116,161 +116,162 @@ export async function startGame({ gameData, roomId, roomToken }) {
   await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
-export async function sendResponse({
-  theme,
-  response,
-  gameData,
-  roomId,
-  roomToken,
-  user,
-  isLast,
-  isDeletedUser = false,
-}) {
-  if (!isDeletedUser) {
-    if (!user.multiGuest) {
-      await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          tableauResponses: {
-            create: {
-              theme: theme,
-              response: response,
-            },
-          },
-        },
-      });
-    } else {
-      await prisma.multiguest.upsert({
-        where: { id: user.dataId },
-        update: {
-          tableauResponses: {
-            create: {
-              theme: theme,
-              response: response,
-            },
-          },
-        },
-        create: {
-          id: user.dataId,
-          tableauResponses: {
-            create: {
-              theme: theme,
-              response: response,
-            },
-          },
-        },
-      });
-    }
-  }
+export async function checkResponses({ gameData, roomId, roomToken }) {
+  const { gamers, enhanced, randoms } = gameData;
+  const themesNumber = enhanced.length + randoms.length;
+  let responsesGamerCounts = [];
 
-  if (isLast || isDeletedUser) {
-    const { gamers, enhanced, randoms } = gameData;
-    const themesNumber = enhanced.length + randoms.length;
-    let responsesGamerCounts = [];
+  await Promise.all(
+    gamers.map(async (gamer) => {
+      if (!gamer.multiGuest) {
+        const count = await prisma.tableauResponse.count({
+          where: {
+            userId: gamer.id,
+          },
+        });
+        responsesGamerCounts.push(count);
+      } else {
+        const count = await prisma.tableauResponse.count({
+          where: {
+            multiguestId: gamer.dataId,
+          },
+        });
+        responsesGamerCounts.push(count);
+      }
+    })
+  );
+
+  if (responsesGamerCounts.every((count) => count === themesNumber)) {
+    let allResponsesByUser = {};
+
+    await Promise.all(
+      gamers.map(async (gamer) => {
+        let tableauResponses;
+        if (!gamer.multiGuest) {
+          tableauResponses = (
+            await prisma.user.findFirst({
+              where: { id: gamer.id },
+              select: { tableauResponses: true },
+            })
+          ).tableauResponses;
+        } else {
+          tableauResponses = (
+            await prisma.multiguest.findFirst({
+              where: { id: gamer.dataId },
+              select: { tableauResponses: true },
+            })
+          ).tableauResponses;
+        }
+
+        let gamerResponses = {};
+        tableauResponses.forEach(
+          (response) => (gamerResponses[response.theme] = response.response)
+        );
+        allResponsesByUser[gamer.name] = gamerResponses;
+      })
+    );
+
+    const sortedResponsesByUser = sortByKeys(allResponsesByUser);
+
+    const allResponsesByTheme = {};
+    const gamersNames = [];
+    for (const [user, themes] of Object.entries(allResponsesByUser)) {
+      gamersNames.push(user);
+      for (const [theme, response] of Object.entries(themes)) {
+        if (!allResponsesByTheme[theme]) {
+          allResponsesByTheme[theme] = {};
+        }
+        allResponsesByTheme[theme][user] = response;
+      }
+    }
+
+    gamersNames.sort();
 
     await Promise.all(
       gamers.map(async (gamer) => {
         if (!gamer.multiGuest) {
-          const count = await prisma.tableauResponse.count({
-            where: {
-              userId: gamer.id,
+          await prisma.user.update({
+            where: { id: gamer.id },
+            data: {
+              tableauSortedResponses: null,
+              tableauSecondSorted: null,
             },
           });
-          responsesGamerCounts.push(count);
         } else {
-          const count = await prisma.tableauResponse.count({
-            where: {
-              multiguestId: gamer.dataId,
+          await prisma.multiguest.update({
+            where: { id: gamer.dataId },
+            data: {
+              tableauSortedResponses: null,
+              tableauSecondSorted: null,
             },
           });
-          responsesGamerCounts.push(count);
         }
       })
     );
 
-    if (responsesGamerCounts.every((count) => count === themesNumber)) {
-      let allResponsesByUser = {};
+    const countDownTimeOption = gameData.options.countDownTime;
+    const finishCountdownDate =
+      countDownTimeOption !== 0 ? Date.now() + countDownTimeOption : 0;
 
-      await Promise.all(
-        gamers.map(async (gamer) => {
-          let tableauResponses;
-          if (!gamer.multiGuest) {
-            tableauResponses = (
-              await prisma.user.findFirst({
-                where: { id: gamer.id },
-                select: { tableauResponses: true },
-              })
-            ).tableauResponses;
-          } else {
-            tableauResponses = (
-              await prisma.multiguest.findFirst({
-                where: { id: gamer.dataId },
-                select: { tableauResponses: true },
-              })
-            ).tableauResponses;
-          }
+    const newData = {
+      ...gameData,
+      allResponses: allResponsesByTheme,
+      allResponsesByUser: sortedResponsesByUser,
+      gamersNames,
+      finishCountdownDate,
+      phase: "sorting",
+      isDeletedUser: false,
+    };
+    await saveAndDispatchData({ roomId, roomToken, newData });
+  }
+}
 
-          let gamerResponses = {};
-          tableauResponses.forEach(
-            (response) => (gamerResponses[response.theme] = response.response)
-          );
-          allResponsesByUser[gamer.name] = gamerResponses;
-        })
-      );
+export async function sendResponse(
+  { gameData, roomId, roomToken, user },
+  prevState,
+  formData
+) {
+  const response = formData.get("response");
+  const theme = formData.get("theme");
+  const isLast = formData.get("isLast");
 
-      const sortedResponsesByUser = sortByKeys(allResponsesByUser);
+  if (!user.multiGuest) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        tableauResponses: {
+          create: {
+            theme: theme,
+            response: response,
+          },
+        },
+      },
+    });
+  } else {
+    await prisma.multiguest.upsert({
+      where: { id: user.dataId },
+      update: {
+        tableauResponses: {
+          create: {
+            theme: theme,
+            response: response,
+          },
+        },
+      },
+      create: {
+        id: user.dataId,
+        tableauResponses: {
+          create: {
+            theme: theme,
+            response: response,
+          },
+        },
+      },
+    });
+  }
 
-      const allResponsesByTheme = {};
-      const gamersNames = [];
-      for (const [user, themes] of Object.entries(allResponsesByUser)) {
-        gamersNames.push(user);
-        for (const [theme, response] of Object.entries(themes)) {
-          if (!allResponsesByTheme[theme]) {
-            allResponsesByTheme[theme] = {};
-          }
-          allResponsesByTheme[theme][user] = response;
-        }
-      }
-
-      gamersNames.sort();
-
-      await Promise.all(
-        gamers.map(async (gamer) => {
-          if (!gamer.multiGuest) {
-            await prisma.user.update({
-              where: { id: gamer.id },
-              data: {
-                tableauSortedResponses: null,
-                tableauSecondSorted: null,
-              },
-            });
-          } else {
-            await prisma.multiguest.update({
-              where: { id: gamer.dataId },
-              data: {
-                tableauSortedResponses: null,
-                tableauSecondSorted: null,
-              },
-            });
-          }
-        })
-      );
-
-      const countDownTimeOption = gameData.options.countDownTime;
-      const finishCountdownDate =
-        countDownTimeOption !== 0 ? Date.now() + countDownTimeOption : 0;
-
-      const newData = {
-        ...gameData,
-        allResponses: allResponsesByTheme,
-        allResponsesByUser: sortedResponsesByUser,
-        gamersNames,
-        finishCountdownDate,
-        phase: "sorting",
-        isDeletedUser: false,
-      };
-      await saveAndDispatchData({ roomId, roomToken, newData });
-    }
+  if (isLast) {
+    await checkResponses({ gameData, roomId, roomToken });
   }
 }
 
