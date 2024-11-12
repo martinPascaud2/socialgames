@@ -21,6 +21,7 @@ export default function GuestConnector({ setCookieToken }) {
     setScanning(true);
   }, []);
 
+  // check
   const onNewScanResult = useCallback(
     throttle(async (decodedText) => {
       if (scanLocked) return;

@@ -24,15 +24,17 @@ export default function CountDown({
     };
   }, [finishCountdownDate]);
 
-  if (leftMinutes && leftSeconds && leftMinutes <= 0 && leftSeconds <= 0) {
-    setHasValidated && setHasValidated(true);
-    onTimeUp && onTimeUp();
-    return;
-  }
+  useEffect(() => {
+    if (leftMinutes && leftSeconds && leftMinutes <= 0 && leftSeconds <= 0) {
+      setHasValidated && setHasValidated(true);
+      onTimeUp && onTimeUp();
+      return;
+    }
+  }, [leftMinutes, leftSeconds, onTimeUp, setHasValidated]);
 
   return (
     <div className="flex justify-center">
-      {(leftMinutes || leftSeconds > 0) && (
+      {(leftMinutes > 0 || (leftMinutes === 0 && leftSeconds >= 0)) && (
         <>
           {label ? <span>{label}</span> : <span>Il vous reste</span>}
           &nbsp;

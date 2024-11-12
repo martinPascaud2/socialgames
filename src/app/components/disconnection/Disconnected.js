@@ -200,6 +200,7 @@ export default function Disconnected({
   user,
 }) {
   const [showDiscoModal, setShowDiscoModal] = useState(false);
+  const [showButton, setShowButton] = useState(false);
   const [disconnectedList, setDisconnectedList] = useState([]);
   const [isValidated, setIsValidated] = useState(false);
   const [withoutLabel, setWithoutLabel] = useState("");
@@ -262,6 +263,7 @@ export default function Disconnected({
 
       setFinishCountdownDate(null);
       setIsValidated(true);
+      setShowButton(false);
     }, 0); //rendering cycle
   }, [
     roomId,
@@ -304,32 +306,37 @@ export default function Disconnected({
           {statusMessage}
         </div>
         {WaitingMessage}
-        <div className="m-2">
-          <DisconnectionRipplingButton
-            label={withoutLabel}
-            onLongPress={onBye}
-            isValidated={isValidated}
-            setIsValidated={setIsValidated}
-            isActive={!!disconnectedList?.length && !isValidated && isAdmin}
-          />
-        </div>
+        {showButton && (
+          <>
+            <div className="m-2">
+              <DisconnectionRipplingButton
+                label={withoutLabel}
+                onLongPress={onBye}
+                isValidated={isValidated}
+                setIsValidated={setIsValidated}
+                isActive={!!disconnectedList?.length && !isValidated && isAdmin}
+              />
+            </div>
+            <div>{WarningMessage}</div>
+          </>
+        )}
 
         {finishCountdownDate && (
-          <div className="m-2">
+          <div>
             <CountDown
               finishCountdownDate={finishCountdownDate}
-              onTimeUp={onBye}
-              label="Reprise dans"
+              onTimeUp={() => setShowButton(true)}
+              label="Patientons"
             />
           </div>
         )}
-        {WarningMessage}
       </div>
     );
   }, [
     onlineGamers,
     disconnectedList,
     withoutLabel,
+    showButton,
     onBye,
     isValidated,
     setIsValidated,
@@ -339,6 +346,27 @@ export default function Disconnected({
     modeName,
   ]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (finishCountdownDate < Date.now() && !isAdmin) onBye();
+    }, 1000);
+    if (!onlineGamers?.length || !gamers?.length || !disconnectedList?.length)
+      clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [
+    finishCountdownDate,
+    onBye,
+    isAdmin,
+    disconnectedList,
+    gamers,
+    onlineGamers,
+  ]);
+  useEffect(() => {
+    if (!onlineGamers?.length || !gamers?.length || !disconnectedList?.length)
+      setShowButton(false);
+  }, [disconnectedList, gamers, onlineGamers]);
   if (!onlineGamers?.length || !gamers?.length || !disconnectedList?.length)
     return null;
 
