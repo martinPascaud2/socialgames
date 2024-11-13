@@ -77,6 +77,7 @@ const DraggableItem = ({
   const [{ isDragging }, ref] = useDrag({
     type: ItemType,
     item: { index, label: item },
+    canDrag: !correctionLocked,
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
