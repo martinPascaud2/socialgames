@@ -120,6 +120,7 @@ const DraggableItem = ({
               : "#fee2e2",
           borderBottomWidth: "0px",
           zIndex: 10,
+          userSelect: "none",
         }}
         className={`flex flex-col text-center items-center justify-center w-full h-16 overflow-hidden mt-6 border border-black relative`}
         onClick={() => moveByClick()}
@@ -203,7 +204,10 @@ const DraggableColumn = ({
             }
             return (
               <React.Fragment key={index}>
-                <td className="absolute left-[50%] translate-x-[-50%] w-full h-[25px] px-[9px] bg-gradient-to-r bg-blue-300 from-gray-100 to-gray-100 via-transparent">
+                <td
+                  className="absolute left-[50%] translate-x-[-50%] w-full h-[25px] px-[9px] bg-gradient-to-r bg-blue-300 from-gray-100 to-gray-100 via-transparent"
+                  style={{ userSelect: "none" }}
+                >
                   <div className="flex outline outline-1 outline-black justify-center w-full">
                     <div className="text-center relative">
                       {otherGamersNames[index]}
@@ -774,7 +778,10 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
       return (
         <table className="flex flex-col items-center justify-center w-full border-b border-black">
           <thead className="w-full">
-            <tr className="w-full flex justify-around">
+            <tr
+              className="w-full flex justify-around"
+              style={{ userSelect: "none" }}
+            >
               {otherGamersResponses &&
                 Object.keys(otherGamersResponses).map((columnKey) => (
                   <th
