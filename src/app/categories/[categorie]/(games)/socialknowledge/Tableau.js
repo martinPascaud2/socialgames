@@ -52,7 +52,7 @@ const MyPreview = ({ dimensions }) => {
 
   return (
     <td
-      className="item-list__item flex justify-center items-center w-fit border border-black bg-green-100 p-2 text-center h-16 shadow-[inset_0_0_0_1px_#16a34a] z-20"
+      className={`item-list__item flex justify-center items-center w-fit border border-black bg-green-100 p-2 text-center h-${dimensions.height} shadow-[inset_0_0_0_1px_#16a34a] z-20`}
       style={{
         ...style,
         width: dimensions.width,
@@ -73,6 +73,7 @@ const DraggableItem = ({
   isBlocked,
   correctionLocked,
   firstTurnName,
+  height,
 }) => {
   const [{ isDragging }, ref] = useDrag({
     type: ItemType,
@@ -123,7 +124,9 @@ const DraggableItem = ({
           zIndex: 10,
           userSelect: "none",
         }}
-        className={`flex flex-col text-center items-center justify-center w-full h-16 overflow-hidden mt-6 border border-black relative`}
+        className={`flex flex-col text-center items-center justify-center w-full h-${
+          height === "medium" ? "16" : "12"
+        } text-sm overflow-hidden mt-6 border border-black relative`}
         onClick={() => moveByClick()}
       >
         {item}
@@ -154,9 +157,10 @@ const DraggableColumn = ({
   useEffect(() => {
     if (dimensionsRef.current) {
       const { width, height } = dimensionsRef.current.getBoundingClientRect();
-      if (width !== 0 && height !== 0) setDimensions({ width, height });
+      if (width !== 0 && height !== 0)
+        setDimensions({ width, height: gamersNames.length >= 6 ? 12 : 16 });
     }
-  }, [setDimensions]);
+  }, [setDimensions, gamersNames]);
 
   useEffect(() => {
     if (!firstTurnSorted || !gamersNames || !allResponses) return;
@@ -241,6 +245,7 @@ const DraggableColumn = ({
                     previousFirstNamesByTheme &&
                     previousFirstNamesByTheme[theme]?.[index]
                   }
+                  height={gamersNames.length >= 6 ? "small" : "medium"}
                 />
               </React.Fragment>
             );
@@ -359,7 +364,7 @@ const Revelator = ({
               setIsRunning(!isRunning);
               setIsReadyForNextGamer(false);
             }}
-            className="border border-blue-400 bg-blue-100 p-1 text-blue-400"
+            className="border border-blue-400 bg-blue-100 p-1 text-blue-400 mt-2"
           >
             {!isRunning ? (
               !isReadyForNextGamer ? (
@@ -374,7 +379,7 @@ const Revelator = ({
         ) : (
           <button
             onClick={() => goResult({ roomId, roomToken, gameData })}
-            className="border border-blue-400 bg-blue-100 text-blue-400 p-2"
+            className="border border-blue-400 bg-blue-100 text-blue-400 p-2 mt-2"
           >
             Résultats
           </button>
@@ -461,7 +466,9 @@ const Revelator = ({
                             style={{
                               borderBottomWidth: "0px",
                             }}
-                            className="flex items-center justify-center w-full h-16 text-center mt-6 border border-black"
+                            className={`flex items-center justify-center w-full h-${
+                              gamersNames.length >= 6 ? 12 : 16
+                            } text-center text-sm mt-6 border border-black`}
                           >
                             {!show ? "" : response}
                           </td>
@@ -822,10 +829,12 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
   );
 
   return (
-    <div className="flex flex-col items-center justify-center p-2 h-full bg-gray-100 relative">
+    <div className="flex flex-col items-center justify-start p-2 h-full bg-gray-100 relative">
       {phase === "waiting" && (
         <>
-          <div>L&apos;admin va lancer la partie...</div>
+          <div className="absolute top-1/2 translate-y-[-50%]">
+            L&apos;admin va lancer la partie...
+          </div>
           {isAdmin && (
             <NextStep
               onClick={() => startGame({ gameData, roomId, roomToken })}
@@ -856,35 +865,35 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
 
       {phase === "sorting" && (
         <div className="flex flex-col justify-start items-center h-[100vw] w-full">
-          <div className="m-4 flex flex-col items-center">
-            <div className="font-semibold">
-              Trouvez les réponses de chaque joueur !
+          <div className="flex items-center justify-center">
+            <div className="m-4 flex flex-col items-center">
+              <div className="font-semibold">Trouvez les réponses !</div>
+              <div className="font-normal">(glisser ou cliquer)</div>
             </div>
-            <div className="font-normal">(glisser ou cliquer)</div>
-          </div>
-          <div className="mb-4">
-            {!hasClickedOnCountdown ? (
-              <ClickableCountDown
-                finishCountdownDate={finishCountdownDate}
-                onTimeUp={onValidate}
-                onClick={() => setHasClickedOnCountdown(true)}
-                isValidationSaved={isValidationSaved}
-              />
-            ) : (
-              <button
-                onClick={() => {
-                  setHasValidated(true);
-                  setHasClickedOnCountdown(false);
-                }}
-                className={`h-16 w-16 border ${
-                  !isValidationSaved
-                    ? "border-blue-300 bg-blue-100 text-blue-400"
-                    : "border-green-300 bg-green-100 text-green-400"
-                } rounded-full`}
-              >
-                Valider
-              </button>
-            )}
+            <div>
+              {!hasClickedOnCountdown ? (
+                <ClickableCountDown
+                  finishCountdownDate={finishCountdownDate}
+                  onTimeUp={onValidate}
+                  onClick={() => setHasClickedOnCountdown(true)}
+                  isValidationSaved={isValidationSaved}
+                />
+              ) : (
+                <button
+                  onClick={() => {
+                    setHasValidated(true);
+                    setHasClickedOnCountdown(false);
+                  }}
+                  className={`h-16 w-16 border ${
+                    !isValidationSaved
+                      ? "border-blue-300 bg-blue-100 text-blue-400"
+                      : "border-green-300 bg-green-100 text-green-400"
+                  } rounded-full`}
+                >
+                  Valider
+                </button>
+              )}
+            </div>
           </div>
 
           <TableauTable />
@@ -899,12 +908,12 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
                 await seeRevelation({ user, gameData, roomId, roomToken });
                 setIsWantNext(true);
               }}
-              className="border border-blue-400 bg-blue-100 p-2 text-blue-400 mb-2"
+              className="border border-blue-400 bg-blue-100 p-2 text-blue-400 my-2"
             >
               Suite
             </button>
           ) : (
-            <div className="mb-2">En attente des autres joueurs...</div>
+            <div className="my-2 p-2">En attente des autres joueurs...</div>
           )}
           <TableauTable allResponses={allResponses} phase={phase} />
         </>
@@ -913,34 +922,36 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
       {(phase === "secondChance_withoutCorrection" ||
         phase === "secondChance_withCorrection") && (
         <div className="flex flex-col justify-start items-center h-[100vw] w-full">
-          <div className="m-4 flex flex-col items-center">
-            <div className="font-semibold">Seconde chance</div>
-            <div className="font-normal">(glisser ou cliquer)</div>
-          </div>
+          <div className="flex items-center justify-center">
+            <div className="m-4 flex flex-col items-center">
+              <div className="font-semibold">Seconde chance</div>
+              <div className="font-normal">(glisser ou cliquer)</div>
+            </div>
 
-          <div className="mb-4">
-            {!hasClickedOnCountdown ? (
-              <ClickableCountDown
-                finishCountdownDate={finishCountdownDate}
-                onTimeUp={onValidate}
-                onClick={() => setHasClickedOnCountdown(true)}
-                isValidationSaved={isValidationSaved}
-              />
-            ) : (
-              <button
-                onClick={() => {
-                  setHasValidated(true);
-                  setHasClickedOnCountdown(false);
-                }}
-                className={`h-16 w-16 border ${
-                  !isValidationSaved
-                    ? "border-blue-300 bg-blue-100 text-blue-400"
-                    : "border-green-300 bg-green-100 text-green-400"
-                } rounded-full`}
-              >
-                Valider
-              </button>
-            )}
+            <div>
+              {!hasClickedOnCountdown ? (
+                <ClickableCountDown
+                  finishCountdownDate={finishCountdownDate}
+                  onTimeUp={onValidate}
+                  onClick={() => setHasClickedOnCountdown(true)}
+                  isValidationSaved={isValidationSaved}
+                />
+              ) : (
+                <button
+                  onClick={() => {
+                    setHasValidated(true);
+                    setHasClickedOnCountdown(false);
+                  }}
+                  className={`h-16 w-16 border ${
+                    !isValidationSaved
+                      ? "border-blue-300 bg-blue-100 text-blue-400"
+                      : "border-green-300 bg-green-100 text-green-400"
+                  } rounded-full`}
+                >
+                  Valider
+                </button>
+              )}
+            </div>
           </div>
 
           <TableauTable
@@ -964,8 +975,8 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
       )}
 
       {phase === "results" && (
-        <>
-          <div className="font-bold m-2 text-lg">Résultats</div>
+        <div className="h-full flex flex-col justify-center">
+          <div className="font-bold m-2 text-lg text-center">Résultats</div>
           <table>
             <tbody>
               {Object.entries(gameData.results)
@@ -986,7 +997,7 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
                 ))}
             </tbody>
           </table>
-        </>
+        </div>
       )}
     </div>
   );
