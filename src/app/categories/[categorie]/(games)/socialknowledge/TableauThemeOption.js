@@ -135,6 +135,35 @@ export default function TableauThemeOption({
     [max, themes, randoms, isAdmin, setServerMessage]
   );
 
+  useEffect(() => {
+    if (
+      Number.isNaN(max) ||
+      Number.isNaN(enhancedLength) ||
+      Number.isNaN(randoms) ||
+      !isAdmin
+    )
+      return;
+    const categoriesNumber = enhancedLength + randoms;
+    if (categoriesNumber > max) {
+      if (randoms) {
+        setRandoms((prevRandoms) => prevRandoms - 1);
+      } else {
+        setThemes((prevThemes) => {
+          const newThemes = [...prevThemes];
+          const firstEnhancedIndex = newThemes.findIndex(
+            (theme) => theme.enhanced
+          );
+          const newEnhanced = {
+            ...newThemes[firstEnhancedIndex],
+            enhanced: false,
+          };
+          newThemes[firstEnhancedIndex] = newEnhanced;
+          return newThemes;
+        });
+      }
+    }
+  }, [max, enhancedLength, randoms, isAdmin]);
+
   return (
     <div className="flex flex-col justify-center items-center my-4">
       <button

@@ -17,6 +17,7 @@ export default function SocialKnowledgeOptions({
   setOptions,
   lastMode,
   setServerMessage,
+  gamersNumber,
 }) {
   const [mode, setMode] = useState(
     (isAdmin && lastMode?.mode) || options.mode || "Tableau"
@@ -89,7 +90,7 @@ export default function SocialKnowledgeOptions({
             options={options}
             setOptions={setOptions}
             isAdmin={isAdmin}
-            max={5}
+            max={gamersNumber >= 6 ? 3 : 4}
             setServerMessage={setServerMessage}
           />
         </>
