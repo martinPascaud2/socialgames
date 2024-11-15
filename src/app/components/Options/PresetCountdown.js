@@ -52,13 +52,13 @@ export default function PresetCountdown({
   // setOptions concurrence
   useEffect(() => {
     if (!times || !isAdmin) return;
-    if (Number.isNaN(options.countDownTime)) {
+    if (Number.isNaN(options.countDownTime) && !options.countDownTime) {
       setOptions((options) => ({
         ...options,
         countDownTime: times.default * 60 * 1000,
       }));
     }
-  }, [options.countDownTime, times, isAdmin]);
+  }, [options.countDownTime, times, isAdmin, setOptions]);
 
   return (
     <div className="m-1 flex flex-col items-center justify-center">

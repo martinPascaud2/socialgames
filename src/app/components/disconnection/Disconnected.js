@@ -129,18 +129,6 @@ const getDiscoWarningMessage = ({
         </div>
       );
 
-    case "tableau":
-      const { phase } = gameData;
-      if (
-        ["waiting", "writing", "sorting", "results"].some(
-          (phaseName) => phaseName === phase
-        )
-      )
-        return (
-          <span>La partie continuera sans {!isSeveral ? "lui" : "eux"}.</span>
-        );
-      else return <span>Attention, ceci mettra fin à la partie.</span>;
-
     default:
       return (
         <span>La partie continuera sans {!isSeveral ? "lui" : "eux"}.</span>

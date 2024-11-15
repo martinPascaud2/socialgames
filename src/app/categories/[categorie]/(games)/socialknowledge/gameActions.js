@@ -275,25 +275,7 @@ export async function sendResponse(
   }
 }
 
-export async function sendSortedResponses({
-  user,
-  sortedResponses,
-  gameData,
-  roomId,
-  roomToken,
-}) {
-  if (!user.multiGuest) {
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { tableauSortedResponses: sortedResponses },
-    });
-  } else {
-    await prisma.multiguest.update({
-      where: { id: user.dataId },
-      data: { tableauSortedResponses: sortedResponses },
-    });
-  }
-
+export async function checkSorted({ gameData, roomId, roomToken }) {
   const { gamers } = gameData;
   let validatedNumber = 0;
   await Promise.all(
@@ -382,9 +364,9 @@ export async function sendSortedResponses({
   }
 }
 
-export async function sendSecondSorted({
+export async function sendSortedResponses({
   user,
-  secondSorted,
+  sortedResponses,
   gameData,
   roomId,
   roomToken,
@@ -392,15 +374,19 @@ export async function sendSecondSorted({
   if (!user.multiGuest) {
     await prisma.user.update({
       where: { id: user.id },
-      data: { tableauSecondSorted: secondSorted },
+      data: { tableauSortedResponses: sortedResponses },
     });
   } else {
     await prisma.multiguest.update({
       where: { id: user.dataId },
-      data: { tableauSecondSorted: secondSorted },
+      data: { tableauSortedResponses: sortedResponses },
     });
   }
 
+  await checkSorted({ gameData, roomId, roomToken });
+}
+
+export async function checkSecond({ gameData, roomId, roomToken }) {
   const { gamers } = gameData;
   let validatedNumber = 0;
   await Promise.all(
@@ -431,21 +417,30 @@ export async function sendSecondSorted({
   }
 }
 
-export async function seeRevelation({ user, gameData, roomId, roomToken }) {
-  const { gamers } = gameData;
-
+export async function sendSecondSorted({
+  user,
+  secondSorted,
+  gameData,
+  roomId,
+  roomToken,
+}) {
   if (!user.multiGuest) {
     await prisma.user.update({
       where: { id: user.id },
-      data: { tableauRevelationSeen: true },
+      data: { tableauSecondSorted: secondSorted },
     });
   } else {
     await prisma.multiguest.update({
       where: { id: user.dataId },
-      data: { tableauRevelationSeen: true },
+      data: { tableauSecondSorted: secondSorted },
     });
   }
 
+  await checkSecond({ gameData, roomId, roomToken });
+}
+
+export async function checkHasSeen({ gameData, roomId, roomToken }) {
+  const { gamers } = gameData;
   let seenNumber = 0;
   await Promise.all(
     gamers.map(async (gamer) => {
@@ -473,6 +468,22 @@ export async function seeRevelation({ user, gameData, roomId, roomToken }) {
     const newData = { ...gameData, phase: "revelating" };
     await saveAndDispatchData({ roomId, roomToken, newData });
   }
+}
+
+export async function seeRevelation({ user, gameData, roomId, roomToken }) {
+  if (!user.multiGuest) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { tableauRevelationSeen: true },
+    });
+  } else {
+    await prisma.multiguest.update({
+      where: { id: user.dataId },
+      data: { tableauRevelationSeen: true },
+    });
+  }
+
+  await checkHasSeen({ gameData, roomId, roomToken });
 }
 
 export async function adminRevelate({ roomId, roomToken, gameData }) {
@@ -725,63 +736,18 @@ export async function removeTableauGamers({
   admins,
   arrivalsOrder,
 }) {
-  const {
-    gamers,
-    allResponses,
-    allResponsesByUser,
-    gamersNames,
-    results,
-    phase,
-  } = gameData;
-
+  const { gamers } = gameData;
   const onlineGamersList = onlineGamers.map((gamer) => gamer.userName);
   const onlineGamersSet = new Set(onlineGamersList);
-
   const remainingGamers = gamers.filter((gamer) =>
     onlineGamersSet.has(gamer.name)
   );
 
-  const newAllResponses = allResponses
-    ? Object.fromEntries(
-        Object.entries(allResponses).map(([theme, responses]) => {
-          const newResponses = { ...responses };
-          Object.keys(responses).forEach((name) => {
-            if (!onlineGamersSet.has(name)) {
-              delete newResponses[name];
-            }
-          });
-          return [theme, newResponses];
-        })
-      )
-    : undefined;
-
-  let newAllResponsesByUser = { ...allResponsesByUser };
-  allResponsesByUser &&
-    Object.keys(allResponsesByUser).forEach((name) => {
-      if (!onlineGamersSet.has(name)) {
-        delete newAllResponsesByUser[name];
-      }
-    });
-  if (!Object.keys(newAllResponsesByUser).length)
-    newAllResponsesByUser = undefined;
-
-  const newGamersNames = gamersNames?.filter((name) =>
-    onlineGamersSet.has(name)
-  );
-
-  let newResults = { ...results };
-  results &&
-    Object.keys(results).forEach((name) => {
-      if (!onlineGamersSet.has(name)) {
-        delete newResults[name];
-      }
-    });
-  if (!Object.keys(newResults).length) newResults = undefined;
-
-  const isEnded = !["waiting", "writing", "sorting", "results"].some(
-    (phaseName) => phaseName === phase
-  );
-  const newPhase = !isEnded ? phase : "end";
+  const deletedGamersNames = gameData.deletedGamersNames || [];
+  const notHereGamersNames = gamers
+    .filter((gamer) => !onlineGamersSet.has(gamer.name))
+    .map((gamer) => gamer.name);
+  const newDeletedGamersNames = [...deletedGamersNames, ...notHereGamersNames];
 
   const newData = {
     ...gameData,
@@ -790,44 +756,8 @@ export async function removeTableauGamers({
     viceAdmin: admins.newViceAdmin,
     arrivalsOrder,
     isDeletedUser: true,
-    allResponses: newAllResponses,
-    allResponsesByUser: newAllResponsesByUser,
-    gamersNames: newGamersNames,
-    results: newResults,
-    revelationIndexes: undefined,
-    ended: isEnded,
-    phase: newPhase,
+    deletedGamersNames: newDeletedGamersNames,
   };
 
-  await saveAndDispatchData({ roomId, roomToken, newData });
-}
-
-export async function resetAllSorted({ gameData, roomId, roomToken }) {
-  const { gamers } = gameData;
-
-  await Promise.all(
-    gamers.map(async (gamer) => {
-      if (!gamer.multiGuest) {
-        await prisma.user.update({
-          where: { id: gamer.id },
-          data: {
-            tableauSortedResponses: null,
-          },
-        });
-      } else {
-        await prisma.multiguest.update({
-          where: { id: gamer.dataId },
-          data: {
-            tableauSortedResponses: null,
-          },
-        });
-      }
-    })
-  );
-
-  const newData = {
-    ...gameData,
-    isDeletedUser: false,
-  };
   await saveAndDispatchData({ roomId, roomToken, newData });
 }

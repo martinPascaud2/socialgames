@@ -12,15 +12,17 @@ import {
   sendResponse,
   checkResponses,
   sendSortedResponses,
+  checkSorted,
   sendSecondSorted,
+  checkSecond,
   writtingComeBack,
   firstSubmitComeBack,
   getGamerFirstTurnSorted,
   seeRevelation,
+  checkHasSeen,
   adminRevelate,
   getAllSortedResponses,
   goResult,
-  resetAllSorted,
 } from "./gameActions";
 
 import ClickableCountDown from "@/components/ClickableCountdown";
@@ -140,6 +142,7 @@ const DraggableColumn = ({
   items,
   moveItem,
   gamersNames,
+  deletedGamersNames,
   otherGamersNames,
   allResponses,
   phase,
@@ -207,10 +210,17 @@ const DraggableColumn = ({
                 allResponses[theme][otherGamersNames[index]]
               );
             }
+
+            const isDeleted = deletedGamersNames.some(
+              (deleted) => deleted === otherGamersNames[index]
+            );
+
             return (
               <React.Fragment key={index}>
                 <td
-                  className="absolute left-[50%] translate-x-[-50%] w-full h-[25px] px-[9px] bg-gradient-to-r bg-blue-300 from-gray-100 to-gray-100 via-transparent"
+                  className={`absolute left-[50%] translate-x-[-50%] w-full h-[25px] px-[9px] bg-gradient-to-r ${
+                    !isDeleted ? "bg-blue-300" : "bg-gray-300"
+                  } from-gray-100 to-gray-100 via-transparent`}
                   style={{ userSelect: "none" }}
                 >
                   <div className="flex outline outline-1 outline-black justify-center w-full">
@@ -261,6 +271,7 @@ const DraggableColumn = ({
 const Revelator = ({
   allResponsesByUser,
   gamersNames,
+  deletedGamersNames,
   allThemes,
   roomId,
   roomToken,
@@ -392,22 +403,27 @@ const Revelator = ({
               allSortedResponses[name]?.[allThemes[currentThemeIndex]]?.[
                 currentGamerIndex
               ];
+
             const isTheOne = gamerResponseForCurrent === null;
+
             const isRight = getAreSimilar(
               gamerResponseForCurrent,
               actualResponse
             );
 
+            const isDeleted = deletedGamersNames.some(
+              (deleted) => deleted === name
+            );
+
             return (
               <div key={index}>
                 <div
-                  className={`text-center ${
-                    isTheOne || !actualResponse
-                      ? "text-black"
-                      : isRight
-                      ? "text-green-600"
-                      : "text-red-600"
-                  }`}
+                  className={`text-center ${(() => {
+                    if (isDeleted) return "text-gray-300";
+                    else if (isTheOne || !actualResponse) return "text-black";
+                    else if (isRight) return "text-green-600";
+                    else return "text-red-600";
+                  })()}`}
                 >
                   {name}
                 </div>
@@ -453,14 +469,22 @@ const Revelator = ({
                         gamerIndex < currentGamerIndex ||
                         (gamerIndex === currentGamerIndex &&
                           themeIndex <= currentThemeIndex);
+                      const isDeleted = deletedGamersNames.some(
+                        (deleted) => deleted === gamer
+                      );
 
                       return (
                         <React.Fragment key={themeIndex}>
-                          <td className="absolute left-[50%] translate-x-[-50%] w-full h-[25px] px-[9px] text-center bg-gradient-to-r bg-blue-300 from-gray-100 to-gray-100 via-transparent ">
+                          <td
+                            className={`absolute left-[50%] translate-x-[-50%] w-full h-[25px] px-[9px] text-center bg-gradient-to-r ${
+                              !isDeleted ? "bg-blue-300" : "bg-gray-300"
+                            } from-gray-100 to-gray-100 via-transparent`}
+                          >
                             <div className="outline outline-1 outline-black">
                               {gamer}
                             </div>
                           </td>
+
                           <td
                             key={theme}
                             style={{
@@ -522,12 +546,15 @@ const ResponseForm = ({
         <>
           <form
             ref={refForm}
-            action={(formData) => {
+            action={async (formData) => {
               if (response.length < 4) {
                 setMessage("Réponse trop courte");
                 return;
+              } else if (response.length > 30) {
+                setMessage("Réponse trop longue");
+                return;
               }
-              formAction(formData);
+              await formAction(formData);
               setWrittenIndex((prevIndex) => prevIndex + 1);
               setResponse("");
               setMessage("");
@@ -575,14 +602,16 @@ const ResponseForm = ({
 
 export default function Tableau({ roomId, roomToken, user, gameData }) {
   const {
-    phase,
     enhanced,
     randoms,
-    allResponses,
     allResponsesByUser,
     gamersNames,
+    deletedGamersNames = [],
     finishCountdownDate,
   } = gameData;
+  const [phase, setPhase] = useState(gameData.phase);
+  const [allResponses, setAllResponses] = useState(gameData.allResponses);
+
   const isAdmin = gameData.admin === user.name;
   const [writtenIndex, setWrittenIndex] = useState(0);
   const [response, setResponse] = useState("");
@@ -598,6 +627,21 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
   const [message, setMessage] = useState("");
 
   const allThemes = [...enhanced, ...randoms].sort(); // useMemo ?
+
+  useEffect(() => {
+    setPhase((prevPhase) => {
+      if (prevPhase === gameData.phase) return prevPhase;
+      return gameData.phase;
+    });
+    setAllResponses((prevAllResponses) => {
+      if (
+        JSON.stringify(prevAllResponses) ===
+        JSON.stringify(gameData.allResponses)
+      )
+        return prevAllResponses;
+      return gameData.allResponses;
+    });
+  }, [gameData.phase, gameData.allResponses]);
 
   useEffect(() => {
     if (phase === "sorting") {
@@ -617,7 +661,7 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
       }
       setOtherGamersReponses(otherGamersResponses);
     }
-  }, [phase, allResponses]);
+  }, [phase, allResponses, user.name]);
 
   useEffect(() => {
     setHasClickedOnCountdown(false);
@@ -735,17 +779,34 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
         });
       }
     };
-    const resetSorted = async () => {
-      if (gameData.isDeletedUser && phase === "sorting") {
-        setHasValidated(false);
-        setHasClickedOnCountdown(false);
-        setIsValidationSaved(false);
-        isAdmin && (await resetAllSorted({ gameData, roomId, roomToken }));
+
+    const checkAllSortedSent = async () => {
+      if (gameData.isDeletedUser && isAdmin && phase === "sorting") {
+        await checkSorted({ gameData, roomId, roomToken });
+      }
+    };
+
+    const checkAllHasSeen = async () => {
+      if (gameData.isDeletedUser && isAdmin && phase === "no_chance") {
+        await checkHasSeen({ gameData, roomId, roomToken });
+      }
+    };
+
+    const checkAllSecond = async () => {
+      if (
+        gameData.isDeletedUser &&
+        isAdmin &&
+        (phase === "secondChance_withoutCorrection" ||
+          phase === "secondChance_withCorrection")
+      ) {
+        await checkSecond({ gameData, roomId, roomToken });
       }
     };
 
     checkAllWritingSent();
-    resetSorted();
+    checkAllSortedSent();
+    checkAllHasSeen();
+    checkAllSecond();
   }, [gameData, isAdmin, roomId, roomToken, phase]);
 
   const TableauTable = useCallback(
@@ -813,6 +874,7 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
                     moveItemInColumn(theme, fromIndex, toIndex)
                   }
                   gamersNames={gamersNames}
+                  deletedGamersNames={deletedGamersNames}
                   otherGamersNames={otherGamersNames}
                   allResponses={allResponses}
                   phase={phase}
@@ -825,7 +887,13 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
         </table>
       );
     },
-    [gamersNames, otherGamersResponses, user.name, previousFirstNamesByTheme]
+    [
+      gamersNames,
+      deletedGamersNames,
+      otherGamersResponses,
+      user.name,
+      previousFirstNamesByTheme,
+    ]
   );
 
   return (
@@ -966,6 +1034,7 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
         <Revelator
           allResponsesByUser={allResponsesByUser}
           gamersNames={gamersNames}
+          deletedGamersNames={deletedGamersNames}
           allThemes={allThemes}
           roomId={roomId}
           roomToken={roomToken}
@@ -981,20 +1050,30 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
             <tbody>
               {Object.entries(gameData.results)
                 .sort(([, scoreA], [, scoreB]) => scoreB - scoreA)
-                .map(([name, score], i) => (
-                  <tr key={i} className="gap-8 my-2">
-                    <td className="p-4">{i + 1}</td>
-                    <td className="p-4 text-center">{name}</td>
-                    {gameData.firstTurnResults && (
-                      <td className="p-4">
-                        {"("}
-                        {gameData.firstTurnResults[name]}
-                        {")"}
-                      </td>
-                    )}
-                    <td className="p-4 font-bold">{score}</td>
-                  </tr>
-                ))}
+                .map(([name, score], i) => {
+                  const isDeleted = deletedGamersNames.some(
+                    (deleted) => deleted === name
+                  );
+                  return (
+                    <tr
+                      key={i}
+                      className={`gap-8 my-2 ${
+                        !isDeleted ? "text-black" : "text-gray-300"
+                      }`}
+                    >
+                      <td className="p-4">{i + 1}</td>
+                      <td className="p-4 text-center">{name}</td>
+                      {gameData.firstTurnResults && (
+                        <td className="p-4">
+                          {"("}
+                          {gameData.firstTurnResults[name]}
+                          {")"}
+                        </td>
+                      )}
+                      <td className="p-4 font-bold">{score}</td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>
