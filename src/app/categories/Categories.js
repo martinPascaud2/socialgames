@@ -1104,13 +1104,13 @@ const Invitations = ({
           setPublicRooms(await getPublicRooms());
           updateLastCP({ userId: user.id }); //no await
         }}
-        className="flex justify-center items-center text-center text-purple-950 mb-2 absolute bottom-full"
+        className="flex justify-center items-center text-center text-purple-800 mb-2 absolute bottom-full"
       >
         <ArrowPathIcon className="ml-2 h-6 w-6" />
       </div>
 
       {!invitations.length && !Object.keys(publicRooms).length && (
-        <div className="text-center text-black absolute top-1/2 translate-y-[-50%]">
+        <div className="text-center text-purple-800 absolute top-1/2 translate-y-[-50%]">
           Aucune partie disponible
         </div>
       )}
