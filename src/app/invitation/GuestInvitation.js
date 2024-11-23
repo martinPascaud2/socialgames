@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import getLocation from "@/utils/getLocation";
@@ -10,7 +10,12 @@ export default function GuestInvitation({ searchParams, setCookieToken }) {
   const router = useRouter();
 
   const [guestName, setGuestName] = useState("");
+  const inputRef = useRef();
   const [serverMessage, setServerMessage] = useState("");
+
+  useEffect(() => {
+    inputRef?.current?.focus();
+  }, [inputRef]);
 
   const joinGame = async () => {
     try {
@@ -31,8 +36,12 @@ export default function GuestInvitation({ searchParams, setCookieToken }) {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen w-screen">
+    <form
+      action={joinGame}
+      className="flex flex-col justify-center items-center h-screen w-screen"
+    >
       <input
+        ref={inputRef}
         onChange={(event) => setGuestName(event.currentTarget.value)}
         className="outline m-4"
       />
@@ -45,6 +54,6 @@ export default function GuestInvitation({ searchParams, setCookieToken }) {
       </button>
 
       <div>{serverMessage}</div>
-    </div>
+    </form>
   );
 }

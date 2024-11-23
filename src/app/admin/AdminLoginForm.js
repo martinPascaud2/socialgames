@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useEffect } from "react";
 import { useFormState } from "react-dom";
 
 import { adminConnect } from "./actions";
@@ -11,6 +12,11 @@ const initialState = {
 
 export default function AdminLoginForm() {
   const [state, formAction] = useFormState(adminConnect, initialState);
+  const inputRef = useRef();
+
+  useEffect(() => {
+    inputRef?.current?.focus();
+  }, [inputRef]);
 
   return (
     <>
@@ -20,6 +26,7 @@ export default function AdminLoginForm() {
       >
         <label htmlFor="mail">Adresse mail</label>
         <input
+          ref={inputRef}
           type="mail"
           name="mail"
           id="mail"

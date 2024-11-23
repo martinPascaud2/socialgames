@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 
 import levenshtein from "@/utils/levenshtein";
 import {
@@ -108,6 +108,7 @@ export default function Ptitbac({
   const [responses, setResponses] = useState(
     Array.from({ length: themes?.length }, () => "")
   );
+  const inputRefs = useRef([]);
   const [isCompleted, setIsCompleted] = useState(false);
   const [hasValidated, setHasValidated] = useState(false);
 
@@ -116,6 +117,10 @@ export default function Ptitbac({
   const [allFalse, setAllFalse] = useState();
   const [refereeValidation, setRefereeValidation] = useState({});
   const [isEnded, setIsEnded] = useState(false);
+
+  useEffect(() => {
+    inputRefs?.current[0]?.focus();
+  }, [inputRefs, phase, themes]);
 
   useEffect(() => {
     if (gameData.ended) setIsEnded(true);
@@ -381,12 +386,21 @@ export default function Ptitbac({
                     >
                       <div className="m-1">{theme}</div>
                       <input
+                        ref={(el) => (inputRefs.current[i] = el)}
                         type="text"
                         value={responses[i] || ""}
                         onChange={(e) => handleChange(e, i)}
                         onKeyDown={(e) => {
                           if (e.key === "/") {
                             e.preventDefault();
+                          }
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            if (i + 1 < themes.length) {
+                              inputRefs.current[i + 1]?.focus();
+                            } else {
+                              inputRefs.current[i]?.blur();
+                            }
                           }
                         }}
                         className="w-4/5 border focus:outline-none focus:border"

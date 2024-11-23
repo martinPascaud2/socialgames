@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 
 import {
@@ -31,10 +31,15 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
   const [CBHadValidated, setCBHadValidated] = useState();
   const [isDeletedUser, setIsDeletedUser] = useState(false);
   const [timeoutId, setTimeoutId] = useState();
+  const inputRef = useRef();
 
   const [showedGamer, setShowedGamer] = useState("");
   const [showedLinks, setShowedLinks] = useState([]);
   const [isShower, setIsShower] = useState(false);
+
+  useEffect(() => {
+    inputRef?.current?.focus();
+  }, [inputRef, phase, lastLink, hasValidated, CBHadValidated]);
 
   useEffect(() => {
     if (turn !== 0 || !words || !user || hasComeback === true) return;
@@ -333,6 +338,7 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
                   <>
                     <div>Qu&apos;est-ce que ça représente ???</div>
                     <input
+                      ref={inputRef}
                       type="text"
                       value={guess}
                       onChange={(e) => setGuess(e.target.value)}

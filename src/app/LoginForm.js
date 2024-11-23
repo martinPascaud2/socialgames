@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useFormState } from "react-dom";
 
 import { connect } from "@/actions";
@@ -15,6 +15,11 @@ const initialState = {
 export function LoginForm({}) {
   const [state, formAction] = useFormState(connect, initialState);
   const [prevUser, setPrevUser] = useState({ prevMail: "", prevPassword: "" });
+  const inputRef = useRef();
+
+  useEffect(() => {
+    inputRef?.current?.focus();
+  }, [inputRef]);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -41,6 +46,7 @@ export function LoginForm({}) {
       >
         <label htmlFor="mail">Ton adresse mail</label>
         <input
+          ref={inputRef}
           type="mail"
           name="mail"
           id="mail"

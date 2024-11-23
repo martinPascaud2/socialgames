@@ -194,6 +194,7 @@ export default function Undercover({
         name="guess"
         id="guess"
         className="border focus:outline-none focus:border-2"
+        autoFocus
       />
 
       <button type="submit" className="border border-blue-300 bg-blue-100">

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useFormState } from "react-dom";
 import Image from "next/image";
 
@@ -37,6 +37,7 @@ export default function TeamDrawing({ roomId, roomToken, user, gameData }) {
   );
   const [state, formAction] = useFormState(guessWordWithData, initialState);
   const [hasProposed, setHasProposed] = useState(false);
+  const inputRef = useRef();
 
   const {
     teams,
@@ -50,6 +51,10 @@ export default function TeamDrawing({ roomId, roomToken, user, gameData }) {
   } = gameData;
   const isAdmin = gameData.admin === user.name;
   const isActive = activePlayers?.some((active) => active.name === user.name);
+
+  useEffect(() => {
+    inputRef?.current?.focus();
+  }, [inputRef, phase, receivedImage, isActive, hasProposed]);
 
   useEffect(() => {
     if (!teams) return;
@@ -250,6 +255,7 @@ export default function TeamDrawing({ roomId, roomToken, user, gameData }) {
                       >
                         <label htmlFor="guess">Propose un mot</label>
                         <input
+                          ref={inputRef}
                           type="text"
                           name="guess"
                           id="guess"

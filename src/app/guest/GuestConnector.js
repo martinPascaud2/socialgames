@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { throttle } from "lodash";
 
@@ -15,11 +15,16 @@ export default function GuestConnector({ setCookieToken }) {
   const [scanLocked, setScanLocked] = useState(false);
   const [qrData, setQrData] = useState("");
   const [toggleInput, setToggleInput] = useState(false);
+  const inputRef = useRef();
   const [guestName, setGuestName] = useState("");
 
   useEffect(() => {
     setScanning(true);
   }, []);
+
+  useEffect(() => {
+    inputRef?.current?.focus();
+  }, [inputRef, toggleInput]);
 
   // check
   const onNewScanResult = useCallback(
@@ -72,9 +77,10 @@ export default function GuestConnector({ setCookieToken }) {
       )}
 
       {toggleInput && (
-        <div className="flex flex-col justify-center">
-          <div className="text-center">Choisis ton pseudonyme Guest</div>
+        <form action={joinGame} className="flex flex-col justify-center">
+          <label className="text-center">Choisis ton pseudonyme Guest</label>
           <input
+            ref={inputRef}
             onChange={(event) => setGuestName(event.currentTarget.value)}
             className="outline m-4"
           />
@@ -84,7 +90,7 @@ export default function GuestConnector({ setCookieToken }) {
           >
             Rejoindre la partie
           </button>
-        </div>
+        </form>
       )}
 
       <div>{serverMessage}</div>
