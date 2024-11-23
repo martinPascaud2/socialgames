@@ -918,11 +918,12 @@ const Params = ({ updateParams, updateLastCP, signOut, fetchUser }) => {
   console.log("user", user);
 
   if (!barValues)
-    return (
-      <div className="h-full w-full flex justify-center items-center">
-        <Spinner />
-      </div>
-    );
+    // return (
+    //   <div className="h-full w-full flex justify-center items-center">
+    //     <Spinner />
+    //   </div>
+    // );
+    return null;
 
   return (
     <div className="w-full h-full flex flex-col justify-center items-center relative">
@@ -1542,17 +1543,21 @@ export default function Categories({
 
                 {setting === "qrCode" && (
                   <CentralZone onClick={handleOctaClick}>
-                    {location ? (
-                      <QRCode
-                        value={`id=${user.id};mail=${user.email};name=${user.name};{"latitude":"${location?.latitude}","longitude":"${location?.longitude}"}`}
-                        className="mx-auto w-fit h-full border border-black"
-                        onClick={(event) => event.stopPropagation()}
-                      />
-                    ) : (
-                      <div className="h-full w-full flex justify-center items-center">
-                        <Spinner />
-                      </div>
-                    )}
+                    {
+                      location ? (
+                        <QRCode
+                          value={`id=${user.id};mail=${user.email};name=${user.name};{"latitude":"${location?.latitude}","longitude":"${location?.longitude}"}`}
+                          className="mx-auto w-fit h-full border border-black"
+                          onClick={(event) => event.stopPropagation()}
+                        />
+                      ) : null
+
+                      // (
+                      //   <div className="h-full w-full flex justify-center items-center">
+                      //     <Spinner />
+                      //   </div>
+                      // )
+                    }
                   </CentralZone>
                 )}
 
