@@ -42,3 +42,7 @@ body {
   overscroll-behavior: none;
 }
 /*----------disabling pull-to-refresh----------*/
+
+div {
+  user-select: none;
+}
