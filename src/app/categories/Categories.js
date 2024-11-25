@@ -872,11 +872,11 @@ const OctagonBackground = ({ handleBgClick }) => {
         }}
       />
       <div
-        className="absolute w-[22vw] h-[6vw] -skew-y-[45deg] translate-y-[-8vw] translate-x-[7.3vw] left-0 bottom-0 z-10 bg-transparent rotate-[-90deg]"
+        className="absolute w-[24vw] h-[6vw] -skew-y-[45deg] translate-y-[-9vw] translate-x-[5.4vw] left-0 bottom-0 z-10 bg-transparent rotate-[-90deg]"
         style={{ boxShadow: "-5px -10px 10px #7e22ce" }}
       />
       <div
-        className="absolute w-[26.3vw] h-[6vw] translate-y-[-28vw] translate-x-[0.8vw] left-0 bottom-0 z-10 bg-transparent rotate-[-45deg]"
+        className="absolute w-[26.3vw] h-[7vw] translate-y-[-30vw] translate-x-[-1.2vw] left-0 bottom-0 z-10 bg-transparent rotate-[-45deg]"
         style={{ boxShadow: "-11px 0px 7px -7px #7e22ce" }}
       />
 
