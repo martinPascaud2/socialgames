@@ -826,25 +826,25 @@ const OctagonBackground = ({ handleBgClick }) => {
 
       <div
         className="absolute w-[26.3vw] h-[36vw] -skew-y-[45deg] translate-y-[-13.4vw] translate-x-[-1px] right-0 bottom-0 z-10 bg-transparent"
-        style={{ boxShadow: "6px 10px 7px #a855f7" }}
+        style={{ boxShadow: "6px 10px 7px #7e22ce" }}
       />
       <div
         className="absolute w-[26.3vw] h-[6vw] translate-y-[26vw] translate-x-[0px] right-0 top-0 z-10 bg-transparent"
-        style={{ boxShadow: "9px 0px 7px -6px #a855f7" }}
+        style={{ boxShadow: "9px 0px 7px -6px #7e22ce" }}
       />
       <div
         className="absolute w-[25vw] h-[20vw] -skew-y-[45deg] translate-y-[2.6vw] translate-x-[-4.6vw] left-1/2 bottom-0 z-10 bg-transparent rotate-45"
         style={{
-          boxShadow: "6px 9px 7px #a855f7",
+          boxShadow: "6px 12px 10px #7e22ce",
         }}
       />
       <div
-        className="absolute w-[25vw] h-[6vw] -skew-y-[45deg] translate-y-[-9.5vw] translate-x-[4.4vw] left-0 bottom-0 z-10 bg-transparent rotate-[-90deg]"
-        style={{ boxShadow: "-5px -10px 7px #a855f7" }}
+        className="absolute w-[22vw] h-[6vw] -skew-y-[45deg] translate-y-[-8vw] translate-x-[7.3vw] left-0 bottom-0 z-10 bg-transparent rotate-[-90deg]"
+        style={{ boxShadow: "-5px -10px 10px #7e22ce" }}
       />
       <div
-        className="absolute w-[26.3vw] h-[6vw] translate-y-[-31vw] translate-x-[-2vw] left-0 bottom-0 z-10 bg-transparent rotate-[-45deg]"
-        style={{ boxShadow: "-11px 0px 10px -8px #a855f7" }}
+        className="absolute w-[26.3vw] h-[6vw] translate-y-[-28vw] translate-x-[0.8vw] left-0 bottom-0 z-10 bg-transparent rotate-[-45deg]"
+        style={{ boxShadow: "-11px 0px 7px -7px #7e22ce" }}
       />
 
       <div className="absolute top-1/2 translate-y-[-50%] bg-transparent w-[90vw] h-[90vw] z-10 flex items-center">
