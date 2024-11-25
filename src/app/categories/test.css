@@ -1,3 +1,7 @@
+body {
+  overflow: hidden;
+}
+
 :root {
   --dynamic-border-color: #9333ea;
 }
