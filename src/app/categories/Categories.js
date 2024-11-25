@@ -1540,20 +1540,21 @@ export default function Categories({
     (event) => {
       resetPermissions();
       event.stopPropagation();
-      setToggledSettings(!toggledSettings);
+      toggledPrelobby && setToggledPrelobby(false);
+      !toggledPrelobby && setToggledSettings(true);
+      toggledSettings && setToggledSettings(false);
     },
-    // [toggledSettings]
-    [toggledSettings, resetPermissions]
+    [toggledSettings, resetPermissions, toggledPrelobby]
   );
 
   const handleOctaClick = useCallback(
     (event) => {
       resetPermissions();
       event.stopPropagation();
-      !toggledSettings && setToggledPrelobby(!toggledPrelobby);
+      !toggledSettings && setToggledPrelobby(true);
       toggledSettings && setToggledSettings(false);
     },
-    [toggledPrelobby, toggledSettings, resetPermissions]
+    [toggledSettings, resetPermissions]
   );
 
   useEffect(() => {
