@@ -1,9 +1,13 @@
+:root {
+  --dynamic-border-color: #9333ea;
+}
+
 .octagon {
   /* width: 100px;
   height: 100px; */
   width: 90vw;
   height: 90vw;
-  background: #9333ea;
+  background: var(--dynamic-border-color);
   position: relative;
 }
 .octagon:before {
@@ -17,7 +21,7 @@
   /* border-bottom: 29px solid red;
   border-left: 29px solid #eee;
   border-right: 29px solid #eee; */
-  border-bottom: 26.5vw solid #9333ea;
+  border-bottom: 26.5vw solid var(--dynamic-border-color);
   border-left: 26.5vw solid black;
   border-right: 26.5vw solid black;
 }
@@ -32,7 +36,7 @@
   /* border-top: 29px solid red;
   border-left: 29px solid #eee;
   border-right: 29px solid #eee; */
-  border-top: 26.5vw solid #9333ea;
+  border-top: 26.5vw solid var(--dynamic-border-color);
   border-left: 26.5vw solid black;
   border-right: 26.5vw solid black;
 }

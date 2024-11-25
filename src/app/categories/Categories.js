@@ -733,6 +733,8 @@ const SettingsButtons = ({
   setScanning,
   setting,
 }) => {
+  const iconsColor =
+    setting === "camera" || setting === "qrCode" ? "purple-900" : "purple-100";
   return (
     <>
       <div className="absolute top-[0%] left-[24%] h-[20vw] w-[20vw] z-10 flex items-start justify-center mt-2">
@@ -746,9 +748,33 @@ const SettingsButtons = ({
           }}
           className="border-black z-10"
         >
-          <FaUserFriends className="w-8 h-8 text-purple-100" />
+          <FaUserFriends
+            className={`w-8 h-8 text-${
+              setting === "friends" ? "purple-900" : iconsColor
+            }`}
+          />
         </div>
       </div>
+
+      <div className="absolute top-[0%] right-[24%] h-[20vw] w-[20vw] z-10 flex items-start justify-center mt-2">
+        <div
+          onClick={(event) => {
+            setSetting("params");
+            setServerMessage("");
+            // setScanning(false);
+            resetPermissions();
+            event.stopPropagation();
+          }}
+          className="border-black z-10"
+        >
+          <IoIosSettings
+            className={`w-8 h-8 text-${
+              setting === "params" ? "purple-900" : iconsColor
+            }`}
+          />
+        </div>
+      </div>
+
       <div className="absolute bottom-[0%] left-[24%] h-[20vw] w-[20vw] z-10 flex items-end justify-center mb-2">
         <div
           onClick={async (event) => {
@@ -760,7 +786,7 @@ const SettingsButtons = ({
 
             try {
               setLocation(await getLocation());
-              setServerMessage("QR code généré !");
+              // setServerMessage("QR code généré !");
             } catch (error) {
               console.error(error.message);
               const errorInformations = getErrorInformations({
@@ -777,7 +803,7 @@ const SettingsButtons = ({
             }
           }}
         >
-          <LiaQrcodeSolid className="w-8 h-8 text-purple-100" />
+          <LiaQrcodeSolid className={`w-8 h-8 text-${iconsColor}`} />
         </div>
       </div>
 
@@ -815,29 +841,14 @@ const SettingsButtons = ({
           }}
           className="border-black z-10"
         >
-          <CameraIcon className="w-8 h-8 text-purple-100" />
-        </div>
-      </div>
-
-      <div className="absolute top-[0%] right-[24%] h-[20vw] w-[20vw] z-10 flex items-start justify-center mt-2">
-        <div
-          onClick={(event) => {
-            setSetting("params");
-            setServerMessage("");
-            // setScanning(false);
-            resetPermissions();
-            event.stopPropagation();
-          }}
-          className="border-black z-10"
-        >
-          <IoIosSettings className="w-8 h-8 text-purple-100" />
+          <CameraIcon className={`w-8 h-8 text-${iconsColor}`} />
         </div>
       </div>
     </>
   );
 };
 
-const OctagonBackground = ({ handleBgClick }) => {
+const OctagonBackground = ({ handleBgClick, discreet }) => {
   return (
     <>
       <div
@@ -857,28 +868,32 @@ const OctagonBackground = ({ handleBgClick }) => {
         onClick={handleBgClick}
       />
 
-      <div
-        className="absolute w-[26.3vw] h-[36vw] -skew-y-[45deg] translate-y-[-13.4vw] translate-x-[-1px] right-0 bottom-0 z-10 bg-transparent"
-        style={{ boxShadow: "6px 10px 7px #7e22ce" }}
-      />
-      <div
-        className="absolute w-[26.3vw] h-[6vw] translate-y-[26vw] translate-x-[0px] right-0 top-0 z-10 bg-transparent"
-        style={{ boxShadow: "9px 0px 7px -6px #7e22ce" }}
-      />
-      <div
-        className="absolute w-[25vw] h-[20vw] -skew-y-[45deg] translate-y-[2.6vw] translate-x-[-4.6vw] left-1/2 bottom-0 z-10 bg-transparent rotate-45"
-        style={{
-          boxShadow: "6px 12px 10px #7e22ce",
-        }}
-      />
-      <div
-        className="absolute w-[24vw] h-[6vw] -skew-y-[45deg] translate-y-[-9vw] translate-x-[5.4vw] left-0 bottom-0 z-10 bg-transparent rotate-[-90deg]"
-        style={{ boxShadow: "-5px -10px 10px #7e22ce" }}
-      />
-      <div
-        className="absolute w-[26.3vw] h-[7vw] translate-y-[-30vw] translate-x-[-1.2vw] left-0 bottom-0 z-10 bg-transparent rotate-[-45deg]"
-        style={{ boxShadow: "-11px 0px 7px -7px #7e22ce" }}
-      />
+      {!discreet && (
+        <>
+          <div
+            className="absolute w-[26.3vw] h-[6vw] translate-y-[26vw] translate-x-[0px] right-0 top-0 z-10 bg-transparent"
+            style={{ boxShadow: "9px 0px 7px -6px #6b21a8" }}
+          />
+          <div
+            className="absolute w-[26.3vw] h-[36vw] -skew-y-[45deg] translate-y-[-13.4vw] translate-x-[-1px] right-0 bottom-0 z-10 bg-transparent"
+            style={{ boxShadow: "10px 12px 10px #6b21a8" }}
+          />
+          <div
+            className="absolute w-[26vw] h-[20vw] -skew-y-[45deg] translate-y-[2.6vw] translate-x-[-5.4vw] left-1/2 bottom-0 z-10 bg-transparent rotate-45"
+            style={{
+              boxShadow: "6px 12px 10px #6b21a8",
+            }}
+          />
+          <div
+            className="absolute w-[24vw] h-[6vw] -skew-y-[45deg] translate-y-[-9vw] translate-x-[5.4vw] left-0 bottom-0 z-10 bg-transparent rotate-[-90deg]"
+            style={{ boxShadow: "-5px -10px 10px #6b21a8" }}
+          />
+          <div
+            className="absolute w-[26.3vw] h-[7vw] translate-y-[-30vw] translate-x-[-1.2vw] left-0 bottom-0 z-10 bg-transparent rotate-[-45deg]"
+            style={{ boxShadow: "-11px 0px 7px -7px #6b21a8" }}
+          />
+        </>
+      )}
 
       <div className="absolute top-1/2 translate-y-[-50%] bg-transparent w-[90vw] h-[90vw] z-10 flex items-center">
         <div className="relative w-full h-full">
@@ -1563,7 +1578,7 @@ export default function Categories({
       event.stopPropagation();
       toggledPrelobby && setToggledPrelobby(false);
       !toggledPrelobby && setToggledSettings(true);
-      // toggledSettings && setToggledSettings(false);
+      toggledSettings && setToggledSettings(false);
       setSetting("");
       setServerMessage("");
     },
@@ -1597,6 +1612,15 @@ export default function Categories({
   console.log("showInvitations", showInvitations);
   console.log("urlControl", urlControl);
 
+  useEffect(() => {
+    const dynamicColor =
+      setting === "camera" || setting === "qrCode" ? "black" : "#9333ea";
+    document.documentElement.style.setProperty(
+      "--dynamic-border-color",
+      dynamicColor
+    );
+  }, [setting]);
+
   return (
     <div
       onClick={(event) => {
@@ -1612,7 +1636,10 @@ export default function Categories({
             onClick={handleOctaClick}
             className="octagon left-5 top-[50dvh] translate-y-[-50%] relative z-0"
           >
-            <OctagonBackground handleBgClick={handleBgClick} />
+            <OctagonBackground
+              handleBgClick={handleBgClick}
+              discreet={setting === "camera" || setting === "qrCode"}
+            />
 
             {toggledSettings && (
               <>
