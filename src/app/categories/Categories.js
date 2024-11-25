@@ -1099,7 +1099,6 @@ const Params = ({ updateParams, updateLastCP, signOut, fetchUser }) => {
         </div>
       ))}
 
-      {/* <Link href="/categories/categorie1/">TEST</Link> */}
       <div
         onClick={async (event) => {
           event.stopPropagation();
@@ -1107,17 +1106,9 @@ const Params = ({ updateParams, updateLastCP, signOut, fetchUser }) => {
           await signOut();
           window.location.reload();
         }}
-        // className="absolute bottom-0"
-        className="mt-2"
+        className="absolute bottom-[10%]"
       >
-        <div className="relative">
-          <div className="py-1 px-2 border border-purple-950 bg-purple-600 text-purple-950">
-            Déconnexion
-          </div>
-          <div className="absolute left-full top-1/2 translate-y-[-50%] pl-2">
-            <ImExit className="w-6 h-6 text-purple-950" />
-          </div>
-        </div>
+        <ImExit className="w-8 h-8 text-purple-950" />
       </div>
     </div>
   );
