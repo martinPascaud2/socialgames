@@ -1446,6 +1446,7 @@ export default function Categories({
     channel.bind("user-event", function (data) {
       if (data.message) {
         setServerMessage(data.message);
+        if (data.message.includes("ajouté")) setSetting("friends");
         router.refresh();
       }
       if (data.invitation) {
@@ -1825,7 +1826,7 @@ export default function Categories({
               </Modal>
             )}
 
-            <div className="absolute top-full z-10 left-1/2 translate-x-[-50%] mt-4 text-purple-100">
+            <div className="absolute top-full z-20 w-full mt-4 text-center text-purple-100">
               {serverMessage}
             </div>
           </div>
