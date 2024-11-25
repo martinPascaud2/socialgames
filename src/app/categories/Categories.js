@@ -736,6 +736,7 @@ const SettingsButtons = ({
             // setScanning(false);
             resetPermissions();
             event.stopPropagation();
+            setServerMessage("");
           }}
           className="border-black z-10"
         >
@@ -750,6 +751,7 @@ const SettingsButtons = ({
             resetPermissions();
             event.stopPropagation();
             updateLastCP({ userId: user.id }); //no await
+
             try {
               setLocation(await getLocation());
               setServerMessage("QR code généré !");
@@ -780,6 +782,7 @@ const SettingsButtons = ({
             setScanning(true);
             // resetPermissions();
             event.stopPropagation();
+            setServerMessage("");
           }}
           className="border-black z-10"
         >
@@ -791,6 +794,7 @@ const SettingsButtons = ({
         <div
           onClick={(event) => {
             setSetting("params");
+            setServerMessage("");
             // setScanning(false);
             resetPermissions();
             event.stopPropagation();
@@ -1543,6 +1547,7 @@ export default function Categories({
       toggledPrelobby && setToggledPrelobby(false);
       !toggledPrelobby && setToggledSettings(true);
       toggledSettings && setToggledSettings(false);
+      setServerMessage("");
     },
     [toggledSettings, resetPermissions, toggledPrelobby]
   );
@@ -1553,6 +1558,7 @@ export default function Categories({
       event.stopPropagation();
       !toggledSettings && setToggledPrelobby(true);
       toggledSettings && setToggledSettings(false);
+      setServerMessage("");
     },
     [toggledSettings, resetPermissions]
   );
@@ -1676,7 +1682,12 @@ export default function Categories({
             {toggledPrelobby && !toggledSettings && (
               <CentralZone onClick={handleOctaClick}>
                 <div className="flex w-full h-full justify-around items-center">
-                  <div onClick={(event) => event.stopPropagation()}>
+                  <div
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      setServerMessage("A venir");
+                    }}
+                  >
                     <GoTools className="w-8 h-8 text-purple-100" />
                   </div>
                   {/* <div onClick={(event) => event.stopPropagation()}>
@@ -1767,7 +1778,7 @@ export default function Categories({
               </Modal>
             )}
 
-            <div className="absolute top-full z-10 left-1/2 translate-x-[-50%]">
+            <div className="absolute top-full z-10 left-1/2 translate-x-[-50%] mt-4 text-purple-100">
               {serverMessage}
             </div>
           </div>
