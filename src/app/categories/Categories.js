@@ -1387,7 +1387,7 @@ export default function Categories({
 
   const [toggledSettings, setToggledSettings] = useState(false);
   const [setting, setSetting] = useState("");
-  const [toggledPrelobby, setToggledPrelobby] = useState(false);
+  const [toggledPrelobby, setToggledPrelobby] = useState(true);
 
   const [location, setLocation] = useState(null);
   const [scanLocked, setScanLocked] = useState(false);
@@ -1546,7 +1546,7 @@ export default function Categories({
       event.stopPropagation();
       toggledPrelobby && setToggledPrelobby(false);
       !toggledPrelobby && setToggledSettings(true);
-      toggledSettings && setToggledSettings(false);
+      // toggledSettings && setToggledSettings(false);
       setServerMessage("");
     },
     [toggledSettings, resetPermissions, toggledPrelobby]
