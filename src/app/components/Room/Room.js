@@ -860,10 +860,10 @@ export default function Room({
       <div className="absolute h-screen w-full z-50">
         <UserContext.Provider value={{ userParams }}>
           <div
-            className={`flex items-end w-full z-50 bg-black`}
+            className={`flex items-end w-full z-50 bg-black h-full relative mt-1`}
             style={{ height: `${barsSizes.top / 4}rem` }}
           >
-            <div className="flex justify-center text-white w-full m-1">
+            <div className="absolute bottom-0 text-center text-white w-full">
               {gamesRefs[gameName].categorie === "grouping"
                 ? "Lobby"
                 : gamesRefs[gameName].name}
@@ -876,7 +876,7 @@ export default function Room({
             <>
               {isAdmin && (
                 <>
-                  <div className="flex justify-center items-center m-2">
+                  <div className="flex justify-center items-center mt-2">
                     {isPrivate ? (
                       <LockClosedIcon
                         onClick={async () => {

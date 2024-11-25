@@ -782,7 +782,7 @@ const SettingsButtons = ({
       </div>
 
       {setting == "" && (
-        <div className="absolute bottom-[10%] left-1/2 translate-x-[-50%] h-[20vw] w-[40vw] z-10 flex items-end justify-center mb-2">
+        <div className="absolute bottom-[10%] left-1/2 translate-x-[-50%] h-[22vw] w-[48vw] z-10 flex items-end justify-center mb-2">
           <div
             onClick={(event) => {
               event.stopPropagation();
@@ -987,7 +987,7 @@ const Friends = ({ friendList, user, deleteFriend, updateLastCP }) => {
 
 // const Params = ({ user, updateParams, updateLastCP, signOut, fetchUser }) => {
 const Params = ({ updateParams, updateLastCP, signOut, fetchUser }) => {
-  const possibleBarValues = [8, 12, 14, 16, 18, 20];
+  const possibleBarValues = [4, 6, 8, 12, 14, 16, 18, 20];
   const [barValues, setBarValues] = useState();
   const [user, setUser] = useState(null);
 
