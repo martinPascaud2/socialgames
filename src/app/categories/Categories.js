@@ -1052,7 +1052,7 @@ const Params = ({ updateParams, updateLastCP, signOut, fetchUser }) => {
         <div
           key={i}
           onClick={(event) => event.stopPropagation()}
-          className="relative border border-purple-200 bg-purple-400 p-1 my-1 w-full text-center flex items-center text-purple-950"
+          className="relative border border-purple-200 bg-purple-400 p-1 my-1 w-full text-center flex items-center text-purple-900"
         >
           {barValues && barValues[barParam.param] !== possibleBarValues[0] && (
             <div className="absolute right-full mx-1">
@@ -1108,7 +1108,7 @@ const Params = ({ updateParams, updateLastCP, signOut, fetchUser }) => {
         }}
         className="absolute bottom-[10%]"
       >
-        <ImExit className="w-8 h-8 text-purple-950" />
+        <ImExit className="w-8 h-8 text-purple-900" />
       </div>
     </div>
   );
