@@ -8,7 +8,12 @@ import classNames from "classnames";
 import QRCode from "react-qr-code";
 import Pusher from "pusher-js";
 
-import { ArrowPathIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowPathIcon,
+  ArrowDownLeftIcon,
+  ArrowDownRightIcon,
+  CameraIcon,
+} from "@heroicons/react/24/outline";
 
 import Html5QrcodePlugin from "@/components/Html5QrcodePlugin";
 import Modal from "@/components/Modal";
@@ -726,6 +731,7 @@ const SettingsButtons = ({
   setServerMessage,
   resetPermissions,
   setScanning,
+  setting,
 }) => {
   return (
     <>
@@ -774,6 +780,29 @@ const SettingsButtons = ({
           <LiaQrcodeSolid className="w-8 h-8 text-purple-100" />
         </div>
       </div>
+
+      {setting == "" && (
+        <div className="absolute bottom-[10%] left-1/2 translate-x-[-50%] h-[20vw] w-[40vw] z-10 flex items-end justify-center mb-2">
+          <div
+            onClick={(event) => {
+              event.stopPropagation();
+              setServerMessage("");
+            }}
+            className="z-10 relative w-full h-full"
+          >
+            <div className="absolute top-0 left-1/2 translate-x-[-50%]">
+              <IoPersonAdd className="w-10 h-10 text-purple-900" />
+            </div>
+            <div className="absolute bottom-0 left-1/4">
+              <ArrowDownLeftIcon className="w-10 h-10 text-purple-900" />
+            </div>
+            <div className="absolute bottom-0 right-1/4">
+              <ArrowDownRightIcon className="w-10 h-10 text-purple-900" />
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="absolute bottom-[0%] right-[24%] h-[20vw] w-[20vw] z-10 flex items-end justify-center mb-2">
         <div
           onClick={(event) => {
@@ -786,7 +815,7 @@ const SettingsButtons = ({
           }}
           className="border-black z-10"
         >
-          <IoPersonAdd className="w-8 h-8 text-purple-100" />
+          <CameraIcon className="w-8 h-8 text-purple-100" />
         </div>
       </div>
 
@@ -1547,6 +1576,7 @@ export default function Categories({
       toggledPrelobby && setToggledPrelobby(false);
       !toggledPrelobby && setToggledSettings(true);
       // toggledSettings && setToggledSettings(false);
+      setSetting("");
       setServerMessage("");
     },
     [toggledSettings, resetPermissions, toggledPrelobby]
@@ -1558,6 +1588,7 @@ export default function Categories({
       event.stopPropagation();
       !toggledSettings && setToggledPrelobby(true);
       toggledSettings && setToggledSettings(false);
+      setSetting("");
       setServerMessage("");
     },
     [toggledSettings, resetPermissions]
@@ -1605,6 +1636,7 @@ export default function Categories({
                   setServerMessage={setServerMessage}
                   resetPermissions={resetPermissions}
                   setScanning={setScanning}
+                  setting={setting}
                 />
 
                 {setting === "friends" && (
