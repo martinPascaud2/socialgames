@@ -122,7 +122,7 @@ export default function PostGame({ user, triaction_PG }) {
           marginTop: `${barsSizes.top / 4}rem`,
         }}
       >
-        <div>PostGame</div>
+        <div>Enregistrements</div>
 
         <div className="flex flex-col items-center w-full">
           <div>Triaction</div>
