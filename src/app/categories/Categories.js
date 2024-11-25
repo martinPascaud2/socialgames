@@ -1535,10 +1535,7 @@ export default function Categories({
     requestCameraAccess();
 
     return (
-      <div
-        onClick={(event) => event.stopPropagation()}
-        className="h-full w-full"
-      >
+      <div onClick={(event) => event.stopPropagation()} className="h-full">
         <Html5QrcodePlugin
           // scanning={setting === "camera"}
           fps={10}
