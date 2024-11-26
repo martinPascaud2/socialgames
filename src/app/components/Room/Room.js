@@ -30,6 +30,7 @@ import {
   LockClosedIcon,
   LockOpenIcon,
 } from "@heroicons/react/24/outline";
+import "./room.css";
 import NextStep from "../NextStep";
 
 var pusher = new Pusher("61853af9f30abf9d5b3d", {
@@ -857,7 +858,7 @@ export default function Room({
 
   if (!isStarted) {
     return (
-      <div className="absolute h-screen w-full z-50">
+      <div className="absolute h-[100dvh] w-full z-50">
         <UserContext.Provider value={{ userParams }}>
           <div
             className={`flex items-end w-full z-50 bg-black h-full relative mt-1`}
@@ -1220,7 +1221,10 @@ export default function Room({
                     <div className="flex flex-col">{serverMessage}</div>
                   </div>
 
-                  <div className={`absolute bottom-0 w-full bg-black z-10`}>
+                  <div
+                    className={`absolute bottom-0 w-full bg-black z-10`}
+                    style={{ height: `${barsSizes.bottom / 4}rem` }}
+                  >
                     <div className="relative h-full">
                       <div
                         onClick={async () => await deleteInvs()}
