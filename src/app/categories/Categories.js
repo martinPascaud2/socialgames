@@ -1684,8 +1684,12 @@ export default function Categories({
                       location ? (
                         <QRCode
                           value={`id=${user.id};mail=${user.email};name=${user.name};{"latitude":"${location?.latitude}","longitude":"${location?.longitude}"}`}
-                          className="mx-auto w-fit h-full border border-black"
                           onClick={(event) => event.stopPropagation()}
+                          className="mx-auto w-fit h-full gradient-border"
+                          style={{
+                            background: "white",
+                            boxShadow: "0px 0 5px 5px white",
+                          }}
                         />
                       ) : null
 
