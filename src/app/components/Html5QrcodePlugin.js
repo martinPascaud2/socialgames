@@ -44,7 +44,10 @@ export default function Html5QrcodePlugin(props) {
       html5QrCode.start(
         { facingMode: "environment" },
         config,
-        props.qrCodeSuccessCallback
+        (decodedText) => {
+          props.qrCodeSuccessCallback(decodedText);
+          html5QrCode.stop();
+        }
       );
 
       setScan(html5QrCode);

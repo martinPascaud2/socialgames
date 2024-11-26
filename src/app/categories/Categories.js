@@ -1512,20 +1512,24 @@ export default function Categories({
   //     }, 1000);
   //   }, 1000);
 
-  const onNewScanResult = throttle(async (decodedText) => {
-    if (scanLocked) return;
-    let userLocation;
-    setScanLocked(true);
-    userLocation = await getLocation();
-    const { error: addFriendError } = await addFriend({
-      userLocation,
-      friendCode: decodedText,
-    });
-    if (addFriendError) setServerMessage(addFriendError);
-    setTimeout(() => {
-      setScanLocked(false);
-    }, 1000);
-  }, 1000);
+  const onNewScanResult = throttle(
+    async (decodedText) => {
+      if (scanLocked) return;
+      let userLocation;
+      setScanLocked(true);
+      userLocation = await getLocation();
+      const { error: addFriendError } = await addFriend({
+        userLocation,
+        friendCode: decodedText,
+      });
+      if (addFriendError) setServerMessage(addFriendError);
+      setTimeout(() => {
+        setScanLocked(false);
+      }, 1000);
+    },
+    1000,
+    { leading: true, trailing: false }
+  );
 
   const QrCodeScanner = useMemo(() => {
     if (setting !== "camera") return;
@@ -1685,7 +1689,7 @@ export default function Categories({
                         <QRCode
                           value={`id=${user.id};mail=${user.email};name=${user.name};{"latitude":"${location?.latitude}","longitude":"${location?.longitude}"}`}
                           onClick={(event) => event.stopPropagation()}
-                          className="mx-auto w-fit h-full gradient-border"
+                          className="mx-auto w-fit h-full"
                           style={{
                             background: "white",
                             boxShadow: "0px 0 5px 5px white",
