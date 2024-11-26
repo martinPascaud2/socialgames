@@ -557,7 +557,7 @@ const ResponseForm = ({
               if (response.length < 4) {
                 setMessage("Réponse trop courte");
                 return;
-              } else if (response.length > 30) {
+              } else if (response.length > 25) {
                 setMessage("Réponse trop longue");
                 return;
               }
