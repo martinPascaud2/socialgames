@@ -40,6 +40,7 @@ import {
   ChevronDoubleRightIcon,
   PauseIcon,
 } from "@heroicons/react/24/outline";
+import { IoCloudOfflineSharp } from "react-icons/io5";
 
 const ItemType = "COLUMN_ITEM";
 
@@ -225,7 +226,10 @@ const DraggableColumn = ({
                 >
                   <div className="flex outline outline-1 outline-black justify-center w-full">
                     <div className="text-center relative">
-                      {otherGamersNames[index]}
+                      <div className="flex items-center">
+                        {otherGamersNames[index]}
+                        {isDeleted && <IoCloudOfflineSharp className="ml-1" />}
+                      </div>
                       <div className="absolute top-0 translate-x-[100%] w-full flex">
                         {badResponses &&
                           Array.from(
@@ -480,8 +484,11 @@ const Revelator = ({
                               !isDeleted ? "bg-blue-300" : "bg-gray-300"
                             } from-gray-100 to-gray-100 via-transparent`}
                           >
-                            <div className="outline outline-1 outline-black">
+                            <div className="outline outline-1 outline-black flex justify-center w-full items-center h-full">
                               {gamer}
+                              {isDeleted && (
+                                <IoCloudOfflineSharp className="ml-1" />
+                              )}
                             </div>
                           </td>
 
