@@ -1229,7 +1229,7 @@ const Invitations = ({
 
   return (
     <div className="w-full h-full flex flex-col justify-start items-center relative py-6">
-      <div
+      {/* <div
         onClick={async (event) => {
           event.stopPropagation();
           setPublicRooms(await getPublicRooms());
@@ -1238,7 +1238,7 @@ const Invitations = ({
         className="flex justify-center items-center text-center text-purple-800 mb-2 absolute bottom-full"
       >
         <ArrowPathIcon className="ml-2 h-6 w-6" />
-      </div>
+      </div> */}
 
       {!invitations.length && !Object.keys(publicRooms).length && (
         <div className="text-center text-purple-800 absolute top-1/2 translate-y-[-50%]">
