@@ -981,7 +981,7 @@ const CentralZone = ({ children, onClick }) => {
 
 const Friends = ({ friendList, user, deleteFriend, updateLastCP }) => {
   return (
-    <div className="py-6">
+    <div className="h-full py-9">
       {friendList.map((friend) => (
         <div
           key={friend.friendId}
@@ -1064,7 +1064,7 @@ const Params = ({ updateParams, updateLastCP, signOut, fetchUser }) => {
     return null;
 
   return (
-    <div className="w-full h-full flex flex-col justify-center items-center relative">
+    <div className="w-full h-full flex flex-col items-center relative py-9">
       {[
         { param: "topBarSize", label: "Taille barre supérieure" },
         {
@@ -1131,7 +1131,7 @@ const Params = ({ updateParams, updateLastCP, signOut, fetchUser }) => {
         }}
         className="absolute bottom-[10%]"
       >
-        <ImExit className="w-8 h-8 text-purple-900" />
+        <ImExit className="ml-2 w-8 h-8 text-purple-900" />
       </div>
     </div>
   );
