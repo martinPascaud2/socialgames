@@ -16,15 +16,11 @@ body {
 }
 .octagon:before {
   content: "";
-  /* width: 100px; */
   width: 90vw;
   height: 0;
   position: absolute;
   top: 0;
   left: 0;
-  /* border-bottom: 29px solid red;
-  border-left: 29px solid #eee;
-  border-right: 29px solid #eee; */
   border-bottom: 26.5vw solid var(--dynamic-border-color);
   border-left: 26.5vw solid black;
   border-right: 26.5vw solid black;

@@ -737,7 +737,7 @@ const SettingsButtons = ({
     setting === "camera" || setting === "qrCode" ? "purple-900" : "purple-100";
   return (
     <>
-      <div className="absolute top-[0%] left-[24%] h-[20vw] w-[20vw] z-10 flex items-start justify-center mt-2">
+      <div className="absolute top-[0%] left-[24%] h-[20vw] w-[20vw] z-20 flex items-start justify-center mt-2">
         <div
           onClick={(event) => {
             setSetting("friends");
@@ -756,7 +756,7 @@ const SettingsButtons = ({
         </div>
       </div>
 
-      <div className="absolute top-[0%] right-[24%] h-[20vw] w-[20vw] z-10 flex items-start justify-center mt-2">
+      <div className="absolute top-[0%] right-[24%] h-[20vw] w-[20vw] z-20 flex items-start justify-center mt-2">
         <div
           onClick={(event) => {
             setSetting("params");
@@ -775,7 +775,7 @@ const SettingsButtons = ({
         </div>
       </div>
 
-      <div className="absolute bottom-[0%] left-[24%] h-[20vw] w-[20vw] z-10 flex items-end justify-center mb-2">
+      <div className="absolute bottom-[0%] left-[24%] h-[20vw] w-[20vw] z-20 flex items-end justify-center mb-2">
         <div
           onClick={async (event) => {
             setSetting("qrCode");
@@ -808,7 +808,7 @@ const SettingsButtons = ({
       </div>
 
       {setting == "" && (
-        <div className="absolute bottom-[10%] left-1/2 translate-x-[-50%] h-[22vw] w-[48vw] z-10 flex items-end justify-center mb-2">
+        <div className="absolute bottom-[10%] left-1/2 translate-x-[-50%] h-[22vw] w-[48vw] z-20 flex items-end justify-center mb-2">
           <div
             onClick={(event) => {
               event.stopPropagation();
@@ -829,7 +829,7 @@ const SettingsButtons = ({
         </div>
       )}
 
-      <div className="absolute bottom-[0%] right-[24%] h-[20vw] w-[20vw] z-10 flex items-end justify-center mb-2">
+      <div className="absolute bottom-[0%] right-[24%] h-[20vw] w-[20vw] z-20 flex items-end justify-center mb-2">
         <div
           onClick={(event) => {
             setSetting("camera");
@@ -851,7 +851,7 @@ const SettingsButtons = ({
 const OctagonBackground = ({ handleBgClick, discreet }) => {
   return (
     <>
-      <div
+      {/* <div
         className="absolute w-[26.3vw] h-[36vw] -skew-y-[45deg] translate-y-[-22.7vw] translate-x-[-1px] left-0 z-20 bg-black"
         onClick={handleBgClick}
       />
@@ -866,36 +866,54 @@ const OctagonBackground = ({ handleBgClick, discreet }) => {
       <div
         className="absolute w-[26.3vw] h-[36vw] -skew-y-[45deg] translate-y-[25.7vw] translate-x-[1px] right-0 bottom-0 z-20 bg-black"
         onClick={handleBgClick}
-      />
+      /> */}
 
       {!discreet && (
         <>
           <div
-            className="absolute w-[26.3vw] h-[6vw] translate-y-[26vw] translate-x-[0px] right-0 top-0 z-10 bg-transparent"
-            style={{ boxShadow: "9px 0px 7px -6px #6b21a8" }}
+            className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[-13.3vw] translate-x-[0vw] right-0 bottom-0 z-20 bg-transparent"
+            style={{ boxShadow: "13px 20px 15px -2px #3b0764" }}
           />
           <div
-            className="absolute w-[26.3vw] h-[36vw] -skew-y-[45deg] translate-y-[-13.4vw] translate-x-[-1px] right-0 bottom-0 z-10 bg-transparent"
-            style={{ boxShadow: "10px 12px 10px #6b21a8" }}
+            className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[5.6vw] translate-x-[-17.6vw] right-0 bottom-0 z-20 bg-transparent rotate-45"
+            style={{ boxShadow: "13px 20px 15px -2px #3b0764" }}
           />
           <div
-            className="absolute w-[26vw] h-[20vw] -skew-y-[45deg] translate-y-[2.6vw] translate-x-[-5.4vw] left-1/2 bottom-0 z-10 bg-transparent rotate-45"
-            style={{
-              boxShadow: "6px 12px 10px #6b21a8",
-            }}
+            className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[6.7vw] translate-x-[20vw] left-0 bottom-0 z-20 bg-transparent rotate-90"
+            style={{ boxShadow: "13px 20px 15px -2px #3b0764" }}
           />
           <div
-            className="absolute w-[24vw] h-[6vw] -skew-y-[45deg] translate-y-[-9vw] translate-x-[5.4vw] left-0 bottom-0 z-10 bg-transparent rotate-[-90deg]"
-            style={{ boxShadow: "-5px -10px 10px #6b21a8" }}
+            className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[39vw] translate-x-[1vw] left-0 top-0 z-20 bg-transparent rotate-[-45deg]"
+            style={{ boxShadow: "-13px -20px 15px -2px #3b0764" }}
           />
           <div
-            className="absolute w-[26.3vw] h-[7vw] translate-y-[-30vw] translate-x-[-1.2vw] left-0 bottom-0 z-10 bg-transparent rotate-[-45deg]"
-            style={{ boxShadow: "-11px 0px 7px -7px #6b21a8" }}
+            className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[13.3vw] translate-x-[0vw] left-0 top-0 z-20 bg-transparent rotate-[0deg]"
+            style={{ boxShadow: "-13px -20px 15px -2px #3b0764" }}
+          />
+          <div
+            className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[-5.6vw] translate-x-[17.7vw] left-0 top-0 z-20 bg-transparent rotate-[-135deg]"
+            style={{ boxShadow: "13px 20px 15px -2px #3b0764" }}
+          />
+          <div
+            className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[-6.5vw] translate-x-[43.6vw] left-0 top-0 z-20 bg-transparent rotate-[90deg]"
+            style={{ boxShadow: "-13px -20px 15px -2px #3b0764" }}
+          />
+          <div
+            className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[11vw] translate-x-[-1.2vw] right-0 top-0 z-20 bg-transparent rotate-[135deg]"
+            style={{ boxShadow: "-13px -20px 15px -2px #3b0764" }}
           />
         </>
       )}
 
       <div className="absolute top-1/2 translate-y-[-50%] bg-transparent w-[90vw] h-[90vw] z-10 flex items-center">
+        <div className="relative">
+          <div className="absolute w-[90.1vw] h-[90.1vw] bg-transparent translate-x-[0vw] translate-y-[-50%] z-0">
+            <div className="relative h-full w-full bg-transparent">
+              <div className="absolute w-full h-full bg-transparent border border-black"></div>
+            </div>
+          </div>
+        </div>
+
         <div className="relative w-full h-full">
           <div
             className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-10 h-[37vw]"
