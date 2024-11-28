@@ -819,23 +819,21 @@ const SettingsButtons = ({
         </div>
       </div>
 
-      {setting == "" && (
-        <div className="absolute bottom-[0vw] left-1/2 translate-x-[-50%] h-[0vw] w-[0vw] z-20 flex items-end justify-center mb-2">
-          <div
-            onClick={(event) => {
-              event.stopPropagation();
-              setServerMessage("");
-            }}
-            className="z-20 relative w-full h-full"
-          >
-            <div className="absolute bottom-0 flex left-1/2 translate-x-[-50%] items-center mb-0.5">
-              <IoMdArrowDropleft className="w-6 h-6 text-purple-900" />
-              <IoPersonAddOutline className="w-6 h-8 text-purple-900 pb-1 mr-0.5" />
-              <IoMdArrowDropright className="w-6 h-6 text-purple-900" />
-            </div>
+      <div className="absolute bottom-[0vw] left-1/2 translate-x-[-50%] h-[0vw] w-[0vw] z-20 flex items-end justify-center mb-2">
+        <div
+          onClick={(event) => {
+            event.stopPropagation();
+            setServerMessage("");
+          }}
+          className="z-20 relative w-full h-full"
+        >
+          <div className="absolute bottom-0 flex left-1/2 translate-x-[-50%] items-center mb-0.5">
+            <IoMdArrowDropleft className="w-6 h-6 text-purple-900" />
+            <IoPersonAddOutline className="w-6 h-8 text-purple-900 pb-1 mr-0.5" />
+            <IoMdArrowDropright className="w-6 h-6 text-purple-900" />
           </div>
         </div>
-      )}
+      </div>
     </>
   );
 };
@@ -1498,11 +1496,13 @@ export default function Categories({
       event.stopPropagation();
       toggledPrelobby && setToggledPrelobby(false);
       !toggledPrelobby && setToggledSettings(true);
-      toggledSettings && setToggledSettings(false);
-      setSetting("");
+      if (toggledSettings) {
+        if (setting === "") setToggledSettings(false);
+        else setSetting("");
+      }
       setServerMessage("");
     },
-    [toggledSettings, resetPermissions, toggledPrelobby]
+    [toggledSettings, resetPermissions, toggledPrelobby, setting]
   );
 
   const handleOctaClick = useCallback(
