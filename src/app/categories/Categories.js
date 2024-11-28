@@ -8,12 +8,7 @@ import classNames from "classnames";
 import QRCode from "react-qr-code";
 import Pusher from "pusher-js";
 
-import {
-  ArrowPathIcon,
-  ArrowDownLeftIcon,
-  ArrowDownRightIcon,
-  CameraIcon,
-} from "@heroicons/react/24/outline";
+import { ArrowPathIcon, CameraIcon } from "@heroicons/react/24/outline";
 
 import Html5QrcodePlugin from "@/components/Html5QrcodePlugin";
 import Modal from "@/components/Modal";
@@ -717,7 +712,8 @@ import { ImExit } from "react-icons/im";
 import { FaUserFriends, FaPlay } from "react-icons/fa";
 import { IoIosSettings } from "react-icons/io";
 import { LiaQrcodeSolid } from "react-icons/lia";
-import { IoPersonAdd } from "react-icons/io5";
+import { IoMdArrowDropleft, IoMdArrowDropright } from "react-icons/io";
+import { IoPersonAddOutline } from "react-icons/io5";
 import { GoTools } from "react-icons/go";
 import { FaRegFloppyDisk } from "react-icons/fa6";
 
@@ -749,7 +745,7 @@ const SettingsButtons = ({
           className="border-black z-10"
         >
           <FaUserFriends
-            className={`w-8 h-8 text-${
+            className={`w-10 h-10 text-${
               setting === "friends" ? "purple-900" : iconsColor
             }`}
           />
@@ -768,7 +764,7 @@ const SettingsButtons = ({
           className="border-black z-10"
         >
           <IoIosSettings
-            className={`w-8 h-8 text-${
+            className={`w-10 h-10 text-${
               setting === "params" ? "purple-900" : iconsColor
             }`}
           />
@@ -803,31 +799,9 @@ const SettingsButtons = ({
             }
           }}
         >
-          <LiaQrcodeSolid className={`w-8 h-8 text-${iconsColor}`} />
+          <LiaQrcodeSolid className={`w-10 h-10 text-${iconsColor}`} />
         </div>
       </div>
-
-      {setting == "" && (
-        <div className="absolute bottom-[10%] left-1/2 translate-x-[-50%] h-[22vw] w-[48vw] z-20 flex items-end justify-center mb-2">
-          <div
-            onClick={(event) => {
-              event.stopPropagation();
-              setServerMessage("");
-            }}
-            className="z-10 relative w-full h-full"
-          >
-            <div className="absolute top-0 left-1/2 translate-x-[-50%]">
-              <IoPersonAdd className="w-10 h-10 text-purple-900" />
-            </div>
-            <div className="absolute bottom-0 left-1/4">
-              <ArrowDownLeftIcon className="w-10 h-10 text-purple-900" />
-            </div>
-            <div className="absolute bottom-0 right-1/4">
-              <ArrowDownRightIcon className="w-10 h-10 text-purple-900" />
-            </div>
-          </div>
-        </div>
-      )}
 
       <div className="absolute bottom-[0%] right-[24%] h-[20vw] w-[20vw] z-20 flex items-end justify-center mb-2">
         <div
@@ -841,9 +815,27 @@ const SettingsButtons = ({
           }}
           className="border-black z-10"
         >
-          <CameraIcon className={`w-8 h-8 text-${iconsColor}`} />
+          <CameraIcon className={`w-10 h-10 text-${iconsColor}`} />
         </div>
       </div>
+
+      {setting == "" && (
+        <div className="absolute bottom-[0vw] left-1/2 translate-x-[-50%] h-[0vw] w-[0vw] z-20 flex items-end justify-center mb-2">
+          <div
+            onClick={(event) => {
+              event.stopPropagation();
+              setServerMessage("");
+            }}
+            className="z-20 relative w-full h-full"
+          >
+            <div className="absolute bottom-0 flex left-1/2 translate-x-[-50%] items-center mb-0.5">
+              <IoMdArrowDropleft className="w-6 h-6 text-purple-900" />
+              <IoPersonAddOutline className="w-6 h-8 text-purple-900 pb-1 mr-0.5" />
+              <IoMdArrowDropright className="w-6 h-6 text-purple-900" />
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
