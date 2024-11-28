@@ -1281,8 +1281,8 @@ const Invitations = ({
                 clipPath: "ellipse(closest-side farthest-side)",
               }}
             >
-              {invitation.userName} pour{" "}
-              {`${invitation.mode || gamesRefs[invitation.gameName].name}`}
+              {invitation.userName}
+              {/* pour{" "}{`${invitation.mode || gamesRefs[invitation.gameName].name}`} */}
             </div>
           </div>
         </div>
@@ -1324,101 +1324,6 @@ const Invitations = ({
       })}
     </div>
   );
-};
-
-const QrCodeScanner = ({
-  setting,
-  // onNewScanResult,
-  setStopScan,
-  setServerMessage,
-}) => {
-  // if (!scanning) return;
-
-  const onNewScanResult = () =>
-    throttle(async (decodedText) => {
-      console.log("coucou");
-      if (scanLocked) return;
-      let userLocation;
-      setScanLocked(true);
-      userLocation = await getLocation();
-      const { error: addFriendError } = await addFriend({
-        userLocation,
-        friendCode: decodedText,
-      });
-      if (addFriendError) setServerMessage(addFriendError);
-      setTimeout(() => {
-        setScanLocked(false);
-      }, 1000);
-    }, 1000);
-
-  const requestCameraAccess = useCallback(async () => {
-    // if (setting !== "camera") return;
-    try {
-      await navigator.mediaDevices.getUserMedia({ video: true });
-    } catch (error) {
-      console.error("Erreur lors de l'accès à la caméra :", error);
-      const errorInformations = getErrorInformations({
-        window,
-        fail: "camera_permission",
-      }).map((info, i) => (
-        <div key={i} className={`${i === 0 && "font-bold"}`}>
-          {i !== 0 && "=>"}
-          {info}
-        </div>
-      ));
-      setServerMessage(errorInformations);
-      // setScanning(false);
-    }
-  }, [setServerMessage]);
-
-  useEffect(() => {
-    // if (!requestCameraAccess) return;
-    const requestCameraAccess = async () => {
-      // if (setting !== "camera") return;
-      try {
-        await navigator.mediaDevices.getUserMedia({ video: true });
-      } catch (error) {
-        console.error("Erreur lors de l'accès à la caméra :", error);
-        const errorInformations = getErrorInformations({
-          window,
-          fail: "camera_permission",
-        }).map((info, i) => (
-          <div key={i} className={`${i === 0 && "font-bold"}`}>
-            {i !== 0 && "=>"}
-            {info}
-          </div>
-        ));
-        setServerMessage(errorInformations);
-        // setScanning(false);
-      }
-    };
-    requestCameraAccess();
-    // }, [requestCameraAccess]);
-  }, [setServerMessage]);
-
-  return (
-    <>
-      <div
-        onClick={(event) => event.stopPropagation()}
-        className="h-full w-full"
-      >
-        <Html5QrcodePlugin
-          // scanning={setting === "camera"}
-          fps={10}
-          qrCodeSuccessCallback={onNewScanResult}
-          setStopScan={setStopScan}
-        />
-        <div
-          onClick={(event) => {
-            event.stopPropagation();
-          }}
-        >
-          test
-        </div>
-      </div>
-    </>
-  );
-  // }, [onNewScanResult, scanning]);
 };
 
 export default function Categories({
