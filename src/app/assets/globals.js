@@ -81,7 +81,7 @@ export const subCategories = {
   ],
   categorie5: [
     {
-      name: "Connaissance des autres",
+      name: "Mentalisme",
       path: "socialknowledge",
       img: "/socialknowledge.png",
       description: "La description de connaissance des autres",
@@ -177,7 +177,7 @@ export const gamesRefs = {
     isGuestsAllowed: false,
   },
   socialknowledge: {
-    name: "Connaissance des autres",
+    name: "Mentalisme",
     categorie: "categorie5",
     limits: { min: 2, max: 10 },
     isGuestsAllowed: false,
