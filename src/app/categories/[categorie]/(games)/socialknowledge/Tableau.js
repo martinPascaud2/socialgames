@@ -371,34 +371,37 @@ const Revelator = ({
   ]);
 
   return (
-    <>
-      {isAdmin &&
-        (!isRevelationEnded ? (
-          <button
-            onClick={() => {
-              setIsRunning(!isRunning);
-              setIsReadyForNextGamer(false);
-            }}
-            className="border border-blue-400 bg-blue-100 p-1 text-blue-400 mt-2"
-          >
-            {!isRunning ? (
-              !isReadyForNextGamer ? (
-                <ChevronRightIcon className="w-8 h-8" />
+    <div className="w-full">
+      {isAdmin && (
+        <div className="w-full flex justify-center">
+          {!isRevelationEnded ? (
+            <button
+              onClick={() => {
+                setIsRunning(!isRunning);
+                setIsReadyForNextGamer(false);
+              }}
+              className="border border-blue-400 bg-blue-100 p-1 text-blue-400 mt-2"
+            >
+              {!isRunning ? (
+                !isReadyForNextGamer ? (
+                  <ChevronRightIcon className="w-8 h-8" />
+                ) : (
+                  <ChevronDoubleRightIcon className="w-8 h-8" />
+                )
               ) : (
-                <ChevronDoubleRightIcon className="w-8 h-8" />
-              )
-            ) : (
-              <PauseIcon className="w-8 h-8" />
-            )}
-          </button>
-        ) : (
-          <button
-            onClick={() => goResult({ roomId, roomToken, gameData })}
-            className="border border-blue-400 bg-blue-100 text-blue-400 p-2 mt-2"
-          >
-            Résultats
-          </button>
-        ))}
+                <PauseIcon className="w-8 h-8" />
+              )}
+            </button>
+          ) : (
+            <button
+              onClick={() => goResult({ roomId, roomToken, gameData })}
+              className="border border-blue-400 bg-blue-100 text-blue-400 p-2 mt-2"
+            >
+              Résultats
+            </button>
+          )}
+        </div>
+      )}
 
       <div className="flex w-full justify-around flex-wrap p-2 m-2">
         {allSortedResponses &&
@@ -512,7 +515,7 @@ const Revelator = ({
             })}
         </tbody>
       </table>
-    </>
+    </div>
   );
 };
 
@@ -535,7 +538,6 @@ const ResponseForm = ({
     roomToken,
     user,
   });
-  const innerHeight = useMemo(() => window.innerHeight, []);
   const [state, formAction] = useFormState(sendResponseWith, {});
   const refForm = useRef();
   const inputRef = useRef();
@@ -545,10 +547,7 @@ const ResponseForm = ({
   }, [writtenIndex]);
 
   return (
-    <div
-      className="flex flex-col justify-center items-center fixed"
-      style={{ top: innerHeight / 2 }}
-    >
+    <div className="flex flex-col justify-center items-center overflow-hidden fixed h-full">
       {writtenIndex < allThemes.length ? (
         <>
           <form
@@ -904,187 +903,189 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
   );
 
   return (
-    <div className="flex flex-col items-center justify-start p-2 h-full bg-gray-100 relative">
-      {phase === "waiting" && (
-        <>
-          <div className="absolute top-1/2 translate-y-[-50%]">
-            L&apos;admin va lancer la partie...
-          </div>
-          {isAdmin && (
-            <NextStep
-              onClick={() => startGame({ gameData, roomId, roomToken })}
-            >
-              Lancer
-            </NextStep>
-          )}
-        </>
-      )}
+    <>
+      <div className="flex flex-col items-center justify-start h-full p-2 bg-gray-100 relative overflow-auto">
+        {phase === "waiting" && (
+          <>
+            <div className="absolute top-1/2 translate-y-[-50%]">
+              L&apos;admin va lancer la partie...
+            </div>
+            {isAdmin && (
+              <NextStep
+                onClick={() => startGame({ gameData, roomId, roomToken })}
+              >
+                Lancer
+              </NextStep>
+            )}
+          </>
+        )}
 
-      {phase === "writing" && (
-        <>
-          <ResponseForm
-            writtenIndex={writtenIndex}
-            setWrittenIndex={setWrittenIndex}
+        {phase === "writing" && (
+          <div className="flex justify-center items-center h-full">
+            <ResponseForm
+              writtenIndex={writtenIndex}
+              setWrittenIndex={setWrittenIndex}
+              allThemes={allThemes}
+              response={response}
+              setResponse={setResponse}
+              message={message}
+              setMessage={setMessage}
+              gameData={gameData}
+              roomId={roomId}
+              roomToken={roomToken}
+              user={user}
+            />
+          </div>
+        )}
+
+        {phase === "sorting" && (
+          <div className="flex flex-col justify-start items-center h-[100vw] w-full">
+            <div className="flex items-center justify-center">
+              <div className="m-4 flex flex-col items-center">
+                <div className="font-semibold">Trouvez les réponses !</div>
+                <div className="font-normal">(glisser ou cliquer)</div>
+              </div>
+              <div>
+                {!hasClickedOnCountdown ? (
+                  <ClickableCountDown
+                    finishCountdownDate={finishCountdownDate}
+                    onTimeUp={onValidate}
+                    onClick={() => setHasClickedOnCountdown(true)}
+                    isValidationSaved={isValidationSaved}
+                  />
+                ) : (
+                  <button
+                    onClick={() => {
+                      setHasValidated(true);
+                      setHasClickedOnCountdown(false);
+                    }}
+                    className={`h-16 w-16 border ${
+                      !isValidationSaved
+                        ? "border-blue-300 bg-blue-100 text-blue-400"
+                        : "border-green-300 bg-green-100 text-green-400"
+                    } rounded-full`}
+                  >
+                    Valider
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <TableauTable />
+          </div>
+        )}
+
+        {phase === "no_chance" && (
+          <>
+            {!isWantNext ? (
+              <button
+                onClick={async () => {
+                  await seeRevelation({ user, gameData, roomId, roomToken });
+                  setIsWantNext(true);
+                }}
+                className="border border-blue-400 bg-blue-100 p-2 text-blue-400 my-2"
+              >
+                Suite
+              </button>
+            ) : (
+              <div className="my-2 p-2">En attente des autres joueurs...</div>
+            )}
+            <TableauTable allResponses={allResponses} phase={phase} />
+          </>
+        )}
+
+        {(phase === "secondChance_withoutCorrection" ||
+          phase === "secondChance_withCorrection") && (
+          <div className="flex flex-col justify-start items-center h-[100vw] w-full">
+            <div className="flex items-center justify-center">
+              <div className="m-4 flex flex-col items-center">
+                <div className="font-semibold">Seconde chance</div>
+                <div className="font-normal">(glisser ou cliquer)</div>
+              </div>
+
+              <div>
+                {!hasClickedOnCountdown ? (
+                  <ClickableCountDown
+                    finishCountdownDate={finishCountdownDate}
+                    onTimeUp={onValidate}
+                    onClick={() => setHasClickedOnCountdown(true)}
+                    isValidationSaved={isValidationSaved}
+                  />
+                ) : (
+                  <button
+                    onClick={() => {
+                      setHasValidated(true);
+                      setHasClickedOnCountdown(false);
+                    }}
+                    className={`h-16 w-16 border ${
+                      !isValidationSaved
+                        ? "border-blue-300 bg-blue-100 text-blue-400"
+                        : "border-green-300 bg-green-100 text-green-400"
+                    } rounded-full`}
+                  >
+                    Valider
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <TableauTable
+              allResponses={allResponses}
+              phase={phase}
+              firstTurnSorted={firstTurnSorted}
+            />
+          </div>
+        )}
+
+        {phase === "revelating" && (
+          <Revelator
+            allResponsesByUser={allResponsesByUser}
+            gamersNames={gamersNames}
+            deletedGamersNames={deletedGamersNames}
             allThemes={allThemes}
-            response={response}
-            setResponse={setResponse}
-            message={message}
-            setMessage={setMessage}
-            gameData={gameData}
             roomId={roomId}
             roomToken={roomToken}
-            user={user}
+            gameData={gameData}
+            isAdmin={isAdmin}
           />
-        </>
-      )}
+        )}
 
-      {phase === "sorting" && (
-        <div className="flex flex-col justify-start items-center h-[100vw] w-full">
-          <div className="flex items-center justify-center">
-            <div className="m-4 flex flex-col items-center">
-              <div className="font-semibold">Trouvez les réponses !</div>
-              <div className="font-normal">(glisser ou cliquer)</div>
-            </div>
-            <div>
-              {!hasClickedOnCountdown ? (
-                <ClickableCountDown
-                  finishCountdownDate={finishCountdownDate}
-                  onTimeUp={onValidate}
-                  onClick={() => setHasClickedOnCountdown(true)}
-                  isValidationSaved={isValidationSaved}
-                />
-              ) : (
-                <button
-                  onClick={() => {
-                    setHasValidated(true);
-                    setHasClickedOnCountdown(false);
-                  }}
-                  className={`h-16 w-16 border ${
-                    !isValidationSaved
-                      ? "border-blue-300 bg-blue-100 text-blue-400"
-                      : "border-green-300 bg-green-100 text-green-400"
-                  } rounded-full`}
-                >
-                  Valider
-                </button>
-              )}
-            </div>
+        {phase === "results" && (
+          <div className="h-full flex flex-col justify-center">
+            <div className="font-bold m-2 text-lg text-center">Résultats</div>
+            <table>
+              <tbody>
+                {Object.entries(gameData.results)
+                  .sort(([, scoreA], [, scoreB]) => scoreB - scoreA)
+                  .map(([name, score], i) => {
+                    const isDeleted = deletedGamersNames.some(
+                      (deleted) => deleted === name
+                    );
+                    return (
+                      <tr
+                        key={i}
+                        className={`gap-8 my-2 ${
+                          !isDeleted ? "text-black" : "text-gray-300"
+                        }`}
+                      >
+                        <td className="p-4">{i + 1}</td>
+                        <td className="p-4 text-center">{name}</td>
+                        {gameData.firstTurnResults && (
+                          <td className="p-4">
+                            {"("}
+                            {gameData.firstTurnResults[name]}
+                            {")"}
+                          </td>
+                        )}
+                        <td className="p-4 font-bold">{score}</td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
           </div>
-
-          <TableauTable />
-        </div>
-      )}
-
-      {phase === "no_chance" && (
-        <>
-          {!isWantNext ? (
-            <button
-              onClick={async () => {
-                await seeRevelation({ user, gameData, roomId, roomToken });
-                setIsWantNext(true);
-              }}
-              className="border border-blue-400 bg-blue-100 p-2 text-blue-400 my-2"
-            >
-              Suite
-            </button>
-          ) : (
-            <div className="my-2 p-2">En attente des autres joueurs...</div>
-          )}
-          <TableauTable allResponses={allResponses} phase={phase} />
-        </>
-      )}
-
-      {(phase === "secondChance_withoutCorrection" ||
-        phase === "secondChance_withCorrection") && (
-        <div className="flex flex-col justify-start items-center h-[100vw] w-full">
-          <div className="flex items-center justify-center">
-            <div className="m-4 flex flex-col items-center">
-              <div className="font-semibold">Seconde chance</div>
-              <div className="font-normal">(glisser ou cliquer)</div>
-            </div>
-
-            <div>
-              {!hasClickedOnCountdown ? (
-                <ClickableCountDown
-                  finishCountdownDate={finishCountdownDate}
-                  onTimeUp={onValidate}
-                  onClick={() => setHasClickedOnCountdown(true)}
-                  isValidationSaved={isValidationSaved}
-                />
-              ) : (
-                <button
-                  onClick={() => {
-                    setHasValidated(true);
-                    setHasClickedOnCountdown(false);
-                  }}
-                  className={`h-16 w-16 border ${
-                    !isValidationSaved
-                      ? "border-blue-300 bg-blue-100 text-blue-400"
-                      : "border-green-300 bg-green-100 text-green-400"
-                  } rounded-full`}
-                >
-                  Valider
-                </button>
-              )}
-            </div>
-          </div>
-
-          <TableauTable
-            allResponses={allResponses}
-            phase={phase}
-            firstTurnSorted={firstTurnSorted}
-          />
-        </div>
-      )}
-
-      {phase === "revelating" && (
-        <Revelator
-          allResponsesByUser={allResponsesByUser}
-          gamersNames={gamersNames}
-          deletedGamersNames={deletedGamersNames}
-          allThemes={allThemes}
-          roomId={roomId}
-          roomToken={roomToken}
-          gameData={gameData}
-          isAdmin={isAdmin}
-        />
-      )}
-
-      {phase === "results" && (
-        <div className="h-full flex flex-col justify-center">
-          <div className="font-bold m-2 text-lg text-center">Résultats</div>
-          <table>
-            <tbody>
-              {Object.entries(gameData.results)
-                .sort(([, scoreA], [, scoreB]) => scoreB - scoreA)
-                .map(([name, score], i) => {
-                  const isDeleted = deletedGamersNames.some(
-                    (deleted) => deleted === name
-                  );
-                  return (
-                    <tr
-                      key={i}
-                      className={`gap-8 my-2 ${
-                        !isDeleted ? "text-black" : "text-gray-300"
-                      }`}
-                    >
-                      <td className="p-4">{i + 1}</td>
-                      <td className="p-4 text-center">{name}</td>
-                      {gameData.firstTurnResults && (
-                        <td className="p-4">
-                          {"("}
-                          {gameData.firstTurnResults[name]}
-                          {")"}
-                        </td>
-                      )}
-                      <td className="p-4 font-bold">{score}</td>
-                    </tr>
-                  );
-                })}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 }

@@ -43,6 +43,14 @@ body {
 }
 /*----------disabling pull-to-refresh----------*/
 
+/*----------disabling text-selection----------*/
 div {
   user-select: none;
 }
+/*----------disabling text-selection----------*/
+
+/*----------disabling scroll----------*/
+body {
+  overflow: hidden;
+}
+/*----------disabling scroll----------*/
