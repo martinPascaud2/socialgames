@@ -1,8 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState, useRef, useMemo } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import React from "react";
 import { useFormState } from "react-dom";
+import Image from "next/image";
 
 import shuffleArray from "@/utils/shuffleArray";
 import getAreSimilar from "./getAreSimilar";
@@ -41,6 +42,9 @@ import {
   PauseIcon,
 } from "@heroicons/react/24/outline";
 import { IoCloudOfflineSharp } from "react-icons/io5";
+import Gold from "/public/gold.png";
+import Silver from "/public/silver.png";
+import Bronze from "/public/bronze.png";
 
 const ItemType = "COLUMN_ITEM";
 
@@ -1068,7 +1072,44 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
                           !isDeleted ? "text-black" : "text-gray-300"
                         }`}
                       >
-                        <td className="p-4">{i + 1}</td>
+                        <td className="p-4">
+                          {(() => {
+                            let placeDisplay;
+                            let displayImage = true;
+                            switch (i) {
+                              case 0:
+                                placeDisplay = Gold;
+                                break;
+                              case 1:
+                                placeDisplay = Silver;
+                                break;
+                              case 2:
+                                placeDisplay = Bronze;
+                                break;
+                              default:
+                                placeDisplay = `${i + 1}e`;
+                                displayImage = false;
+                            }
+                            return (
+                              <>
+                                {displayImage ? (
+                                  <div className="w-8 h-8">
+                                    <Image
+                                      alt="place"
+                                      src={placeDisplay}
+                                      width={500}
+                                      height={500}
+                                    />
+                                  </div>
+                                ) : (
+                                  <div className="text-center text-xl">
+                                    {placeDisplay}
+                                  </div>
+                                )}
+                              </>
+                            );
+                          })()}
+                        </td>
                         <td className="p-4 text-center">{name}</td>
                         {gameData.firstTurnResults && (
                           <td className="p-4">
