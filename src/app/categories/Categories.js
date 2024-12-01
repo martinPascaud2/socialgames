@@ -239,7 +239,7 @@ import getUser from "@/utils/getUser";
 //       }
 //     });
 
-//     updateLastCP({ userId: user.id }); //no await
+//     updateLastCP({ userId: user.id }); // no await
 
 //     return () => {
 //       pusher.unsubscribe(`user-${user.email}`);
@@ -379,7 +379,7 @@ import getUser from "@/utils/getUser";
 //                     userId: user.id,
 //                     friendId: friend.friendId,
 //                   });
-//                   updateLastCP({ userId: user.id }); //no await
+//                   updateLastCP({ userId: user.id }); // no await
 //                 }}
 //               >
 //                 {friend.customName}
@@ -415,7 +415,7 @@ import getUser from "@/utils/getUser";
 //             <button
 //               onClick={() => {
 //                 resetPermissions();
-//                 updateLastCP({ userId: user.id }); //no await
+//                 updateLastCP({ userId: user.id }); // no await
 //                 setShowParams(true);
 //                 setShowQrCode(false);
 //                 setScanning(false);
@@ -482,7 +482,7 @@ import getUser from "@/utils/getUser";
 //                 <div
 //                   onClick={async () => {
 //                     setPublicRooms(await getPublicRooms());
-//                     updateLastCP({ userId: user.id }); //no await
+//                     updateLastCP({ userId: user.id }); // no await
 //                   }}
 //                   className="flex justify-center items-center border text-center text-slate-300"
 //                 >
@@ -551,7 +551,7 @@ import getUser from "@/utils/getUser";
 //               <button
 //                 onClick={async () => {
 //                   resetPermissions();
-//                   updateLastCP({ userId: user.id }); //no await
+//                   updateLastCP({ userId: user.id }); // no await
 //                   setShowParams(false);
 //                   setShowQrCode(false);
 //                   setScanning(false);
@@ -583,7 +583,7 @@ import getUser from "@/utils/getUser";
 //                 })}
 //                 onClick={async () => {
 //                   resetPermissions();
-//                   updateLastCP({ userId: user.id }); //no await
+//                   updateLastCP({ userId: user.id }); // no await
 //                   try {
 //                     setLocation(await getLocation());
 //                     setServerMessage("QR code généré !");
@@ -612,7 +612,7 @@ import getUser from "@/utils/getUser";
 //               <button
 //                 onClick={() => {
 //                   resetPermissions();
-//                   updateLastCP({ userId: user.id }); //no await
+//                   updateLastCP({ userId: user.id }); // no await
 //                   setShowParams(false);
 //                   setShowQrCode(false);
 //                   setScanning(!scanning);
@@ -716,6 +716,10 @@ import { GoTools } from "react-icons/go";
 import { FaRegFloppyDisk } from "react-icons/fa6";
 import { IoGameControllerOutline } from "react-icons/io5";
 import { MdOutlineVideogameAsset } from "react-icons/md";
+import { IoKeyOutline } from "react-icons/io5";
+
+import { updatePassword } from "@/signin/actions";
+import { useFormState } from "react-dom";
 
 import Spinner from "@/components/spinners/Spinner";
 
@@ -728,6 +732,7 @@ const SettingsButtons = ({
   resetPermissions,
   setScanning,
   setting,
+  setParam,
 }) => {
   const iconsColor =
     setting === "camera" || setting === "qrCode" ? "purple-900" : "purple-100";
@@ -740,7 +745,8 @@ const SettingsButtons = ({
             // setScanning(false);
             resetPermissions();
             event.stopPropagation();
-            updateLastCP({ userId: user.id }); //no await
+            updateLastCP({ userId: user.id }); // no await
+            setParam("bars");
             setServerMessage("");
           }}
           className="border-black z-10"
@@ -757,11 +763,12 @@ const SettingsButtons = ({
         <div
           onClick={(event) => {
             setSetting("params");
+            setParam("bars");
             setServerMessage("");
             // setScanning(false);
             resetPermissions();
             event.stopPropagation();
-            updateLastCP({ userId: user.id }); //no await
+            updateLastCP({ userId: user.id }); // no await
           }}
           className="border-black z-10"
         >
@@ -780,7 +787,7 @@ const SettingsButtons = ({
             // setScanning(false);
             resetPermissions();
             event.stopPropagation();
-            updateLastCP({ userId: user.id }); //no await
+            updateLastCP({ userId: user.id }); // no await
 
             try {
               setLocation(await getLocation());
@@ -797,6 +804,7 @@ const SettingsButtons = ({
                 </div>
               ));
               setServerMessage(errorInformations);
+              setParam("bars");
               setLocation();
             }
           }}
@@ -813,8 +821,9 @@ const SettingsButtons = ({
             setScanning(true);
             // resetPermissions();
             event.stopPropagation();
-            updateLastCP({ userId: user.id }); //no await
+            updateLastCP({ userId: user.id }); // no await
             setServerMessage("");
+            setParam("bars");
           }}
           className="border-black z-10"
         >
@@ -1018,7 +1027,7 @@ const Friends = ({ friendList, user, deleteFriend, updateLastCP }) => {
                 userId: user.id,
                 friendId: friend.friendId,
               });
-              updateLastCP({ userId: user.id }); //no await
+              updateLastCP({ userId: user.id }); // no await
             }}
             className="absolute left-full top-1"
           >
@@ -1030,8 +1039,70 @@ const Friends = ({ friendList, user, deleteFriend, updateLastCP }) => {
   );
 };
 
-// const Params = ({ user, updateParams, updateLastCP, signOut, fetchUser }) => {
-const Params = ({ updateParams, updateLastCP, signOut, fetchUser }) => {
+const PasswordForm = ({ user }) => {
+  const updateWithUserId = updatePassword.bind(null, user.id);
+  const [state, formAction] = useFormState(updateWithUserId, {
+    status: 200,
+    message: null,
+  });
+
+  return (
+    <div className="w-full h-full flex justify-center">
+      <form
+        action={(formData) => formAction(formData)}
+        className="flex flex-col items-center"
+      >
+        <label className="text-purple-900">Ancien mot de passe</label>
+        <input
+          type="password"
+          name="oldPassword"
+          id="oldPassword"
+          className="text-purple-900 focus:outline-none"
+          style={{ backgroundColor: "#f3e8ff" }}
+          autoComplete=""
+        />
+
+        <label className="text-purple-900">Nouveau mot de passe</label>
+        <input
+          type="password"
+          name="newPassword"
+          id="newPassword"
+          className="text-purple-900 focus:outline-none"
+          style={{ backgroundColor: "#f3e8ff" }}
+          autoComplete=""
+        />
+
+        <label className="text-purple-900">Confirmer</label>
+        <input
+          type="password"
+          name="confirmedPassword"
+          id="confirmedPassword"
+          className="text-purple-900 focus:outline-none"
+          style={{ backgroundColor: "#f3e8ff" }}
+          autoComplete=""
+        />
+
+        <button
+          type="submit"
+          className="border border-purple-200 bg-purple-400 text-purple-900 mt-2 p-1"
+        >
+          Valider
+        </button>
+
+        <div style={{ color: "#581c87" }}>{state.message}</div>
+      </form>
+    </div>
+  );
+};
+
+const Params = ({
+  updateParams,
+  updateLastCP,
+  signOut,
+  fetchUser,
+  param,
+  setParam,
+}) => {
   const possibleBarValues = [4, 6, 8, 12, 14, 16, 18, 20];
   const [barValues, setBarValues] = useState();
   const [user, setUser] = useState(null);
@@ -1074,87 +1145,96 @@ const Params = ({ updateParams, updateLastCP, signOut, fetchUser }) => {
     update();
   }, [barValues, user, updateParams]);
 
-  console.log("barValues", barValues);
-  console.log("user", user);
-
-  if (!barValues)
-    // return (
-    //   <div className="h-full w-full flex justify-center items-center">
-    //     <Spinner />
-    //   </div>
-    // );
-    return null;
+  if (!barValues) return null;
 
   return (
     <div className="w-full h-full flex flex-col items-center relative py-9">
-      {[
-        { param: "topBarSize", label: "Taille barre supérieure" },
-        {
-          param: "bottomBarSize",
-          label: "Taille barre inférieure",
-        },
-      ].map((barParam, i) => (
-        <div
-          key={i}
-          onClick={(event) => event.stopPropagation()}
-          className="relative border border-purple-200 bg-purple-400 p-1 my-1 w-full text-center flex items-center text-purple-900"
-        >
-          {barValues && barValues[barParam.param] !== possibleBarValues[0] && (
-            <div className="absolute right-full mx-1">
-              <ChevronLeftIcon
-                onClick={() => {
-                  const index = possibleBarValues?.indexOf(
-                    (barValues && barValues[barParam.param]) ||
-                      possibleBarValues[0]
-                  );
-                  const newIndex = index === 0 ? index : index - 1;
-                  setBarValues((prevValues) => ({
-                    ...prevValues,
-                    [barParam.param]: possibleBarValues[newIndex],
-                  }));
-                }}
-                className="w-8 h-8"
-              />
-            </div>
-          )}
-          <div className="text-center w-full">
-            {barParam.label} : {barValues && barValues[barParam.param]}
-          </div>
-          {barValues &&
-            barValues[barParam.param] !==
-              possibleBarValues[possibleBarValues.length - 1] && (
-              <div
-                className="absolute left-full mx-1"
-                onClick={() => {
-                  const index = possibleBarValues?.indexOf(
-                    (barValues && barValues[barParam.param]) ||
-                      possibleBarValues[0]
-                  );
-                  const newIndex =
-                    index >= possibleBarValues.length - 1 ? index : index + 1;
-                  setBarValues((prevValues) => ({
-                    ...prevValues,
-                    [barParam.param]: possibleBarValues[newIndex],
-                  }));
-                }}
-              >
-                <ChevronRightIcon className="w-8 h-8" />
+      {param === "bars" && (
+        <>
+          {[
+            { param: "topBarSize", label: "Taille barre supérieure" },
+            {
+              param: "bottomBarSize",
+              label: "Taille barre inférieure",
+            },
+          ].map((barParam, i) => (
+            <div
+              key={i}
+              onClick={(event) => event.stopPropagation()}
+              className="relative border border-purple-200 bg-purple-400 p-1 my-1 w-full text-center flex items-center text-purple-900"
+            >
+              {barValues &&
+                barValues[barParam.param] !== possibleBarValues[0] && (
+                  <div className="absolute right-full mx-1">
+                    <ChevronLeftIcon
+                      onClick={() => {
+                        const index = possibleBarValues?.indexOf(
+                          (barValues && barValues[barParam.param]) ||
+                            possibleBarValues[0]
+                        );
+                        const newIndex = index === 0 ? index : index - 1;
+                        setBarValues((prevValues) => ({
+                          ...prevValues,
+                          [barParam.param]: possibleBarValues[newIndex],
+                        }));
+                      }}
+                      className="w-8 h-8"
+                    />
+                  </div>
+                )}
+              <div className="text-center w-full">
+                {barParam.label} : {barValues && barValues[barParam.param]}
               </div>
-            )}
-        </div>
-      ))}
+              {barValues &&
+                barValues[barParam.param] !==
+                  possibleBarValues[possibleBarValues.length - 1] && (
+                  <div
+                    className="absolute left-full mx-1"
+                    onClick={() => {
+                      const index = possibleBarValues?.indexOf(
+                        (barValues && barValues[barParam.param]) ||
+                          possibleBarValues[0]
+                      );
+                      const newIndex =
+                        index >= possibleBarValues.length - 1
+                          ? index
+                          : index + 1;
+                      setBarValues((prevValues) => ({
+                        ...prevValues,
+                        [barParam.param]: possibleBarValues[newIndex],
+                      }));
+                    }}
+                  >
+                    <ChevronRightIcon className="w-8 h-8" />
+                  </div>
+                )}
+            </div>
+          ))}
+        </>
+      )}
 
-      <div
-        onClick={async (event) => {
-          event.stopPropagation();
-          await updateLastCP({ userId: user.id, out: true });
-          await signOut();
-          window.location.reload();
-        }}
-        className="absolute bottom-[10%]"
-      >
-        <ImExit className="ml-2 w-8 h-8 text-purple-900" />
+      <div className="w-full flex justify-center">
+        {param !== "password" && (
+          <div onClick={() => setParam("password")}>
+            <IoKeyOutline className="w-8 h-8 mt-2" />
+          </div>
+        )}
+        {param === "password" && <PasswordForm user={user} />}
       </div>
+
+      {param === "bars" && (
+        <div
+          onClick={async (event) => {
+            event.stopPropagation();
+            await updateLastCP({ userId: user.id, out: true });
+            await signOut();
+            window.location.reload();
+          }}
+          className="absolute bottom-[10%]"
+        >
+          <ImExit className="ml-2 w-8 h-8 text-purple-900" />
+        </div>
+      )}
     </div>
   );
 };
@@ -1218,7 +1298,7 @@ const Invitations = ({
   //     }
   //   });
 
-  //   updateLastCP({ userId: user.id }); //no await
+  //   updateLastCP({ userId: user.id }); // no await
 
   //   return () => {
   //     pusher.unsubscribe(`user-${user.email}`);
@@ -1253,7 +1333,7 @@ const Invitations = ({
         onClick={async (event) => {
           event.stopPropagation();
           setPublicRooms(await getPublicRooms());
-          updateLastCP({ userId: user.id }); //no await
+          updateLastCP({ userId: user.id }); // no await
         }}
         className="flex justify-center items-center text-center text-purple-800 mb-2 absolute bottom-full"
       >
@@ -1359,6 +1439,7 @@ export default function Categories({
   const [toggledPrelobby, setToggledPrelobby] = useState(
     searchParams.get("prelobby") === "true"
   );
+  const [param, setParam] = useState("bars");
 
   const [location, setLocation] = useState(null);
   const [scanLocked, setScanLocked] = useState(false);
@@ -1424,7 +1505,7 @@ export default function Categories({
       }
     });
 
-    updateLastCP({ userId: user.id }); //no await
+    updateLastCP({ userId: user.id }); // no await
 
     return () => {
       pusher.unsubscribe(`user-${user.email}`);
@@ -1524,11 +1605,13 @@ export default function Categories({
       //   else setSetting("");
       // }
       setToggledPrelobby(false);
-      setToggledSettings(false);
-      setSetting("");
+      if (param === "bars") {
+        setToggledSettings(false);
+        setSetting("");
+      } else setParam("bars");
       setServerMessage("");
     },
-    [toggledSettings, resetPermissions, toggledPrelobby, setting]
+    [toggledSettings, resetPermissions, toggledPrelobby, setting, param]
   );
 
   const handleOctaClick = useCallback(
@@ -1552,10 +1635,6 @@ export default function Categories({
   }, [getCurrentGame, router]);
 
   const showInvitations = !toggledSettings && !toggledPrelobby;
-
-  console.log("friendList", friendList);
-  console.log("stopScan", stopScan);
-  console.log("showInvitations", showInvitations);
 
   useEffect(() => {
     const dynamicColor =
@@ -1597,6 +1676,7 @@ export default function Categories({
                   resetPermissions={resetPermissions}
                   setScanning={setScanning}
                   setting={setting}
+                  setParam={setParam}
                 />
 
                 {setting === "friends" && (
@@ -1618,6 +1698,8 @@ export default function Categories({
                       updateLastCP={updateLastCP}
                       signOut={signOut}
                       fetchUser={fetchUser}
+                      param={param}
+                      setParam={setParam}
                     />
                   </CentralZone>
                 )}
@@ -1738,7 +1820,7 @@ export default function Categories({
                 isOpen={true}
                 onClose={() => {
                   setCurrentGame();
-                  cancelBack({ userId: user.id }); //no await
+                  cancelBack({ userId: user.id }); // no await
                   return;
                 }}
               >
