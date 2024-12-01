@@ -16,7 +16,7 @@ export default function DeleteGroup({ roomToken, roomId }) {
       onClick={async () => {
         await deleteGroup({ groupToken: roomToken });
         await deleteRoom({ roomId });
-        window.location.href = "/categories?control=true";
+        window.location.href = "/categories";
       }}
       className="border border-blue-300 bg-blue-100"
       style={{ bottom: `${userParams?.bottomBarSize / 4 || 2}rem` }}

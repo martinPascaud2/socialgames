@@ -43,7 +43,7 @@ export async function connect(prevState, formData) {
 
   if (isValidPassword) {
     await setCookieToken("User", mail);
-    redirect(`/categories?control=true`);
+    redirect(`/categories`);
   } else {
     return {
       status: 401,

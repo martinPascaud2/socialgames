@@ -765,7 +765,7 @@ export default function Room({
       try {
         //tricky: router before
         localStorage.removeItem("reservedName");
-        router.push("/categories?control=true");
+        router.push("/categories");
         !user.multiGuest && (await cancelBack({ userId: user.id }));
       } catch (error) {
         console.error("Erreur pendant la redirection : ", error);
@@ -844,7 +844,7 @@ export default function Room({
         <button
           onClick={async () => {
             !user.multiGuest && (await deleteInvs());
-            router.push("/categories?control=true");
+            router.push("/categories");
           }}
           className="border border-blue-300 bg-blue-100"
         >

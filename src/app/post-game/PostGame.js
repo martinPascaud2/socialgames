@@ -136,7 +136,7 @@ export default function PostGame({ user, triaction_PG }) {
         </div>
 
         <Link
-          href={"/categories/?control=true"}
+          href={"/categories/?prelobby=true"}
           className="border border-blue-300 bg-blue-100 p-1"
         >
           Retour

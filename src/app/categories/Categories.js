@@ -1352,12 +1352,13 @@ export default function Categories({
   const { isSupported, isVisible, released, request, release } = useWake();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const urlControl = searchParams.get("control") === "true";
   const isGroup = searchParams.get("group") === "true";
 
   const [toggledSettings, setToggledSettings] = useState(false);
   const [setting, setSetting] = useState("");
-  const [toggledPrelobby, setToggledPrelobby] = useState(true);
+  const [toggledPrelobby, setToggledPrelobby] = useState(
+    searchParams.get("prelobby") === "true"
+  );
 
   const [location, setLocation] = useState(null);
   const [scanLocked, setScanLocked] = useState(false);
@@ -1555,7 +1556,6 @@ export default function Categories({
   console.log("friendList", friendList);
   console.log("stopScan", stopScan);
   console.log("showInvitations", showInvitations);
-  console.log("urlControl", urlControl);
 
   useEffect(() => {
     const dynamicColor =

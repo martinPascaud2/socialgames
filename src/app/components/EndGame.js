@@ -64,7 +64,7 @@ export default function EndGame({ gameData, user, isFirst = false }) {
                 });
             }
 
-            window.location.href = "/categories?control=true";
+            window.location.href = "/categories";
           }}
           className="border border-blue-300 bg-blue-100"
         >
