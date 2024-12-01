@@ -700,9 +700,6 @@ import getUser from "@/utils/getUser";
 //   );
 // }
 
-// const SettingsButtons = ({ setSetting, setScanning, resetPermissions }) => {
-// const SettingsButtons = ({ setSetting, setScanning }) => {
-
 import {
   XMarkIcon,
   ChevronLeftIcon,
@@ -714,8 +711,11 @@ import { IoIosSettings } from "react-icons/io";
 import { LiaQrcodeSolid } from "react-icons/lia";
 import { IoMdArrowDropleft, IoMdArrowDropright } from "react-icons/io";
 import { IoPersonAddOutline } from "react-icons/io5";
+import { IoMan } from "react-icons/io5";
 import { GoTools } from "react-icons/go";
 import { FaRegFloppyDisk } from "react-icons/fa6";
+import { IoGameControllerOutline } from "react-icons/io5";
+import { MdOutlineVideogameAsset } from "react-icons/md";
 
 import Spinner from "@/components/spinners/Spinner";
 
@@ -740,6 +740,7 @@ const SettingsButtons = ({
             // setScanning(false);
             resetPermissions();
             event.stopPropagation();
+            updateLastCP({ userId: user.id }); //no await
             setServerMessage("");
           }}
           className="border-black z-10"
@@ -760,6 +761,7 @@ const SettingsButtons = ({
             // setScanning(false);
             resetPermissions();
             event.stopPropagation();
+            updateLastCP({ userId: user.id }); //no await
           }}
           className="border-black z-10"
         >
@@ -811,6 +813,7 @@ const SettingsButtons = ({
             setScanning(true);
             // resetPermissions();
             event.stopPropagation();
+            updateLastCP({ userId: user.id }); //no await
             setServerMessage("");
           }}
           className="border-black z-10"
@@ -838,10 +841,29 @@ const SettingsButtons = ({
   );
 };
 
+const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
+  return (
+    <>
+      <div
+        onClick={() => setToggledSettings(true)}
+        className="absolute top-[0%] left-[24%] h-[20vw] w-[20vw] z-20 flex items-start justify-center mt-2"
+      >
+        <IoMan className="w-12 h-10" />
+      </div>
+      <div
+        onClick={() => setToggledPrelobby(true)}
+        className="absolute top-[0%] right-[24%] h-[20vw] w-[20vw] z-20 flex items-start justify-center mt-2"
+      >
+        <MdOutlineVideogameAsset className="w-11 h-20 translate-y-[-4.8vw] rotate-90" />
+      </div>
+    </>
+  );
+};
+
 const OctagonBackground = ({ handleBgClick, discreet }) => {
   return (
     <>
-      {/* <div
+      <div
         className="absolute w-[26.3vw] h-[36vw] -skew-y-[45deg] translate-y-[-22.7vw] translate-x-[-1px] left-0 z-20 bg-black"
         onClick={handleBgClick}
       />
@@ -856,7 +878,7 @@ const OctagonBackground = ({ handleBgClick, discreet }) => {
       <div
         className="absolute w-[26.3vw] h-[36vw] -skew-y-[45deg] translate-y-[25.7vw] translate-x-[1px] right-0 bottom-0 z-20 bg-black"
         onClick={handleBgClick}
-      /> */}
+      />
 
       {!discreet && (
         <>
@@ -906,55 +928,55 @@ const OctagonBackground = ({ handleBgClick, discreet }) => {
 
         <div className="relative w-full h-full">
           <div
-            className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-10 h-[37vw]"
+            className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-0 h-[37vw]"
             style={{
               boxShadow: "inset 9px 0px 5px -6px #581c87",
             }}
           />
           <div
-            className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-10 h-[37vw] rotate-45"
+            className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-0 h-[37vw] rotate-45"
             style={{
               boxShadow: "inset 9px 0px 5px -6px #581c87",
             }}
           />
           <div
-            className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-10 h-[37vw] rotate-90"
+            className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-0 h-[37vw] rotate-90"
             style={{
               boxShadow: "inset 9px 0px 5px -6px #581c87",
             }}
           />
           <div
-            className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-10 h-[37vw] rotate-[-45deg]"
+            className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-0 h-[37vw] rotate-[-45deg]"
             style={{
               boxShadow: "inset 9px 0px 5px -6px #581c87",
             }}
           />
           <div
-            className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-10 h-[37vw] rotate-[-45deg]"
+            className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-0 h-[37vw] rotate-[-45deg]"
             style={{
               boxShadow: "inset 9px 0px 5px -6px #581c87",
             }}
           />
           <div
-            className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-10 h-[37vw] rotate-[-90deg]"
+            className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-0 h-[37vw] rotate-[-90deg]"
             style={{
               boxShadow: "inset 9px 0px 5px -6px #581c87",
             }}
           />
           <div
-            className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-10 h-[37vw]"
+            className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-0 h-[37vw]"
             style={{
               boxShadow: "inset -9px 0px 5px -6px #581c87",
             }}
           />
           <div
-            className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-10 h-[37vw] rotate-45"
+            className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-0 h-[37vw] rotate-45"
             style={{
               boxShadow: "inset -9px 0px 5px -6px #581c87",
             }}
           />
           <div
-            className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-10 h-[37vw] rotate-[-45deg]"
+            className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-0 h-[37vw] rotate-[-45deg]"
             style={{
               boxShadow: "inset -9px 0px 5px -6px #581c87",
             }}
@@ -972,7 +994,7 @@ const CentralZone = ({ children, onClick }) => {
         event.stopPropagation();
         onClick && onClick(event);
       }}
-      className="central-zone absolute top-[18.2%] left-[11.4%] h-[57.1vw] w-[69.3vw] z-10"
+      className="central-zone absolute top-[18.2%] left-[11.4%] h-[57.1vw] w-[69.3vw] z-20"
     >
       {children}
     </div>
@@ -1494,12 +1516,15 @@ export default function Categories({
     (event) => {
       resetPermissions();
       event.stopPropagation();
-      toggledPrelobby && setToggledPrelobby(false);
-      !toggledPrelobby && setToggledSettings(true);
-      if (toggledSettings) {
-        if (setting === "") setToggledSettings(false);
-        else setSetting("");
-      }
+      // toggledPrelobby && setToggledPrelobby(false);
+      // !toggledPrelobby && setToggledSettings(true);
+      // if (toggledSettings) {
+      //   if (setting === "") setToggledSettings(false);
+      //   else setSetting("");
+      // }
+      setToggledPrelobby(false);
+      setToggledSettings(false);
+      setSetting("");
       setServerMessage("");
     },
     [toggledSettings, resetPermissions, toggledPrelobby, setting]
@@ -1507,12 +1532,12 @@ export default function Categories({
 
   const handleOctaClick = useCallback(
     (event) => {
-      resetPermissions();
+      // resetPermissions();
       event.stopPropagation();
-      !toggledSettings && setToggledPrelobby(true);
-      toggledSettings && setToggledSettings(false);
-      setSetting("");
-      setServerMessage("");
+      // !toggledSettings && setToggledPrelobby(true);
+      // toggledSettings && setToggledSettings(false);
+      // setSetting("");
+      // setServerMessage("");
     },
     [toggledSettings, resetPermissions]
   );
@@ -1636,18 +1661,24 @@ export default function Categories({
             )}
 
             {showInvitations && (
-              <CentralZone onClick={handleOctaClick}>
-                <Invitations
-                  user={user}
-                  router={router}
-                  updateLastCP={updateLastCP}
-                  getPublicRooms={getPublicRooms}
-                  publicRooms={publicRooms}
-                  setPublicRooms={setPublicRooms}
-                  invitations={invitations}
-                  setInvitations={setInvitations}
+              <>
+                <MainButtons
+                  setToggledSettings={setToggledSettings}
+                  setToggledPrelobby={setToggledPrelobby}
                 />
-              </CentralZone>
+                <CentralZone onClick={handleOctaClick}>
+                  <Invitations
+                    user={user}
+                    router={router}
+                    updateLastCP={updateLastCP}
+                    getPublicRooms={getPublicRooms}
+                    publicRooms={publicRooms}
+                    setPublicRooms={setPublicRooms}
+                    invitations={invitations}
+                    setInvitations={setInvitations}
+                  />
+                </CentralZone>
+              </>
             )}
 
             {toggledPrelobby && !toggledSettings && (
