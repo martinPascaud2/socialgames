@@ -1022,7 +1022,7 @@ const Friends = ({ friendList, user, deleteFriend, updateLastCP }) => {
             }}
             className="absolute left-full top-1"
           >
-            <XMarkIcon className="ml-1 pb-1.5 w-8 h-8 text-red-500" />
+            <XMarkIcon className="ml-0 pb-3.5 w-10 h-10 text-red-500" />
           </div>
         </div>
       ))}
