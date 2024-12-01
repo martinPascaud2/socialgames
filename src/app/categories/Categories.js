@@ -846,15 +846,15 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
     <>
       <div
         onClick={() => setToggledSettings(true)}
-        className="absolute top-[0%] left-[24%] h-[20vw] w-[20vw] z-20 flex items-start justify-center mt-2"
+        className="absolute top-[6vw] left-[30%] h-[20vw] w-[20vw] z-20 flex items-start justify-center mt-2"
       >
         <IoMan className="w-12 h-10" />
       </div>
       <div
         onClick={() => setToggledPrelobby(true)}
-        className="absolute top-[0%] right-[24%] h-[20vw] w-[20vw] z-20 flex items-start justify-center mt-2"
+        className="absolute top-[1.3vw] right-[30%] h-[20vw] w-[20vw] z-20 flex items-start justify-center mt-2"
       >
-        <MdOutlineVideogameAsset className="w-11 h-20 translate-y-[-4.8vw] rotate-90" />
+        <MdOutlineVideogameAsset className="w-11 h-20 rotate-90" />
       </div>
     </>
   );
