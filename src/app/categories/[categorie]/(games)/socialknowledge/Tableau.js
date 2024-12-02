@@ -666,7 +666,10 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
 
       let otherGamersResponses = {};
       for (const [theme, responses] of Object.entries(filteredResponses)) {
-        let themeResponses = shuffleArray(Object.values(responses));
+        let themeResponses =
+          gameData.options.difficulty === "easy"
+            ? Object.values(responses)
+            : shuffleArray(Object.values(responses));
         otherGamersResponses[theme] = themeResponses;
       }
       setOtherGamersReponses(otherGamersResponses);
@@ -822,34 +825,66 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
   const TableauTable = useCallback(
     ({ allResponses, phase, firstTurnSorted }) => {
       const moveItemInColumn = (columnKey, fromIndex, toIndex) => {
-        const updatedColumn = [...otherGamersResponses[columnKey]];
-        const [movedItem] = updatedColumn.slice(fromIndex, fromIndex + 1);
-        const [exchangedItem] = updatedColumn.slice(toIndex, toIndex + 1);
-        updatedColumn.splice(toIndex, 1, movedItem);
-        updatedColumn.splice(fromIndex, 1, exchangedItem);
-        setOtherGamersReponses((prevColumns) => ({
-          ...prevColumns,
-          [columnKey]: updatedColumn,
-        }));
+        if (gameData.options.difficulty === "easy") {
+          const newColumns = {};
+          for (let columnKey in otherGamersResponses) {
+            const updatedColumn = [...otherGamersResponses[columnKey]];
+            const [movedItem] = updatedColumn.slice(fromIndex, fromIndex + 1);
+            const [exchangedItem] = updatedColumn.slice(toIndex, toIndex + 1);
+            updatedColumn.splice(toIndex, 1, movedItem);
+            updatedColumn.splice(fromIndex, 1, exchangedItem);
+            newColumns[columnKey] = updatedColumn;
+          }
+          setOtherGamersReponses(newColumns);
+        } else {
+          const updatedColumn = [...otherGamersResponses[columnKey]];
+          const [movedItem] = updatedColumn.slice(fromIndex, fromIndex + 1);
+          const [exchangedItem] = updatedColumn.slice(toIndex, toIndex + 1);
+          updatedColumn.splice(toIndex, 1, movedItem);
+          updatedColumn.splice(fromIndex, 1, exchangedItem);
+          setOtherGamersReponses((prevColumns) => ({
+            ...prevColumns,
+            [columnKey]: updatedColumn,
+          }));
+        }
 
         setPreviousFirstNamesByTheme((prevNamesColumns) => {
           if (!prevNamesColumns) return prevNamesColumns;
           else {
-            const updatedNamesColumn = [...prevNamesColumns[columnKey]];
-            const [movedName] = updatedNamesColumn.slice(
-              fromIndex,
-              fromIndex + 1
-            );
-            const [exchangedName] = updatedNamesColumn.slice(
-              toIndex,
-              toIndex + 1
-            );
-            updatedNamesColumn.splice(toIndex, 1, movedName);
-            updatedNamesColumn.splice(fromIndex, 1, exchangedName);
-            return {
-              ...prevNamesColumns,
-              [columnKey]: updatedNamesColumn,
-            };
+            if (gameData.options.difficulty === "easy") {
+              const newPreviousFirstNamesByTheme = {};
+              for (let columnKey in prevNamesColumns) {
+                const updatedNamesColumn = [...prevNamesColumns[columnKey]];
+                const [movedName] = updatedNamesColumn.slice(
+                  fromIndex,
+                  fromIndex + 1
+                );
+                const [exchangedName] = updatedNamesColumn.slice(
+                  toIndex,
+                  toIndex + 1
+                );
+                updatedNamesColumn.splice(toIndex, 1, movedName);
+                updatedNamesColumn.splice(fromIndex, 1, exchangedName);
+                newPreviousFirstNamesByTheme[columnKey] = updatedNamesColumn;
+              }
+              return newPreviousFirstNamesByTheme;
+            } else {
+              const updatedNamesColumn = [...prevNamesColumns[columnKey]];
+              const [movedName] = updatedNamesColumn.slice(
+                fromIndex,
+                fromIndex + 1
+              );
+              const [exchangedName] = updatedNamesColumn.slice(
+                toIndex,
+                toIndex + 1
+              );
+              updatedNamesColumn.splice(toIndex, 1, movedName);
+              updatedNamesColumn.splice(fromIndex, 1, exchangedName);
+              return {
+                ...prevNamesColumns,
+                [columnKey]: updatedNamesColumn,
+              };
+            }
           }
         });
       };

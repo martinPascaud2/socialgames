@@ -51,7 +51,7 @@ export default function OptionsLabel({
             {(() =>
               values.possibles.find(
                 (possible) => possible.value === options[param.value]
-              ).label)()}
+              )?.label)()}
           </div>
         )}
       </div>

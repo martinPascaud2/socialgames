@@ -85,6 +85,21 @@ export default function SocialKnowledgeOptions({
             last={lastParams?.["secondChance"]}
           />
 
+          <OptionsLabel
+            isAdmin={isAdmin}
+            options={options}
+            setOptions={setOptions}
+            param={{ value: "difficulty", label: "Difficulté" }}
+            values={{
+              possibles: [
+                { value: "easy", label: "Facile" },
+                { value: "expert", label: "Expert" },
+              ],
+              default: "easy",
+            }}
+            last={lastParams?.["difficulty"]}
+          />
+
           <TableauThemeOption
             lastParams={lastParams}
             options={options}
