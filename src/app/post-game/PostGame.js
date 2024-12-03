@@ -8,6 +8,7 @@ import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import formatDate from "@/utils/formatDate";
 
 import WrittenCard from "@/categories/[categorie]/(games)/triaction/WrittenCard";
+import CountDown from "@/components/CountDown";
 
 const TriactionPG = ({ postGame, userName }) => {
   const date = formatDate(postGame.createdAt);
@@ -24,6 +25,12 @@ const TriactionPG = ({ postGame, userName }) => {
   return (
     <div className="flex flex-col items-center w-full">
       <div>{date}</div>
+      <CountDown
+        finishCountdownDate={
+          new Date(postGame.createdAt.getTime() + 10 * 24 * 60 * 60 * 1000)
+        }
+        label="Fin du jeu dans"
+      />
       <div className="flex flex-col items-center w-full">
         {Object.entries(actions).map(([gamer, actions], i) => {
           const canModify = gamer === userName || isAdmin;
@@ -113,35 +120,66 @@ export default function PostGame({ user, triaction_PG }) {
   };
 
   return (
-    <div className="absolute h-screen w-full z-50">
-      <div className={`fixed h-${barsSizes.top} w-full z-[70] bg-black`} />
+    <>
       <div
-        className={`overflow-y-auto z-[60] w-full`}
+        className={`fixed h-[${barsSizes.top / 4}rem] w-full z-[70] bg-black`}
         style={{
-          height: `calc(100vh - ${barsSizes.top / 4 + barsSizes.top / 4}rem)`,
-          marginTop: `${barsSizes.top / 4}rem`,
+          height: `${barsSizes.top / 4}rem`,
         }}
-      >
-        <div>Enregistrements</div>
+      />
+      <div
+        className={`fixed h-[${
+          barsSizes.bottom / 4
+        }rem] w-full z-[70] bg-black bottom-0`}
+        style={{ height: `${barsSizes.bottom / 4}rem` }}
+      />
+      <div className="absolute h-full w-full z-0 flex flex-col items-center justify-start">
+        <div
+          className={`overflow-y-auto z-[60] w-full`}
+          style={{
+            height: `calc(100dvh - ${barsSizes.top / 4}rem)`,
+            marginTop: `${barsSizes.top / 4}rem`,
+            marginBottom: `${barsSizes.bottom / 4}rem`,
+          }}
+        >
+          <div className="fixed w-full z-10">
+            <div className="w-full h-10 bg-white text-center mb-2 fixed p-2 flex justify-center relative">
+              <div className="absolute left-2">
+                <Link
+                  href={"/categories/?prelobby=true"}
+                  className="border border-blue-300 bg-blue-100 p-1"
+                >
+                  Retour
+                </Link>
+              </div>
+              <div className="w-full">Enregistrements</div>
+              <div className="absolute right-2">
+                <Link
+                  href={"/post-game/historical/"}
+                  className="border border-blue-300 bg-blue-100 p-1"
+                >
+                  Historique
+                </Link>
+              </div>
+            </div>
+          </div>
 
-        <div className="flex flex-col items-center w-full">
-          <div>Triaction</div>
-          <div className="flex flex-col items-center w-full">
-            {triaction_PG.map((postGame, i) => {
-              return (
-                <TriactionPG key={i} postGame={postGame} userName={user.name} />
-              );
-            })}
+          <div className="z-0 flex flex-col items-center w-full mt-10">
+            <div>Triaction</div>
+            <div className="flex flex-col items-center w-full">
+              {triaction_PG.map((postGame, i) => {
+                return (
+                  <TriactionPG
+                    key={i}
+                    postGame={postGame}
+                    userName={user.name}
+                  />
+                );
+              })}
+            </div>
           </div>
         </div>
-
-        <Link
-          href={"/categories/?prelobby=true"}
-          className="border border-blue-300 bg-blue-100 p-1"
-        >
-          Retour
-        </Link>
       </div>
-    </div>
+    </>
   );
 }

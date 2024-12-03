@@ -10,6 +10,8 @@ export default function CountDown({
 }) {
   const [leftSeconds, setLeftSeconds] = useState();
   const [leftMinutes, setLeftMinutes] = useState();
+  const [leftHours, setLeftHours] = useState();
+  const [leftDays, setLeftDays] = useState();
 
   useEffect(() => {
     if (!finishCountdownDate) return;
@@ -17,7 +19,9 @@ export default function CountDown({
       const currentTime = Date.now();
       const leftMilliseconds = finishCountdownDate - currentTime;
       setLeftSeconds(Math.floor((leftMilliseconds / 1000) % 60));
-      setLeftMinutes(Math.floor(leftMilliseconds / 1000 / 60));
+      setLeftMinutes(Math.floor((leftMilliseconds / 1000 / 60) % 60));
+      setLeftHours(Math.floor((leftMilliseconds / 1000 / 60 / 60) % 24));
+      setLeftDays(Math.floor(leftMilliseconds / 1000 / 60 / 60 / 24));
     }, 1000);
     return () => {
       clearInterval(interval);
@@ -38,14 +42,36 @@ export default function CountDown({
         <>
           {label ? <span>{label}</span> : <span>Il vous reste</span>}
           &nbsp;
-          {leftMinutes > 0 && (
+          {leftDays > 0 && (
             <span>
-              <span className="font-bold">{leftMinutes}</span>
-              &nbsp;minute{leftMinutes >= 2 ? "s" : ""}&nbsp;et&nbsp;
+              <span className="font-bold">{leftDays}</span>&nbsp;jour
+              {leftDays >= 2 ? "s" : ""}&nbsp;
             </span>
           )}
-          <span className="font-bold">{leftSeconds}</span>&nbsp;seconde
-          {leftSeconds >= 2 ? "s" : ""}.
+          {(leftDays || leftHours > 0) && (
+            <span>
+              <span>{leftDays ? " et " : ""}</span>
+              <span className="font-bold">{leftHours}</span>
+              &nbsp;heure{leftHours >= 2 ? "s" : ""}
+              <span>{leftDays ? "" : "\u00A0"}</span>
+            </span>
+          )}
+          {leftDays === 0 && (leftHours || leftMinutes > 0) && (
+            <span>
+              <span>{leftHours ? " et " : ""}</span>
+              <span className="font-bold">{leftMinutes}</span>
+              &nbsp;minute{leftMinutes >= 2 ? "s" : ""}
+            </span>
+          )}
+          {leftDays === 0 && leftHours === 0 && (
+            <span>
+              <span>{leftMinutes ? "\u00A0et\u00A0" : ""}</span>
+              <span className="font-bold">{leftSeconds}</span>
+              &nbsp;seconde
+              {leftSeconds >= 2 ? "s" : ""}
+            </span>
+          )}
+          <span>.</span>
         </>
       )}
     </div>
