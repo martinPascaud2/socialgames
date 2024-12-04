@@ -674,7 +674,7 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
       }
       setOtherGamersReponses(otherGamersResponses);
     }
-  }, [phase, allResponses, user.name]);
+  }, [phase, allResponses, user.name, gameData.options.difficulty]);
 
   useEffect(() => {
     setHasClickedOnCountdown(false);
@@ -938,12 +938,13 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
       otherGamersResponses,
       user.name,
       previousFirstNamesByTheme,
+      otherGamersNames,
     ]
   );
 
   return (
     <>
-      <div className="flex flex-col items-center justify-start h-full p-2 bg-gray-100 relative overflow-auto">
+      <div className="flex flex-col items-center justify-start h-full p-2 bg-gray-100 relative overflow-hidden">
         {phase === "waiting" && (
           <>
             <div className="absolute top-1/2 translate-y-[-50%]">
