@@ -105,10 +105,10 @@ export default async function CategoriesPage() {
     if (!isFriendExists || !user || friendMail === user.email)
       return { error: "Utilisateur introuvable" };
 
-    const distance = getDistance({
-      first: userLocation,
-      second: friendLocation,
-    });
+    // const distance = getDistance({
+    //   first: userLocation,
+    //   second: friendLocation,
+    // });
     // if (distance > 500) return { error: "Vous êtes trop loin !" };
 
     const friendList = await getFriendList({ userId: user.id });

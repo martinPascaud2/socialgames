@@ -1767,9 +1767,11 @@ export default function Categories({
               <CentralZone onClick={handleOctaClick}>
                 <div className="flex w-full h-full justify-around items-center">
                   <div
-                    onClick={(event) => {
+                    onClick={async (event) => {
                       event.stopPropagation();
-                      setServerMessage("A venir");
+                      resetPermissions();
+                      await updateLastCP({ userId: user.id, out: true });
+                      window.location.href = "/tools/";
                     }}
                   >
                     <GoTools className="w-8 h-8 text-purple-100" />
