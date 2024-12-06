@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef, useMemo } from "react";
 import React from "react";
 import { useFormState } from "react-dom";
 import Image from "next/image";
@@ -542,16 +542,20 @@ const ResponseForm = ({
     roomToken,
     user,
   });
+  const innerHeight = useMemo(() => window.innerHeight, []);
   const [state, formAction] = useFormState(sendResponseWith, {});
   const refForm = useRef();
   const inputRef = useRef();
 
   useEffect(() => {
     inputRef?.current?.focus();
-  }, [writtenIndex]);
+  }, [writtenIndex, inputRef]);
 
   return (
-    <div className="flex flex-col justify-center items-center overflow-hidden fixed h-full">
+    <div
+      className="flex flex-col justify-start items-center overflow-hidden fixed"
+      style={{ top: innerHeight / 2, height: "100%" }}
+    >
       {writtenIndex < allThemes.length ? (
         <>
           <form
