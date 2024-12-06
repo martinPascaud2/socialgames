@@ -554,7 +554,7 @@ const ResponseForm = ({
   return (
     <div
       className="flex flex-col justify-start items-center overflow-hidden fixed"
-      style={{ top: innerHeight / 2, height: "100%" }}
+      style={{ top: innerHeight / 3, height: "100%" }}
     >
       {writtenIndex < allThemes.length ? (
         <>
