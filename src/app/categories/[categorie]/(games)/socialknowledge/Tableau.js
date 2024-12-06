@@ -5,6 +5,8 @@ import React from "react";
 import { useFormState } from "react-dom";
 import Image from "next/image";
 
+import usePreventScroll from "@/utils/usePreventScroll";
+
 import shuffleArray from "@/utils/shuffleArray";
 import getAreSimilar from "./getAreSimilar";
 
@@ -615,6 +617,7 @@ const ResponseForm = ({
 };
 
 export default function Tableau({ roomId, roomToken, user, gameData }) {
+  usePreventScroll();
   const {
     enhanced,
     randoms,
