@@ -355,7 +355,12 @@ export default function Disconnected({
     if (!onlineGamers?.length || !gamers?.length || !disconnectedList?.length)
       setShowButton(false);
   }, [disconnectedList, gamers, onlineGamers]);
-  if (!onlineGamers?.length || !gamers?.length || !disconnectedList?.length)
+  if (
+    !onlineGamers?.length ||
+    !gamers?.length ||
+    !disconnectedList?.length ||
+    gameData.ended
+  )
     return null;
 
   return <DiscoModal isOpen={showDiscoModal}>{Message}</DiscoModal>;

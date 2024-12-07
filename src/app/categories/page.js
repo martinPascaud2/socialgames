@@ -204,6 +204,14 @@ export default async function CategoriesPage() {
     cookies().delete("SG_token");
   };
 
+  // check TEST
+  const ip = "78.243.220.125";
+  const response = await fetch(
+    `https://ipgeolocation.abstractapi.com/v1/?api_key=50243c1d69714bcbb90a001d82638cc0&ip_address=${ip}`
+  );
+  const data = await response.json();
+  console.log(data);
+
   return (
     <>
       <Categories
