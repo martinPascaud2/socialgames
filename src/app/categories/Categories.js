@@ -790,7 +790,8 @@ const SettingsButtons = ({
             updateLastCP({ userId: user.id }); // no await
 
             try {
-              setLocation(await getLocation());
+              // setLocation(await getLocation());
+              setLocation({ latitude: "", longitude: "" });
               // setServerMessage("QR code généré !");
             } catch (error) {
               console.error(error.message);
@@ -1534,7 +1535,7 @@ export default function Categories({
       if (scanLocked) return;
       let userLocation;
       setScanLocked(true);
-      userLocation = await getLocation();
+      // userLocation = await getLocation();
       const { error: addFriendError } = await addFriend({
         userLocation,
         friendCode: decodedText,
