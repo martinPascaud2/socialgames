@@ -44,6 +44,12 @@ export default function EditionPage() {
       >
         Triaction
       </Link>
+      <Link
+        href="/admin/app-edition/admin-addFriend"
+        className="w-1/3 text-center border border-blue-300 bg-blue-100"
+      >
+        Ajout d&apos;amis
+      </Link>
     </>
   );
 }
