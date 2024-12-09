@@ -72,209 +72,32 @@ const MyPreview = ({ dimensions }) => {
   );
 };
 
-const DraggableItem = ({
-  item,
-  index,
-  moveItem,
-  clickMoveFromIndex,
-  setClickMoveFromIndex,
-  goodResponse,
-  isBlocked,
-  correctionLocked,
-  firstTurnName,
-  height,
-}) => {
-  const [{ isDragging }, ref] = useDrag({
-    type: ItemType,
-    item: { index, label: item },
-    canDrag: !correctionLocked,
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging(),
-    }),
-  });
+const MyRowPreview = ({ dimensions, otherGamersResponses }) => {
+  const preview = usePreview();
 
-  const [, drop] = useDrop({
-    accept: ItemType,
-    // hover: (draggedItem) => {
-    drop: (draggedItem) => {
-      if (draggedItem.index !== index && !isBlocked && !correctionLocked) {
-        moveItem(draggedItem.index, index);
-        draggedItem.index = index;
-        setClickMoveFromIndex();
-      }
-    },
-  });
+  if (!preview.display) {
+    return null;
+  }
 
-  const moveByClick = () => {
-    if (isBlocked || correctionLocked) return;
-    if (clickMoveFromIndex === undefined) setClickMoveFromIndex(index);
-    else {
-      moveItem(clickMoveFromIndex, index);
-      setClickMoveFromIndex();
-    }
-  };
+  const { itemType, item, style } = preview;
 
   return (
-    <>
-      <td
-        ref={(node) => ref(drop(node))}
-        style={{
-          padding: "0px",
-          margin: "",
-          backgroundColor:
-            goodResponse === undefined
-              ? clickMoveFromIndex === index || correctionLocked === true
-                ? "#dcfce7"
-                : "#f3f4f6"
-              : goodResponse
-              ? "#dcfce7"
-              : "#fee2e2",
-          borderBottomWidth: "0px",
-          zIndex: 10,
-          userSelect: "none",
-        }}
-        className={`flex flex-col text-center items-center justify-center w-full h-${
-          height === "medium" ? "16" : "12"
-        } text-sm overflow-hidden mt-6 border border-black relative`}
-        onClick={() => moveByClick()}
-      >
-        {item}
-        <div className="absolute bottom-0 right-0 text-xs">{firstTurnName}</div>
-      </td>
-    </>
-  );
-};
-
-const DraggableColumn = ({
-  items,
-  moveItem,
-  gamersNames,
-  deletedGamersNames,
-  otherGamersNames,
-  allResponses,
-  phase,
-  theme,
-  firstTurnSorted,
-  previousFirstNamesByTheme,
-}) => {
-  const [dimensions, setDimensions] = useState();
-  const dimensionsRef = useRef(null);
-  const [clickMoveFromIndex, setClickMoveFromIndex] = useState();
-
-  const [badResponses, setBadResponses] = useState();
-  const [correctionLockeds, setCorrectionLockeds] = useState();
-
-  useEffect(() => {
-    if (dimensionsRef.current) {
-      const { width, height } = dimensionsRef.current.getBoundingClientRect();
-      if (width !== 0 && height !== 0)
-        setDimensions({ width, height: gamersNames.length >= 6 ? 12 : 16 });
-    }
-  }, [setDimensions, gamersNames]);
-
-  useEffect(() => {
-    if (!firstTurnSorted || !gamersNames || !allResponses) return;
-
-    let badResponses = {};
-    gamersNames.forEach((name) => {
-      badResponses[name] = 0;
-    });
-
-    let correctionLockeds = {};
-    Object.entries(firstTurnSorted).forEach(([th, responses]) => {
-      let passedGamerIndex = 0;
-      responses.forEach((response, gamerIndex) => {
-        if (response !== null) {
-          if (
-            !getAreSimilar(response, allResponses[th][gamersNames[gamerIndex]])
-          ) {
-            badResponses[gamersNames[gamerIndex]] += 1;
-            if (th === theme)
-              correctionLockeds[gamerIndex - passedGamerIndex] = false;
-          } else {
-            if (th === theme)
-              correctionLockeds[gamerIndex - passedGamerIndex] = true;
-          }
-        } else {
-          passedGamerIndex = 1;
-        }
-      });
-    });
-    setBadResponses(badResponses);
-    phase === "secondChance_withCorrection" &&
-      setCorrectionLockeds(correctionLockeds);
-  }, [firstTurnSorted, allResponses, gamersNames]);
-
-  return (
-    <>
-      <DndProvider backend={TouchBackend} options={{ HTML5toTouch }}>
-        <tr ref={dimensionsRef} className="w-full h-full">
-          {items.map((item, index) => {
-            let goodResponse;
-            if (phase === "no_chance") {
-              goodResponse = getAreSimilar(
-                item,
-                allResponses[theme][otherGamersNames[index]]
-              );
-            }
-
-            const isDeleted = deletedGamersNames.some(
-              (deleted) => deleted === otherGamersNames[index]
-            );
-
-            return (
-              <React.Fragment key={index}>
-                <td
-                  className={`absolute left-[50%] translate-x-[-50%] w-full h-[25px] px-[9px] bg-gradient-to-r ${
-                    !isDeleted ? "bg-blue-300" : "bg-gray-300"
-                  } from-gray-100 to-gray-100 via-transparent`}
-                  style={{ userSelect: "none" }}
-                >
-                  <div className="flex outline outline-1 outline-black justify-center w-full">
-                    <div className="text-center relative">
-                      <div className="flex items-center">
-                        {otherGamersNames[index]}
-                        {isDeleted && <IoCloudOfflineSharp className="ml-1" />}
-                      </div>
-                      <div className="absolute top-0 translate-x-[100%] w-full flex">
-                        {badResponses &&
-                          Array.from(
-                            { length: badResponses[otherGamersNames[index]] },
-                            (_, i) => (
-                              <div key={`${index}-${i}`}>
-                                <XMarkIcon className="w-6 h-6 text-red-600" />
-                              </div>
-                            )
-                          )}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-
-                <DraggableItem
-                  key={index}
-                  item={item}
-                  index={index}
-                  moveItem={moveItem}
-                  clickMoveFromIndex={clickMoveFromIndex}
-                  setClickMoveFromIndex={setClickMoveFromIndex}
-                  goodResponse={goodResponse}
-                  isBlocked={phase === "no_chance"}
-                  correctionLocked={correctionLockeds?.[index]}
-                  firstTurnName={
-                    previousFirstNamesByTheme &&
-                    previousFirstNamesByTheme[theme]?.[index]
-                  }
-                  height={gamersNames.length >= 6 ? "small" : "medium"}
-                />
-              </React.Fragment>
-            );
-          })}
-
-          {phase !== "no_chance" && <MyPreview dimensions={dimensions} />}
-        </tr>
-      </DndProvider>
-    </>
+    <td
+      className={`item-list__item flex items-center w-full border border-black bg-green-100 text-center h-${dimensions.height} shadow-[inset_0_0_0_1px_#16a34a] z-20`}
+      style={{
+        ...style,
+        width: dimensions.width,
+      }}
+    >
+      {Object.values(otherGamersResponses).map((responses, i) => (
+        <div
+          key={i}
+          className="w-full h-full border border-black flex items-center justify-center"
+        >
+          {responses[item.gamerIndex]}
+        </div>
+      ))}
+    </td>
   );
 };
 
@@ -616,6 +439,424 @@ const ResponseForm = ({
   );
 };
 
+const DraggableItem = ({
+  item,
+  index,
+  moveItem,
+  clickMoveFromIndex,
+  setClickMoveFromIndex,
+  goodResponse,
+  isBlocked,
+  correctionLocked,
+  firstTurnName,
+  height,
+}) => {
+  const [{ isDragging }, ref] = useDrag({
+    type: ItemType,
+    item: { index, label: item },
+    canDrag: !correctionLocked,
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+
+  const [, drop] = useDrop({
+    accept: ItemType,
+    // hover: (draggedItem) => {
+    drop: (draggedItem) => {
+      if (draggedItem.index !== index && !isBlocked && !correctionLocked) {
+        moveItem(draggedItem.index, index);
+        draggedItem.index = index;
+        setClickMoveFromIndex();
+      }
+    },
+  });
+
+  const moveByClick = () => {
+    if (isBlocked || correctionLocked) return;
+    if (clickMoveFromIndex === undefined) setClickMoveFromIndex(index);
+    else {
+      moveItem(clickMoveFromIndex, index);
+      setClickMoveFromIndex();
+    }
+  };
+
+  return (
+    <>
+      <td
+        ref={(node) => ref(drop(node))}
+        style={{
+          padding: "0px",
+          margin: "",
+          backgroundColor:
+            goodResponse === undefined
+              ? clickMoveFromIndex === index || correctionLocked === true
+                ? "#dcfce7"
+                : "#f3f4f6"
+              : goodResponse
+              ? "#dcfce7"
+              : "#fee2e2",
+          borderBottomWidth: "0px",
+          zIndex: 10,
+          userSelect: "none",
+        }}
+        className={`flex flex-col text-center items-center justify-center w-full h-${
+          height === "medium" ? "16" : "12"
+        } text-sm overflow-hidden mt-6 border border-black relative`}
+        onClick={() => moveByClick()}
+      >
+        {item}
+        <div className="absolute bottom-0 right-0 text-xs">{firstTurnName}</div>
+      </td>
+    </>
+  );
+};
+
+const DraggableColumn = ({
+  items,
+  moveItem,
+  gamersNames,
+  deletedGamersNames,
+  otherGamersNames,
+  allResponses,
+  phase,
+  theme,
+  firstTurnSorted,
+  previousFirstNamesByTheme,
+}) => {
+  const [dimensions, setDimensions] = useState();
+  const dimensionsRef = useRef(null);
+  const [clickMoveFromIndex, setClickMoveFromIndex] = useState();
+
+  const [badResponses, setBadResponses] = useState();
+  const [correctionLockeds, setCorrectionLockeds] = useState();
+
+  useEffect(() => {
+    if (dimensionsRef.current) {
+      const { width, height } = dimensionsRef.current.getBoundingClientRect();
+      if (width !== 0 && height !== 0)
+        setDimensions({ width, height: gamersNames.length >= 6 ? 12 : 16 });
+    }
+  }, [setDimensions, gamersNames]);
+
+  useEffect(() => {
+    if (!firstTurnSorted || !gamersNames || !allResponses) return;
+
+    let badResponses = {};
+    gamersNames.forEach((name) => {
+      badResponses[name] = 0;
+    });
+
+    let correctionLockeds = {};
+    Object.entries(firstTurnSorted).forEach(([th, responses]) => {
+      let passedGamerIndex = 0;
+      responses.forEach((response, gamerIndex) => {
+        if (response !== null) {
+          if (
+            !getAreSimilar(response, allResponses[th][gamersNames[gamerIndex]])
+          ) {
+            badResponses[gamersNames[gamerIndex]] += 1;
+            if (th === theme)
+              correctionLockeds[gamerIndex - passedGamerIndex] = false;
+          } else {
+            if (th === theme)
+              correctionLockeds[gamerIndex - passedGamerIndex] = true;
+          }
+        } else {
+          passedGamerIndex = 1;
+        }
+      });
+    });
+    setBadResponses(badResponses);
+    phase === "secondChance_withCorrection" &&
+      setCorrectionLockeds(correctionLockeds);
+  }, [firstTurnSorted, allResponses, gamersNames]);
+
+  return (
+    <>
+      <DndProvider backend={TouchBackend} options={{ HTML5toTouch }}>
+        <tr ref={dimensionsRef} className="w-full h-full">
+          {items.map((item, index) => {
+            let goodResponse;
+            if (phase === "no_chance") {
+              goodResponse = getAreSimilar(
+                item,
+                allResponses[theme][otherGamersNames[index]]
+              );
+            }
+
+            const isDeleted = deletedGamersNames.some(
+              (deleted) => deleted === otherGamersNames[index]
+            );
+
+            return (
+              <React.Fragment key={index}>
+                <td
+                  className={`absolute left-[50%] translate-x-[-50%] w-full h-[25px] px-[9px] bg-gradient-to-r ${
+                    !isDeleted ? "bg-blue-300" : "bg-gray-300"
+                  } from-gray-100 to-gray-100 via-transparent`}
+                  style={{ userSelect: "none" }}
+                >
+                  <div className="flex outline outline-1 outline-black justify-center w-full">
+                    <div className="text-center relative">
+                      <div className="flex items-center">
+                        {otherGamersNames[index]}
+                        {isDeleted && <IoCloudOfflineSharp className="ml-1" />}
+                      </div>
+                      <div className="absolute top-0 translate-x-[100%] w-full flex">
+                        {badResponses &&
+                          Array.from(
+                            { length: badResponses[otherGamersNames[index]] },
+                            (_, i) => (
+                              <div key={`${index}-${i}`}>
+                                <XMarkIcon className="w-6 h-6 text-red-600" />
+                              </div>
+                            )
+                          )}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <DraggableItem
+                  key={index}
+                  item={item}
+                  index={index}
+                  moveItem={moveItem}
+                  clickMoveFromIndex={clickMoveFromIndex}
+                  setClickMoveFromIndex={setClickMoveFromIndex}
+                  goodResponse={goodResponse}
+                  isBlocked={phase === "no_chance"}
+                  correctionLocked={correctionLockeds?.[index]}
+                  firstTurnName={
+                    previousFirstNamesByTheme &&
+                    previousFirstNamesByTheme[theme]?.[index]
+                  }
+                  height={gamersNames.length >= 6 ? "small" : "medium"}
+                />
+              </React.Fragment>
+            );
+          })}
+
+          {phase !== "no_chance" && <MyPreview dimensions={dimensions} />}
+        </tr>
+      </DndProvider>
+    </>
+  );
+};
+
+const DraggableRow = ({
+  gamerIndex,
+  otherGamersResponses,
+  moveItem,
+  easyClickMoveFromIndex,
+  setEasyClickMoveFromIndex,
+  height,
+  goodResponse,
+  isBlocked,
+  correctionLocked,
+  previousFirstNamesByTheme,
+}) => {
+  const [{ isDragging }, ref] = useDrag({
+    type: ItemType,
+    item: { gamerIndex },
+    canDrag: !correctionLocked,
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+
+  const [, drop] = useDrop({
+    accept: ItemType,
+    // hover: (draggedItem) => {
+    drop: (draggedItem) => {
+      if (
+        draggedItem.gamerIndex !== gamerIndex &&
+        !isBlocked &&
+        !correctionLocked
+      ) {
+        moveItem(draggedItem.gamerIndex, gamerIndex);
+        draggedItem.gamerIndex = gamerIndex;
+        setEasyClickMoveFromIndex();
+      }
+    },
+  });
+
+  const moveByClick = () => {
+    if (isBlocked || correctionLocked) return;
+    if (easyClickMoveFromIndex === undefined)
+      setEasyClickMoveFromIndex(gamerIndex);
+    else {
+      moveItem(easyClickMoveFromIndex, gamerIndex);
+      setEasyClickMoveFromIndex();
+    }
+  };
+
+  if (Number.isNaN(gamerIndex) || !otherGamersResponses) return;
+  return (
+    <tr
+      ref={(node) => ref(drop(node))}
+      onClick={() => moveByClick()}
+      className={`flex justify-around items-center w-full text-center h-${
+        height === "medium" ? "16" : "12"
+      }`}
+      style={{
+        backgroundColor:
+          goodResponse === undefined
+            ? easyClickMoveFromIndex === gamerIndex || correctionLocked === true
+              ? "#dcfce7"
+              : "#f3f4f6"
+            : goodResponse
+            ? "#dcfce7"
+            : "#fee2e2",
+      }}
+    >
+      {Object.values(otherGamersResponses).map((responses, i) => (
+        <td
+          key={i}
+          className={`w-full h-full border border-black border-y-0 flex items-center justify-center relative text-sm`}
+        >
+          {responses[gamerIndex]}
+          <div className="absolute bottom-0 right-0 text-xs">
+            {previousFirstNamesByTheme &&
+              Object.values(previousFirstNamesByTheme)[0][gamerIndex]}
+          </div>
+        </td>
+      ))}
+    </tr>
+  );
+};
+
+const EasyRow = ({
+  gamersNames,
+  otherGamersResponses,
+  userName,
+  moveItem,
+  easyClickMoveFromIndex,
+  setEasyClickMoveFromIndex,
+  otherGamersNames,
+  deletedGamersNames,
+  firstTurnSorted,
+  allResponses,
+  phase,
+  previousFirstNamesByTheme,
+}) => {
+  const [dimensions, setDimensions] = useState();
+  const dimensionsRef = useRef(null);
+  const [badResponses, setBadResponses] = useState();
+  const [correctionLockeds, setCorrectionLockeds] = useState();
+
+  useEffect(() => {
+    if (dimensionsRef.current) {
+      const { width, height } = dimensionsRef.current.getBoundingClientRect();
+      if (width !== 0 && height !== 0)
+        setDimensions({ width, height: gamersNames.length >= 6 ? 12 : 16 });
+    }
+  }, [setDimensions, gamersNames]);
+
+  useEffect(() => {
+    if (!firstTurnSorted || !gamersNames || !allResponses) return;
+
+    let badResponses = {};
+    gamersNames.forEach((name) => {
+      badResponses[name] = 0;
+    });
+
+    let correctionLockeds = {};
+    Object.entries(firstTurnSorted).forEach(([th, responses]) => {
+      let passedGamerIndex = 0;
+      responses.forEach((response, gamerIndex) => {
+        if (response !== null) {
+          if (
+            !getAreSimilar(response, allResponses[th][gamersNames[gamerIndex]])
+          ) {
+            badResponses[gamersNames[gamerIndex]] += 1;
+            correctionLockeds[gamerIndex - passedGamerIndex] = false;
+          } else {
+            correctionLockeds[gamerIndex - passedGamerIndex] = true;
+          }
+        } else {
+          passedGamerIndex = 1;
+        }
+      });
+    });
+    setBadResponses(badResponses);
+    phase === "secondChance_withCorrection" &&
+      setCorrectionLockeds(correctionLockeds);
+  }, [firstTurnSorted, allResponses, gamersNames, phase]);
+
+  if (!otherGamersResponses) return null;
+  return (
+    <tbody ref={dimensionsRef} className="flex flex-col items-center">
+      {gamersNames
+        .filter((gamerName) => gamerName !== userName)
+        .map((gamerName, gamerIndex) => {
+          let goodResponse;
+          if (phase === "no_chance") {
+            const trueResponse = Object.values(allResponses)[0][gamerName];
+            const responded =
+              Object.values(otherGamersResponses)[0][gamerIndex];
+            goodResponse = getAreSimilar(trueResponse, responded);
+          }
+
+          const isDeleted = deletedGamersNames.some(
+            (deleted) => deleted === otherGamersNames[gamerIndex]
+          );
+          return (
+            <React.Fragment key={gamerIndex}>
+              <tr
+                className={`h-[25px] border border-black w-full flex justify-center bg-gradient-to-r ${
+                  !isDeleted ? "bg-blue-300" : "bg-gray-300"
+                } from-gray-100 to-gray-100 via-transparent
+                `}
+              >
+                <td className="flex w-full justify-center">
+                  <div className="flex justify-center items-center relative">
+                    {gamerName}
+                    {isDeleted && <IoCloudOfflineSharp className="ml-1" />}
+                    <div className="absolute top-0 translate-x-[100%] w-full flex">
+                      {badResponses &&
+                        Array.from(
+                          {
+                            length: badResponses[otherGamersNames[gamerIndex]],
+                          },
+                          (_, i) => (
+                            <div key={`${gamerIndex}-${i}`}>
+                              <XMarkIcon className="w-6 h-6 text-red-600" />
+                            </div>
+                          )
+                        )}
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <DraggableRow
+                gamerIndex={gamerIndex}
+                otherGamersResponses={otherGamersResponses}
+                moveItem={moveItem}
+                easyClickMoveFromIndex={easyClickMoveFromIndex}
+                setEasyClickMoveFromIndex={setEasyClickMoveFromIndex}
+                height={gamersNames.length >= 6 ? "small" : "medium"}
+                goodResponse={goodResponse}
+                isBlocked={phase === "no_chance"}
+                correctionLocked={correctionLockeds?.[gamerIndex]}
+                previousFirstNamesByTheme={previousFirstNamesByTheme}
+              />
+              {phase !== "no_chance" && (
+                <tr>
+                  <MyRowPreview
+                    dimensions={dimensions}
+                    otherGamersResponses={otherGamersResponses}
+                  />
+                </tr>
+              )}
+            </React.Fragment>
+          );
+        })}
+    </tbody>
+  );
+};
+
 export default function Tableau({ roomId, roomToken, user, gameData }) {
   usePreventScroll();
   const {
@@ -632,9 +873,10 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
   const isAdmin = gameData.admin === user.name;
   const [writtenIndex, setWrittenIndex] = useState(0);
   const [response, setResponse] = useState("");
-  const [otherGamersResponses, setOtherGamersReponses] = useState();
+  const [otherGamersResponses, setOtherGamersResponses] = useState();
   const [hasClickedOnCountdown, setHasClickedOnCountdown] = useState(false);
   const [hasValidated, setHasValidated] = useState(false);
+  const [easyClickMoveFromIndex, setEasyClickMoveFromIndex] = useState();
   const [isValidationSaved, setIsValidationSaved] = useState(false);
   const [isWantNext, setIsWantNext] = useState(false);
   const [firstTurnSorted, setFirstTurnSorted] = useState();
@@ -679,7 +921,7 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
             : shuffleArray(Object.values(responses));
         otherGamersResponses[theme] = themeResponses;
       }
-      setOtherGamersReponses(otherGamersResponses);
+      setOtherGamersResponses(otherGamersResponses);
     }
   }, [phase, allResponses, user.name, gameData.options.difficulty]);
 
@@ -763,7 +1005,7 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
         isComingBack === true
       ) {
         const otherGamersResponses = await firstSubmitComeBack({ user });
-        setOtherGamersReponses(otherGamersResponses);
+        setOtherGamersResponses(otherGamersResponses);
         setIsComingBack(false);
       }
     };
@@ -831,51 +1073,23 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
 
   const TableauTable = useCallback(
     ({ allResponses, phase, firstTurnSorted }) => {
-      const moveItemInColumn = (columnKey, fromIndex, toIndex) => {
-        if (gameData.options.difficulty === "easy") {
-          const newColumns = {};
-          for (let columnKey in otherGamersResponses) {
-            const updatedColumn = [...otherGamersResponses[columnKey]];
-            const [movedItem] = updatedColumn.slice(fromIndex, fromIndex + 1);
-            const [exchangedItem] = updatedColumn.slice(toIndex, toIndex + 1);
-            updatedColumn.splice(toIndex, 1, movedItem);
-            updatedColumn.splice(fromIndex, 1, exchangedItem);
-            newColumns[columnKey] = updatedColumn;
-          }
-          setOtherGamersReponses(newColumns);
-        } else {
+      const moveItemByRow = (fromIndex, toIndex) => {
+        const newColumns = {};
+        for (let columnKey in otherGamersResponses) {
           const updatedColumn = [...otherGamersResponses[columnKey]];
           const [movedItem] = updatedColumn.slice(fromIndex, fromIndex + 1);
           const [exchangedItem] = updatedColumn.slice(toIndex, toIndex + 1);
           updatedColumn.splice(toIndex, 1, movedItem);
           updatedColumn.splice(fromIndex, 1, exchangedItem);
-          setOtherGamersReponses((prevColumns) => ({
-            ...prevColumns,
-            [columnKey]: updatedColumn,
-          }));
+          newColumns[columnKey] = updatedColumn;
         }
+        setOtherGamersResponses(newColumns);
 
         setPreviousFirstNamesByTheme((prevNamesColumns) => {
           if (!prevNamesColumns) return prevNamesColumns;
           else {
-            if (gameData.options.difficulty === "easy") {
-              const newPreviousFirstNamesByTheme = {};
-              for (let columnKey in prevNamesColumns) {
-                const updatedNamesColumn = [...prevNamesColumns[columnKey]];
-                const [movedName] = updatedNamesColumn.slice(
-                  fromIndex,
-                  fromIndex + 1
-                );
-                const [exchangedName] = updatedNamesColumn.slice(
-                  toIndex,
-                  toIndex + 1
-                );
-                updatedNamesColumn.splice(toIndex, 1, movedName);
-                updatedNamesColumn.splice(fromIndex, 1, exchangedName);
-                newPreviousFirstNamesByTheme[columnKey] = updatedNamesColumn;
-              }
-              return newPreviousFirstNamesByTheme;
-            } else {
+            const newPreviousFirstNamesByTheme = {};
+            for (let columnKey in prevNamesColumns) {
               const updatedNamesColumn = [...prevNamesColumns[columnKey]];
               const [movedName] = updatedNamesColumn.slice(
                 fromIndex,
@@ -887,55 +1101,107 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
               );
               updatedNamesColumn.splice(toIndex, 1, movedName);
               updatedNamesColumn.splice(fromIndex, 1, exchangedName);
-              return {
-                ...prevNamesColumns,
-                [columnKey]: updatedNamesColumn,
-              };
+              newPreviousFirstNamesByTheme[columnKey] = updatedNamesColumn;
             }
+            return newPreviousFirstNamesByTheme;
+          }
+        });
+      };
+
+      const moveItemInColumn = (columnKey, fromIndex, toIndex) => {
+        const updatedColumn = [...otherGamersResponses[columnKey]];
+        const [movedItem] = updatedColumn.slice(fromIndex, fromIndex + 1);
+        const [exchangedItem] = updatedColumn.slice(toIndex, toIndex + 1);
+        updatedColumn.splice(toIndex, 1, movedItem);
+        updatedColumn.splice(fromIndex, 1, exchangedItem);
+        setOtherGamersResponses((prevColumns) => ({
+          ...prevColumns,
+          [columnKey]: updatedColumn,
+        }));
+
+        setPreviousFirstNamesByTheme((prevNamesColumns) => {
+          if (!prevNamesColumns) return prevNamesColumns;
+          else {
+            const updatedNamesColumn = [...prevNamesColumns[columnKey]];
+            const [movedName] = updatedNamesColumn.slice(
+              fromIndex,
+              fromIndex + 1
+            );
+            const [exchangedName] = updatedNamesColumn.slice(
+              toIndex,
+              toIndex + 1
+            );
+            updatedNamesColumn.splice(toIndex, 1, movedName);
+            updatedNamesColumn.splice(fromIndex, 1, exchangedName);
+            return {
+              ...prevNamesColumns,
+              [columnKey]: updatedNamesColumn,
+            };
           }
         });
       };
 
       return (
-        <table className="flex flex-col items-center justify-center w-full border-b border-black">
-          <thead className="w-full">
-            <tr
-              className="w-full flex justify-around"
-              style={{ userSelect: "none" }}
-            >
-              {otherGamersResponses &&
-                Object.keys(otherGamersResponses).map((columnKey) => (
-                  <th
-                    scope="row"
-                    key={columnKey}
-                    className="flex-1 flex items-end justify-center"
-                  >
-                    {columnKey}
-                  </th>
-                ))}
-            </tr>
-          </thead>
+        <table className="w-full flex flex-col items-around border border-x-0 border-t-0 border-b-1 border-black">
+          <DndProvider backend={TouchBackend} options={{ HTML5toTouch }}>
+            <thead className="w-full">
+              <tr
+                className="w-full flex justify-around"
+                style={{ userSelect: "none" }}
+              >
+                {otherGamersResponses &&
+                  Object.keys(otherGamersResponses).map((columnKey) => (
+                    <th
+                      scope="row"
+                      key={columnKey}
+                      className="flex-1 flex items-end justify-center"
+                    >
+                      {columnKey}
+                    </th>
+                  ))}
+              </tr>
+            </thead>
 
-          <tbody className="flex w-full">
-            {otherGamersResponses &&
-              Object.keys(otherGamersResponses).map((theme, i) => (
-                <DraggableColumn
-                  key={i}
-                  items={otherGamersResponses[theme]}
-                  moveItem={(fromIndex, toIndex) =>
-                    moveItemInColumn(theme, fromIndex, toIndex)
-                  }
-                  gamersNames={gamersNames}
-                  deletedGamersNames={deletedGamersNames}
-                  otherGamersNames={otherGamersNames}
-                  allResponses={allResponses}
-                  phase={phase}
-                  theme={theme}
-                  firstTurnSorted={firstTurnSorted}
-                  previousFirstNamesByTheme={previousFirstNamesByTheme}
-                />
-              ))}
-          </tbody>
+            {gameData.options.difficulty === "easy" ? (
+              <EasyRow
+                gamersNames={gamersNames}
+                otherGamersResponses={otherGamersResponses}
+                userName={user.name}
+                moveItem={(fromIndex, toIndex) =>
+                  moveItemByRow(fromIndex, toIndex)
+                }
+                easyClickMoveFromIndex={easyClickMoveFromIndex}
+                setEasyClickMoveFromIndex={setEasyClickMoveFromIndex}
+                otherGamersNames={otherGamersNames}
+                deletedGamersNames={deletedGamersNames}
+                firstTurnSorted={firstTurnSorted}
+                allResponses={allResponses}
+                phase={phase}
+                previousFirstNamesByTheme={previousFirstNamesByTheme}
+              />
+            ) : (
+              <tbody className="flex w-full">
+                {otherGamersResponses &&
+                  Object.keys(otherGamersResponses).map((theme, i) => (
+                    <DraggableColumn
+                      key={i}
+                      items={otherGamersResponses[theme]}
+                      moveItem={(fromIndex, toIndex) =>
+                        moveItemInColumn(theme, fromIndex, toIndex)
+                      }
+                      gamersNames={gamersNames}
+                      deletedGamersNames={deletedGamersNames}
+                      otherGamersNames={otherGamersNames}
+                      allResponses={allResponses}
+                      phase={phase}
+                      theme={theme}
+                      firstTurnSorted={firstTurnSorted}
+                      previousFirstNamesByTheme={previousFirstNamesByTheme}
+                    />
+                  ))}
+              </tbody>
+            )}
+          </DndProvider>
         </table>
       );
     },
@@ -946,6 +1212,8 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
       user.name,
       previousFirstNamesByTheme,
       otherGamersNames,
+      easyClickMoveFromIndex,
+      gameData.options.difficulty,
     ]
   );
 
