@@ -67,7 +67,10 @@ export function LoginForm({}) {
 
         <div className="text-justify font-bold">{state.message}</div>
 
-        <button type="submit" className="border border-blue-300 bg-blue-100">
+        <button
+          type="submit"
+          className="border border-blue-300 bg-blue-100 mt-4"
+        >
           Connexion
         </button>
 
