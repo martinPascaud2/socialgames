@@ -734,13 +734,19 @@ const SettingsButtons = ({
   setting,
   setParam,
 }) => {
+  const [locked, setLocked] = useState(true);
   const iconsColor =
     setting === "camera" || setting === "qrCode" ? "purple-900" : "purple-100";
+
+  useEffect(() => {
+    setLocked(false);
+  }, []);
   return (
     <>
       <div className="absolute top-[0%] left-[24%] h-[20vw] w-[20vw] z-20 flex items-start justify-center mt-2">
         <div
           onClick={(event) => {
+            if (locked) return;
             setSetting("friends");
             // setScanning(false);
             resetPermissions();
@@ -762,6 +768,7 @@ const SettingsButtons = ({
       <div className="absolute top-[0%] right-[24%] h-[20vw] w-[20vw] z-20 flex items-start justify-center mt-2">
         <div
           onClick={(event) => {
+            if (locked) return;
             setSetting("params");
             setParam("bars");
             setServerMessage("");
@@ -783,6 +790,7 @@ const SettingsButtons = ({
       <div className="absolute bottom-[0%] left-[24%] h-[20vw] w-[20vw] z-20 flex items-end justify-center mb-2">
         <div
           onClick={async (event) => {
+            if (locked) return;
             setSetting("qrCode");
             // setScanning(false);
             resetPermissions();
@@ -817,6 +825,7 @@ const SettingsButtons = ({
       <div className="absolute bottom-[0%] right-[24%] h-[20vw] w-[20vw] z-20 flex items-end justify-center mb-2">
         <div
           onClick={(event) => {
+            if (locked) return;
             setSetting("camera");
             // setScanning((prevScanning) => !prevScanning);
             setScanning(true);
@@ -852,19 +861,370 @@ const SettingsButtons = ({
 };
 
 const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
+  const [isSettingsPressed, setIsSettingsPressed] = useState(false);
+  const [isPrelobbyPressed, setIsPrelobbyPressed] = useState(false);
+
   return (
     <>
-      <div
-        onClick={() => setToggledSettings(true)}
-        className="absolute top-[6vw] left-[30%] h-[20vw] w-[20vw] z-20 flex items-start justify-center mt-2"
-      >
-        <IoMan className="w-12 h-10" />
-      </div>
-      <div
-        onClick={() => setToggledPrelobby(true)}
-        className="absolute top-[1.3vw] right-[30%] h-[20vw] w-[20vw] z-20 flex items-start justify-center mt-2"
-      >
-        <MdOutlineVideogameAsset className="w-11 h-20 rotate-90" />
+      <div className="absolute z-30 w-full h-full">
+        <div className="relative w-full h-full">
+          {/* left */}
+          <div // square
+            onTouchStart={() => setIsSettingsPressed(true)}
+            onTouchEnd={() => {
+              setIsSettingsPressed(false);
+              setToggledSettings(true);
+            }}
+            className="absolute h-[20.2vw] w-[17vw] top-[0.3vw] left-[26.5vw] z-30"
+            style={{
+              boxShadow: !isSettingsPressed
+                ? "1vw 1vw 2vw -1vw #7e22ce, 2vw 2vw 2vw -1vw #7e22ce"
+                : "",
+              borderBottom: isSettingsPressed ? "1px solid #581c87" : "",
+              borderRight: isSettingsPressed ? "1px solid #581c87" : "",
+              backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
+            }}
+          />
+          <div // skew
+            onTouchStart={() => setIsSettingsPressed(true)}
+            onTouchEnd={() => {
+              setIsSettingsPressed(false);
+              setToggledSettings(true);
+            }}
+            className="absolute h-[20vw] w-[17vw] top-[0.1vw] -skew-x-[45deg] bg-transparent left-[16.5vw] z-30"
+            style={{
+              backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isSettingsPressed
+                ? ""
+                : "inset 9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
+            }}
+          />
+          <div // shadow filler
+            onTouchStart={() => setIsSettingsPressed(true)}
+            onTouchEnd={() => {
+              setIsSettingsPressed(false);
+              setToggledSettings(true);
+            }}
+            className="absolute h-[5vw] w-[16.5vw] top-[15.5vw] left-[15.5vw] z-30"
+            style={{
+              boxShadow: !isSettingsPressed ? "0vw 3vw 1vw -2vw #7e22ce" : "",
+            }}
+          />
+          <div // border filler
+            onTouchStart={() => setIsSettingsPressed(true)}
+            onTouchEnd={() => {
+              setIsSettingsPressed(false);
+              setToggledSettings(true);
+            }}
+            className="absolute h-[5vw] w-[16.5vw] top-[15.5vw] left-[17vw] z-30"
+            style={{
+              backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
+              borderBottom: isSettingsPressed ? "1px solid #581c87" : "",
+            }}
+          />
+
+          <div // skew top
+            onTouchStart={() => setIsSettingsPressed(true)}
+            onTouchEnd={() => {
+              setIsSettingsPressed(false);
+              setToggledSettings(true);
+            }}
+            className="absolute h-[30vw] w-[17vw] top-[18.1vw] -skew-y-[45deg] bg-transparent left-[0.1vw] z-30"
+            style={{
+              backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isSettingsPressed
+                ? ""
+                : "inset 9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
+            }}
+          />
+          <div // border filler + icon
+            onTouchStart={() => setIsSettingsPressed(true)}
+            onTouchEnd={() => {
+              setIsSettingsPressed(false);
+              setToggledSettings(true);
+            }}
+            className="absolute h-[49.2vw] w-[17vw] top-1/2 translate-y-[-50%] bg-transparent left-[0.1vw] z-40 flex justify-center items-center"
+            style={{
+              borderRight: isSettingsPressed ? "1px solid #581c87" : "",
+            }}
+          >
+            <IoMan className="w-12 h-10 text-purple-900 mb-4" />
+          </div>
+          <div // background filler
+            onTouchStart={() => setIsSettingsPressed(true)}
+            onTouchEnd={() => {
+              setIsSettingsPressed(false);
+              setToggledSettings(true);
+            }}
+            className="absolute h-[20vw] w-[17vw] top-1/2 translate-y-[-50%] left-[0.1vw] z-30 flex justify-center items-center"
+            style={{
+              backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
+              borderRight: isSettingsPressed ? "1px solid #581c87" : "",
+            }}
+          />
+          <div // middle shadow
+            onTouchStart={() => setIsSettingsPressed(true)}
+            onTouchEnd={() => {
+              setIsSettingsPressed(false);
+              setToggledSettings(true);
+            }}
+            className="absolute h-[52vw] w-[17vw] top-1/2 translate-y-[-50%] bg-transparent left-[0.1vw] z-30"
+            style={{
+              boxShadow: !isSettingsPressed ? "3vw 0vw 2vw -2vw #7e22ce" : "",
+            }}
+          />
+          <div // skew bottom
+            onTouchStart={() => setIsSettingsPressed(true)}
+            onTouchEnd={() => {
+              setIsSettingsPressed(false);
+              setToggledSettings(true);
+            }}
+            className="absolute h-[30vw] w-[17vw] bottom-[17.8vw] skew-y-[45deg] bg-transparent left-[0.1vw] z-30"
+            style={{
+              backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isSettingsPressed
+                ? ""
+                : "inset 9px 0px 5px -6px #581c87, inset 0px -9px 5px -6px #581c87",
+            }}
+          />
+
+          <div // border filler
+            onTouchStart={() => setIsSettingsPressed(true)}
+            onTouchEnd={() => {
+              setIsSettingsPressed(false);
+              setToggledSettings(true);
+            }}
+            className="absolute h-[5vw] w-[16.5vw] bottom-[15.5vw] left-[17vw] z-30"
+            style={{
+              backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
+              borderTop: isSettingsPressed ? "1px solid #581c87" : "",
+            }}
+          />
+          <div // shadow filler
+            onTouchStart={() => setIsSettingsPressed(true)}
+            onTouchEnd={() => {
+              setIsSettingsPressed(false);
+              setToggledSettings(true);
+            }}
+            className="absolute h-[5vw] w-[17vw] bottom-[15.5vw] left-[15.5vw] z-30"
+            style={{
+              boxShadow: !isSettingsPressed ? "0vw -3vw 1vw -2vw #7e22ce" : "",
+            }}
+          />
+          <div // skew
+            onTouchStart={() => setIsSettingsPressed(true)}
+            onTouchEnd={() => {
+              setIsSettingsPressed(false);
+              setToggledSettings(true);
+            }}
+            className="absolute h-[20vw] w-[17vw] bottom-[0.2vw] skew-x-[45deg] left-[16.2vw] z-30"
+            style={{
+              backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isSettingsPressed
+                ? ""
+                : "inset 9px 0px 5px -6px #581c87",
+            }}
+          />
+          <div // square
+            onTouchStart={() => setIsSettingsPressed(true)}
+            l
+            onTouchEnd={() => {
+              setIsSettingsPressed(false);
+              setToggledSettings(true);
+            }}
+            className="absolute h-[20.2vw] w-[17vw] bg-transparent bottom-[0.3vw] left-[26.5vw] z-30"
+            style={{
+              boxShadow: !isSettingsPressed
+                ? "1vw -1vw 2vw -1vw #7e22ce, 2vw -2vw 2vw -1vw #7e22ce"
+                : "inset 0px -9px 5px -6px #581c87",
+              borderTop: isSettingsPressed ? "1px solid #581c87" : "",
+              borderRight: isSettingsPressed ? "1px solid #581c87" : "",
+              backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
+            }}
+          />
+
+          {/* right */}
+          <div // square
+            onTouchStart={() => setIsPrelobbyPressed(true)}
+            onTouchEnd={() => {
+              setIsPrelobbyPressed(false);
+              setToggledPrelobby(true);
+            }}
+            className="absolute h-[20.2vw] w-[17vw] top-[0.3vw] right-[26.5vw] z-30"
+            style={{
+              boxShadow: !isPrelobbyPressed
+                ? "-1vw 1vw 2vw -1vw #7e22ce, -2vw 2vw 2vw -1vw #7e22ce"
+                : "",
+              borderBottom: isPrelobbyPressed ? "1px solid #581c87" : "",
+              borderLeft: isPrelobbyPressed ? "1px solid #581c87" : "",
+              backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
+            }}
+          />
+          <div // skew
+            onTouchStart={() => setIsPrelobbyPressed(true)}
+            onTouchEnd={() => {
+              setIsPrelobbyPressed(false);
+              setToggledPrelobby(true);
+            }}
+            className="absolute h-[20vw] w-[17vw] top-[0.1vw] skew-x-[45deg] bg-transparent right-[16.5vw] z-30"
+            style={{
+              backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isPrelobbyPressed
+                ? ""
+                : "inset -9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
+            }}
+          />
+          <div // shadow filler
+            onTouchStart={() => setIsPrelobbyPressed(true)}
+            onTouchEnd={() => {
+              setIsPrelobbyPressed(false);
+              setToggledPrelobby(true);
+            }}
+            className="absolute h-[5vw] w-[16.5vw] top-[15.5vw] right-[15.5vw] z-30"
+            style={{
+              boxShadow: !isPrelobbyPressed ? "0vw 3vw 1vw -2vw #7e22ce" : "",
+            }}
+          />
+          <div // border filler
+            onTouchStart={() => setIsPrelobbyPressed(true)}
+            onTouchEnd={() => {
+              setIsPrelobbyPressed(false);
+              setToggledPrelobby(true);
+            }}
+            className="absolute h-[5vw] w-[16.5vw] top-[15.5vw] right-[17vw] z-30"
+            style={{
+              backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
+              borderBottom: isPrelobbyPressed ? "1px solid #581c87" : "",
+            }}
+          />
+
+          <div // skew top
+            onTouchStart={() => setIsPrelobbyPressed(true)}
+            onTouchEnd={() => {
+              setIsPrelobbyPressed(false);
+              setToggledPrelobby(true);
+            }}
+            className="absolute h-[30vw] w-[17vw] top-[18.1vw] skew-y-[45deg] bg-transparent right-[0.1vw] z-30"
+            style={{
+              backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isPrelobbyPressed
+                ? ""
+                : "inset -9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
+            }}
+          />
+          <div // border filler + icon
+            onTouchStart={() => setIsPrelobbyPressed(true)}
+            onTouchEnd={() => {
+              setIsPrelobbyPressed(false);
+              setToggledPrelobby(true);
+            }}
+            className="absolute h-[49.2vw] w-[17vw] top-1/2 translate-y-[-50%] bg-transparent right-[0.1vw] z-40 flex justify-center items-center"
+            style={{
+              borderLeft: isPrelobbyPressed ? "1px solid #581c87" : "",
+            }}
+          >
+            <MdOutlineVideogameAsset className="w-11 h-20 rotate-90 mb-4 text-purple-900" />
+          </div>
+          <div // background filler
+            onTouchStart={() => setIsPrelobbyPressed(true)}
+            onTouchEnd={() => {
+              setIsPrelobbyPressed(false);
+              setToggledPrelobby(true);
+            }}
+            className="absolute h-[20vw] w-[17vw] top-1/2 translate-y-[-50%] right-[0.1vw] z-30 flex justify-center items-center"
+            style={{
+              backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
+              borderLeft: isPrelobbyPressed ? "1px solid #581c87" : "",
+            }}
+          />
+          <div // middle shadow
+            onTouchStart={() => setIsPrelobbyPressed(true)}
+            onTouchEnd={() => {
+              setIsPrelobbyPressed(false);
+              setToggledPrelobby(true);
+            }}
+            className="absolute h-[52vw] w-[17vw] top-1/2 translate-y-[-50%] bg-transparent right-[0.1vw] z-30"
+            style={{
+              boxShadow: !isPrelobbyPressed ? "-3vw 0vw 2vw -2vw #7e22ce" : "",
+            }}
+          />
+          <div // skew bottom
+            onTouchStart={() => setIsPrelobbyPressed(true)}
+            onTouchEnd={() => {
+              setIsPrelobbyPressed(false);
+              setToggledPrelobby(true);
+            }}
+            className="absolute h-[30vw] w-[17vw] bottom-[18.1vw] -skew-y-[45deg] bg-transparent right-[0.1vw] z-30"
+          />
+          <div // skew bottom
+            onTouchStart={() => setIsPrelobbyPressed(true)}
+            onTouchEnd={() => {
+              setIsPrelobbyPressed(false);
+              setToggledPrelobby(true);
+            }}
+            className="absolute h-[30vw] w-[17vw] bottom-[17.8vw] -skew-y-[45deg] bg-transparent right-[0.1vw] z-30"
+            style={{
+              backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isPrelobbyPressed
+                ? ""
+                : "inset -9px 0px 5px -6px #581c87, inset 0px -9px 5px -6px #581c87",
+            }}
+          />
+
+          <div // border filler
+            onTouchStart={() => setIsPrelobbyPressed(true)}
+            onTouchEnd={() => {
+              setIsPrelobbyPressed(false);
+              setToggledPrelobby(true);
+            }}
+            className="absolute h-[5vw] w-[16.5vw] bottom-[15.5vw] right-[17vw] z-30"
+            style={{
+              backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
+              borderTop: isPrelobbyPressed ? "1px solid #581c87" : "",
+            }}
+          />
+          <div // shadow filler
+            onTouchStart={() => setIsPrelobbyPressed(true)}
+            onTouchEnd={() => {
+              setIsPrelobbyPressed(false);
+              setToggledPrelobby(true);
+            }}
+            className="absolute h-[5vw] w-[17vw] bottom-[15.5vw] right-[15.5vw] z-30"
+            style={{
+              boxShadow: !isPrelobbyPressed ? "0vw -3vw 1vw -2vw #7e22ce" : "",
+            }}
+          />
+          <div // skew
+            onTouchStart={() => setIsPrelobbyPressed(true)}
+            onTouchEnd={() => {
+              setIsPrelobbyPressed(false);
+              setToggledPrelobby(true);
+            }}
+            className="absolute h-[20vw] w-[17vw] bottom-[0.2vw] -skew-x-[45deg] right-[16.2vw] z-30"
+            style={{
+              backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isPrelobbyPressed
+                ? ""
+                : "inset -9px 0px 5px -6px #581c87",
+            }}
+          />
+          <div // square
+            onTouchStart={() => setIsPrelobbyPressed(true)}
+            onTouchEnd={() => {
+              setIsPrelobbyPressed(false);
+              setToggledPrelobby(true);
+            }}
+            className="absolute h-[20.2vw] w-[17vw] bg-transparent bottom-[0.3vw] right-[26.5vw] z-30"
+            style={{
+              boxShadow: !isPrelobbyPressed
+                ? "-1vw -1vw 2vw -1vw #7e22ce, -2vw -2vw 2vw -1vw #7e22ce"
+                : "inset 0px -9px 5px -6px #581c87",
+              borderTop: isPrelobbyPressed ? "1px solid #581c87" : "",
+              borderLeft: isPrelobbyPressed ? "1px solid #581c87" : "",
+              backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
+            }}
+          />
+        </div>
       </div>
     </>
   );
