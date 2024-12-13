@@ -948,7 +948,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
               borderRight: isSettingsPressed ? "1px solid #581c87" : "",
             }}
           >
-            <IoMan className="w-12 h-10 text-purple-900 mb-4" />
+            <IoMan className="w-12 h-10 text-purple-800 mb-4" />
           </div>
           <div // background filler
             onTouchStart={() => setIsSettingsPressed(true)}
@@ -1123,7 +1123,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
               borderLeft: isPrelobbyPressed ? "1px solid #581c87" : "",
             }}
           >
-            <MdOutlineVideogameAsset className="w-11 h-20 rotate-90 mb-4 text-purple-900" />
+            <MdOutlineVideogameAsset className="w-11 h-20 rotate-90 mb-4 text-purple-800" />
           </div>
           <div // background filler
             onTouchStart={() => setIsPrelobbyPressed(true)}
