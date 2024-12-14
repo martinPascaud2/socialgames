@@ -50,6 +50,19 @@ import Bronze from "/public/bronze.png";
 
 const ItemType = "COLUMN_ITEM";
 
+const tailColors = [
+  "#93c5fd", // blue
+  "#d8b4fe", // purple
+  "#fda4af", // rose
+  "#fcd34d", // amber
+  "#86efac", // green
+  "#67e8f9", // cyan
+  "#a5b4fc", // indigo
+  "#f0abfc", // fuchsia
+  "#fca5a5", // red
+  "#fde047", // yellow
+];
+
 const MyPreview = ({ dimensions }) => {
   const preview = usePreview();
 
@@ -312,9 +325,12 @@ const Revelator = ({
                       return (
                         <React.Fragment key={themeIndex}>
                           <td
-                            className={`absolute left-[50%] translate-x-[-50%] w-full h-[25px] px-[9px] text-center bg-gradient-to-r ${
-                              !isDeleted ? "bg-blue-300" : "bg-gray-300"
-                            } from-gray-100 to-gray-100 via-transparent`}
+                            className="absolute left-[50%] translate-x-[-50%] w-full h-[25px] px-[9px] text-center bg-gradient-to-r from-gray-100 to-gray-100 via-transparent"
+                            style={{
+                              backgroundColor: !isDeleted
+                                ? tailColors[gamerIndex]
+                                : "#d1d5db",
+                            }}
                           >
                             <div className="outline outline-1 outline-black flex justify-center w-full items-center h-full">
                               {gamer}
@@ -592,10 +608,11 @@ const DraggableColumn = ({
             return (
               <React.Fragment key={index}>
                 <td
-                  className={`absolute left-[50%] translate-x-[-50%] w-full h-[25px] px-[9px] bg-gradient-to-r ${
-                    !isDeleted ? "bg-blue-300" : "bg-gray-300"
-                  } from-gray-100 to-gray-100 via-transparent`}
-                  style={{ userSelect: "none" }}
+                  className={`absolute left-[50%] translate-x-[-50%] w-full h-[25px] px-[9px] bg-gradient-to-r from-gray-100 to-gray-100 via-transparent`}
+                  style={{
+                    userSelect: "none",
+                    backgroundColor: !isDeleted ? tailColors[index] : "#d1d5db",
+                  }}
                 >
                   <div className="flex outline outline-1 outline-black justify-center w-full">
                     <div className="text-center relative">
@@ -802,13 +819,17 @@ const EasyRow = ({
           const isDeleted = deletedGamersNames.some(
             (deleted) => deleted === otherGamersNames[gamerIndex]
           );
+
           return (
             <React.Fragment key={gamerIndex}>
               <tr
-                className={`h-[25px] border border-black w-full flex justify-center bg-gradient-to-r ${
-                  !isDeleted ? "bg-blue-300" : "bg-gray-300"
-                } from-gray-100 to-gray-100 via-transparent
+                className={`h-[25px] border border-black w-full flex justify-center bg-gradient-to-r from-gray-100 to-gray-100 via-transparent
                 `}
+                style={{
+                  backgroundColor: !isDeleted
+                    ? tailColors[gamerIndex]
+                    : "#d1d5db",
+                }}
               >
                 <td className="flex w-full justify-center">
                   <div className="flex justify-center items-center relative">
