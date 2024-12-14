@@ -685,6 +685,7 @@ export async function goResult({ roomId, roomToken, gameData }) {
     results,
     firstTurnResults,
     phase: "results",
+    ended: true,
   };
   await saveAndDispatchData({ roomId, roomToken, newData });
 }

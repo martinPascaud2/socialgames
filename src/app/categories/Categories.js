@@ -1829,14 +1829,14 @@ const OctagonBackground = ({ handleBgClick, discreet }) => {
   );
 };
 
-const CentralZone = ({ children, onClick }) => {
+const CentralZone = ({ children, onClick, zIndex }) => {
   return (
     <div
       onClick={(event) => {
         event.stopPropagation();
         onClick && onClick(event);
       }}
-      className="central-zone absolute top-[18.2%] left-[11.4%] h-[57.1vw] w-[69.3vw] z-20"
+      className={`central-zone absolute top-[18.2%] left-[11.4%] h-[57.1vw] w-[69.3vw] z-[${zIndex}]`}
     >
       {children}
     </div>
@@ -1887,6 +1887,7 @@ const PasswordForm = ({ user }) => {
   });
 
   return (
+    // <div className="w-full h-full flex justify-center py-9">
     <div className="w-full h-full flex justify-center py-9">
       <form
         action={(formData) => formAction(formData)}
@@ -2149,14 +2150,14 @@ const Invitations = ({
       alreadyInInvitations.forEach((already) => delete publics[already]);
       return publics;
     });
-  }, [publicRooms, invitations]);
+  }, [publicRooms, invitations, setPublicRooms]);
 
   useEffect(() => {
     const getRooms = async () => {
       setPublicRooms(await getPublicRooms());
     };
     getRooms();
-  }, [getPublicRooms]);
+  }, [getPublicRooms, setPublicRooms]);
 
   return (
     <div className="w-full h-full flex flex-col justify-start items-center relative py-6">
@@ -2187,7 +2188,7 @@ const Invitations = ({
             window.location.href = invitation.link;
           }}
           // href={invitation.link}
-          className="w-[90%]"
+          className="w-[75%] z-30"
         >
           <div
             style={{
@@ -2221,7 +2222,7 @@ const Invitations = ({
               await updateLastCP({ userId: user.id, out: true });
               window.location.href = room[1].link;
             }}
-            className="w-[90%]"
+            className="w-[75%] z-30"
           >
             <div
               style={{
@@ -2516,7 +2517,7 @@ export default function Categories({
                 />
 
                 {setting === "friends" && (
-                  <CentralZone onClick={handleOctaClick}>
+                  <CentralZone onClick={handleOctaClick} zIndex={60}>
                     <Friends
                       friendList={friendList}
                       user={user}
@@ -2527,7 +2528,7 @@ export default function Categories({
                 )}
 
                 {setting === "params" && (
-                  <CentralZone onClick={handleOctaClick}>
+                  <CentralZone onClick={handleOctaClick} zIndex={60}>
                     <Params
                       updateParams={updateParams}
                       // user={user}
@@ -2541,13 +2542,13 @@ export default function Categories({
                 )}
 
                 {setting === "password" && (
-                  <CentralZone onClick={handleOctaClick}>
+                  <CentralZone onClick={handleOctaClick} zIndex={60}>
                     <PasswordForm user={user} />
                   </CentralZone>
                 )}
 
                 {setting === "qrCode" && (
-                  <CentralZone onClick={handleOctaClick}>
+                  <CentralZone onClick={handleOctaClick} zIndex={60}>
                     {
                       location ? (
                         <QRCode
@@ -2571,7 +2572,7 @@ export default function Categories({
                 )}
 
                 {setting === "camera" && (
-                  <CentralZone onClick={handleOctaClick}>
+                  <CentralZone onClick={handleOctaClick} zIndex={60}>
                     {QrCodeScanner}
                     {/* <QrCodeScanner
                     setting={setting}
@@ -2606,7 +2607,7 @@ export default function Categories({
             )}
 
             {toggledPrelobby && !toggledSettings && (
-              <CentralZone onClick={handleOctaClick}>
+              <CentralZone onClick={handleOctaClick} zIndex={60}>
                 <div className="flex w-full h-full justify-around items-center">
                   <div
                     onClick={async (event) => {
