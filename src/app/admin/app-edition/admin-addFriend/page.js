@@ -1,3 +1,5 @@
+import prisma from "@/utils/prisma";
+
 import AdminAddFriend from "./AdminAddFriend";
 
 export default async function AdminAddFriendPage() {
