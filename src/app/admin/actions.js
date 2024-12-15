@@ -25,6 +25,7 @@ export async function adminConnect(prevState, formData) {
       value: jwt,
       httpOnly: true,
       path: "/",
+      maxAge: 60 * 60 * 24 * 365 * 10,
     });
   };
 

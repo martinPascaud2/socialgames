@@ -20,5 +20,6 @@ export async function setCookieToken(status, mail) {
     value: jwt,
     httpOnly: true,
     path: "/",
+    maxAge: 60 * 60 * 24 * 365 * 10,
   });
 }
