@@ -30,10 +30,7 @@ export default function RootLayout({ children }) {
       <meta name="theme-color" content="#000000"></meta>
 
       <body className={`${inter.className}`}>
-        {/* <div className="fixed top-0 w-full bg-black z-40 h-20" /> */}
-        <div className="fixed top-0 w-full bg-black z-40 h-4" />
         <div className="h-screen">{children}</div>
-        <div className="fixed bottom-0 w-full bg-black z-40 h-4" />
       </body>
     </html>
   );
