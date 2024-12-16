@@ -24,13 +24,14 @@ export default function Triangle({
 
 export function CornerTriangle({
   size = "30",
-  direction = "top",
+  direction,
   color = "#00000",
   // childrenPosition,
   // children,
 }) {
   const [dimension, setDimension] = useState();
   const [points, setPoints] = useState();
+  const [borderInset, setBorderInset] = useState();
 
   useEffect(() => {
     if (!size) return;
@@ -52,15 +53,26 @@ export function CornerTriangle({
       // left: [`${dimension},0`, `${dimension},${dimension}`, `0,${dimension / 2}`],
     };
     setPoints(points);
-  }, [size]);
 
-  if (!dimension || !points) return null;
+    if (direction.y === "bottom" && direction.x === "left") {
+      setBorderInset("inset 9px 0px 5px -6px #581c87");
+    } else if (direction.y === "bottom" && direction.x === "right") {
+      setBorderInset("inset 0px 9px 5px -6px #581c87");
+    } else if (direction.y === "top" && direction.x === "left") {
+      setBorderInset("inset 0px -9px 5px -6px #581c87");
+    } else if (direction.y === "top" && direction.x === "right") {
+      setBorderInset("inset -9px 0px 5px -6px #581c87");
+    }
+  }, [size, direction]);
+
+  if (!dimension || !points || !borderInset) return null;
 
   return (
     <div className="relative w-full h-full">
       <svg width={dimension} height={dimension}>
-        <polygon points={points[direction].join(" ")} fill={color} />
+        <polygon points={points[direction.y].join(" ")} fill={color} />
       </svg>
+
       {/* {childrenPosition && children && (
         <div
           className="absolute"
@@ -72,6 +84,18 @@ export function CornerTriangle({
           {children}
         </div>
       )} */}
+      <div
+        className={`absolute bg-transparent rotate-45`}
+        style={{
+          width: dimension,
+          height: dimension,
+          top: direction.y === "bottom" ? `${dimension / 5}px` : "",
+          bottom: direction.y === "top" ? `${dimension / 5}px` : "",
+          left: direction.x === "left" ? `${dimension / 2}px` : "",
+          right: direction.x === "right" ? `${dimension / 2}px` : "",
+          boxShadow: borderInset,
+        }}
+      ></div>
     </div>
   );
 }
