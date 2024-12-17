@@ -36,6 +36,15 @@ export const categories = [
   },
 ];
 
+export const categoriesIcons = {
+  categorie1: "/categoriesIcons/cerebral.png",
+  categorie2: "/categoriesIcons/knowledge2.png",
+  categorie3: "/categoriesIcons/family1.png",
+  categorie4: "/categoriesIcons/cards2.png",
+  categorie5: "/categoriesIcons/social.png",
+  categorie6: "/categoriesIcons/duo1.png",
+};
+
 export const subCategories = {
   grouping: [{ name: "grouping", path: "grouping" }],
   categorie1: [
@@ -219,6 +228,6 @@ export const modesRules = {
   },
   tableau: {
     name: "Tableau",
-    limits: { min: 2, max: 10 },
+    limits: { min: 2, max: 10, opti: 6 },
   },
 };
