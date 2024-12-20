@@ -18,7 +18,7 @@ export async function launchGame({
   options,
 }) {
   const { error: playersError } = checkPlayers({
-    gameName: "dobble",
+    mode: "dobble",
     gamers,
     guests,
     multiGuests,

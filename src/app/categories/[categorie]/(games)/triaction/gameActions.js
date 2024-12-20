@@ -15,7 +15,7 @@ export async function launchGame({
   options,
 }) {
   const { error: playersError } = checkPlayers({
-    gameName: "triaction",
+    mode: options.mode,
     gamers,
     guests,
     multiGuests,

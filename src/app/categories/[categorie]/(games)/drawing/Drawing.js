@@ -19,7 +19,6 @@ export default function Drawing({
   storedLocation,
 }) {
   const mode = gameData.options?.mode;
-  const formattedMode = mode && formatWord(mode);
   const isAdmin = gameData.admin === user.name;
 
   const [isEnded, setIsEnded] = useState(false);
@@ -29,8 +28,8 @@ export default function Drawing({
 
   const removeGamers = useCallback(
     ({ roomId, roomToken, gameData, onlineGamers, admins, arrivalsOrder }) => {
-      switch (formattedMode) {
-        case "esquisse":
+      switch (mode) {
+        case "Esquissé":
           return removeChainGamers({
             roomId,
             roomToken,
@@ -39,7 +38,7 @@ export default function Drawing({
             admins,
             arrivalsOrder,
           });
-        case "pictionary":
+        case "Pictionary":
           return removeTeamGamers({
             roomId,
             roomToken,
@@ -50,7 +49,7 @@ export default function Drawing({
           });
       }
     },
-    [formattedMode]
+    [mode]
   );
 
   return (
@@ -98,7 +97,7 @@ export default function Drawing({
             admins,
           });
         }}
-        modeName={formattedMode}
+        modeName={mode}
         gameData={gameData}
         user={user}
       />

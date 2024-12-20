@@ -15,7 +15,7 @@ export async function launchGame({
   options,
 }) {
   const { error: playersError } = checkPlayers({
-    gameName: "undercover",
+    mode: "undercover",
     gamers,
     guests,
     multiGuests,

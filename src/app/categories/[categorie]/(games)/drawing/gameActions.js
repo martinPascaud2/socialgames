@@ -94,7 +94,7 @@ export async function launchGame({
   options,
 }) {
   const { error: playersError } = checkPlayers({
-    gameName: "drawing",
+    mode: options.mode,
     gamers,
     guests,
     multiGuests,

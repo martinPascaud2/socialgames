@@ -48,7 +48,7 @@ export async function launchGame({
   // options,
 }) {
   const { error: playersError } = checkPlayers({
-    gameName: "uno",
+    mode: "uno",
     gamers,
     guests,
     multiGuests,

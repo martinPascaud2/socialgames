@@ -473,7 +473,7 @@ export default function Ptitbac({
             arrivalsOrder,
           })
         }
-        modeName="ptitbac"
+        modeName="P'tit bac"
         gameData={gameData}
         user={user}
       />

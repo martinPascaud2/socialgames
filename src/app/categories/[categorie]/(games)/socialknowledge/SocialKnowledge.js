@@ -18,7 +18,6 @@ export default function SocialKnowledge({
   storedLocation,
 }) {
   const mode = gameData.options?.mode;
-  const formattedMode = mode && formatWord(mode);
   const isAdmin = gameData.admin === user.name;
 
   const [isEnded, setIsEnded] = useState(false);
@@ -28,8 +27,8 @@ export default function SocialKnowledge({
 
   const removeGamers = useCallback(
     ({ roomId, roomToken, gameData, onlineGamers, admins, arrivalsOrder }) => {
-      switch (formattedMode) {
-        case "tableau":
+      switch (mode) {
+        case "Tableau":
           return removeTableauGamers({
             roomId,
             roomToken,
@@ -40,7 +39,7 @@ export default function SocialKnowledge({
           });
       }
     },
-    [formattedMode]
+    [mode]
   );
 
   return (
@@ -80,7 +79,7 @@ export default function SocialKnowledge({
             arrivalsOrder,
           });
         }}
-        modeName={formattedMode}
+        modeName={mode}
         gameData={gameData}
         user={user}
       />

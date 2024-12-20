@@ -128,7 +128,6 @@ export const subCategories = {
 };
 
 // to be done : remove isGuestsAllowed, limits in modes
-
 export const gamesRefs = {
   grouping: { name: "un nouveau groupe", categorie: "grouping" },
   // actionouverite: {
@@ -140,19 +139,19 @@ export const gamesRefs = {
   undercover: {
     name: "Undercover",
     categorie: "categorie5",
-    limits: { min: 3, max: 15 },
+    limits: { min: 3, max: 15, opti: 8 },
     isGuestsAllowed: true,
   },
   dobble: {
     name: "Identiques",
     categorie: "categorie1",
-    limits: { min: 2, max: 15 },
+    limits: { min: 2, max: 15, opti: 4 },
     isGuestsAllowed: false,
   },
   memory: {
     name: "Mémoire",
     categorie: "categorie6",
-    limits: { min: 2, max: 2 },
+    limits: { min: 2, max: 2, opti: 2 },
     isGuestsAllowed: true,
   },
   ptitbac: {
@@ -170,7 +169,7 @@ export const gamesRefs = {
   uno: {
     name: "Classico",
     categorie: "categorie4",
-    limits: { min: 2, max: 10 },
+    limits: { min: 2, max: 10, opti: 6 },
     isGuestsAllowed: false,
   },
   triaction: {
@@ -194,39 +193,68 @@ export const gamesRefs = {
 };
 
 export const modesRules = {
-  ptitbac: {
+  "P'tit bac": {
     name: "Quel mot ?",
-    limits: { min: 2, max: 15 },
+    limits: { min: 2, max: 15, opti: 7 },
   },
+
   dobble: {
     name: "Identiques",
-    limits: { min: 2, max: 15 },
+    limits: { min: 2, max: 15, opti: 4 },
   },
-  esquisse: {
-    name: "Esquisse",
-    limits: { min: 4, max: 10 },
+
+  Pictionary: {
+    name: "Pictionary",
+    limits: { min: 4, max: 10, opti: 7 },
   },
+  Esquissé: {
+    name: "Esquissé",
+    limits: { min: 4, max: 10, opti: 7 },
+  },
+
   memory: {
     name: "Mémoire",
-    limits: { min: 2, max: 2 },
+    limits: { min: 2, max: 2, opti: 2 },
   },
+  Memory: {
+    name: "Mémoire",
+    limits: { min: 2, max: 2, opti: 2 },
+  },
+
   triaction: {
+    // put mode in disconnected
     name: "Triaction",
-    limits: { min: 3, max: 8 },
+    limits: { min: 3, max: 8, opti: 5 },
   },
+  "Triaction (random)": {
+    name: "Triaction",
+    limits: { min: 3, max: 8, opti: 5 },
+  },
+  "Triaction (peek)": {
+    name: "Triaction",
+    limits: { min: 3, max: 8, opti: 5 },
+  },
+
   undercover: {
     name: "Undercover",
-    limits: { min: 3, max: 15 },
+    limits: { min: 3, max: 15, opti: 8 },
   },
+
   uno: {
     name: "Classico",
-    limits: { min: 2, max: 10 },
+    limits: { min: 2, max: 10, opti: 6 },
   },
+
   sort: {
     name: "Placement",
-    limits: { min: 2, max: 8 },
+    limits: { min: 2, max: 8, opti: 5 },
   },
+
   tableau: {
+    name: "Tableau",
+    limits: { min: 2, max: 10, opti: 6 },
+  },
+  Tableau: {
     name: "Tableau",
     limits: { min: 2, max: 10, opti: 6 },
   },

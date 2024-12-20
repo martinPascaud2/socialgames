@@ -377,7 +377,7 @@ export default function Memory({
             arrivalsOrder,
           })
         }
-        modeName="memory"
+        modeName="Memory"
         gameData={gameData}
         user={user}
       />

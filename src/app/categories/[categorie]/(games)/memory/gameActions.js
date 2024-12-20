@@ -17,7 +17,7 @@ export async function launchGame({
   options,
 }) {
   const { error: playersError } = checkPlayers({
-    gameName: "memory",
+    mode: "memory",
     gamers,
     guests,
     multiGuests,

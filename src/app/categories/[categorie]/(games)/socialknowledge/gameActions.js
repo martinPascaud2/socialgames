@@ -18,7 +18,7 @@ export async function launchGame({
   options,
 }) {
   const { error: playersError } = checkPlayers({
-    gameName: "socialknowledge",
+    mode: options.mode,
     gamers,
     guests,
     multiGuests,

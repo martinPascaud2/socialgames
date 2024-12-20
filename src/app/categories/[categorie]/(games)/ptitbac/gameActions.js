@@ -21,7 +21,7 @@ export async function launchGame({
   options,
 }) {
   const { error: playersError } = checkPlayers({
-    gameName: "ptitbac",
+    mode: "P'tit bac",
     gamers,
     guests,
     multiGuests,

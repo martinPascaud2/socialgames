@@ -13,6 +13,7 @@ export default function ChooseAnotherGame({
   lastPosition,
   viceAdmin,
   arrivalsOrder,
+  children,
 }) {
   const router = useRouter();
 
@@ -46,12 +47,5 @@ export default function ChooseAnotherGame({
     arrivalsOrder,
   ]);
 
-  return (
-    <button
-      onClick={async () => await returnLobby()}
-      className="border border-blue-300 bg-blue-100"
-    >
-      Autre jeu
-    </button>
-  );
+  return <button onClick={async () => await returnLobby()}>{children}</button>;
 }

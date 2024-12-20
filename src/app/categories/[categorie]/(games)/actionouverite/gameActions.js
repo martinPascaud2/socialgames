@@ -17,7 +17,7 @@ export async function launchGame({
   options,
 }) {
   const { error: playersError } = checkPlayers({
-    gameName: "actionouverite",
+    mode: "actionouverite",
     gamers,
     guests,
     multiGuests,

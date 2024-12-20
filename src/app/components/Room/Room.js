@@ -35,6 +35,7 @@ import {
   LockOpenIcon,
 } from "@heroicons/react/24/outline";
 import { FaLongArrowAltLeft, FaLongArrowAltRight } from "react-icons/fa";
+import { FaInfo } from "react-icons/fa6";
 import { IoInformationCircleOutline } from "react-icons/io5";
 // import { ImExit } from "react-icons/im";
 import "./room.css";
@@ -913,6 +914,13 @@ export default function Room({
               />
             </div>
           </div>
+          {isAdmin && gameName !== "grouping" && (
+            <div onClick={async () => await deleteInvs()}>
+              <NextStep onClick={() => launchRoom()}>
+                <div>Lancer</div>
+              </NextStep>
+            </div>
+          )}
 
           <div
             className="h-full w-full absolute top-0 left-0 z-20 px-2"
@@ -925,44 +933,82 @@ export default function Room({
               <div>Chargement...</div>
             ) : (
               <div className="relative h-full w-full">
-                <div className="absolute left-1/2 translate-x-[-50%] h-[15dvh] w-full">
+                <div className="absolute left-1/2 translate-x-[-50%] h-[10dvh] w-full">
                   <div className="w-full flex justify-center translate-y-[1rem]">
-                    {options?.mode && (
+                    {categorie !== "grouping" && (
                       <div className="flex items-center">
                         <div>
-                          {modesRules[options?.mode.toLowerCase()].limits.min}
+                          {options?.mode
+                            ? modesRules[options?.mode].limits.min
+                            : gamesRefs[gameName].limits.min}
                           &nbsp;
                         </div>
                         <FaLongArrowAltRight className="mr-1 w-6 h-6" />
                         <div className="text-2xl text-amber-400">
-                          {modesRules[options?.mode.toLowerCase()].limits.opti}
+                          {options?.mode
+                            ? modesRules[options?.mode].limits.opti
+                            : gamesRefs[gameName].limits.opti}
                         </div>
                         <FaLongArrowAltLeft className="ml-1 w-6 h-6" />
                         <div>
                           &nbsp;
-                          {modesRules[options?.mode.toLowerCase()].limits.max}
+                          {options?.mode
+                            ? modesRules[options?.mode].limits.max
+                            : gamesRefs[gameName].limits.max}
                         </div>
                       </div>
                     )}
                   </div>
-                  <div className="relative w-full h-full flex justify-center items-center">
-                    <div className="absolute left-[7dvh] top-[3dvh]">
+                  <div className="absolute top-[7dvh] w-full flex justify-center items-center">
+                    {categorie !== "grouping" ? (
                       <Image
                         src={categoriesIcons[categorie]}
                         alt={`${categorie.name} image`}
-                        className="max-h-[5dvh] max-w-[5dvh] aspect-square"
+                        className="max-h-[4dvh] max-w-[4dvh] aspect-square"
                         style={{ objectFit: "contain" }}
                         width={500}
                         height={500}
                       />
-                    </div>
-                    <div className="absolute right-[6dvh] top-[2.8dvh]">
-                      <IoInformationCircleOutline className="h-[6dvh] w-[6dvh]" />
-                    </div>
-                    <div className="text-center w-full absolute top-[4dvh] text-amber-400 text-3xl flex justify-center">
-                      {gamesRefs[gameName].categorie === "grouping"
-                        ? "Lobby"
-                        : gamesRefs[gameName].name}
+                    ) : (
+                      <div className="h-[4dvh] w-[4dvh]" />
+                    )}
+                    {isAdmin ? (
+                      <div className="text-center text-amber-700 text-3xl flex justify-center items-center border border-amber-700 bg-amber-100 p-2 mx-2 min-w-[15dvh]">
+                        {gamesRefs[gameName].categorie === "grouping" ? (
+                          <div
+                            onClick={() => launchRoom()}
+                            className="w-full h-full"
+                          >
+                            +
+                          </div>
+                        ) : (
+                          gameName !== "grouping" &&
+                          group && (
+                            <ChooseAnotherGame
+                              group={group}
+                              roomToken={roomToken}
+                              gameData={gameData}
+                              lastGame={group.lastGame}
+                              lastPosition={geoLocation}
+                              viceAdmin={group.viceAdmin}
+                              arrivalsOrder={group.arrivalsOrder}
+                            >
+                              {gamesRefs[gameName].name}
+                            </ChooseAnotherGame>
+                          )
+                        )}
+                      </div>
+                    ) : (
+                      <div className="text-center text-amber-400 text-3xl flex justify-center items-center mx-2 min-w-[15dvh]">
+                        {gamesRefs[gameName].categorie === "grouping" ? (
+                          <span>Lobby</span>
+                        ) : (
+                          gamesRefs[gameName].name
+                        )}
+                      </div>
+                    )}
+                    <div className="rounded-full h-[4dvh] w-[4dvh] border border-amber-700 bg-amber-100 flex justify-center items-center">
+                      <FaInfo className="h-[2.5dvh] w-[2.5dvh] text-amber-700" />
                     </div>
                   </div>
                 </div>
@@ -1240,7 +1286,7 @@ export default function Room({
                       </div>
                     </div>
                   )}
-                  <div
+                  {/* <div
                     className={`absolute flex items-end w-full z-50 bg-black bottom-0`}
                     style={{ height: `${barsSizes.bottom / 4}rem` }}
                   >
@@ -1267,7 +1313,7 @@ export default function Room({
                         </button>
                       )}
                     </div>
-                  </div>
+                  </div> */}
                   {isAdmin && (
                     <>
                       <hr />
@@ -1325,7 +1371,7 @@ export default function Room({
                         <div className="flex flex-col">{serverMessage}</div>
                       </div>
 
-                      <div
+                      {/* <div
                         className={`absolute bottom-0 w-full bg-black z-10`}
                         style={{ height: `${barsSizes.bottom / 4}rem` }}
                       >
@@ -1381,7 +1427,7 @@ export default function Room({
                             </NextStep>
                           </div>
                         </div>
-                      </div>
+                      </div> */}
                     </>
                   )}
                   {Options && options && setOptions && setServerMessage && (
