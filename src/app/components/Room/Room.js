@@ -23,7 +23,7 @@ import cancelBack from "@/utils/cancelBack";
 import { gamesRefs, modesRules, categoriesIcons } from "@/assets/globals";
 
 import { CornerTriangle } from "../Triangle";
-import DeleteGroup from "@/components/DeleteGroup";
+import { LobbyDeleteGroup } from "@/components/DeleteGroup";
 import ChooseAnotherGame from "@/components/ChooseAnotherGame";
 import ChooseLastGame from "@/components/ChooseLastGame";
 import NextStep from "../NextStep";
@@ -37,7 +37,14 @@ import {
 import { FaLongArrowAltLeft, FaLongArrowAltRight } from "react-icons/fa";
 import { FaInfo } from "react-icons/fa6";
 import { IoInformationCircleOutline } from "react-icons/io5";
-// import { ImExit } from "react-icons/im";
+import { ImExit } from "react-icons/im";
+import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
+import { FaUserFriends } from "react-icons/fa";
+import { IoPersonAddSharp } from "react-icons/io5";
+import { IoMdArrowDropright } from "react-icons/io";
+import { LiaQrcodeSolid } from "react-icons/lia";
+
 import "./room.css";
 
 var pusher = new Pusher("61853af9f30abf9d5b3d", {
@@ -161,7 +168,6 @@ export default function Room({
   const [multiGuestId, setMultiGuestId] = useState();
   const [multiGuestDataId, setMultiGuestDataId] = useState();
   const [joinError, setJoinError] = useState();
-  const [showRoomRefs, setShowRoomRefs] = useState(false);
   const [isPrivate, setIsPrivate] = useState();
   const [geoLocation, setGeoLocation] = useState(null);
   const [isStarted, setIsStarted] = useState(false);
@@ -179,6 +185,12 @@ export default function Room({
   const [options, setOptions] = useState({});
   const [gameData, setGameData] = useState({});
   const [onlineGamers, setOnlineGamers] = useState([]);
+
+  const [showPlayers, setShowPlayers] = useState(true);
+  const [showGamerList, setShowGamerList] = useState(true);
+  const [showInvitations, setShowInvitations] = useState(false);
+  const [showRoomRefs, setShowRoomRefs] = useState(false);
+  const [showConfig, setShowConfig] = useState(false);
 
   const { isSupported, isVisible, released, request, release } = useWake(); // check
   const userParams = user.params;
@@ -853,13 +865,16 @@ export default function Room({
             !user.multiGuest && (await deleteInvs());
             router.push("/categories");
           }}
-          className="border border-blue-300 bg-blue-100"
+          className="border border-sky-300 bg-sky-100"
         >
           Quitter
         </button>
       </>
     );
   }
+
+  console.log("gameName", gameName);
+  console.log("group", group);
 
   if (!roomId || !gameData) return null;
 
@@ -1013,8 +1028,559 @@ export default function Room({
                   </div>
                 </div>
 
-                <div className="le reste absolute top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%] w-full">
-                  {isAdmin && (
+                <div className="le reste absolute top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%] w-full flex flex-col items-center">
+                  {!showPlayers ? (
+                    <div
+                      onClick={() => {
+                        setShowPlayers(true);
+                        setShowConfig(false);
+                      }}
+                      className="relative flex justify-center items-center border border-2 rounded-t-md border-amber-700 bg-amber-100 text-amber-700 p-2 w-[80%] h-12"
+                    >
+                      <div className="flex items-center absolute left-2">
+                        {isPrivate ? (
+                          <LockClosedIcon className="h-8 w-8 mb-0.5" />
+                        ) : (
+                          <LockOpenIcon className="h-8 w-8 mb-0.5" />
+                        )}
+                      </div>
+                      {(() => {
+                        if (!gamerList || !multiGuestList) return;
+                        const gamersNumber =
+                          gamerList.length +
+                          guestList.length +
+                          multiGuestList.length;
+                        const badGamersNumber =
+                          gamersNumber < gamesRefs[gameName].limits?.min ||
+                          gamersNumber > gamesRefs[gameName].limits?.max;
+
+                        return (
+                          <div className="text-xl">
+                            <span>Joueurs&nbsp;:&nbsp;</span>
+                            <span
+                              className={`${
+                                badGamersNumber && "text-red-800 font-semibold"
+                              }`}
+                            >
+                              {gamersNumber}
+                            </span>
+                            <span>
+                              {gamesRefs[gameName].limits &&
+                                `\u00A0/\u00A0${gamesRefs[gameName].limits.max}`}
+                            </span>
+                          </div>
+                        );
+                      })()}
+                      <div className="absolute right-1">
+                        <ChevronRightIcon className="h-8 w-8" />
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center border border-2 rounded-t-md border-sky-700 bg-sky-100 text-sky-700 p-2 w-[80%] relative min-h-[13.3rem]">
+                      <div className="absolute right-1">
+                        <ChevronDownIcon className="h-8 w-8" />
+                      </div>
+
+                      <div className="absolute top-2 left-2 flex flex-col gap-2">
+                        <div
+                          className={`p-1 ${
+                            isAdmin &&
+                            "border border-amber-700 bg-amber-100 w-fit"
+                          }`}
+                        >
+                          {isPrivate ? (
+                            <LockClosedIcon
+                              onClick={async () => {
+                                if (!isAdmin) return;
+                                await togglePriv();
+                                await inviteAll({
+                                  userId: user.id,
+                                  userName: user.name,
+                                  categorie,
+                                  gameName,
+                                  mode: options?.mode,
+                                  roomToken,
+                                });
+                                setInvitedList(() => {
+                                  const friendsNames = friendsList.map(
+                                    (friend) => friend.name
+                                  );
+                                  return friendsNames;
+                                });
+                              }}
+                              className="w-8 h-8 text-amber-700"
+                            />
+                          ) : (
+                            <LockOpenIcon
+                              onClick={async () => {
+                                if (!isAdmin) return;
+                                await togglePriv();
+                              }}
+                              className="w-8 h-8 text-amber-700"
+                            />
+                          )}
+                        </div>
+                        {!user.multiGuest && (
+                          <>
+                            <div
+                              onClick={() => {
+                                setShowGamerList(true);
+                                setShowInvitations(false);
+                                setShowRoomRefs(false);
+                              }}
+                              className={`${
+                                showGamerList
+                                  ? "border border-sky-100 text-sky-700 relative p-1"
+                                  : "border border-amber-700 bg-amber-100 text-amber-700 relative p-1"
+                              }`}
+                            >
+                              <FaUserFriends className="w-8 h-8" />
+                              {showGamerList && (
+                                <div className="absolute left-full top-1/2 translate-y-[-50%]">
+                                  <IoMdArrowDropright className="h-8 w-8 pr-2" />
+                                </div>
+                              )}
+                            </div>
+                            <div
+                              onClick={() => {
+                                setShowGamerList(false);
+                                setShowInvitations(true);
+                                setShowRoomRefs(false);
+                              }}
+                              className={`${
+                                showInvitations
+                                  ? "border border-sky-100 text-sky-700 relative p-1"
+                                  : "border border-amber-700 bg-amber-100 text-amber-700 relative p-1"
+                              }`}
+                            >
+                              <IoPersonAddSharp className="w-8 h-8" />
+                              {showInvitations && (
+                                <div className="absolute left-full top-1/2 translate-y-[-50%]">
+                                  <IoMdArrowDropright className="h-8 w-8 pr-2" />
+                                </div>
+                              )}
+                            </div>
+
+                            {isAdmin && (
+                              <div
+                                onClick={async () => {
+                                  try {
+                                    if (!geoLocation) {
+                                      const loc = await getLocation();
+                                      await saveLocation({
+                                        geoLocation: loc,
+                                        roomId,
+                                      });
+                                      setGeoLocation(loc);
+                                    }
+                                    setShowGamerList(false);
+                                    setShowInvitations(false);
+                                    setShowRoomRefs(true);
+                                  } catch (error) {
+                                    console.error(error.message);
+                                    const errorInformations =
+                                      getErrorInformations({
+                                        window,
+                                        fail: "location_permission",
+                                      }).map((info, i) => (
+                                        <div
+                                          key={i}
+                                          className={`${
+                                            i === 0 && "font-bold"
+                                          }`}
+                                        >
+                                          {i !== 0 && "=>"}
+                                          {info}
+                                        </div>
+                                      ));
+                                    setServerMessage(errorInformations);
+                                  }
+                                }}
+                                className={`${
+                                  showRoomRefs
+                                    ? "border border-sky-100 text-sky-700 relative p-1"
+                                    : "border border-amber-700 bg-amber-100 text-amber-700 relative p-1"
+                                }`}
+                              >
+                                <LiaQrcodeSolid className="w-8 h-8" />
+                                {showRoomRefs && (
+                                  <div className="absolute left-full top-1/2 translate-y-[-50%]">
+                                    <IoMdArrowDropright className="h-8 w-8 pr-2" />
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+
+                      {showGamerList && (
+                        <>
+                          {(() => {
+                            if (!gamerList || !multiGuestList) return;
+                            const gamersNumber =
+                              gamerList.length +
+                              guestList.length +
+                              multiGuestList.length;
+                            const badGamersNumber =
+                              gamersNumber < gamesRefs[gameName].limits?.min ||
+                              gamersNumber > gamesRefs[gameName].limits?.max;
+
+                            return (
+                              <div className="flex justify-center items-center h-8">
+                                <div className="relative">
+                                  Liste des joueurs&nbsp;:&nbsp;
+                                  <div className="absolute left-full top-1/2 translate-y-[-50%] w-full flex items-baseline">
+                                    <div
+                                      className={`font-semibold ${
+                                        badGamersNumber && "text-red-800"
+                                      }`}
+                                    >
+                                      {gamersNumber}&nbsp;
+                                    </div>
+                                    {gamesRefs[gameName].limits && (
+                                      <div>
+                                        {`/\u0020${gamesRefs[gameName].limits.max}`}
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })()}
+                          {group?.gamers &&
+                            group.gamers.map((gamer) => {
+                              const gamerName = gamer.name;
+                              const isHere = gamerList?.includes(gamerName);
+                              return (
+                                <div
+                                  key={gamerName}
+                                  className="w-full flex justify-center"
+                                >
+                                  <div
+                                    className={`${
+                                      gamerName === uniqueName
+                                        ? "font-semibold"
+                                        : ""
+                                    } relative`}
+                                  >
+                                    <span className="text-lg">{gamerName}</span>
+                                    <div className="absolute right-full top-0">
+                                      {gamerName !== user.name ? (
+                                        isHere ? (
+                                          <CheckIcon className="h-6 w-6 " />
+                                        ) : (
+                                          " ... "
+                                        )
+                                      ) : null}
+                                    </div>
+                                    {isHere && gamerName !== user.name && (
+                                      <button
+                                        onClick={async () => {
+                                          const newGamersGroup = [
+                                            ...group.gamers,
+                                          ].filter(
+                                            (gamer) => gamer.name !== gamerName
+                                          );
+                                          setGroup((prevGroup) => ({
+                                            ...prevGroup,
+                                            gamers: newGamersGroup,
+                                          }));
+                                          await deleteGamer(gamerName);
+                                        }}
+                                        className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
+                                      >
+                                        <XMarkIcon className="w-5 h-5" />
+                                      </button>
+                                    )}
+                                    {isHere && gamerName === user.name && (
+                                      <div
+                                        onClick={async () => await deleteInvs()}
+                                      >
+                                        <LobbyDeleteGroup
+                                          roomToken={roomToken}
+                                          roomId={roomId}
+                                        />
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          {group?.multiGuests &&
+                            group.multiGuests.map((multi) => {
+                              const multiName = multi.name;
+                              const isHere =
+                                multiGuestList?.includes(multiName);
+                              return (
+                                <div
+                                  key={multiName}
+                                  className="w-full flex justify-center"
+                                >
+                                  <div className="flex justify-center items-center relative">
+                                    <span className="text-lg">{multiName}</span>{" "}
+                                    <span className="italic text-sm">
+                                      (invité)
+                                    </span>
+                                    <div className="absolute right-full top-0">
+                                      {isHere ? (
+                                        <CheckIcon className="h-6 w-6 " />
+                                      ) : (
+                                        " ... "
+                                      )}
+                                    </div>
+                                    {isHere && (
+                                      <button
+                                        onClick={() => {
+                                          const newMultiGroup = [
+                                            ...group.multiGuests,
+                                          ].filter(
+                                            (multi) => multi.name !== multiName
+                                          );
+                                          setGroup((prevGroup) => ({
+                                            ...prevGroup,
+                                            multiGuests: newMultiGroup,
+                                          }));
+                                          deleteMultiGuest(multiName);
+                                        }}
+                                        className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
+                                      >
+                                        <XMarkIcon className="w-5 h-5" />
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          {gamerList?.map((gamer) => {
+                            const gamerNameList =
+                              group?.gamers?.map((gamer) => gamer.name) || [];
+                            const multiNameList =
+                              group?.multiGuests?.map((multi) => multi.name) ||
+                              [];
+                            if (
+                              gamerNameList.includes(gamer) ||
+                              multiNameList.includes(gamer)
+                            )
+                              return;
+                            return (
+                              <div
+                                key={gamer}
+                                className="w-full flex justify-center my-0.5"
+                              >
+                                <div
+                                  className={`${
+                                    gamer === uniqueName ? "font-semibold" : ""
+                                  } relative
+                                  `}
+                                >
+                                  <span className="text-lg">{gamer}</span>
+                                  {isAdmin && gamer !== user.name && (
+                                    <button
+                                      onClick={async () =>
+                                        await deleteGamer(gamer)
+                                      }
+                                      className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
+                                    >
+                                      <XMarkIcon className="h-5 w-5" />
+                                    </button>
+                                  )}
+                                  {isAdmin && gamer === user.name && (
+                                    <>
+                                      <div
+                                        onClick={async () => await deleteInvs()}
+                                      >
+                                        <LobbyDeleteGroup
+                                          roomToken={roomToken}
+                                          roomId={roomId}
+                                        />
+                                      </div>
+                                    </>
+                                  )}
+                                  {!isAdmin && gamer === user.name && (
+                                    <button
+                                      onClick={async () =>
+                                        await deleteGamer(uniqueName)
+                                      }
+                                      className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
+                                    >
+                                      <ImExit className="ml-1 w-5 h-5 p-0.5" />
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                          {multiGuestList?.map((multiGuest, i) => {
+                            const gamerNameList =
+                              group?.gamers?.map((gamer) => gamer.name) || [];
+                            const multiNameList =
+                              group?.multiGuests?.map((multi) => multi.name) ||
+                              [];
+                            if (
+                              multiNameList.includes(multiGuest) ||
+                              gamerNameList.includes(multiGuest)
+                            )
+                              return;
+                            return (
+                              <div
+                                key={i}
+                                className="w-full flex justify-center"
+                              >
+                                <div
+                                  className={`${
+                                    multiGuest === uniqueName
+                                      ? "font-semibold"
+                                      : ""
+                                  } relative
+                                  `}
+                                >
+                                  <span className="text-lg">{multiGuest}</span>
+                                  <span className="italic text-sm font-normal">
+                                    (invité)
+                                  </span>
+                                  {isAdmin && (
+                                    <button
+                                      onClick={() =>
+                                        deleteMultiGuest(multiGuest)
+                                      }
+                                      className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
+                                    >
+                                      <XMarkIcon className="h-5 w-5" />
+                                    </button>
+                                  )}
+                                  {multiGuest === user.name && (
+                                    <button
+                                      onClick={async () =>
+                                        await deleteMultiGuest(uniqueName)
+                                      }
+                                      className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
+                                    >
+                                      <ImExit className="ml-1 w-5 h-5 p-0.5" />
+                                    </button>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </>
+                      )}
+
+                      {showInvitations && (
+                        <div className="flex flex-col gap-1 items-center">
+                          <div className="relative h-8 flex items-center">
+                            <h1>Invite tes amis !</h1>
+                            <button
+                              onClick={async () => {
+                                const friends = await getRoomFriendList({
+                                  userId: user.id,
+                                });
+                                setFriendsList(friends);
+                              }}
+                              className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
+                            >
+                              <ArrowPathIcon className="h-4 w-4" />
+                            </button>
+                          </div>
+                          <div>
+                            {friendsList &&
+                              friendsList.map((friend) => {
+                                if (
+                                  deletedGamersList.some(
+                                    (deleted) => deleted === friend.name
+                                  ) ||
+                                  gamerList.some(
+                                    (gamer) => gamer === friend.name
+                                  )
+                                )
+                                  return;
+                                const invited = invitedList.some(
+                                  (inv) => inv === friend.name
+                                );
+                                return (
+                                  <button
+                                    key={friend.id}
+                                    onClick={async () => {
+                                      await inviteFriend({
+                                        userName: user.name,
+                                        friendMail: friend.email,
+                                        categorie,
+                                        gameName,
+                                        mode: options?.mode,
+                                        roomToken,
+                                      });
+                                      setInvitedList((prevInv) => [
+                                        ...new Set([...prevInv, friend.name]),
+                                      ]);
+                                    }}
+                                    className={`${
+                                      !invited
+                                        ? "border border-amber-700 bg-amber-100 text-amber-700 p-1"
+                                        : "border border-sky-100 text-sky-700 pulse-soft p-1"
+                                    }`}
+                                  >
+                                    {friend.customName}
+                                  </button>
+                                );
+                              })}
+                          </div>
+                        </div>
+                      )}
+
+                      {showRoomRefs && geoLocation && (
+                        <div className="w-full">
+                          <div className="w-full h-8 flex justify-center items-center ml-6">
+                            Qr code de la partie
+                          </div>
+
+                          <div className="w-full ml-16 pl-1">
+                            <QRCode
+                              value={`${process.env.NEXT_PUBLIC_APP_URL}/invitation/?categorie=${categorie}&gameName=${gameName}&token=${roomToken}`}
+                              style={{
+                                width: "calc(100% - 5rem)",
+                                aspectRatio: "1 / 1",
+                              }}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {!showConfig && (
+                    <div
+                      onClick={() => {
+                        setShowConfig(true);
+                        setShowPlayers(false);
+                      }}
+                      className="flex justify-between items-center border border-2 border-amber-700 rounded-b-md bg-amber-100 text-amber-700 p-2 w-[80%] h-12"
+                    >
+                      Résumé config
+                    </div>
+                  )}
+                  <div
+                    className={`${
+                      !showConfig && "hidden"
+                    } flex flex-col items-center border border-2 border-sky-700 rounded-b-md bg-sky-100 text-sky-700 p-2 w-[80%]`}
+                  >
+                    {Options && options && setOptions && setServerMessage && (
+                      <Options
+                        userId={user.id}
+                        isAdmin={isAdmin}
+                        options={options}
+                        setOptions={setOptions}
+                        lastMode={group?.lastMode}
+                        setServerMessage={setServerMessage}
+                        gamersNumber={
+                          gamerList.length +
+                          guestList.length +
+                          multiGuestList.length
+                        }
+                      />
+                    )}
+                  </div>
+
+                  {/* {isAdmin && (
                     <>
                       <div className="flex justify-center items-center">
                         {isPrivate ? (
@@ -1036,7 +1602,7 @@ export default function Room({
                                 return friendsNames;
                               });
                             }}
-                            className="ml-2 mb-2 w-8 h-8 text-blue-300"
+                            className="ml-2 mb-2 w-8 h-8 text-sky-300"
                           />
                         ) : (
                           <LockOpenIcon
@@ -1046,8 +1612,8 @@ export default function Room({
                         )}
                       </div>
                     </>
-                  )}
-                  <div>
+                  )} */}
+                  {/* <div>
                     {(() => {
                       if (!gamerList || !multiGuestList) return;
                       const gamersNumber =
@@ -1109,7 +1675,7 @@ export default function Room({
                                 }));
                                 await deleteGamer(gamerName);
                               }}
-                              className="border border-blue-300 bg-blue-100"
+                              className="border border-sky-300 bg-sky-100"
                             >
                               Retirer
                             </button>
@@ -1146,7 +1712,7 @@ export default function Room({
                                 }));
                                 deleteMultiGuest(multiName);
                               }}
-                              className="border border-blue-300 bg-blue-100"
+                              className="border border-sky-300 bg-sky-100"
                             >
                               Retirer
                             </button>
@@ -1177,7 +1743,7 @@ export default function Room({
                           {isAdmin && gamer !== user.name && (
                             <button
                               onClick={async () => await deleteGamer(gamer)}
-                              className="border border-blue-300 bg-blue-100"
+                              className="border border-sky-300 bg-sky-100"
                             >
                               Retirer
                             </button>
@@ -1212,7 +1778,7 @@ export default function Room({
                           {isAdmin && (
                             <button
                               onClick={() => deleteMultiGuest(multiGuest)}
-                              className="border border-blue-300 bg-blue-100"
+                              className="border border-sky-300 bg-sky-100"
                             >
                               Retirer
                             </button>
@@ -1220,11 +1786,11 @@ export default function Room({
                         </div>
                       );
                     })}
-                  </div>
+                  </div> */}
 
                   <hr />
 
-                  {!user.multiGuest && (
+                  {/* {!user.multiGuest && (
                     <div className="flex flex-col items-center">
                       <div className="flex mt-1">
                         <h1>Invite tes amis !</h1>
@@ -1235,7 +1801,7 @@ export default function Room({
                             });
                             setFriendsList(friends);
                           }}
-                          className="flex justify-center items-center border border-blue-300 bg-blue-100 ml-2"
+                          className="flex justify-center items-center border border-sky-300 bg-sky-100 ml-2"
                         >
                           <ArrowPathIcon className="h-4 w-4" />
                         </button>
@@ -1275,7 +1841,7 @@ export default function Room({
                                 }}
                                 className={`border ${
                                   !invited
-                                    ? "border-blue-300 bg-blue-100"
+                                    ? "border-sky-300 bg-sky-100"
                                     : "border-green-300 bg-green-100"
                                 }`}
                               >
@@ -1285,7 +1851,7 @@ export default function Room({
                           })}
                       </div>
                     </div>
-                  )}
+                  )} */}
                   {/* <div
                     className={`absolute flex items-end w-full z-50 bg-black bottom-0`}
                     style={{ height: `${barsSizes.bottom / 4}rem` }}
@@ -1297,7 +1863,7 @@ export default function Room({
                       {!user.multiGuest && !isAdmin && (
                         <button
                           onClick={async () => await deleteGamer(uniqueName)}
-                          className="border border-blue-300 bg-blue-100"
+                          className="border border-sky-300 bg-sky-100"
                         >
                           Quitter le groupe
                         </button>
@@ -1307,7 +1873,7 @@ export default function Room({
                           onClick={async () =>
                             await deleteMultiGuest(uniqueName)
                           }
-                          className="border border-blue-300 bg-blue-100"
+                          className="border border-sky-300 bg-sky-100"
                         >
                           Quitter le groupe
                         </button>
@@ -1318,7 +1884,7 @@ export default function Room({
                     <>
                       <hr />
 
-                      <div className="flex flex-col items-center">
+                      {/* <div className="flex flex-col items-center">
                         <h1>Invite des Guests multi-screen !</h1>
                         <h2 className="text-sm italic">
                           Ils joueront sur leur propre écran.
@@ -1354,7 +1920,7 @@ export default function Room({
                               setServerMessage(errorInformations);
                             }
                           }}
-                          className="border border-blue-300 bg-blue-100"
+                          className="border border-sky-300 bg-sky-100"
                         >
                           {!showRoomRefs ? "Afficher" : "Cacher"} le QrCode
                         </button>
@@ -1363,7 +1929,7 @@ export default function Room({
                             value={`${process.env.NEXT_PUBLIC_APP_URL}/invitation/?categorie=${categorie}&gameName=${gameName}&token=${roomToken}`}
                           />
                         )}
-                      </div>
+                      </div> */}
 
                       <hr />
 
@@ -1430,7 +1996,7 @@ export default function Room({
                       </div> */}
                     </>
                   )}
-                  {Options && options && setOptions && setServerMessage && (
+                  {/* {Options && options && setOptions && setServerMessage && (
                     <Options
                       userId={user.id}
                       isAdmin={isAdmin}
@@ -1444,7 +2010,7 @@ export default function Room({
                         multiGuestList.length
                       }
                     />
-                  )}
+                  )} */}
                 </div>
               </div>
             )}

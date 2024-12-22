@@ -2240,7 +2240,7 @@ const Invitations = ({
                 }}
               >
                 {friendName}
-                {gamersNumber > 1 && `(+${gamersNumber - 1})`} pour {gameName}
+                {/* {gamersNumber > 1 && `(+${gamersNumber - 1})`} pour {gameName} */}
               </div>
             </div>
           </div>

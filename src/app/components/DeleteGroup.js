@@ -6,6 +6,8 @@ import { useUserContext } from "./Room/Room";
 import deleteGroup from "@/utils/deleteGroup";
 import { deleteRoom } from "./Room/actions";
 
+import { ImExit } from "react-icons/im";
+
 export default function DeleteGroup({ roomToken, roomId }) {
   const router = useRouter();
   const contextValue = useUserContext();
@@ -22,6 +24,25 @@ export default function DeleteGroup({ roomToken, roomId }) {
       style={{ bottom: `${userParams?.bottomBarSize / 4 || 2}rem` }}
     >
       Quitter
+    </button>
+  );
+}
+
+export function LobbyDeleteGroup({ roomToken, roomId }) {
+  const router = useRouter();
+  const contextValue = useUserContext();
+  const userParams = contextValue.userParams;
+
+  return (
+    <button
+      onClick={async () => {
+        await deleteGroup({ groupToken: roomToken });
+        await deleteRoom({ roomId });
+        window.location.href = "/categories";
+      }}
+      className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
+    >
+      <ImExit className="ml-1 w-5 h-5 p-0.5" />
     </button>
   );
 }
