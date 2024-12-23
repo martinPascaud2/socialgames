@@ -90,6 +90,12 @@ export const subCategories = {
   ],
   categorie5: [
     {
+      name: "Classement",
+      path: "ranking",
+      img: "/ranking.jpg",
+      description: "La description de ranking",
+    },
+    {
       name: "Mentalisme",
       path: "socialknowledge",
       img: "/socialknowledge.png",
@@ -178,6 +184,12 @@ export const gamesRefs = {
     limits: { min: 3, max: 8 },
     isGuestsAllowed: false,
   },
+  ranking: {
+    name: "Classement",
+    categorie: "categorie5",
+    limits: { min: 2, max: 10 },
+    isGuestsAllowed: false,
+  },
   sort: {
     name: "Placement",
     categorie: "categorie2",
@@ -210,6 +222,11 @@ export const modesRules = {
   Esquissé: {
     name: "Esquissé",
     limits: { min: 4, max: 10, opti: 7 },
+  },
+
+  Podium: {
+    name: "Podium",
+    limits: { min: 1, max: 10, opti: 6 },
   },
 
   memory: {

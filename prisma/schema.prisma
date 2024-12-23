@@ -30,6 +30,7 @@ model User {
   pictionaryLastParams        Json?
   esquisseLastParams          Json?
   memoryLastParams            Json?
+  podiumLastParams            Json?
   ptitbacLastParams           Json?
   triaction_random_LastParams Json?
   triaction_peek_LastParams   Json?
