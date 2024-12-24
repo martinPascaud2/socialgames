@@ -53,6 +53,7 @@ export async function launchGame({
     arrivalsOrder,
     gamers: gamersAndGuests,
     options,
+    phase: "preparing",
   };
   await saveAndDispatchData({ roomId, roomToken, newData });
 
@@ -61,6 +62,58 @@ export async function launchGame({
   });
 
   return {};
+}
+
+export async function toggleTarget({ gameData, roomId, roomToken }) {
+  const { target } = gameData.options;
+  const newTarget = target === "players" ? "others" : "players";
+  const newOptions = { ...gameData.options, target: newTarget };
+  const newData = { ...gameData, options: newOptions };
+  await saveAndDispatchData({ roomId, roomToken, newData });
+}
+
+export async function addTheme(
+  { gameData, roomId, roomToken },
+  prevState,
+  formData
+) {
+  const theme = formData.get("theme");
+
+  const { target } = gameData.options;
+  let newPhase;
+  if (target === "players") newPhase = "turn";
+  else newPhase = "preparing";
+
+  const newData = {
+    ...gameData,
+    theme,
+    phase: newPhase,
+  };
+  await saveAndDispatchData({ roomId, roomToken, newData });
+}
+
+export async function addObject(
+  { objectNumber, gameData, roomId, roomToken },
+  prevState,
+  formData
+) {
+  const object = formData.get("object");
+  const { objects } = gameData;
+  const newObjects = {
+    ...objects,
+    [objectNumber]: object,
+  };
+
+  const newPhase = objectNumber === 8 ? "preturn" : "preparing";
+
+  const newData = { ...gameData, objects: newObjects, phase: newPhase };
+  await saveAndDispatchData({ roomId, roomToken, newData });
+}
+
+export async function goPreTurnFast({ gameData, roomId, roomToken }) {
+  const newPhase = "preturn";
+  const newData = { ...gameData, phase: newPhase };
+  await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
 export async function removePodiumGamers({

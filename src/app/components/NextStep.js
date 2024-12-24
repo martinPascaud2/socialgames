@@ -36,3 +36,19 @@ export function FixedNextStep({ onClick, children }) {
     </div>
   );
 }
+
+export function StaticNextStep({ onClick, children }) {
+  const contextValue = useUserContext();
+  const userParams = contextValue.userParams;
+
+  return (
+    <div className="z-30">
+      <button
+        onClick={onClick}
+        className="border border-red-800 bg-red-600 rotate-45 aspect-square"
+      >
+        <div className="rotate-[-45deg]">{children}</div>
+      </button>
+    </div>
+  );
+}
