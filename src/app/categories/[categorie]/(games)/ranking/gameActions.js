@@ -116,6 +116,55 @@ export async function goPreTurnFast({ gameData, roomId, roomToken }) {
   await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
+export async function adminEditing({ type, objectKey, roomId, roomToken }) {
+  const gameData = (
+    await prisma.room.findFirst({
+      where: { id: roomId },
+      select: { gameData: true },
+    })
+  ).gameData;
+  const newData = { ...gameData, adminEdition: { type, objectKey } };
+  await saveAndDispatchData({ roomId, roomToken, newData });
+}
+
+export async function editValues(
+  { gameData, roomId, roomToken },
+  prevState,
+  formData
+) {
+  const type = formData.get("type");
+  const newValue = formData.get("newValue");
+
+  const newAdminEdition = { type: "", objectKey: {} };
+
+  if (type === "theme") {
+    const newData = {
+      ...gameData,
+      theme: newValue,
+      adminEdition: newAdminEdition,
+    };
+    await saveAndDispatchData({ roomId, roomToken, newData });
+  }
+
+  if (type === "objects") {
+    const objectKey = formData.get("objectKey");
+    const { objects } = gameData;
+    const newObjects = { ...objects, [objectKey]: newValue };
+    const newData = {
+      ...gameData,
+      objects: newObjects,
+      adminEdition: newAdminEdition,
+    };
+    await saveAndDispatchData({ roomId, roomToken, newData });
+  }
+}
+
+export async function goTurnPhase({ gameData, roomId, roomToken }) {
+  const newPhase = "turn";
+  const newData = { ...gameData, phase: newPhase };
+  await saveAndDispatchData({ roomId, roomToken, newData });
+}
+
 export async function removePodiumGamers({
   roomId,
   roomToken,

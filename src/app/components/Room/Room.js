@@ -873,9 +873,6 @@ export default function Room({
     );
   }
 
-  console.log("gameName", gameName);
-  console.log("group", group);
-
   if (!roomId || !gameData) return null;
 
   if (!isStarted) {
@@ -2034,7 +2031,10 @@ export default function Room({
           <div
             className={`overflow-y-auto z-[60] w-full`}
             style={{
-              height: `calc(100dvh - ${barsSizes.top / 4}rem)`,
+              // height: `calc(100dvh - ${barsSizes.top / 4}rem)`,
+              height: `calc(100dvh - ${barsSizes.top / 4}rem - ${
+                barsSizes.bottom / 4
+              }rem)`,
               marginTop: `${barsSizes.top / 4}rem`,
             }}
           >
