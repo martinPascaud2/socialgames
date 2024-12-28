@@ -2,6 +2,7 @@
 
 import { useFormState } from "react-dom";
 import { useRef, useEffect, useState, useCallback } from "react";
+import Image from "next/image";
 
 import usePreventScroll from "@/utils/usePreventScroll";
 import {
@@ -24,6 +25,15 @@ import { SlBubble } from "react-icons/sl";
 import { IoSettingsSharp } from "react-icons/io5";
 import { IoMdArrowDropright } from "react-icons/io";
 import { TfiWrite } from "react-icons/tfi";
+import Gold from "/public/gold.png";
+import Silver from "/public/silver.png";
+import Bronze from "/public/bronze.png";
+
+import { TouchBackend } from "react-dnd-touch-backend";
+import { DndProvider, useDrag, useDrop } from "react-dnd";
+import { HTML5toTouch } from "@/components/DND/HTML5toTouch";
+import { usePreview } from "react-dnd-preview";
+const ItemType = "Item";
 
 const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
   const { options, theme, objects } = gameData;
@@ -417,6 +427,218 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
   );
 };
 
+const DraggableItem = ({
+  type,
+  index,
+  value,
+  moveItem,
+  setDraggedTop,
+  draggedTop,
+}) => {
+  const [{ isDragging }, ref] = useDrag({
+    type: ItemType,
+    item: { type, index, value },
+    canDrag: !!value,
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
+
+  const [, drop] = useDrop({
+    accept: ItemType,
+    // hover: (draggedItem) => {
+    drop: (draggedItem) => {
+      if (draggedItem.index === index) return;
+      moveItem({ draggedItem, to: { type, index, value } });
+    },
+  });
+
+  useEffect(() => {
+    if (isDragging && type === "top") {
+      setDraggedTop(index);
+    }
+    if (!isDragging && type === "top" && draggedTop === index) {
+      setDraggedTop(null);
+    }
+  }, [isDragging, type, setDraggedTop, draggedTop, index]);
+
+  return (
+    <div
+      ref={(node) => ref(drop(node))}
+      className={`w-[${type === "item" ? "30%" : "50%"}] text-center text-${
+        type === "item" ? "base" : "2xl"
+      } border p-2 my-1 border ${
+        type !== "top"
+          ? !isDragging
+            ? "border-amber-700 bg-amber-100 text-amber-700"
+            : "border-sky-700 bg-sky-100 text-sky-700"
+          : !value
+          ? "border-sky-700 bg-sky-100 text-sky-700 border-dashed"
+          : !isDragging
+          ? "border-amber-700 bg-amber-100 text-amber-700"
+          : "border-sky-700 bg-sky-100 text-sky-700 border-dashed"
+      }`}
+    >
+      {value || "..."}
+    </div>
+  );
+};
+
+const Preview = ({}) => {
+  const preview = usePreview();
+
+  if (!preview.display) {
+    return null;
+  }
+
+  const { item, style } = preview;
+  const { value } = item;
+
+  return (
+    <div
+      className={`w-[${
+        item.type === "item" ? "30%" : "50%"
+      }] p-2 border border-amber-700 bg-amber-100 text-center text-amber-700 text-${
+        item.type === "item" ? "base" : "2xl"
+      }`}
+      style={{ ...style }}
+    >
+      {value}
+    </div>
+  );
+};
+
+const TurnPhase = ({ gameData, roomId, roomToken, user, isAdmin }) => {
+  const [items, setItems] = useState();
+  const [tops, setTops] = useState({});
+  const [draggedTop, setDraggedTop] = useState(null);
+
+  useEffect(() => {
+    if (!gameData.objects) {
+      setItems(() => {
+        const { gamers } = gameData;
+        const filteredGamers = gamers.filter(
+          (gamer) => gamer.name !== user.name
+        );
+        const filteredNames = filteredGamers.map((filtered) => filtered.name);
+        return filteredNames;
+      });
+    } else {
+      setItems(Object.values(gameData.objects));
+    }
+  }, []);
+
+  const moveItem = ({ draggedItem, to }) => {
+    if (to.type === "item") return;
+
+    if (draggedItem.type === "item") {
+      setTops((prevTops) => {
+        const newTops = { ...prevTops };
+        newTops[to.index] = draggedItem.value;
+        return newTops;
+      });
+
+      setItems((prevItems) => {
+        const newItems = [...prevItems];
+        if (to.value !== undefined) {
+          newItems[draggedItem.index] = to.value;
+        } else {
+          newItems.splice(draggedItem.index, 1);
+        }
+        return newItems;
+      });
+    } else if (draggedItem.type === "top") {
+      setTops((prevTops) => {
+        const newTops = { ...prevTops };
+        newTops[to.index] = draggedItem.value;
+        newTops[draggedItem.index] = to.value;
+        return newTops;
+      });
+    }
+  };
+
+  if (!items) return null;
+
+  return (
+    <div className="h-full w-full flex flex-col justify-center items-center relative">
+      <div className="absolute top-10">Validation</div>
+
+      <DndProvider backend={TouchBackend} options={{ HTML5toTouch }}>
+        <div className="relative w-full h-fit">
+          <div className="absolute bottom-full w-full text-center text-3xl font-bold mb-4">
+            {gameData.theme}
+          </div>
+
+          {["1", "2", "3"].map((top) => {
+            return (
+              <div key={top} className="flex w-full justify-center">
+                <div className="flex justify-center items-center py-1 w-[10%]">
+                  <div
+                    className={`border h-full w-full flex justify-center items-center ${
+                      !tops[top]
+                        ? "border-sky-700 bg-sky-100 border-dashed"
+                        : "border-amber-700 bg-amber-100"
+                    }`}
+                  >
+                    {(() => {
+                      let imgSrc;
+                      switch (top) {
+                        case "1":
+                          imgSrc = Gold;
+                          break;
+                        case "2":
+                          imgSrc = Silver;
+                          break;
+                        case "3":
+                          imgSrc = Bronze;
+                          break;
+                      }
+                      return (
+                        <div className="w-8 h-8">
+                          <Image
+                            alt="place"
+                            src={imgSrc}
+                            width={500}
+                            height={500}
+                          />
+                        </div>
+                      );
+                    })()}
+                  </div>
+                </div>
+
+                <DraggableItem
+                  type="top"
+                  index={top}
+                  value={tops[top]}
+                  moveItem={moveItem}
+                  setDraggedTop={setDraggedTop}
+                  draggedTop={draggedTop}
+                />
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="absolute bottom-20 flex flex-wrap justify-around w-full">
+          {items.map((item, index) => {
+            return (
+              <DraggableItem
+                key={index}
+                type="item"
+                index={index}
+                value={item}
+                moveItem={moveItem}
+              />
+            );
+          })}
+        </div>
+        <Preview />
+      </DndProvider>
+    </div>
+  );
+};
+
 export default function Podium({ roomId, roomToken, user, gameData }) {
   usePreventScroll();
   const isAdmin = gameData.admin === user.name;
@@ -440,6 +662,16 @@ export default function Podium({ roomId, roomToken, user, gameData }) {
           gameData={gameData}
           roomId={roomId}
           roomToken={roomToken}
+          isAdmin={isAdmin}
+        />
+      )}
+
+      {phase === "turn" && (
+        <TurnPhase
+          gameData={gameData}
+          roomId={roomId}
+          roomToken={roomToken}
+          user={user}
           isAdmin={isAdmin}
         />
       )}

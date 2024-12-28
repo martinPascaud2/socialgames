@@ -84,6 +84,8 @@ export async function addTheme(
   if (target === "players") newPhase = "turn";
   else newPhase = "preparing";
 
+  // add reset gamers podium_tops
+
   const newData = {
     ...gameData,
     theme,
