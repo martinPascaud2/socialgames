@@ -42,6 +42,7 @@ model User {
   tableauSortedResponses      Json?
   tableauSecondSorted         Json?
   tableauRevelationSeen       Boolean                   @default(false)
+  podiumTops                  Json?
   postGames                   UserPostGame[]
 }
 
@@ -54,6 +55,7 @@ model Multiguest {
   tableauSortedResponses Json?
   tableauSecondSorted    Json?
   tableauRevelationSeen  Boolean           @default(false)
+  podiumTops             Json?
 }
 
 model PostGame {

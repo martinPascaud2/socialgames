@@ -13,6 +13,7 @@ import {
   adminEditing,
   editValues,
   goTurnPhase,
+  sendTops,
 } from "./gameActions";
 
 import ToggleCheckbox from "@/components/ToggleCheckbox";
@@ -465,7 +466,7 @@ const DraggableItem = ({
   return (
     <div
       ref={(node) => ref(drop(node))}
-      className={`w-[${type === "item" ? "30%" : "50%"}] text-center text-${
+      className={`text-center text-${
         type === "item" ? "base" : "2xl"
       } border p-2 my-1 border ${
         type !== "top"
@@ -478,6 +479,9 @@ const DraggableItem = ({
           ? "border-amber-700 bg-amber-100 text-amber-700"
           : "border-sky-700 bg-sky-100 text-sky-700 border-dashed"
       }`}
+      style={{
+        width: type === "item" ? "30%" : "50%",
+      }}
     >
       {value || "..."}
     </div>
@@ -496,12 +500,10 @@ const Preview = ({}) => {
 
   return (
     <div
-      className={`w-[${
-        item.type === "item" ? "30%" : "50%"
-      }] p-2 border border-amber-700 bg-amber-100 text-center text-amber-700 text-${
+      className={`p-2 border border-amber-700 bg-amber-100 text-center text-amber-700 text-${
         item.type === "item" ? "base" : "2xl"
       }`}
-      style={{ ...style }}
+      style={{ ...style, width: item.type === "item" ? "30%" : "50%" }}
     >
       {value}
     </div>
@@ -512,6 +514,7 @@ const TurnPhase = ({ gameData, roomId, roomToken, user, isAdmin }) => {
   const [items, setItems] = useState();
   const [tops, setTops] = useState({});
   const [draggedTop, setDraggedTop] = useState(null);
+  const [hasValidated, setHasValidated] = useState(false);
 
   useEffect(() => {
     if (!gameData.objects) {
@@ -561,7 +564,30 @@ const TurnPhase = ({ gameData, roomId, roomToken, user, isAdmin }) => {
 
   return (
     <div className="h-full w-full flex flex-col justify-center items-center relative">
-      <div className="absolute top-10">Validation</div>
+      {(() => {
+        const threeTops = Object.keys(tops).length === 3;
+        const allTopsDefined = Object.values(tops).every(
+          (top) => top !== undefined
+        );
+        return (
+          <div
+            onClick={async () => {
+              if (!threeTops || !allTopsDefined) return;
+              await sendTops({ user, tops, gameData, roomId, roomToken });
+              setHasValidated(true);
+            }}
+            className={`absolute top-20 w-[30%] text-center border ${
+              !threeTops || !allTopsDefined
+                ? "border-gray-700 bg-gray-100 text-gray-700"
+                : !hasValidated
+                ? "border-amber-700 bg-amber-100 text-amber-700"
+                : "border-green-700 bg-green-100 text-green-700"
+            } p-2`}
+          >
+            Valider
+          </div>
+        );
+      })()}
 
       <DndProvider backend={TouchBackend} options={{ HTML5toTouch }}>
         <div className="relative w-full h-fit">

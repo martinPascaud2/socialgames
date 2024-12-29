@@ -84,7 +84,30 @@ export async function addTheme(
   if (target === "players") newPhase = "turn";
   else newPhase = "preparing";
 
-  // add reset gamers podium_tops
+  const { gamers } = gameData;
+  await Promise.all(
+    gamers.map(async (gamer) => {
+      if (!gamer.multiGuest) {
+        await prisma.user.update({
+          where: { id: gamer.id },
+          data: {
+            podiumTops: null,
+          },
+        });
+      } else {
+        await prisma.multiguest.upsert({
+          where: { id: gamer.dataId },
+          update: {
+            podiumTops: null,
+          },
+          create: {
+            id: gamer.dataId,
+            podiumTops: null,
+          },
+        });
+      }
+    })
+  );
 
   const newData = {
     ...gameData,
@@ -165,6 +188,129 @@ export async function goTurnPhase({ gameData, roomId, roomToken }) {
   const newPhase = "turn";
   const newData = { ...gameData, phase: newPhase };
   await saveAndDispatchData({ roomId, roomToken, newData });
+}
+
+const goResultPhase = async ({ gameData, roomId, roomToken }) => {
+  const { gamers } = gameData;
+
+  const count = {};
+  if (!gameData.objects) {
+    const gamersNames = gamers.map((gamer) => gamer.name);
+    gamersNames.forEach((name) => {
+      count[name] = 0;
+    });
+  } else {
+    Object.values(gameData.objects).forEach((object) => {
+      count[object] = 0;
+    });
+  }
+
+  const topValues = {
+    1: 9,
+    2: 6,
+    3: 4,
+  };
+
+  await Promise.all(
+    gamers.map(async (gamer) => {
+      if (!gamer.multiGuest) {
+        const gamerTop = (
+          await prisma.user.findFirst({
+            where: { id: gamer.id },
+            select: { podiumTops: true },
+          })
+        ).podiumTops;
+        Object.entries(gamerTop).forEach(([place, name]) => {
+          count[name] = count[name] + topValues[place];
+        });
+      } else {
+        const gamerTop = (
+          await prisma.multiguest.findFirst({
+            where: { id: gamer.dataId },
+            select: { podiumTops: true },
+          })
+        ).podiumTops;
+        Object.entries(gamerTop).forEach(([place, name]) => {
+          count[name] = count[name] + topValues[place];
+        });
+      }
+    })
+  );
+
+  const podium = {
+    firsts: [],
+    seconds: [],
+    thirds: [],
+  };
+  const sortedCountEntries = Object.entries(count).sort((a, b) => b[1] - a[1]);
+  const uniqueScores = [
+    ...new Set(sortedCountEntries.map(([_, value]) => value)),
+  ];
+  for (const [name, score] of sortedCountEntries) {
+    if (score === uniqueScores[0]) {
+      podium.firsts.push(name);
+    } else if (score === uniqueScores[1]) {
+      podium.seconds.push(name);
+    } else if (score === uniqueScores[2]) {
+      podium.thirds.push(name);
+    }
+  }
+
+  const newData = { ...gameData, podium, phase: "result" };
+  await saveAndDispatchData({ roomId, roomToken, newData });
+};
+
+const checkTops = async ({ gameData, roomId, roomToken }) => {
+  const { gamers } = gameData;
+  let isLastTop = true;
+
+  await Promise.all(
+    gamers.map(async (gamer) => {
+      if (!gamer.multiGuest) {
+        const hasSent =
+          (
+            await prisma.user.findFirst({
+              where: { id: gamer.id },
+              select: { podiumTops: true },
+            })
+          ).podiumTops !== null;
+        if (!hasSent) isLastTop = false;
+      } else {
+        const hasSent =
+          (
+            await prisma.multiguest.findFirst({
+              where: { id: gamer.dataId },
+              select: { podiumTops: true },
+            })
+          ).podiumTops !== null;
+        if (!hasSent) isLastTop = false;
+      }
+    })
+  );
+
+  if (isLastTop) {
+    await goResultPhase({ gameData, roomId, roomToken });
+  }
+};
+
+export async function sendTops({ user, tops, gameData, roomId, roomToken }) {
+  if (!user.multiGuest) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        podiumTops: tops,
+      },
+    });
+  } else {
+    await prisma.multiguest.update({
+      where: { id: user.dataId },
+      data: {
+        podiumTops: tops,
+      },
+    });
+  }
+
+  await checkTops({ gameData, roomId, roomToken });
 }
 
 export async function removePodiumGamers({
