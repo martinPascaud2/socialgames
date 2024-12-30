@@ -843,8 +843,6 @@ export default function Podium({ roomId, roomToken, user, gameData }) {
   const isAdmin = gameData.admin === user.name;
   const { phase } = gameData;
 
-  console.log("gameData", gameData);
-
   return (
     <div className="bg-gray-100 h-full w-full">
       {phase === "preparing" && (

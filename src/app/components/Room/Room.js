@@ -551,12 +551,12 @@ export default function Room({
         setGameData(data.gameData);
         setOptions(data.options);
       }
-      const { gamerList, guests, multiGuests, options } = data;
+      const { gamers, guests, multiGuests, options } = data;
       const channel = pusher.subscribe(`room-${token}`);
       channel.bind("room-event", function (data) {
         data.clientGamerList &&
           data.clientGamerList.length &&
-          setGamerList([...new Set([...data.clientGamerList, ...gamerList])]);
+          setGamerList([...new Set([...data.clientGamerList, ...gamers])]);
         data.multiGuestList &&
           data.multiGuestList.length &&
           setMultiGuestList([
@@ -572,7 +572,7 @@ export default function Room({
 
       setRoomToken(token);
       setUniqueName(multiGuestName);
-      setGamerList(gamerList);
+      setGamerList(gamers);
       setGuestList(guests);
       setMultiGuestList(multiGuests);
       setOptions(options);
