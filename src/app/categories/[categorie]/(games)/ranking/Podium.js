@@ -372,49 +372,55 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
       </div>
 
       {isAdmin && (
-        <div
-          className={`mt-4 border ${
-            !isChanging
-              ? "border-amber-700 bg-amber-100 text-amber-700"
-              : "border-sky-700 bg-sky-100 text-sky-700"
-          } p-2`}
-        >
-          <TfiWrite
-            onClick={() => setIsChanging(!isChanging)}
-            className="w-8 h-8"
-          />
-        </div>
-      )}
+        <>
+          <div
+            className={`mt-4 border ${
+              !isChanging
+                ? "border-amber-700 bg-amber-100 text-amber-700"
+                : "border-sky-700 bg-sky-100 text-sky-700"
+            } p-2`}
+          >
+            <TfiWrite
+              onClick={() => setIsChanging(!isChanging)}
+              className="w-8 h-8"
+            />
+          </div>
 
-      <form
-        action={async (formData) => {
-          await formValuesAction(formData);
-          setIsChanging(false);
-          setIsEditing(null);
-          valueInputRef?.current?.blur();
-        }}
-      >
-        <input type="hidden" name="type" value={type} />
-        <input type="hidden" name="objectKey" value={objectKey} />
-        <input
-          ref={valueInputRef}
-          type="text"
-          name="newValue"
-          value={newValue}
-          onChange={(e) => setNewValue(e.target.value)}
-          onBlur={() => {
-            adminEditing({
-              type: "",
-              objectKey: {},
-              roomId,
-              roomToken,
-            });
-            setIsChanging(false);
-            setIsEditing(null);
-          }}
-          className="absolute bottom-[200%]"
-        />
-      </form>
+          <form
+            action={async (formData) => {
+              await formValuesAction(formData);
+              setIsChanging(false);
+              setIsEditing(null);
+              valueInputRef?.current?.blur();
+            }}
+          >
+            <input type="hidden" name="type" value={type} />
+            <input type="hidden" name="objectKey" value={objectKey} />
+            <input
+              ref={valueInputRef}
+              type="text"
+              name="newValue"
+              value={newValue}
+              onChange={(e) => setNewValue(e.target.value)}
+              onBlur={() => {
+                adminEditing({
+                  type: "",
+                  objectKey: {},
+                  roomId,
+                  roomToken,
+                });
+                setIsChanging(false);
+                setIsEditing(null);
+              }}
+              className={`absolute top-20 left-1/2 translate-x-[-50%] focus:outline-none focus:border-2 border border-amber-700 rounded ${
+                !isEditing
+                  ? "bg-gray-100 text-gray-100 border-gray-100"
+                  : "border-amber-700 bg-amber-100 text-amber-700 p-1 text-xl text-center"
+              }`}
+            />
+          </form>
+        </>
+      )}
 
       {isAdmin && (
         <div className="absolute bottom-10">
