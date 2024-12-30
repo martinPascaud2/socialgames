@@ -167,7 +167,7 @@ const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
                 />
                 <button
                   type="submit"
-                  className="border border-amber-700 bg-amber-100 mt-2 p-1"
+                  className="border border-amber-700 bg-amber-100 text-amber-700 mt-2 p-1"
                 >
                   Envoyer
                 </button>
