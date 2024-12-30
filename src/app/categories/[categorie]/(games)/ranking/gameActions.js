@@ -6,6 +6,7 @@ import checkPlayers from "@/utils/checkPlayers";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkViceAdminAndArrivals from "@/utils/checkViceAdminAndArrivals";
 import { saveAndDispatchData } from "@/components/Room/actions";
+import capitalizeFirstLetter from "@/utils/capitalizeFirstLetter";
 
 export async function launchGame({
   roomId,
@@ -77,7 +78,7 @@ export async function addTheme(
   prevState,
   formData
 ) {
-  const theme = formData.get("theme");
+  const theme = capitalizeFirstLetter(formData.get("theme"));
 
   const { target } = gameData.options;
   let newPhase;
@@ -122,7 +123,7 @@ export async function addObject(
   prevState,
   formData
 ) {
-  const object = formData.get("object");
+  const object = capitalizeFirstLetter(formData.get("object"));
   const { objects } = gameData;
   const newObjects = {
     ...objects,
@@ -158,7 +159,7 @@ export async function editValues(
   formData
 ) {
   const type = formData.get("type");
-  const newValue = formData.get("newValue");
+  const newValue = capitalizeFirstLetter(formData.get("newValue"));
 
   const newAdminEdition = { type: "", objectKey: {} };
 
