@@ -14,6 +14,7 @@ import {
   editValues,
   goTurnPhase,
   sendTops,
+  showResults,
 } from "./gameActions";
 
 import ToggleCheckbox from "@/components/ToggleCheckbox";
@@ -510,7 +511,7 @@ const Preview = ({}) => {
   );
 };
 
-const TurnPhase = ({ gameData, roomId, roomToken, user, isAdmin }) => {
+const TurnPhase = ({ gameData, roomId, roomToken, user }) => {
   const [items, setItems] = useState();
   const [tops, setTops] = useState({});
   const [draggedTop, setDraggedTop] = useState(null);
@@ -665,6 +666,178 @@ const TurnPhase = ({ gameData, roomId, roomToken, user, isAdmin }) => {
   );
 };
 
+const ResultPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
+  const { podium } = gameData;
+  const { firsts, seconds, thirds } = podium;
+
+  const [showFirsts, setShowFirsts] = useState(false);
+  const [showSeconds, setShowSeconds] = useState(false);
+  const [showThirds, setShowThirds] = useState(false);
+
+  useEffect(() => {
+    const show = gameData?.show;
+    if (!show) return;
+
+    if (show.firsts) setShowFirsts(true);
+    if (show.seconds) setShowSeconds(true);
+    if (show.thirds) setShowThirds(true);
+  }, [gameData]);
+
+  const getPlaceColors = ({ place }) => {
+    let lightColor;
+    let darkColor;
+    switch (place) {
+      case "third":
+        lightColor = "#ff9936";
+        darkColor = "#cd7430";
+        break;
+      case "second":
+        lightColor = "#e0e0e0";
+        darkColor = "#9e9e9e";
+        break;
+      case "first":
+        lightColor = "#fee27a";
+        darkColor = "#ffbb58";
+        break;
+    }
+    return { lightColor, darkColor };
+  };
+
+  const GamerName = useCallback(({ place, isRevelated, name, index }) => {
+    const { lightColor: intTextColor, darkColor: extTextcolor } =
+      getPlaceColors({ place });
+
+    return (
+      <>
+        <div
+          className={`absolute bottom-full font-bold ${
+            place === "third"
+              ? "text-xl"
+              : place === "second"
+              ? "text-2xl"
+              : "text-3xl"
+          }`}
+          style={{
+            marginBottom: `${index * 1.5}rem`,
+            display: "inline-block",
+            clipPath: isRevelated ? "inset(0 0 0 0)" : "inset(0 100% 0 0)",
+            opacity: isRevelated ? 1 : 0,
+            transition: "clip-path 3s ease-out, opacity 3s ease-out",
+            animation: isRevelated
+              ? "slideIn 3s ease-out forwards, opac 3s ease-out forwards"
+              : "",
+
+            color: intTextColor,
+            textShadow: `1px 0px 1px ${extTextcolor}, -1px 0px 1px ${extTextcolor}, 0px 1px 1px ${extTextcolor}, 0px -1px 1px ${extTextcolor}`,
+          }}
+        >
+          {name}
+        </div>
+        <style jsx>{`
+          @keyframes slideIn {
+            0% {
+              clip-path: inset(0 100% 0 0);
+            }
+            100% {
+              clip-path: inset(0 0 0 0);
+            }
+          }
+
+          @keyframes opac {
+            0% {
+              opacity: 0;
+            }
+            100% {
+              opacity: 1;
+            }
+          }
+        `}</style>
+      </>
+    );
+  }, []);
+
+  return (
+    <div className="h-full w-full flex flex-col justify-center items-center relative">
+      {(() => {
+        if (showFirsts || !isAdmin) return null;
+
+        let place;
+        if (showSeconds) place = "first";
+        else if (showThirds) place = "second";
+        else place = "third";
+        const { lightColor, darkColor } = getPlaceColors({ place });
+
+        return (
+          <div
+            onClick={() => showResults({ gameData, roomId, roomToken })}
+            className="absolute top-20 border p-2 rounded text-xl font-semibold"
+            style={{
+              backgroundColor: lightColor,
+              color: darkColor,
+              borderColor: darkColor,
+            }}
+          >
+            {(() => {
+              if (showSeconds) {
+                return "Or";
+              } else if (showThirds) {
+                return "Argent";
+              } else {
+                return "Bronze";
+              }
+            })()}
+          </div>
+        );
+      })()}
+
+      <div className="flex justify-center items-end w-full p-4">
+        <div className="w-1/3 h-32 flex justify-center items-center bg-gray-600 relative">
+          {seconds.map((second, index) => (
+            <GamerName
+              key={index}
+              place="second"
+              isRevelated={showSeconds}
+              name={second}
+              index={index}
+            />
+          ))}
+          <div className="w-10 h-10">
+            <Image alt="place" src={Silver} width={500} height={500} />
+          </div>
+        </div>
+        <div className="w-1/3 h-48 flex justify-center items-center bg-gray-600 relative">
+          {firsts.map((first, index) => (
+            <GamerName
+              key={index}
+              place="first"
+              isRevelated={showFirsts}
+              name={first}
+              index={index}
+            />
+          ))}
+          <div className="w-10 h-10">
+            <Image alt="place" src={Gold} width={500} height={500} />
+          </div>
+        </div>
+        <div className="w-1/3 h-20 flex justify-center items-center bg-gray-600 relative">
+          {thirds.map((third, index) => (
+            <GamerName
+              key={index}
+              place="third"
+              isRevelated={showThirds}
+              name={third}
+              index={index}
+            />
+          ))}
+          <div className="w-10 h-10">
+            <Image alt="place" src={Bronze} width={500} height={500} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function Podium({ roomId, roomToken, user, gameData }) {
   usePreventScroll();
   const isAdmin = gameData.admin === user.name;
@@ -698,6 +871,14 @@ export default function Podium({ roomId, roomToken, user, gameData }) {
           roomId={roomId}
           roomToken={roomToken}
           user={user}
+        />
+      )}
+
+      {phase === "result" && (
+        <ResultPhase
+          gameData={gameData}
+          roomId={roomId}
+          roomToken={roomToken}
           isAdmin={isAdmin}
         />
       )}

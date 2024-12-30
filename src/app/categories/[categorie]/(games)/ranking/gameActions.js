@@ -313,6 +313,39 @@ export async function sendTops({ user, tops, gameData, roomId, roomToken }) {
   await checkTops({ gameData, roomId, roomToken });
 }
 
+export async function showResults({ gameData, roomId, roomToken }) {
+  let { show: newShow } = gameData;
+
+  if (!newShow) newShow = { thirds: true };
+  else if (!newShow.seconds) newShow = { ...newShow, seconds: true };
+  else if (!newShow.firsts) newShow = { ...newShow, firsts: true };
+
+  const newData = { ...gameData, show: newShow, ended: !!newShow.firsts };
+  await saveAndDispatchData({ roomId, roomToken, newData });
+}
+
+export async function goNewPodium({ gameData, roomId, roomToken }) {
+  const newPhase = "preparing";
+  const newTheme = undefined;
+  const newObjects = undefined;
+  const newAdminEdition = undefined;
+  const newPodium = undefined;
+  const newShow = undefined;
+  const newEnded = false;
+
+  const newData = {
+    ...gameData,
+    phase: newPhase,
+    theme: newTheme,
+    objects: newObjects,
+    adminEdition: newAdminEdition,
+    podium: newPodium,
+    show: newShow,
+    ended: newEnded,
+  };
+  await saveAndDispatchData({ roomId, roomToken, newData });
+}
+
 export async function removePodiumGamers({
   roomId,
   roomToken,

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 
-import { removePodiumGamers } from "./gameActions";
+import { goNewPodium, removePodiumGamers } from "./gameActions";
 
 import NextEndingPossibilities from "@/components/NextEndingPossibilities";
 import Disconnected from "@/components/disconnection/Disconnected";
@@ -21,7 +21,7 @@ export default function Ranking({
   const [isEnded, setIsEnded] = useState(false);
 
   useEffect(() => {
-    if (gameData.ended) setIsEnded(true);
+    setIsEnded(gameData.ended);
   }, [gameData.ended]);
 
   const removeGamers = useCallback(
@@ -58,7 +58,7 @@ export default function Ranking({
         gameData={gameData}
         roomToken={roomToken}
         roomId={roomId}
-        reset={() => console.log("to be done")}
+        reset={() => goNewPodium({ gameData, roomId, roomToken })}
         storedLocation={storedLocation}
         user={user}
       />
