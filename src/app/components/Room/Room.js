@@ -679,7 +679,7 @@ export default function Room({
         setServerMessage(error.message);
       }
     };
-    user.multiGuest && getMultiLoc();
+    // user.multiGuest && getMultiLoc();
   }, [user]);
   // ------------------------------
 
