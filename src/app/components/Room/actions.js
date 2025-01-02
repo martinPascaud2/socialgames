@@ -96,6 +96,7 @@ export async function goOneMoreGame({
   try {
     await pusher.trigger(`room-${oldRoomToken}`, "room-event", {
       gameData: {
+        ended: true,
         nextGame: {
           name: gameName,
           path: `${pathname}?token=${newRoomToken}`,

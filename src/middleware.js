@@ -45,6 +45,7 @@ export async function middleware(request) {
     userStatus === "Guest" &&
     request.nextUrl.pathname !== "/guest/" &&
     !checkGuestAllowed(request.nextUrl.href) &&
+    request.nextUrl.pathname !== "/invitation/" &&
     request.nextUrl.pathname !== "/api/pusherAuth/"
   ) {
     return NextResponse.redirect(new URL("/guest", request.url));
