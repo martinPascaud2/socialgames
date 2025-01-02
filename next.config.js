@@ -14,7 +14,7 @@ const nextConfig = {
   trailingSlash: true,
   images: {
     formats: ["image/webp", "image/avif"],
-    domains: [process.env.NEXT_PUBLIC_APP_URL], // Ajouter des domaines externes si vous chargez des images depuis une URL
+    domains: [process.env.NEXT_PUBLIC_APP_URL],
   },
 };
 

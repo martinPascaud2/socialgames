@@ -874,29 +874,6 @@ export default function Room({
     );
   }
 
-  console.log("gameName", gameName);
-
-  const getNextImage = useCallback(
-    ({ src, alt, className }) => {
-      console.log("categoriesIcons", categoriesIcons);
-      console.log("categorie", categorie);
-      if (!categorie || !categoriesIcons) return null;
-      else
-        return (
-          <Image
-            src={src}
-            alt={alt}
-            className={className}
-            style={{ objectFit: "contain" }}
-            width={500}
-            height={500}
-          />
-        );
-    },
-
-    [categorie, categoriesIcons]
-  );
-
   if (!roomId || !gameData) return null;
 
   if (!isStarted) {
@@ -996,16 +973,9 @@ export default function Room({
                     )}
                   </div>
                   <div className="absolute top-[7dvh] w-full flex justify-center items-center">
-                    {categorie !== "grouping" ? (
-                      // <img
-                      //   src={categoriesIcons[categorie]}
-                      //   alt={`${categorie} image`}
-                      //   style={{ objectFit: "contain" }}
-                      // />
+                    {categorie !== "grouping" && categoriesIcons ? (
                       <Image
-                        // src={categoriesIcons[categorie]}
-                        src="/categoriesIcons/cerebral.webp"
-                        // alt={`${categorie.name} image`}
+                        src={categoriesIcons[categorie]}
                         alt={`${categorie} image`}
                         className="max-h-[4dvh] max-w-[4dvh] aspect-square"
                         style={{ objectFit: "contain" }}
@@ -1013,12 +983,6 @@ export default function Room({
                         height={500}
                       />
                     ) : (
-                      // getNextImage({
-                      //   src: categoriesIcons[categorie],
-                      //   alt: `${categorie} image`,
-                      //   className: "max-h-[4dvh] max-w-[4dvh] aspect-square",
-                      //   // style: { objectFit: "contain" },
-                      // })
                       <div className="h-[4dvh] w-[4dvh]" />
                     )}
                     {isAdmin ? (
