@@ -874,8 +874,28 @@ export default function Room({
     );
   }
 
-  console.log("categorie", categorie);
   console.log("gameName", gameName);
+
+  const getNextImage = useCallback(
+    ({ src, alt, className }) => {
+      console.log("categoriesIcons", categoriesIcons);
+      console.log("categorie", categorie);
+      if (!categorie || !categoriesIcons) return null;
+      else
+        return (
+          <Image
+            src={src}
+            alt={alt}
+            className={className}
+            style={{ objectFit: "contain" }}
+            width={500}
+            height={500}
+          />
+        );
+    },
+
+    [categorie, categoriesIcons]
+  );
 
   if (!roomId || !gameData) return null;
 
@@ -977,16 +997,23 @@ export default function Room({
                   </div>
                   <div className="absolute top-[7dvh] w-full flex justify-center items-center">
                     {categorie !== "grouping" ? (
-                      <Image
-                        unoptimized
-                        src={categoriesIcons[categorie]}
-                        alt={`${categorie.name} image`}
-                        className="max-h-[4dvh] max-w-[4dvh] aspect-square"
-                        style={{ objectFit: "contain" }}
-                        width={500}
-                        height={500}
-                      />
+                      getNextImage({
+                        src: categoriesIcons[categorie],
+                        alt: `${categorie} image`,
+                        className: "max-h-[4dvh] max-w-[4dvh] aspect-square",
+                        // style: { objectFit: "contain" },
+                      })
                     ) : (
+                      // <Image
+                      //   unoptimized
+                      //   src={categoriesIcons[categorie]}
+                      //   // alt={`${categorie.name} image`}
+                      //   alt={`${categorie} image`}
+                      //   className="max-h-[4dvh] max-w-[4dvh] aspect-square"
+                      //   style={{ objectFit: "contain" }}
+                      //   width={500}
+                      //   height={500}
+                      // />
                       <div className="h-[4dvh] w-[4dvh]" />
                     )}
                     {isAdmin ? (
