@@ -19,7 +19,7 @@ export default function GuestInvitation({ searchParams, setCookieToken }) {
 
   const joinGame = async () => {
     try {
-      await getLocation();
+      // await getLocation();
 
       if (guestName.length < 3) {
         setServerMessage("Nom trop court");
@@ -27,7 +27,8 @@ export default function GuestInvitation({ searchParams, setCookieToken }) {
         await setCookieToken("Guest", "guest");
 
         const guestUrl = `${process.env.NEXT_PUBLIC_APP_URL}/categories/${categorie}/${gameName}/?token=${token}&guestName=${guestName}`;
-        router.push(guestUrl);
+        // router.push(guestUrl);
+        window.location.href = guestUrl;
       }
     } catch (error) {
       setServerMessage(error.message);

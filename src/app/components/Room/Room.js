@@ -1162,14 +1162,14 @@ export default function Room({
                               <div
                                 onClick={async () => {
                                   try {
-                                    if (!geoLocation) {
-                                      const loc = await getLocation();
-                                      await saveLocation({
-                                        geoLocation: loc,
-                                        roomId,
-                                      });
-                                      setGeoLocation(loc);
-                                    }
+                                    // if (!geoLocation) {
+                                    //   const loc = await getLocation();
+                                    //   await saveLocation({
+                                    //     geoLocation: loc,
+                                    //     roomId,
+                                    //   });
+                                    //   setGeoLocation(loc);
+                                    // }
                                     setShowGamerList(false);
                                     setShowInvitations(false);
                                     setShowRoomRefs(true);
@@ -1524,7 +1524,8 @@ export default function Room({
                         </div>
                       )}
 
-                      {showRoomRefs && geoLocation && (
+                      {/* {showRoomRefs && geoLocation && ( */}
+                      {showRoomRefs && (
                         <div className="w-full">
                           <div className="w-full h-8 flex justify-center items-center ml-6">
                             Qr code de la partie
