@@ -12,6 +12,10 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 const nextConfig = {
   reactStrictMode: false,
   trailingSlash: true,
+  images: {
+    formats: ["image/webp", "image/avif"],
+    domains: [process.env.NEXT_PUBLIC_APP_URL], // Ajouter des domaines externes si vous chargez des images depuis une URL
+  },
 };
 
 module.exports = withPWA(nextConfig);

@@ -997,23 +997,28 @@ export default function Room({
                   </div>
                   <div className="absolute top-[7dvh] w-full flex justify-center items-center">
                     {categorie !== "grouping" ? (
-                      getNextImage({
-                        src: categoriesIcons[categorie],
-                        alt: `${categorie} image`,
-                        className: "max-h-[4dvh] max-w-[4dvh] aspect-square",
-                        // style: { objectFit: "contain" },
-                      })
-                    ) : (
-                      // <Image
-                      //   unoptimized
+                      // <img
                       //   src={categoriesIcons[categorie]}
-                      //   // alt={`${categorie.name} image`}
                       //   alt={`${categorie} image`}
-                      //   className="max-h-[4dvh] max-w-[4dvh] aspect-square"
                       //   style={{ objectFit: "contain" }}
-                      //   width={500}
-                      //   height={500}
                       // />
+                      <Image
+                        // src={categoriesIcons[categorie]}
+                        src="/categoriesIcons/cerebral.webp"
+                        // alt={`${categorie.name} image`}
+                        alt={`${categorie} image`}
+                        className="max-h-[4dvh] max-w-[4dvh] aspect-square"
+                        style={{ objectFit: "contain" }}
+                        width={500}
+                        height={500}
+                      />
+                    ) : (
+                      // getNextImage({
+                      //   src: categoriesIcons[categorie],
+                      //   alt: `${categorie} image`,
+                      //   className: "max-h-[4dvh] max-w-[4dvh] aspect-square",
+                      //   // style: { objectFit: "contain" },
+                      // })
                       <div className="h-[4dvh] w-[4dvh]" />
                     )}
                     {isAdmin ? (

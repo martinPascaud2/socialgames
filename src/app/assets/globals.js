@@ -37,7 +37,7 @@ export const categories = [
 ];
 
 export const categoriesIcons = {
-  categorie1: "/categoriesIcons/cerebral.png",
+  categorie1: "/categoriesIcons/cerebral.webp",
   categorie2: "/categoriesIcons/knowledge2.png",
   categorie3: "/categoriesIcons/family1.png",
   categorie4: "/categoriesIcons/cards2.png",
