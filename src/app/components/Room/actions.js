@@ -365,7 +365,7 @@ export async function serverJoin({ token, user }) {
 }
 
 export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
-  if (!geoLocation) return { error: "Chargement..." };
+  // if (!geoLocation) return { error: "Chargement..." };
 
   const room = await prisma.room.findFirst({
     where: {
@@ -416,9 +416,9 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
 
   const { id: roomId, adminLocation, multiGuests, options } = room;
 
-  const distance = getDistance({ first: adminLocation, second: geoLocation });
-  if (distance > 500)
-    return { error: "Veuillez vous approcher de la zone de jeu" };
+  // const distance = getDistance({ first: adminLocation, second: geoLocation });
+  // if (distance > 500)
+  //   return { error: "Veuillez vous approcher de la zone de jeu" };
 
   const gamers = Object.keys(room.gamers);
   const guests = Object.keys(room.guests);

@@ -512,7 +512,8 @@ export default function Room({
   }, [inputToken, user, gamerList, isChosen]);
 
   const addMultiGuest = useCallback(async () => {
-    if (!isChosen || !inputToken || !geoLocation) {
+    // if (!isChosen || !inputToken || !geoLocation) {
+    if (!isChosen || !inputToken) {
       setIsChosen(true);
       return;
     }
