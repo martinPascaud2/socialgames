@@ -874,6 +874,23 @@ export default function Room({
     );
   }
 
+  console.log("categorie", categorie);
+  console.log("gameName", gameName);
+
+  const getNextImage = useCallback(
+    ({ src, alt, className }) => (
+      <Image
+        src={src}
+        alt={alt}
+        className={className}
+        style={{ objectFit: "contain" }}
+        width={500}
+        height={500}
+      />
+    ),
+    []
+  );
+
   if (!roomId || !gameData) return null;
 
   if (!isStarted) {
@@ -974,15 +991,20 @@ export default function Room({
                   </div>
                   <div className="absolute top-[7dvh] w-full flex justify-center items-center">
                     {categorie !== "grouping" ? (
-                      <Image
-                        src={categoriesIcons[categorie]}
-                        alt={`${categorie.name} image`}
-                        className="max-h-[4dvh] max-w-[4dvh] aspect-square"
-                        style={{ objectFit: "contain" }}
-                        width={500}
-                        height={500}
-                      />
+                      getNextImage({
+                        src: categoriesIcons[categorie],
+                        alt: `${categorie.name} image`,
+                        className: "max-h-[4dvh] max-w-[4dvh] aspect-square",
+                      })
                     ) : (
+                      // <Image
+                      //   src={categoriesIcons[categorie]}
+                      //   alt={`${categorie.name} image`}
+                      //   className="max-h-[4dvh] max-w-[4dvh] aspect-square"
+                      //   style={{ objectFit: "contain" }}
+                      //   width={500}
+                      //   height={500}
+                      // />
                       <div className="h-[4dvh] w-[4dvh]" />
                     )}
                     {isAdmin ? (
