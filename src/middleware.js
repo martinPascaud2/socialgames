@@ -46,7 +46,8 @@ export async function middleware(request) {
     request.nextUrl.pathname !== "/guest/" &&
     !checkGuestAllowed(request.nextUrl.href) &&
     request.nextUrl.pathname !== "/invitation/" &&
-    request.nextUrl.pathname !== "/api/pusherAuth/"
+    request.nextUrl.pathname !== "/api/pusherAuth/" &&
+    !request.nextUrl.pathname.startsWith("/categoriesIcons/")
   ) {
     return NextResponse.redirect(new URL("/guest", request.url));
   }
