@@ -2551,15 +2551,17 @@ export default function Categories({
                   <CentralZone onClick={handleOctaClick} zIndex={60}>
                     {
                       location ? (
-                        <QRCode
-                          value={`id=${user.id};mail=${user.email};name=${user.name};{"latitude":"${location?.latitude}","longitude":"${location?.longitude}"}`}
-                          onClick={(event) => event.stopPropagation()}
-                          className="mx-auto w-fit h-full"
-                          style={{
-                            background: "white",
-                            boxShadow: "0px 0 5px 5px white",
-                          }}
-                        />
+                        <div className="w-full h-full flex justify-center items-center p-1">
+                          <QRCode
+                            value={`id=${user.id};mail=${user.email};name=${user.name};{"latitude":"${location?.latitude}","longitude":"${location?.longitude}"}`}
+                            onClick={(event) => event.stopPropagation()}
+                            className="h-full w-auto p-1"
+                            style={{
+                              background: "white",
+                              boxShadow: "0px 0px 5px 5px white",
+                            }}
+                          />
+                        </div>
                       ) : null
 
                       // (
