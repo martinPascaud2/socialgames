@@ -653,7 +653,7 @@ const TurnPhase = ({ gameData, roomId, roomToken, user }) => {
           })}
         </div>
 
-        <div className="absolute bottom-20 flex flex-wrap justify-around w-full">
+        <div className="absolute bottom-10 flex flex-wrap justify-around w-full">
           {items.map((item, index) => {
             return (
               <DraggableItem
