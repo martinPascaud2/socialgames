@@ -878,7 +878,7 @@ export default function Room({
 
   if (!isStarted) {
     return (
-      <div className="absolute h-[100dvh] w-full px-2">
+      <div className="absolute h-[100dvh] w-full px-2 overflow-x-hidden">
         <UserContext.Provider value={{ userParams }}>
           <div className={`relative h-full w-full`}>
             <div
