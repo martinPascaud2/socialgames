@@ -27,7 +27,7 @@ export default function EndGame({ gameData, user, isFirst = false }) {
         <div className="text-white">En attente de l&apos;admin...</div>
       )}
 
-      {gameData?.nextGame && (
+      {gameData?.nextGame && !isFirst && (
         <>
           <button
             onClick={() => {
