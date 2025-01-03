@@ -44,12 +44,13 @@ export async function middleware(request) {
   if (
     userStatus === "Guest" &&
     request.nextUrl.pathname !== "/guest/" &&
+    request.nextUrl.pathname !== "/" &&
     !checkGuestAllowed(request.nextUrl.href) &&
     request.nextUrl.pathname !== "/invitation/" &&
     request.nextUrl.pathname !== "/api/pusherAuth/" &&
     !request.nextUrl.pathname.startsWith("/categoriesIcons/")
   ) {
-    return NextResponse.redirect(new URL("/guest", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   if (
