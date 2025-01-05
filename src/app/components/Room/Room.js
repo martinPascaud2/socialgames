@@ -1577,55 +1577,58 @@ export default function Room({
                       </div>
                     )}
                   </div>
-                  <div
-                    onClick={() => {
-                      if (!showConfig) {
-                        setShowConfig(true);
-                        setShowPlayers(false);
-                      }
-                    }}
-                    className={`overflow-hidden relative border w-[80%] transition-[height] duration-1000 ease-in-out ${
-                      !showConfig
-                        ? "h-12 border border-2 rounded-md border-amber-700 bg-amber-100 text-amber-700 p-2"
-                        : "h-full border border-2 rounded-md border-sky-700 bg-sky-100 text-sky-700 p-2"
-                    }`}
-                  >
-                    {!showConfig && (
-                      <div>
-                        <div className="absolute right-1 top-1">
-                          <ChevronRightIcon className="h-8 w-8" />
+
+                  {gameName !== "grouping" && (
+                    <div
+                      onClick={() => {
+                        if (!showConfig) {
+                          setShowConfig(true);
+                          setShowPlayers(false);
+                        }
+                      }}
+                      className={`overflow-hidden relative border w-[80%] transition-[height] duration-1000 ease-in-out ${
+                        !showConfig
+                          ? "h-12 border border-2 rounded-md border-amber-700 bg-amber-100 text-amber-700 p-2"
+                          : "h-full border border-2 rounded-md border-sky-700 bg-sky-100 text-sky-700 p-2"
+                      }`}
+                    >
+                      {!showConfig && (
+                        <div>
+                          <div className="absolute right-1 top-1">
+                            <ChevronRightIcon className="h-8 w-8" />
+                          </div>
+                          <div className="text-xl absolute top-1.5 left-[50%] translate-x-[-50%]">
+                            Configuration
+                          </div>
                         </div>
-                        <div className="text-xl absolute top-1.5 left-[50%] translate-x-[-50%]">
-                          Configuration
+                      )}
+                      {showConfig && (
+                        <div>
+                          <div className="absolute right-2 top-2">
+                            <ChevronDownIcon className="h-8 w-8" />
+                          </div>
+                          {Options &&
+                            options &&
+                            setOptions &&
+                            setServerMessage && (
+                              <Options
+                                userId={user.id}
+                                isAdmin={isAdmin}
+                                options={options}
+                                setOptions={setOptions}
+                                lastMode={group?.lastMode}
+                                setServerMessage={setServerMessage}
+                                gamersNumber={
+                                  gamerList.length +
+                                  guestList.length +
+                                  multiGuestList.length
+                                }
+                              />
+                            )}
                         </div>
-                      </div>
-                    )}
-                    {showConfig && (
-                      <div>
-                        <div className="absolute right-2 top-2">
-                          <ChevronDownIcon className="h-8 w-8" />
-                        </div>
-                        {Options &&
-                          options &&
-                          setOptions &&
-                          setServerMessage && (
-                            <Options
-                              userId={user.id}
-                              isAdmin={isAdmin}
-                              options={options}
-                              setOptions={setOptions}
-                              lastMode={group?.lastMode}
-                              setServerMessage={setServerMessage}
-                              gamersNumber={
-                                gamerList.length +
-                                guestList.length +
-                                multiGuestList.length
-                              }
-                            />
-                          )}
-                      </div>
-                    )}
-                  </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
