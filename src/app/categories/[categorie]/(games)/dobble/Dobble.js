@@ -229,6 +229,7 @@ export default function Dobble({
 
       <Disconnected
         roomId={roomId}
+        roomToken={roomToken}
         onlineGamers={onlineGamers}
         gamers={gamers}
         isAdmin={isAdmin}

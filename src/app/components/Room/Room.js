@@ -105,27 +105,27 @@ const subscribePresenceChannel = ({
   const presenceChannel = pusherPresence.subscribe(`presence-${roomToken}`);
   let pingTimeStamps = {};
 
-  presenceChannel.bind("pusher:subscription_succeeded", ({ members }) => {
-    setOnlineGamers(Object.values(members));
-  });
+  // presenceChannel.bind("pusher:subscription_succeeded", ({ members }) => {
+  //   setOnlineGamers(Object.values(members));
+  // });
 
-  presenceChannel.bind("pusher:subscription_error", (status) => {
-    console.error("Subscription failed:", status);
-  });
+  // presenceChannel.bind("pusher:subscription_error", (status) => {
+  //   console.error("Subscription failed:", status);
+  // });
 
-  presenceChannel.bind("pusher:member_added", (member) => {
-    setOnlineGamers(Object.values(presenceChannel.members.members));
-  });
+  // presenceChannel.bind("pusher:member_added", (member) => {
+  //   setOnlineGamers(Object.values(presenceChannel.members.members));
+  // });
 
-  presenceChannel.bind("pusher:member_removed", (member) => {
-    setOnlineGamers(Object.values(presenceChannel.members.members));
-  });
+  // presenceChannel.bind("pusher:member_removed", (member) => {
+  //   setOnlineGamers(Object.values(presenceChannel.members.members));
+  // });
 
   presenceChannel.bind("check-presence", (presence) => {
     pingTimeStamps[presence.userName] = presence.time;
 
     Object.entries(pingTimeStamps).forEach((stamp) => {
-      if (Date.now() - stamp[1] > 12000) {
+      if (Date.now() - stamp[1] > 15000) {
         delete pingTimeStamps[stamp[0]];
         setOnlineGamers((prevOnlines) => {
           const newOnlines = prevOnlines.filter(
@@ -835,7 +835,17 @@ export default function Room({
 
   // send presence_sign
   useEffect(() => {
-    if (!roomToken || !user?.name) return;
+    if (!roomToken || !user) return;
+    const sendFirstPresenceSign = async () => {
+      await sendPresenceSign({
+        roomToken,
+        userName: user.name,
+        userId: user.id,
+        multiGuest: !!user.multiGuest,
+      });
+    };
+    sendFirstPresenceSign();
+
     const interval = setInterval(async () => {
       await sendPresenceSign({
         roomToken,
@@ -843,7 +853,7 @@ export default function Room({
         userId: user.id,
         multiGuest: !!user.multiGuest,
       });
-    }, 7000);
+    }, 5000);
 
     return () => clearInterval(interval);
   }, [roomToken, user]);

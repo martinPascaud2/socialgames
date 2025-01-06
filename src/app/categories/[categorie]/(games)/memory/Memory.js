@@ -364,6 +364,7 @@ export default function Memory({
 
       <Disconnected
         roomId={roomId}
+        roomToken={roomToken}
         onlineGamers={onlineGamers}
         gamers={gamers}
         isAdmin={isAdmin}

@@ -66,6 +66,7 @@ export default function SocialKnowledge({
 
       <Disconnected
         roomId={roomId}
+        roomToken={roomToken}
         onlineGamers={onlineGamers}
         gamers={gameData.gamers}
         isAdmin={isAdmin}

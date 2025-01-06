@@ -122,6 +122,7 @@ export default function Sort({
 
       <Disconnected
         roomId={roomId}
+        roomToken={roomToken}
         onlineGamers={onlineGamers}
         gamers={gamers}
         isAdmin={isAdmin}

@@ -8,6 +8,7 @@ import { modesRules } from "@/assets/globals";
 
 import convertNameListToString from "@/utils/convertNameListToString";
 import updateRoomLeavers from "./updateRoomLeavers";
+import { sendPresenceSign } from "../Room/actions";
 
 import { DiscoModal } from "@/components/Modal";
 import CountDown from "@/components/CountDown";
@@ -179,6 +180,7 @@ const checkAdmins_gameData = ({ gameData, onlineGamers }) => {
 
 export default function Disconnected({
   roomId,
+  roomToken,
   onlineGamers,
   gamers,
   isAdmin,
@@ -195,7 +197,8 @@ export default function Disconnected({
   const [finishCountdownDate, setFinishCountdownDate] = useState(null);
 
   useEffect(() => {
-    if (!onlineGamers?.length || !gamers) return;
+    if (!onlineGamers?.length || !gamers || !roomToken || !user) return;
+
     if (onlineGamers.length !== gamers.length) {
       const onlineGamersSet = new Set(
         onlineGamers.map((online) => online.userName)
@@ -212,7 +215,15 @@ export default function Disconnected({
       setShowDiscoModal(false);
       setIsValidated(false);
     }
-  }, [onlineGamers, gamers]);
+
+    // no await
+    sendPresenceSign({
+      roomToken,
+      userName: user.name,
+      userId: user.id,
+      multiGuest: !!user.multiGuest,
+    });
+  }, [onlineGamers, gamers, roomToken, user]);
 
   useEffect(() => {
     if (!disconnectedList.length) setFinishCountdownDate(null);
@@ -355,6 +366,7 @@ export default function Disconnected({
     if (!onlineGamers?.length || !gamers?.length || !disconnectedList?.length)
       setShowButton(false);
   }, [disconnectedList, gamers, onlineGamers]);
+
   if (
     !onlineGamers?.length ||
     !gamers?.length ||

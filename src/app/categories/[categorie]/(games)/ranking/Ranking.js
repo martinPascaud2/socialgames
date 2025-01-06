@@ -65,6 +65,7 @@ export default function Ranking({
 
       <Disconnected
         roomId={roomId}
+        roomToken={roomToken}
         onlineGamers={onlineGamers}
         gamers={gameData.gamers}
         isAdmin={isAdmin}

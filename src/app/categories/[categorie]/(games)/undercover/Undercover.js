@@ -393,6 +393,7 @@ export default function Undercover({
 
       <Disconnected
         roomId={roomId}
+        roomToken={roomToken}
         onlineGamers={onlineGamers}
         gamers={gamers}
         isAdmin={isAdmin}

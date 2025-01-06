@@ -85,6 +85,7 @@ export default function Drawing({
 
       <Disconnected
         roomId={roomId}
+        roomToken={roomToken}
         onlineGamers={onlineGamers}
         gamers={gameData.gamers}
         isAdmin={isAdmin}
