@@ -711,12 +711,12 @@ import { IoIosSettings } from "react-icons/io";
 import { LiaQrcodeSolid } from "react-icons/lia";
 import { IoMdArrowDropleft, IoMdArrowDropright } from "react-icons/io";
 import { IoPersonAddOutline } from "react-icons/io5";
-import { IoMan } from "react-icons/io5";
 import { GoTools } from "react-icons/go";
 import { FaRegFloppyDisk } from "react-icons/fa6";
 import { IoGameControllerOutline } from "react-icons/io5";
 import { MdOutlineVideogameAsset } from "react-icons/md";
 import { IoKeyOutline } from "react-icons/io5";
+import FriendsSettingsIcon from "./FriendsSettingsIcon";
 
 import { updatePassword } from "@/signin/actions";
 import { useFormState } from "react-dom";
@@ -1421,7 +1421,12 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
               borderRight: isSettingsPressed ? "1px solid #581c87" : "",
             }}
           >
-            <IoMan className="w-12 h-10 text-purple-800 mb-4" />
+            <div className="ml-3 mb-1.5">
+              <FriendsSettingsIcon
+                bgColor={isSettingsPressed ? "#7e22ce" : "#9333ea"}
+                color="#6b21a8"
+              />
+            </div>
           </div>
           <div // background filler
             onTouchStart={() => setIsSettingsPressed(true)}
