@@ -38,16 +38,18 @@ export default function MakeTeams({ isAdmin, options, setOptions, last }) {
   }, [isAdmin, options]);
 
   return (
-    <div className="m-1 flex flex-col items-center">
+    <div className="mb-2 flex flex-col items-center">
       <div>Constitution des équipes</div>
       <div className="flex justify-center gap-2">
         <button
           type="button"
-          className={`border ${
+          className={`${
             teamMode === "teamNumber"
-              ? "border-2 border-blue-500"
-              : "border border-blue-300"
-          } ${isAdmin ? "bg-blue-100" : ""}`}
+              ? "border border-2 border-sky-700 bg-sky-100 text-sky-700 font-semibold"
+              : isAdmin
+              ? "border border-amber-700 bg-amber-100 text-amber-700"
+              : "border border-sky-700 bg-sky-100 text-sky-700"
+          }`}
           onClick={() => {
             isAdmin && setTeamMode("teamNumber");
           }}
@@ -56,11 +58,13 @@ export default function MakeTeams({ isAdmin, options, setOptions, last }) {
         </button>
         <button
           type="button"
-          className={`border ${
+          className={`${
             teamMode === "minimum"
-              ? "border-2 border-blue-500"
-              : "border border-blue-300"
-          } ${isAdmin ? "bg-blue-100" : ""}`}
+              ? "border border-2 border-sky-700 bg-sky-100 text-sky-700 font-semibold"
+              : isAdmin
+              ? "border border-amber-700 bg-amber-100 text-amber-700"
+              : "border border-sky-700 bg-sky-100 text-sky-700"
+          }`}
           onClick={() => {
             isAdmin && setTeamMode("minimum");
           }}
@@ -70,19 +74,25 @@ export default function MakeTeams({ isAdmin, options, setOptions, last }) {
       </div>
 
       {teamMode === "teamNumber" && (
-        <div className={`border w-[60%] flex mt-1`}>
+        <div className={`w-[60%] flex mt-1`}>
           <button
             onClick={() => setTeamsNumber((teams) => teams - 1)}
-            className={`mr-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center ${
+            className={`mr-auto border border-amber-700 bg-amber-100 text-amber-700 w-[20%] flex justify-center ${
               !isAdmin ? "collapse" : ""
             }`}
           >
             -
           </button>
-          <div className="flex items-center">{teamsNumber} équipes</div>
+          <div
+            className={`flex items-center w-[60%] border border-sky-700 ${
+              isAdmin ? "border-x-0 w-[60%]" : "p-1 w-full border-2"
+            } justify-center font-semibold`}
+          >
+            {teamsNumber} équipes
+          </div>
           <button
             onClick={() => setTeamsNumber((teams) => teams + 1)}
-            className={`ml-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center ${
+            className={`ml-auto border border-amber-700 bg-amber-100 text-amber-700 w-[20%] flex justify-center ${
               !isAdmin ? "collapse" : ""
             }`}
           >
@@ -92,19 +102,25 @@ export default function MakeTeams({ isAdmin, options, setOptions, last }) {
       )}
 
       {teamMode === "minimum" && (
-        <div className="border w-[60%] flex mt-1">
+        <div className="w-[60%] flex mt-1">
           <button
             onClick={() => setMinByTeam((teams) => teams - 1)}
-            className={`mr-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center ${
+            className={`mr-auto border border-amber-700 bg-amber-100 text-amber-700 w-[20%] flex justify-center ${
               !isAdmin ? "collapse" : ""
             }`}
           >
             -
           </button>
-          <div className="flex items-center">au moins {minByTeam}</div>
+          <div
+            className={`flex items-center w-[60%] border border-sky-700 ${
+              isAdmin ? "border-x-0 w-[60%]" : "p-1 w-full border-2"
+            } justify-center font-semibold`}
+          >
+            au moins {minByTeam}
+          </div>
           <button
             onClick={() => setMinByTeam((teams) => teams + 1)}
-            className={`ml-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center ${
+            className={`ml-auto border border-amber-700 bg-amber-100 text-amber-700 w-[20%] flex justify-center ${
               !isAdmin ? "collapse" : ""
             }`}
           >

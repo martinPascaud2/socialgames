@@ -37,21 +37,27 @@ export default function Countdown({
   }, [options, isAdmin]);
 
   return (
-    <div className="m-1 flex flex-col items-center justify-center">
-      <div>Temps des tours</div>
-      <div className="border w-full flex">
+    <div className="my-2 mx-1 flex flex-col items-center justify-center">
+      <div>Temps / tour</div>
+      <div className="w-full flex">
         <button
           onClick={() => setCountDownTime((time) => time - 1)}
-          className={`mr-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center ${
+          className={`mr-auto border border-amber-700 bg-amber-100 text-amber-700 w-[20%] flex justify-center ${
             !isAdmin ? "collapse" : ""
           }`}
         >
           -
         </button>
-        <div className="flex items-center">{countDownTime} minutes</div>
+        <div
+          className={`flex items-center w-[60%] border border-sky-700 ${
+            isAdmin ? "border-x-0 w-[60%]" : "p-1 w-full"
+          } justify-center font-semibold`}
+        >
+          {countDownTime} minutes
+        </div>
         <button
           onClick={() => setCountDownTime((time) => time + 1)}
-          className={`ml-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center ${
+          className={`ml-auto border border-amber-700 bg-amber-100 text-amber-700 w-[20%] flex justify-center ${
             !isAdmin ? "collapse" : ""
           }`}
         >

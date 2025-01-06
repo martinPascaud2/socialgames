@@ -1120,7 +1120,9 @@ export default function Room({
                                     return friendsNames;
                                   });
                                 }}
-                                className="w-8 h-8 text-amber-700"
+                                className={`w-8 h-8 ${
+                                  isAdmin ? "text-amber-700" : "text-sky-700"
+                                }`}
                               />
                             ) : (
                               <LockOpenIcon
@@ -1128,7 +1130,9 @@ export default function Room({
                                   if (!isAdmin) return;
                                   await togglePriv();
                                 }}
-                                className="w-8 h-8 text-amber-700"
+                                className={`w-8 h-8 ${
+                                  isAdmin ? "text-amber-700" : "text-sky-700"
+                                }`}
                               />
                             )}
                           </div>
@@ -1602,31 +1606,30 @@ export default function Room({
                           </div>
                         </div>
                       )}
-                      {showConfig && (
-                        <div>
-                          <div className="absolute right-2 top-2">
-                            <ChevronDownIcon className="h-8 w-8" />
-                          </div>
-                          {Options &&
-                            options &&
-                            setOptions &&
-                            setServerMessage && (
-                              <Options
-                                userId={user.id}
-                                isAdmin={isAdmin}
-                                options={options}
-                                setOptions={setOptions}
-                                lastMode={group?.lastMode}
-                                setServerMessage={setServerMessage}
-                                gamersNumber={
-                                  gamerList.length +
-                                  guestList.length +
-                                  multiGuestList.length
-                                }
-                              />
-                            )}
+
+                      <div className={`${!showConfig && "hidden"}`}>
+                        <div className="absolute right-2 top-2">
+                          <ChevronDownIcon className="h-8 w-8" />
                         </div>
-                      )}
+                        {Options &&
+                          options &&
+                          setOptions &&
+                          setServerMessage && (
+                            <Options
+                              userId={user.id}
+                              isAdmin={isAdmin}
+                              options={options}
+                              setOptions={setOptions}
+                              lastMode={group?.lastMode}
+                              setServerMessage={setServerMessage}
+                              gamersNumber={
+                                gamerList.length +
+                                guestList.length +
+                                multiGuestList.length
+                              }
+                            />
+                          )}
+                      </div>
                     </div>
                   )}
                 </div>

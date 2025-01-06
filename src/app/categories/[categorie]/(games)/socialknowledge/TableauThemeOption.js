@@ -168,7 +168,7 @@ export default function TableauThemeOption({
     <div className="flex flex-col justify-center items-center my-4">
       <button
         onClick={() => setShowModal(true)}
-        className="flex justify-center border border-gray-950 text-gray-950 bg-blue-100 w-2/3"
+        className="flex justify-center border border-amber-700 bg-amber-100 text-amber-700 w-2/3"
       >
         {enhancedLength + randoms} catégorie
         {enhancedLength + randoms >= 2 ? "s" : ""}

@@ -28,7 +28,7 @@ export default function OptionsLabel({
   }, [value, isAdmin]);
 
   return (
-    <div className="flex flex-col items-center m-1">
+    <div className="flex flex-col items-center mb-2">
       <div>{param.label}</div>
 
       <div className="flex justify-center">
@@ -38,7 +38,7 @@ export default function OptionsLabel({
             onChange={(e) => {
               setValue(e.target.value);
             }}
-            className="border border-blue-300 bg-blue-100 p-1 text-center"
+            className="border border-amber-700 bg-amber-100 text-amber-700 p-1 text-center"
           >
             {values.possibles.map((possible) => (
               <option key={possible.value} value={possible.value}>
@@ -47,7 +47,7 @@ export default function OptionsLabel({
             ))}
           </select>
         ) : (
-          <div className="border p-1">
+          <div className="border p-1 border-sky-700 text-sky-700 bg-sky-100 font-semibold">
             {(() =>
               values.possibles.find(
                 (possible) => possible.value === options[param.value]

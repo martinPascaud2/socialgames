@@ -95,9 +95,9 @@ export default function MemoryOptions({
             />
           )}
 
-          <div className="m-4 flex flex-col items-center">
+          <div className="mb-4 flex flex-col items-center">
             <div>Nombre de paires</div>
-            <div className="border w-[60%] flex">
+            <div className="w-[60%] flex">
               <button
                 onClick={() => {
                   const newPairsNumber = pairsNumber - 2;
@@ -107,16 +107,22 @@ export default function MemoryOptions({
                   }
                   setPairsNumber((pairs) => pairs - 2);
                 }}
-                className={`mr-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center ${
+                className={`mr-auto border border-amber-700 bg-amber-100 text-amber-700 w-[20%] flex justify-center ${
                   !isAdmin ? "collapse" : ""
                 }`}
               >
                 -
               </button>
-              <div className="flex items-center">{pairsNumber}</div>
+              <div
+                className={`flex items-center w-[60%] border border-sky-700 ${
+                  isAdmin ? "border-x-0 w-[60%]" : "p-1 w-full"
+                } justify-center font-semibold`}
+              >
+                {pairsNumber}
+              </div>
               <button
                 onClick={() => setPairsNumber((pairs) => pairs + 2)}
-                className={`ml-auto border border-blue-300 bg-blue-100 w-[20%] flex justify-center ${
+                className={`ml-auto border border-amber-700 bg-amber-100 text-amber-700 w-[20%] flex justify-center ${
                   !isAdmin ? "collapse" : ""
                 }`}
               >
@@ -124,6 +130,7 @@ export default function MemoryOptions({
               </button>
             </div>
           </div>
+
           <MemoryThemeOption
             isAdmin={isAdmin}
             setOptions={setOptions}

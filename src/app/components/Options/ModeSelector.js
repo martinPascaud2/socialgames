@@ -34,7 +34,7 @@ export default function ModeSelector({
                 return compareState(prevOptions, newOptions);
               })
             )}
-            className="border border-blue-300 bg-blue-100 p-1"
+            className="border border-amber-700 bg-amber-100 text-amber-700 text-xl p-1"
           >
             {modeList.map((mode) => (
               <option key={mode.mode} value={mode.mode}>
@@ -43,15 +43,14 @@ export default function ModeSelector({
             ))}
           </select>
         ) : (
-          <div className="border p-1">{options.mode}</div>
+          <div className="font-semibold text-xl">{options.mode}</div>
         )}
       </div>
     );
   }, [value, modeList, setMode, setOptions, isAdmin, options]);
 
   return (
-    <div className="flex flex-col items-center m-1">
-      <div>Mode de jeu</div>
+    <div className="flex w-full items-center justify-center mt-2 mb-4">
       {Select()}
     </div>
   );

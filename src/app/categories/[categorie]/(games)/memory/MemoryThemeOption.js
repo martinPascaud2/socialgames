@@ -87,12 +87,12 @@ export default function MemoryThemeOption({
   );
 
   return (
-    <div className="flex flex-col justify-center items-center mb-4">
+    <div className="flex flex-col justify-center items-center my-6">
       <button
         onClick={() => setShowModal(true)}
-        className="flex justify-center border border-gray-950 bg-blue-100 w-4/5"
+        className="flex justify-center border border-amber-700 bg-amber-100 w-4/5"
       >
-        <div className="text-gray-950">
+        <div className="text-amber-700">
           {selectedThemes?.length} catégorie
           {selectedThemes?.length >= 2 ? "s" : ""}
         </div>
@@ -101,7 +101,7 @@ export default function MemoryThemeOption({
       <Modal isOpen={showModal} onClose={closeModal} message="">
         <div
           onClick={() => closeModal()}
-          className="flex justify-center border border-2 border-b-0  border-gray-950 bg-gray-100 w-full py-1"
+          className="flex justify-center border border-2 border-b-0 border-gray-950 bg-gray-100 w-full py-1"
         >
           <button className="font-semibold text-gray-950">
             {selectedThemes?.length} catégorie
