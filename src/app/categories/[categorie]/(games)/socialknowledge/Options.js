@@ -16,6 +16,7 @@ export default function SocialKnowledgeOptions({
   options,
   setOptions,
   lastMode,
+  serverMessage,
   setServerMessage,
   gamersNumber,
 }) {
@@ -106,6 +107,7 @@ export default function SocialKnowledgeOptions({
             setOptions={setOptions}
             isAdmin={isAdmin}
             max={gamersNumber >= 6 ? 3 : 4}
+            serverMessage={serverMessage}
             setServerMessage={setServerMessage}
           />
         </>

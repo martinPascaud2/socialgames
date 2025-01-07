@@ -881,8 +881,7 @@ const EasyRow = ({
 export default function Tableau({ roomId, roomToken, user, gameData }) {
   usePreventScroll();
   const {
-    enhanced,
-    randoms,
+    themes,
     allResponsesByUser,
     gamersNames,
     deletedGamersNames = [],
@@ -906,7 +905,7 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
   const [isComingBack, setIsComingBack] = useState(true);
   const [message, setMessage] = useState("");
 
-  const allThemes = [...enhanced, ...randoms].sort(); // useMemo ?
+  const allThemes = themes.sort();
 
   useEffect(() => {
     setPhase((prevPhase) => {

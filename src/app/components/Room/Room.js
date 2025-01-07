@@ -1631,6 +1631,7 @@ export default function Room({
                               options={options}
                               setOptions={setOptions}
                               lastMode={group?.lastMode}
+                              serverMessage={serverMessage}
                               setServerMessage={setServerMessage}
                               gamersNumber={
                                 gamerList.length +

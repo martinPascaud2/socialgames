@@ -8,6 +8,22 @@ import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkViceAdminAndArrivals from "@/utils/checkViceAdminAndArrivals";
 import { saveAndDispatchData } from "@/components/Room/actions";
 
+const deleteAllTableauResponse = async ({ gamers }) => {
+  await Promise.all(
+    gamers.map(async (gamer) => {
+      if (!gamer.multiGuest) {
+        await prisma.tableauResponse.deleteMany({
+          where: { userId: gamer.id },
+        });
+      } else {
+        await prisma.tableauResponse.deleteMany({
+          where: { multiguestId: gamer.dataId },
+        });
+      }
+    })
+  );
+};
+
 export async function launchGame({
   roomId,
   roomToken,
@@ -50,16 +66,21 @@ export async function launchGame({
 
   let newData;
   if (options.mode === "Tableau") {
+    // await deleteAllTableauResponse({ gamers: gamersAndGuests });
+
+    const { themes } = options;
+    const selectedThemesLabels = themes
+      .filter((theme) => theme.selected)
+      .map((theme) => theme.theme);
     newData = {
       admin: startedRoom.admin,
       viceAdmin,
       arrivalsOrder,
       gamers: gamersAndGuests,
-      // activePlayer: gamersAndGuests[0],
-      enhanced: [],
-      randoms: [],
+      themes: selectedThemesLabels,
       options,
       phase: "waiting",
+      // phase: "writing",
     };
   }
 
@@ -71,54 +92,18 @@ export async function launchGame({
   return {};
 }
 
-const deleteAllTableauResponse = async ({ gamers }) => {
-  await Promise.all(
-    gamers.map(async (gamer) => {
-      if (!gamer.multiGuest) {
-        await prisma.tableauResponse.deleteMany({
-          where: { userId: gamer.id },
-        });
-      } else {
-        await prisma.tableauResponse.deleteMany({
-          where: { multiguestId: gamer.dataId },
-        });
-      }
-    })
-  );
-};
-
 export async function startGame({ gameData, roomId, roomToken }) {
-  const { options, gamers } = gameData;
-  const { themes, randoms: randomsNumber } = options;
+  const { gamers } = gameData;
 
   await deleteAllTableauResponse({ gamers });
 
-  let enhanced = [];
-  let onlySelected = [];
-  let randoms = [];
-
-  themes.forEach((theme) => {
-    if (theme.enhanced) enhanced.push(theme.theme);
-    else if (theme.selected) onlySelected.push(theme.theme);
-  });
-
-  let selectedRandomIndexes = new Set();
-  while (selectedRandomIndexes.size < randomsNumber) {
-    const randomIndex = Math.floor(Math.random() * onlySelected.length);
-    selectedRandomIndexes.add(randomIndex);
-  }
-  selectedRandomIndexes = Array.from(selectedRandomIndexes);
-  selectedRandomIndexes.forEach((randomIndex) => {
-    randoms.push(onlySelected[randomIndex]);
-  });
-
-  const newData = { ...gameData, phase: "writing", enhanced, randoms };
+  const newData = { ...gameData, phase: "writing" };
   await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
 export async function checkResponses({ gameData, roomId, roomToken }) {
-  const { gamers, enhanced, randoms } = gameData;
-  const themesNumber = enhanced.length + randoms.length;
+  const { gamers, themes } = gameData;
+  const themesNumber = themes.length;
   let responsesGamerCounts = [];
 
   await Promise.all(
