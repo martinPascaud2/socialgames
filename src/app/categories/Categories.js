@@ -1600,7 +1600,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
               borderLeft: isPrelobbyPressed ? "1px solid #581c87" : "",
             }}
           >
-            <MdOutlineVideogameAsset className="w-11 h-20 rotate-90 mb-4 text-purple-800" />
+            <MdOutlineVideogameAsset className="w-11 h-20 rotate-90 mb-5 text-purple-800" />
           </div>
           <div // background filler
             onTouchStart={() => setIsPrelobbyPressed(true)}
@@ -2293,7 +2293,6 @@ export default function Categories({
     return user;
   };
 
-  console.log("serverMessage", serverMessage);
   useEffect(() => {
     const channel = pusher.subscribe(`user-${user.email}`);
     channel.bind("user-event", function (data) {
@@ -2385,9 +2384,11 @@ export default function Categories({
   );
 
   const QrCodeScanner = useMemo(() => {
-    if (setting !== "camera") return;
-    if (!scanning || !setting) return;
+    // if (setting !== "camera") return;
+    // if (!scanning || !setting) return;
     const requestCameraAccess = async () => {
+      // if (setting !== "camera" || stopScan) return;
+      if (setting !== "camera" || stopScan) return;
       try {
         await navigator.mediaDevices.getUserMedia({ video: true });
       } catch (error) {
@@ -2407,10 +2408,12 @@ export default function Categories({
     };
     requestCameraAccess();
 
+    // if (setting !== "camera") return null;
+
     return (
       <div onClick={(event) => event.stopPropagation()} className="h-full">
         <Html5QrcodePlugin
-          // scanning={setting === "camera"}
+          scanning={setting === "camera"}
           fps={10}
           qrCodeSuccessCallback={onNewScanResult}
           setStopScan={setStopScan}
@@ -2422,18 +2425,16 @@ export default function Categories({
   }, [setting, scanning]);
 
   const resetPermissions = useCallback(() => {
-    stopScan && stopScan();
+    // stopScan && stopScan();
+    stopScan && setting === "camera" && stopScan();
     setStopScan();
-  }, [stopScan]);
-
-  useEffect(() => {
-    if (setting !== "camera") resetPermissions();
-  }, [setting, resetPermissions]);
+    // }, [stopScan]);
+  }, [stopScan, setting]);
 
   const handleBgClick = useCallback(
     (event) => {
-      resetPermissions();
       event.stopPropagation();
+      resetPermissions();
       // toggledPrelobby && setToggledPrelobby(false);
       // !toggledPrelobby && setToggledSettings(true);
       // if (toggledSettings) {
@@ -2578,7 +2579,12 @@ export default function Categories({
                   </CentralZone>
                 )}
 
-                {setting === "camera" && (
+                {/* {setting === "camera" && (
+                  <CentralZone onClick={handleOctaClick} zIndex={60}>
+                    {QrCodeScanner}
+                  </CentralZone>
+                )} */}
+                <div className={`${setting !== "camera" && "hidden"}`}>
                   <CentralZone onClick={handleOctaClick} zIndex={60}>
                     {QrCodeScanner}
                     {/* <QrCodeScanner
@@ -2588,7 +2594,7 @@ export default function Categories({
                     setServerMessage={setServerMessage}
                   /> */}
                   </CentralZone>
-                )}
+                </div>
               </>
             )}
 
