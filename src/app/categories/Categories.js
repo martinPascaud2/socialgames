@@ -2384,11 +2384,9 @@ export default function Categories({
   );
 
   const QrCodeScanner = useMemo(() => {
-    // if (setting !== "camera") return;
-    // if (!scanning || !setting) return;
     const requestCameraAccess = async () => {
-      // if (setting !== "camera" || stopScan) return;
       if (setting !== "camera" || stopScan) return;
+
       try {
         await navigator.mediaDevices.getUserMedia({ video: true });
       } catch (error) {
@@ -2408,8 +2406,6 @@ export default function Categories({
     };
     requestCameraAccess();
 
-    // if (setting !== "camera") return null;
-
     return (
       <div onClick={(event) => event.stopPropagation()} className="h-full">
         <Html5QrcodePlugin
@@ -2425,10 +2421,8 @@ export default function Categories({
   }, [setting, scanning]);
 
   const resetPermissions = useCallback(() => {
-    // stopScan && stopScan();
     stopScan && setting === "camera" && stopScan();
     setStopScan();
-    // }, [stopScan]);
   }, [stopScan, setting]);
 
   const handleBgClick = useCallback(
@@ -2579,20 +2573,9 @@ export default function Categories({
                   </CentralZone>
                 )}
 
-                {/* {setting === "camera" && (
-                  <CentralZone onClick={handleOctaClick} zIndex={60}>
-                    {QrCodeScanner}
-                  </CentralZone>
-                )} */}
                 <div className={`${setting !== "camera" && "hidden"}`}>
                   <CentralZone onClick={handleOctaClick} zIndex={60}>
                     {QrCodeScanner}
-                    {/* <QrCodeScanner
-                    setting={setting}
-                    // onNewScanResult={onNewScanResult}
-                    setStopScan={setStopScan}
-                    setServerMessage={setServerMessage}
-                  /> */}
                   </CentralZone>
                 </div>
               </>

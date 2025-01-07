@@ -41,7 +41,6 @@ export default function Html5QrcodePlugin(props) {
     if (!props.scanning) return;
     if (reader) {
       const html5QrCode = new Html5Qrcode("reader");
-      console.log("html5QrCode", html5QrCode);
       const config = createConfig(props);
 
       html5QrCode.start(
@@ -58,28 +57,10 @@ export default function Html5QrcodePlugin(props) {
   }, [props, reader]);
 
   useEffect(() => {
-    // if (!props.scanning) return;
     const stop = () => scan?.stop();
-    console.log("stop", stop);
     stop && props.setStopScan && props.setStopScan(() => stop);
-    // stop && props.setStopScan && props.setStopScan(stop);
-    // stop &&
-    //   props.setStopScan &&
-    //   props.setStopScan((prevStop) => {
-    //     if (prevStop) return prevStop;
-    //     // else return () => stop;
-    //     else return stop;
-    //   });
-    // }, [scan]);
   }, [scan, props]);
 
-  useEffect(() => {
-    if (!props.scanning) return;
-    // if (!props.scanning && scan) scan.stop();
-    // if (!props.scanning && scan) scan.stop();
-  }, [props, scan]);
-
-  // if (!props.scanning) return null;
   return (
     <div
       id="reader"
