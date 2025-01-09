@@ -103,14 +103,16 @@ export function InputModal({ isOpen, onClose, action, name, message }) {
 
   useEffect(() => {
     setModalOpen(isOpen);
+  }, [isOpen]);
 
-    if (isOpen) {
+  useEffect(() => {
+    if (modalOpen) {
       setTimeout(() => {
         inputRef.current?.focus();
         inputRef.current?.click();
-      }, 500);
+      }, 50);
     }
-  }, [isOpen, inputRef]);
+  }, [modalOpen]);
 
   const handleClose = () => {
     setModalOpen(false);
