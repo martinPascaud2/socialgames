@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import ReactDOM from "react-dom";
 
 // export default function Modal({ children, isOpen, onClose }) {
@@ -99,9 +99,16 @@ export function InputModal({ isOpen, onClose, action, name, message }) {
   );
 
   const [modalOpen, setModalOpen] = useState(isOpen);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     setModalOpen(isOpen);
+
+    if (isOpen) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 50);
+    }
   }, [isOpen]);
 
   const handleClose = () => {
@@ -152,7 +159,7 @@ export function InputModal({ isOpen, onClose, action, name, message }) {
 
                 <form action={action}>
                   <input
-                    autoFocus
+                    ref={inputRef}
                     name={name}
                     className="text-center h-6 focus:outline-none border focus:border-amber-700 rounded-md focus:bg-amber-100"
                   />
