@@ -107,9 +107,10 @@ export function InputModal({ isOpen, onClose, action, name, message }) {
     if (isOpen) {
       setTimeout(() => {
         inputRef.current?.focus();
+        inputRef.current?.click();
       }, 500);
     }
-  }, [isOpen]);
+  }, [isOpen, inputRef]);
 
   const handleClose = () => {
     setModalOpen(false);
