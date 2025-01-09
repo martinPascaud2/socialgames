@@ -16,7 +16,7 @@ export default function usePreventScroll() {
 
     const disableScrollStyles = () => {
       document.body.style.overflow = "hidden";
-      document.body.style.position = "fixed";
+      // document.body.style.position = "fixed";
       document.body.style.width = "100%";
       document.body.style.height = "100%";
     };

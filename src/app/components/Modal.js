@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import ReactDOM from "react-dom";
 
 // export default function Modal({ children, isOpen, onClose }) {
@@ -66,7 +66,7 @@ export default function Modal({ children, isOpen, onClose }) {
       <div
         className="overflow-hidden fixed"
         style={{
-          zIndex: isOpen ? 100 : 0,
+          zIndex: isOpen ? 90 : 0,
           height: isOpen ? "100vh" : 0,
           width: isOpen ? "100vw" : 0,
           top: 0,
@@ -82,6 +82,81 @@ export default function Modal({ children, isOpen, onClose }) {
             <div className="relative flex w-full bg-white border-0 rounded-lg shadow-lg outline-none focus:outline-none">
               <div className="relative p-4 flex-auto bg-gray-100 rounded-lg">
                 {children}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    ),
+    document.body
+  );
+}
+
+export function InputModal({ isOpen, onClose, action, name, message }) {
+  const windowHeight = useMemo(() => window.innerHeight, []);
+  const [windowResizedHeight, setWindowResizedHeight] = useState(
+    window.visualViewport.height
+  );
+
+  const [modalOpen, setModalOpen] = useState(isOpen);
+
+  useEffect(() => {
+    setModalOpen(isOpen);
+  }, [isOpen]);
+
+  const handleClose = () => {
+    setModalOpen(false);
+    onClose();
+  };
+
+  useEffect(() => {
+    const updateHeight = () => {
+      setWindowResizedHeight(window.visualViewport.height);
+    };
+
+    window.visualViewport.addEventListener("resize", updateHeight);
+    window.visualViewport.addEventListener("focusin", updateHeight);
+    window.visualViewport.addEventListener("focusout", updateHeight);
+
+    return () => {
+      window.visualViewport.removeEventListener("resize", updateHeight);
+      window.visualViewport.removeEventListener("focusin", updateHeight);
+      window.visualViewport.removeEventListener("focusout", updateHeight);
+    };
+  }, []);
+
+  return ReactDOM.createPortal(
+    modalOpen && (
+      <div
+        className="overflow-hidden fixed"
+        style={{
+          zIndex: isOpen ? 100 : 0,
+          height: isOpen ? "100vh" : 0,
+          width: isOpen ? "100vw" : 0,
+          left: 0,
+        }}
+      >
+        <div className="fixed inset-0 flex items-end justify-center outline-none focus:outline-none">
+          <div onClick={() => handleClose()} className="fixed inset-0" />
+          <div
+            className="w-full absolute"
+            style={{
+              bottom: `calc(${windowHeight}px - ${windowResizedHeight}px)`,
+            }}
+          >
+            <div className="relative flex w-full border border-t-2 border-x-0 border-b-0 border-black outline-none focus:outline-none">
+              <div className="relative pb-4 flex-auto bg-sky-100 flex flex-col items-center">
+                <div className="h-6 my-2 text-sky-700 font-semibold">
+                  {message}
+                </div>
+
+                <form action={action}>
+                  <input
+                    autoFocus
+                    name={name}
+                    className="text-center h-6 focus:outline-none border focus:border-amber-700 rounded-md focus:bg-amber-100"
+                  />
+                </form>
               </div>
             </div>
           </div>

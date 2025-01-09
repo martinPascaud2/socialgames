@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState, useCallback, useRef } from "react";
 import capitalizeFirstLetter from "@/utils/capitalizeFirstLetter";
 
 import Modal from "@/components/Modal";
+import { InputModal } from "@/components/Modal";
 
 // export default function TableauThemeOption({
 //   isAdmin,
@@ -318,7 +319,6 @@ export default function TableauThemeOption({
 
   const [customs, setCustoms] = useState(lastParams?.customs || 0);
   const [showCustomInput, setShowCustomInput] = useState(false);
-  const inputRef = useRef();
 
   const [showModal, setShowModal] = useState(false);
   const [isDeletingCustom, setIsDeletingCustom] = useState(false);
@@ -345,6 +345,9 @@ export default function TableauThemeOption({
 
   const closeModal = () => {
     setShowModal(false);
+  };
+  const closeInputModal = () => {
+    setShowCustomInput(false);
   };
 
   const handleCheck = useCallback(
@@ -375,12 +378,6 @@ export default function TableauThemeOption({
     [max, themes, isAdmin, setServerMessage]
   );
 
-  useEffect(() => {
-    if (showCustomInput) {
-      inputRef.current?.focus();
-    }
-  }, [showCustomInput]);
-
   const addCustom = (formData) => {
     const newCustom = capitalizeFirstLetter(formData.get("custom"));
 
@@ -404,8 +401,6 @@ export default function TableauThemeOption({
     );
     setThemes(sortedThemes);
 
-    inputRef.current.value = "";
-    inputRef.current.blur();
     setShowCustomInput(false);
     setServerMessage("");
   };
@@ -536,17 +531,13 @@ export default function TableauThemeOption({
                 </div>
               </div>
 
-              <form
-                action={(formData) => addCustom(formData)}
-                className={`${!showCustomInput && "hidden"}`}
-              >
-                <input
-                  ref={inputRef}
-                  name="custom"
-                  onBlur={() => setShowCustomInput(false)}
-                  className="mt-1 mb-4 text-center"
-                />
-              </form>
+              <InputModal
+                isOpen={showCustomInput}
+                onClose={closeInputModal}
+                action={addCustom}
+                name="custom"
+                message="Nouvelle catégorie personnalisée"
+              />
 
               {serverMessage.length !== 0 && (
                 <div className="absolute bottom-0">{serverMessage}</div>

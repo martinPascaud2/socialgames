@@ -14,6 +14,7 @@ import Pusher from "pusher-js";
 import QRCode from "react-qr-code";
 import useWake from "@/utils/useWake";
 
+import usePreventScroll from "@/utils/usePreventScroll";
 import genToken from "@/utils/genToken";
 import getLocation from "@/utils/getLocation";
 import getErrorInformations from "@/utils/getErrorInformations";
@@ -153,6 +154,7 @@ export default function Room({
   Options,
   launchGame,
 }) {
+  usePreventScroll();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
