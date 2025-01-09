@@ -107,7 +107,7 @@ export function InputModal({ isOpen, onClose, action, name, message }) {
     if (isOpen) {
       setTimeout(() => {
         inputRef.current?.focus();
-      }, 50);
+      }, 500);
     }
   }, [isOpen]);
 
