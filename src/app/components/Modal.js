@@ -121,7 +121,9 @@ export function InputModal({ isOpen, onClose, action, name, message }) {
 
   useEffect(() => {
     const updateHeight = () => {
-      setWindowResizedHeight(window.visualViewport.height);
+      setWindowResizedHeight(
+        window.visualViewport.height || window.innerHeight
+      );
     };
 
     window.visualViewport.addEventListener("resize", updateHeight);
