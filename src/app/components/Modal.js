@@ -138,43 +138,44 @@ export function InputModal({ isOpen, onClose, action, name, message }) {
   }, []);
 
   return ReactDOM.createPortal(
-    modalOpen && (
-      <div
-        className="overflow-hidden fixed"
-        style={{
-          zIndex: isOpen ? 100 : 0,
-          // height: isOpen ? "100vh" : 0,
-          width: isOpen ? "100vw" : 0,
-          left: 0,
-        }}
-      >
-        <div className="fixed inset-0 flex items-end justify-center outline-none focus:outline-none">
-          <div onClick={() => handleClose()} className="fixed inset-0" />
-          <div
-            className="w-full absolute"
-            style={{
-              bottom: `calc(${windowHeight}px - ${windowResizedHeight}px)`,
-            }}
-          >
-            <div className="relative flex w-full border border-y-2 border-x-0 border-black outline-none focus:outline-none">
-              <div className="relative pb-4 flex-auto bg-sky-100 flex flex-col items-center">
-                <div className="h-6 my-2 text-sky-700 font-semibold">
-                  {message}
-                </div>
-
-                <form action={action}>
-                  <input
-                    ref={inputRef}
-                    name={name}
-                    className="text-center h-6 focus:outline-none border focus:border-amber-700 rounded-md focus:bg-amber-100"
-                  />
-                </form>
+    // modalOpen && (
+    <div
+      // className="overflow-hidden fixed"
+      className={`overflow-hidden fixed ${!modalOpen && "hidden"}`}
+      style={{
+        zIndex: isOpen ? 100 : 0,
+        // height: isOpen ? "100vh" : 0,
+        width: isOpen ? "100vw" : 0,
+        left: 0,
+      }}
+    >
+      <div className="fixed inset-0 flex items-end justify-center outline-none focus:outline-none">
+        <div onClick={() => handleClose()} className="fixed inset-0" />
+        <div
+          className="w-full absolute"
+          style={{
+            bottom: `calc(${windowHeight}px - ${windowResizedHeight}px)`,
+          }}
+        >
+          <div className="relative flex w-full border border-y-2 border-x-0 border-black outline-none focus:outline-none">
+            <div className="relative pb-4 flex-auto bg-sky-100 flex flex-col items-center">
+              <div className="h-6 my-2 text-sky-700 font-semibold">
+                {message}
               </div>
+
+              <form action={action}>
+                <input
+                  ref={inputRef}
+                  name={name}
+                  className="text-center h-6 focus:outline-none border focus:border-amber-700 rounded-md focus:bg-amber-100"
+                />
+              </form>
             </div>
           </div>
         </div>
       </div>
-    ),
+    </div>,
+    // )
     document.body
   );
 }
