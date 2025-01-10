@@ -143,7 +143,7 @@ export function InputModal({ isOpen, onClose, action, name, message }) {
         className="overflow-hidden fixed"
         style={{
           zIndex: isOpen ? 100 : 0,
-          height: isOpen ? "100vh" : 0,
+          // height: isOpen ? "100vh" : 0,
           width: isOpen ? "100vw" : 0,
           left: 0,
         }}
@@ -156,7 +156,7 @@ export function InputModal({ isOpen, onClose, action, name, message }) {
               bottom: `calc(${windowHeight}px - ${windowResizedHeight}px)`,
             }}
           >
-            <div className="relative flex w-full border border-t-2 border-x-0 border-b-0 border-black outline-none focus:outline-none">
+            <div className="relative flex w-full border border-y-2 border-x-0 border-black outline-none focus:outline-none">
               <div className="relative pb-4 flex-auto bg-sky-100 flex flex-col items-center">
                 <div className="h-6 my-2 text-sky-700 font-semibold">
                   {message}
