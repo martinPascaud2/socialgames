@@ -861,6 +861,14 @@ export default function Room({
   }, [roomToken, user]);
   // ------------------------------
 
+  // reset invitedList
+  useEffect(() => {
+    if (!invitedList.length) return;
+    const timeout = setTimeout(() => setInvitedList([]), 8000);
+    return () => clearTimeout(timeout);
+  }, [invitedList]);
+  // ------------------------------
+
   if (joinError) {
     return (
       <div className="h-screen w-screen flex justify-center items-center">
@@ -1558,8 +1566,8 @@ export default function Room({
                                       }}
                                       className={`${
                                         !invited
-                                          ? "border border-amber-700 bg-amber-100 text-amber-700 p-1"
-                                          : "border border-sky-100 text-sky-700 pulse-soft p-1"
+                                          ? "border border-amber-700 bg-amber-100 text-amber-700 p-1 m-0.5"
+                                          : "border border-sky-100 text-sky-700 pulse-soft p-1 m-0.5"
                                       }`}
                                     >
                                       {friend.customName}
