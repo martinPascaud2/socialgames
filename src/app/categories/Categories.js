@@ -1965,7 +1965,7 @@ const BarParam = ({ style }) => {
       <div
         key={key}
         className="absolute w-full"
-        style={{ ...style, animation: "colorWipe 5s" }}
+        style={{ ...style, animation: "colorWipe 3s" }}
       />
     </>,
     document.body
