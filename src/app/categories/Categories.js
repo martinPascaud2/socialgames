@@ -719,7 +719,7 @@ import { IoKeyOutline } from "react-icons/io5";
 import FriendsSettingsIcon from "./FriendsSettingsIcon";
 
 import { updatePassword } from "@/signin/actions";
-import { useFormState } from "react-dom";
+import ReactDOM, { useFormState } from "react-dom";
 
 import Spinner from "@/components/spinners/Spinner";
 
@@ -1941,6 +1941,37 @@ const PasswordForm = ({ user }) => {
   );
 };
 
+const BarParam = ({ style }) => {
+  const [key, setKey] = useState(0);
+
+  useEffect(() => {
+    setKey((prevKey) => prevKey + 1);
+  }, [style]);
+
+  return ReactDOM.createPortal(
+    <>
+      <style jsx>
+        {`
+          @keyframes colorWipe {
+            0% {
+              background-color: #9ca3af;
+            }
+            100% {
+              background-color: #000000;
+            }
+          }
+        `}
+      </style>
+      <div
+        key={key}
+        className="absolute w-full"
+        style={{ ...style, animation: "colorWipe 5s" }}
+      />
+    </>,
+    document.body
+  );
+};
+
 const Params = ({ updateParams, updateLastCP, fetchUser }) => {
   const possibleBarValues = [4, 6, 8, 12, 14, 16, 18, 20];
   const [barValues, setBarValues] = useState();
@@ -1988,6 +2019,10 @@ const Params = ({ updateParams, updateLastCP, fetchUser }) => {
 
   return (
     <div className="w-full h-full flex flex-col items-center relative py-9">
+      <BarParam style={{ top: 0, height: `${barValues.topBarSize / 4}rem` }} />
+      <BarParam
+        style={{ bottom: 0, height: `${barValues.bottomBarSize / 4}rem` }}
+      />
       {/* {param === "bars" && ( */}
       <>
         {[
