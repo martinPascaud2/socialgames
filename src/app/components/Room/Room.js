@@ -182,7 +182,6 @@ export default function Room({
   const [guestList, setGuestList] = useState([]);
   const [multiGuestList, setMultiGuestList] = useState([]);
   const [deletedGamer, setDeletedGamer] = useState(null);
-  const [deletedGamersList, setDeletedGamersList] = useState([]);
 
   const [options, setOptions] = useState({});
   const [gameData, setGameData] = useState({});
@@ -774,8 +773,7 @@ export default function Room({
 
     setServerMessage(`Joueur ${gamer} retiré`);
     setGamerList(gamers);
-    setDeletedGamersList((prevList) => [...prevList, gamer]);
-    setTimeout(async () => await getFriends(), 1000);
+    setTimeout(async () => await getFriends(), 5000);
   };
 
   const deleteMultiGuest = async (multiGuest) => {
@@ -1537,9 +1535,6 @@ export default function Room({
                               {friendsList &&
                                 friendsList.map((friend) => {
                                   if (
-                                    deletedGamersList.some(
-                                      (deleted) => deleted === friend.name
-                                    ) ||
                                     gamerList.some(
                                       (gamer) => gamer === friend.name
                                     )
