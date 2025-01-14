@@ -130,7 +130,7 @@ const Revelator = ({
   const [isReadyForNextGamer, setIsReadyForNextGamer] = useState(false);
   const [isRevelationEnded, setIsRevelationEnded] = useState(false);
   const [allSortedResponses, setAllSortedResponses] = useState();
-  const [goodResponses, setGoodResponses] = useState({});
+  const [goodOrBadResponses, setGoodOrBadResponses] = useState([]);
 
   useEffect(() => {
     if (!isRunning || !isAdmin) return;
@@ -168,16 +168,11 @@ const Revelator = ({
     get();
   }, [gameData, gamersNames]);
 
-  const actualResponse =
-    allResponsesByUser[gamersNames[currentGamerIndex]]?.[
-      allThemes[currentThemeIndex]
-    ];
-
   useEffect(() => {
     if (!allSortedResponses) return;
-    const goodResponses = {};
+    const goodOrBadResponses = {};
     gamersNames.forEach((name) => {
-      goodResponses[name] = 0;
+      goodOrBadResponses[name] = [];
     });
 
     Object.entries(allSortedResponses)
@@ -190,20 +185,28 @@ const Revelator = ({
               const countThisOne =
                 forThisGamerIndex === currentGamerIndex &&
                 themeIndex <= currentThemeIndex;
+
+              if (!countThisOne) return;
+
               if (
                 getAreSimilar(
                   response,
                   allResponsesByUser[gamersNames[forThisGamerIndex]][theme]
-                ) &&
-                countThisOne
+                )
               ) {
-                goodResponses[name] += 1;
+                const gamerGoodOrBad = [...goodOrBadResponses[name]];
+                gamerGoodOrBad.push(true);
+                goodOrBadResponses[name] = gamerGoodOrBad;
+              } else {
+                const gamerGoodOrBad = [...goodOrBadResponses[name]];
+                gamerGoodOrBad.push(false);
+                goodOrBadResponses[name] = gamerGoodOrBad;
               }
             });
           });
       });
 
-    setGoodResponses(goodResponses);
+    setGoodOrBadResponses(goodOrBadResponses);
   }, [
     allSortedResponses,
     gamersNames,
@@ -245,51 +248,7 @@ const Revelator = ({
         </div>
       )}
 
-      <div className="flex w-full justify-around flex-wrap p-2 m-2">
-        {allSortedResponses &&
-          gamersNames.map((name, index) => {
-            const gamerResponseForCurrent =
-              allSortedResponses[name]?.[allThemes[currentThemeIndex]]?.[
-                currentGamerIndex
-              ];
-
-            const isTheOne = gamerResponseForCurrent === null;
-
-            const isRight = getAreSimilar(
-              gamerResponseForCurrent,
-              actualResponse
-            );
-
-            const isDeleted = deletedGamersNames.some(
-              (deleted) => deleted === name
-            );
-
-            return (
-              <div key={index}>
-                <div
-                  className={`text-center ${(() => {
-                    if (isDeleted) return "text-gray-300";
-                    else if (isTheOne || !actualResponse) return "text-black";
-                    else if (isRight) return "text-green-600";
-                    else return "text-red-600";
-                  })()}`}
-                >
-                  {name}
-                </div>
-
-                <div className="flex h-6">
-                  {Array.from({ length: goodResponses[name] }, (_, i) => (
-                    <div key={`${index}-${i}`}>
-                      <CheckIcon className="w-6 h-6" />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-      </div>
-
-      <table className="flex flex-col items-center justify-center w-full border-b border-black">
+      <table className="flex flex-col items-center justify-center w-full border-b border-black mt-4">
         <thead className="w-full">
           <tr className="w-full flex justify-around">
             {allThemes.map((theme) => (
@@ -318,6 +277,9 @@ const Revelator = ({
                         gamerIndex < currentGamerIndex ||
                         (gamerIndex === currentGamerIndex &&
                           themeIndex <= currentThemeIndex);
+
+                      const isTheOne = gamerIndex === currentGamerIndex;
+
                       const isDeleted = deletedGamersNames.some(
                         (deleted) => deleted === gamer
                       );
@@ -333,7 +295,30 @@ const Revelator = ({
                             }}
                           >
                             <div className="outline outline-1 outline-black flex justify-center w-full items-center h-full">
-                              {gamer}
+                              <div className="relative flex justify-center items-center">
+                                {gamer}
+                                <div className="absolute left-full flex">
+                                  {!isTheOne &&
+                                    goodOrBadResponses &&
+                                    goodOrBadResponses[gamer]?.map(
+                                      (goodOrBad, i) => {
+                                        if (goodOrBad) {
+                                          return (
+                                            <div key={`${gamer}-${i}`}>
+                                              <CheckIcon className="w-6 h-6 text-green-600" />
+                                            </div>
+                                          );
+                                        } else {
+                                          return (
+                                            <div key={`${gamer}-${i}`}>
+                                              <XMarkIcon className="w-6 h-6 text-red-600" />
+                                            </div>
+                                          );
+                                        }
+                                      }
+                                    )}
+                                </div>
+                              </div>
                               {isDeleted && (
                                 <IoCloudOfflineSharp className="ml-1" />
                               )}
@@ -346,8 +331,8 @@ const Revelator = ({
                               borderBottomWidth: "0px",
                             }}
                             className={`flex items-center justify-center w-full h-${
-                              gamersNames.length >= 6 ? 12 : 16
-                            } text-center text-sm mt-6 border border-black`}
+                              gamersNames.length >= 6 ? 8 : 10
+                            } text-center text-sm mt-6 border border-black leading-tight`}
                           >
                             {!show ? "" : response}
                           </td>
@@ -517,8 +502,8 @@ const DraggableItem = ({
           userSelect: "none",
         }}
         className={`flex flex-col text-center items-center justify-center w-full h-${
-          height === "medium" ? "16" : "12"
-        } text-sm overflow-hidden mt-6 border border-black relative`}
+          height === "medium" ? "10" : "8"
+        } text-sm overflow-hidden mt-6 border border-black relative leading-tight`}
         onClick={() => moveByClick()}
       >
         {item}
@@ -551,7 +536,7 @@ const DraggableColumn = ({
     if (dimensionsRef.current) {
       const { width, height } = dimensionsRef.current.getBoundingClientRect();
       if (width !== 0 && height !== 0)
-        setDimensions({ width, height: gamersNames.length >= 6 ? 12 : 16 });
+        setDimensions({ width, height: gamersNames.length >= 6 ? 8 : 10 });
     }
   }, [setDimensions, gamersNames]);
 
@@ -715,7 +700,7 @@ const DraggableRow = ({
       ref={(node) => ref(drop(node))}
       onClick={() => moveByClick()}
       className={`flex justify-around items-center w-full text-center h-${
-        height === "medium" ? "16" : "12"
+        height === "medium" ? "10" : "8"
       }`}
       style={{
         backgroundColor:
@@ -731,7 +716,7 @@ const DraggableRow = ({
       {Object.values(otherGamersResponses).map((responses, i) => (
         <td
           key={i}
-          className={`w-full h-full border border-black border-y-0 flex items-center justify-center relative text-sm`}
+          className={`w-full h-full border border-black border-y-0 flex items-center justify-center relative text-sm leading-tight`}
         >
           {responses[gamerIndex]}
           <div className="absolute bottom-0 right-0 text-xs">
@@ -767,7 +752,7 @@ const EasyRow = ({
     if (dimensionsRef.current) {
       const { width, height } = dimensionsRef.current.getBoundingClientRect();
       if (width !== 0 && height !== 0)
-        setDimensions({ width, height: gamersNames.length >= 6 ? 12 : 16 });
+        setDimensions({ width, height: gamersNames.length >= 6 ? 8 : 10 });
     }
   }, [setDimensions, gamersNames]);
 

@@ -151,6 +151,7 @@ export function InputModal({ isOpen, onClose, action, name, message }) {
     >
       <div className="fixed inset-0 flex items-end justify-center outline-none focus:outline-none">
         <div onClick={() => handleClose()} className="fixed inset-0" />
+
         <div
           className="w-full absolute"
           style={{

@@ -861,8 +861,6 @@ export default function Room({
   }, [roomToken, user]);
   // ------------------------------
 
-  const [isExtandedPlayers, setIsExtandedPlayers] = useState(false);
-
   if (joinError) {
     return (
       <div className="h-screen w-screen flex justify-center items-center">
