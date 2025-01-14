@@ -79,7 +79,6 @@ export async function launchGame({
       gamers: gamersAndGuests,
       themes: selectedThemesLabels,
       options,
-      // phase: "waiting",
       phase: "writing",
     };
   }
@@ -91,15 +90,6 @@ export async function launchGame({
 
   return {};
 }
-
-// export async function startGame({ gameData, roomId, roomToken }) {
-//   const { gamers } = gameData;
-
-//   await deleteAllTableauResponse({ gamers });
-
-//   const newData = { ...gameData, phase: "writing" };
-//   await saveAndDispatchData({ roomId, roomToken, newData });
-// }
 
 export async function checkResponses({ gameData, roomId, roomToken }) {
   const { gamers, themes } = gameData;
