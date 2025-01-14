@@ -661,6 +661,14 @@ export default function Room({
   }, [gamerList]);
   // ------------------------------
 
+  // reset invitedList
+  useEffect(() => {
+    if (!invitedList.length) return;
+    const timeout = setTimeout(() => setInvitedList([]), 8000);
+    return () => clearTimeout(timeout);
+  }, [invitedList]);
+  // ------------------------------
+
   // delete CP_invitations when going out
   const deleteInvs = useCallback(async () => {
     await deleteInvitations({
@@ -859,14 +867,6 @@ export default function Room({
 
     return () => clearInterval(interval);
   }, [roomToken, user]);
-  // ------------------------------
-
-  // reset invitedList
-  useEffect(() => {
-    if (!invitedList.length) return;
-    const timeout = setTimeout(() => setInvitedList([]), 8000);
-    return () => clearTimeout(timeout);
-  }, [invitedList]);
   // ------------------------------
 
   if (joinError) {
