@@ -47,7 +47,7 @@ export function LoginForm({}) {
         <label htmlFor="mail">Ton adresse mail</label>
         <input
           ref={inputRef}
-          type="mail"
+          type="email"
           name="mail"
           id="mail"
           autoComplete="email"
