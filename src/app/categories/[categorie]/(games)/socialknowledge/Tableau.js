@@ -997,9 +997,10 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
 
   useEffect(() => {
     const comeBack = async () => {
-      if (phase === "waiting") {
-        setIsComingBack(false);
-      } else if (phase === "writing" && isComingBack === true) {
+      // if (phase === "waiting") {
+      //   setIsComingBack(false);
+      // } else
+      if (phase === "writing" && isComingBack === true) {
         const savedWrittenIndex = await writtingComeBack({ user });
         setWrittenIndex(savedWrittenIndex);
         setIsComingBack(false);
@@ -1225,7 +1226,7 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
   return (
     <>
       <div className="flex flex-col items-center justify-start h-full p-2 bg-gray-100 relative overflow-hidden">
-        {phase === "waiting" && (
+        {/* {phase === "waiting" && (
           <>
             <div className="absolute top-1/2 translate-y-[-50%]">
               L&apos;admin va lancer la partie...
@@ -1238,7 +1239,7 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
               </NextStep>
             )}
           </>
-        )}
+        )} */}
 
         {phase === "writing" && (
           <div className="flex justify-center items-center h-full">

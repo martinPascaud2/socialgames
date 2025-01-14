@@ -66,7 +66,7 @@ export async function launchGame({
 
   let newData;
   if (options.mode === "Tableau") {
-    // await deleteAllTableauResponse({ gamers: gamersAndGuests });
+    await deleteAllTableauResponse({ gamers: gamersAndGuests });
 
     const { themes } = options;
     const selectedThemesLabels = themes
@@ -79,8 +79,8 @@ export async function launchGame({
       gamers: gamersAndGuests,
       themes: selectedThemesLabels,
       options,
-      phase: "waiting",
-      // phase: "writing",
+      // phase: "waiting",
+      phase: "writing",
     };
   }
 
@@ -92,14 +92,14 @@ export async function launchGame({
   return {};
 }
 
-export async function startGame({ gameData, roomId, roomToken }) {
-  const { gamers } = gameData;
+// export async function startGame({ gameData, roomId, roomToken }) {
+//   const { gamers } = gameData;
 
-  await deleteAllTableauResponse({ gamers });
+//   await deleteAllTableauResponse({ gamers });
 
-  const newData = { ...gameData, phase: "writing" };
-  await saveAndDispatchData({ roomId, roomToken, newData });
-}
+//   const newData = { ...gameData, phase: "writing" };
+//   await saveAndDispatchData({ roomId, roomToken, newData });
+// }
 
 export async function checkResponses({ gameData, roomId, roomToken }) {
   const { gamers, themes } = gameData;
