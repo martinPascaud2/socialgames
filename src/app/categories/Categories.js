@@ -2301,7 +2301,8 @@ export default function Categories({
   updateLastCP,
   signOut,
 }) {
-  const { isSupported, isVisible, released, request, release } = useWake();
+  // const { isSupported, isVisible, released, request, release } = useWake();
+  const { isSupported, isLocked, requestWakeLock, releaseWakeLock } = useWake();
   const router = useRouter();
   const searchParams = useSearchParams();
   const isGroup = searchParams.get("group") === "true";
@@ -2625,10 +2626,7 @@ export default function Categories({
                 <CentralZone onClick={handleOctaClick}>
                   <div className="absolute w-full flex flex-col justify-center items-center h-full z-50">
                     <div>{`isSupported ${isSupported}`}</div>
-                    <div>{`isVisible ${isVisible}`}</div>
-                    <div>{`released ${released}`}</div>
-                    {/* <div>{`request ${request}`}</div> */}
-                    {/* <div>{`release ${release}`}</div> */}
+                    <div>{`isLocked ${isLocked}`}</div>
                   </div>
 
                   <Invitations
