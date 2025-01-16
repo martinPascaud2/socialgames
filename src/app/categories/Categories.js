@@ -723,6 +723,8 @@ import ReactDOM, { useFormState } from "react-dom";
 
 import Spinner from "@/components/spinners/Spinner";
 
+import { useWakeLock } from "react-screen-wake-lock";
+
 const SettingsButtons = ({
   setSetting,
   setLocation,
@@ -2301,8 +2303,13 @@ export default function Categories({
   updateLastCP,
   signOut,
 }) {
-  const { isSupported, isVisible, released, request, release } = useWake();
+  // const { isSupported, isVisible, released, request, release } = useWake();
   // const { isSupported, isLocked, requestWakeLock, releaseWakeLock } = useWake();
+  const { isSupported, released, request, release } = useWakeLock({
+    onRequest: () => {},
+    // onError: () => alert("WakeLock: error"), //check
+    onRelease: () => {},
+  });
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -2630,6 +2637,7 @@ export default function Categories({
                       {" "}
                       super bouton
                     </button>
+                    {/* <div>isSupported: {`${isSupported}`}</div> */}
                   </div>
 
                   <Invitations
