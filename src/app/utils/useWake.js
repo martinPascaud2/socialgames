@@ -83,13 +83,29 @@ export default function useWake() {
     }
   };
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   if (isSupported) {
+  //     requestWakeLock();
+  //   }
+
+  //   return () => {
+  //     releaseWakeLock();
+  //   };
+  // }, [isSupported]);
+
+  const handleClick = () => {
     if (isSupported) {
       requestWakeLock();
     }
+  };
+
+  useEffect(() => {
+    if (isSupported) {
+      document.addEventListener("click", handleClick);
+    }
 
     return () => {
-      releaseWakeLock();
+      document.removeEventListener("click", handleClick);
     };
   }, [isSupported]);
 
