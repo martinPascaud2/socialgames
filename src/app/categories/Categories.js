@@ -2623,6 +2623,14 @@ export default function Categories({
                   setToggledPrelobby={setToggledPrelobby}
                 />
                 <CentralZone onClick={handleOctaClick}>
+                  <div className="absolute w-full flex flex-col justify-center items-center h-full z-50">
+                    <div>{`isSupported ${isSupported}`}</div>
+                    <div>{`isVisible ${isVisible}`}</div>
+                    <div>{`released ${released}`}</div>
+                    {/* <div>{`request ${request}`}</div> */}
+                    {/* <div>{`release ${release}`}</div> */}
+                  </div>
+
                   <Invitations
                     user={user}
                     router={router}
