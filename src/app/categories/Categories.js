@@ -2301,8 +2301,9 @@ export default function Categories({
   updateLastCP,
   signOut,
 }) {
-  // const { isSupported, isVisible, released, request, release } = useWake();
-  const { isSupported, isLocked, requestWakeLock, releaseWakeLock } = useWake();
+  const { isSupported, isVisible, released, request, release } = useWake();
+  // const { isSupported, isLocked, requestWakeLock, releaseWakeLock } = useWake();
+
   const router = useRouter();
   const searchParams = useSearchParams();
   const isGroup = searchParams.get("group") === "true";
@@ -2624,9 +2625,11 @@ export default function Categories({
                   setToggledPrelobby={setToggledPrelobby}
                 />
                 <CentralZone onClick={handleOctaClick}>
-                  <div className="absolute w-full flex flex-col justify-center items-center h-full z-50">
-                    <div>{`isSupported ${isSupported}`}</div>
-                    <div>{`isLocked ${isLocked}`}</div>
+                  <div className="absolute w-full flex flex-col justify-center items-center h-full">
+                    <button onClick={() => request()} className="z-50">
+                      {" "}
+                      super bouton
+                    </button>
                   </div>
 
                   <Invitations
