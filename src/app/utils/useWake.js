@@ -24,9 +24,15 @@ export default function useWake() {
   }, []);
 
   useEffect(() => {
-    if (request && (released === undefined || released === true) && isVisible) {
-      request();
-    }
+    // if (request && (released === undefined || released === true) && isVisible) {
+    //   request();
+    // }
+    request && request();
+
+    // return () => {
+    //   if (release) release();
+    // };
+    // }, [request, released, isVisible]);
   }, [request, released, isVisible]);
 
   return {
