@@ -117,12 +117,12 @@ const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
                   onChange={(e) => setThemeInputValue(e.target.value)}
                   className="border focus:outline-none focus:border-2"
                 />
-                <button
+                {/* <button
                   type="submit"
                   className="border border-amber-700 bg-amber-100 text-amber-700 mt-2 p-1"
                 >
                   Envoyer
-                </button>
+                </button> */}
               </form>
             </>
           )}
@@ -165,12 +165,12 @@ const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
                   onChange={(e) => setObjectInputValue(e.target.value)}
                   className="border focus:outline-none focus:border-2"
                 />
-                <button
+                {/* <button
                   type="submit"
                   className="border border-amber-700 bg-amber-100 text-amber-700 mt-2 p-1"
                 >
                   Envoyer
-                </button>
+                </button> */}
               </form>
             </div>
           )}

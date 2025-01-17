@@ -423,12 +423,12 @@ const ResponseForm = ({
               value={writtenIndex === allThemes.length - 1}
             />
 
-            <button
+            {/* <button
               type="submit"
               className="border border-blue-300 bg-blue-100"
             >
               Envoyer
-            </button>
+            </button> */}
           </form>
 
           <div className="w-full text-center italic">{message}</div>

@@ -2179,6 +2179,8 @@ const Invitations = ({
   //   };
   // }, [user, router, updateLastCP]);
 
+  console.log("invitations", invitations);
+
   useEffect(() => {
     setPublicRooms((prevPublics) => {
       const alreadyInInvitations = [];
