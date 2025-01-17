@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { throttle } from "lodash";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -2292,6 +2292,63 @@ const Invitations = ({
   );
 };
 
+const PreventScreenSleep = () => {
+  const videoRef = useRef(null);
+
+  const startPreventSleep = () => {
+    const video = videoRef.current;
+
+    if (video) {
+      video.play().catch((error) => {
+        console.error("Erreur lors de la lecture de la vidéo :", error);
+      });
+
+      // if (document.documentElement.requestFullscreen) {
+      //   document.documentElement.requestFullscreen();
+      // }
+      if (document.fullscreenElement) {
+        document.exitFullscreen().catch((error) => {
+          console.error(
+            "Erreur lors de la sortie du mode plein écran :",
+            error
+          );
+        });
+      }
+    }
+  };
+
+  const stopPreventSleep = () => {
+    const video = videoRef.current;
+
+    if (video) {
+      video.pause();
+
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      }
+    }
+  };
+
+  useEffect(() => {
+    startPreventSleep();
+
+    return () => stopPreventSleep();
+  }, []);
+
+  return (
+    <div>
+      <video
+        ref={videoRef}
+        src="/videoplayback.mp4"
+        style={{ display: "none" }}
+        loop
+        muted
+      />
+      <button onClick={stopPreventSleep}>Stop</button>
+    </div>
+  );
+};
+
 export default function Categories({
   user,
   updateParams,
@@ -2637,6 +2694,7 @@ export default function Categories({
                       {" "}
                       super bouton
                     </button>
+                    <PreventScreenSleep />
                     {/* <div>isSupported: {`${isSupported}`}</div> */}
                   </div>
 
