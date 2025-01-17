@@ -1007,7 +1007,10 @@ export default function Room({
                       <div className="text-center text-amber-700 text-3xl flex justify-center items-center border border-amber-700 bg-amber-100 p-2 mx-2 min-w-[15dvh]">
                         {gamesRefs[gameName].categorie === "grouping" ? (
                           <div
-                            onClick={() => launchRoom()}
+                            onClick={async () => {
+                              await deleteInvs();
+                              launchRoom();
+                            }}
                             className="w-full h-full"
                           >
                             +
@@ -1023,6 +1026,7 @@ export default function Room({
                               lastPosition={geoLocation}
                               viceAdmin={group.viceAdmin}
                               arrivalsOrder={group.arrivalsOrder}
+                              deleteInvs={deleteInvs}
                             >
                               {gamesRefs[gameName].name}
                             </ChooseAnotherGame>

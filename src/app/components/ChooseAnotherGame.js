@@ -13,11 +13,14 @@ export default function ChooseAnotherGame({
   lastPosition,
   viceAdmin,
   arrivalsOrder,
+  deleteInvs,
   children,
 }) {
   const router = useRouter();
 
   const returnLobby = useCallback(async () => {
+    await deleteInvs();
+
     const gamers = [...group.gamers];
     const multiGuests = [...group.multiGuests];
 
