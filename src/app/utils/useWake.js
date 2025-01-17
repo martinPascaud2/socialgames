@@ -33,7 +33,7 @@ export default function useWake() {
     // if (request && (released === undefined || released === true) && isVisible) {
     //   request();
     // }
-    // request && request();
+    request && request();
     // return () => {
     //   if (release) release();
     // };
