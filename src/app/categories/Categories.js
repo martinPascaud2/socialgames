@@ -2297,43 +2297,19 @@ const PreventScreenSleep = () => {
 
   const startPreventSleep = () => {
     const video = videoRef.current;
-
     if (video) {
       video.play().catch((error) => {
         console.error("Erreur lors de la lecture de la vidéo :", error);
       });
-
-      // if (document.documentElement.requestFullscreen) {
-      //   document.documentElement.requestFullscreen();
-      // }
-      if (document.fullscreenElement) {
-        document.exitFullscreen().catch((error) => {
-          console.error(
-            "Erreur lors de la sortie du mode plein écran :",
-            error
-          );
-        });
-      }
     }
   };
 
   const stopPreventSleep = () => {
     const video = videoRef.current;
-
     if (video) {
       video.pause();
-
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      }
     }
   };
-
-  useEffect(() => {
-    startPreventSleep();
-
-    return () => stopPreventSleep();
-  }, []);
 
   return (
     <div>
@@ -2344,7 +2320,8 @@ const PreventScreenSleep = () => {
         loop
         muted
       />
-      <button onClick={stopPreventSleep}>Stop</button>
+      <button onClick={startPreventSleep}>On</button>
+      <button onClick={stopPreventSleep}>Off</button>
     </div>
   );
 };
