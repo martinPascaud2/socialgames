@@ -2338,13 +2338,13 @@ export default function Categories({
   updateLastCP,
   signOut,
 }) {
-  // const { isSupported, isVisible, released, request, release } = useWake();
+  const { isSupported, isVisible, released, request, release } = useWake();
   // const { isSupported, isLocked, requestWakeLock, releaseWakeLock } = useWake();
-  const { isSupported, released, request, release } = useWakeLock({
-    onRequest: () => {},
-    // onError: () => alert("WakeLock: error"), //check
-    onRelease: () => {},
-  });
+  // const { isSupported, released, request, release } = useWakeLock({
+  //   onRequest: () => {},
+  //   // onError: () => alert("WakeLock: error"), //check
+  //   onRelease: () => {},
+  // });
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -2668,12 +2668,17 @@ export default function Categories({
                 />
                 <CentralZone onClick={handleOctaClick}>
                   <div className="absolute w-full flex flex-col justify-center items-center h-full">
-                    <button onClick={() => request()} className="z-50">
+                    {/* <button onClick={() => request()} className="z-50">
                       {" "}
                       super bouton
-                    </button>
-                    <PreventScreenSleep />
+                    </button> */}
+                    {/* <PreventScreenSleep /> */}
                     {/* <div>isSupported: {`${isSupported}`}</div> */}
+                    <div className="z-50">{`isSupported ${isSupported}`}</div>
+                    <div className="z-50">{`released ${released}`}</div>
+                    <button onClick={() => request()} className="z-50">
+                      start
+                    </button>
                   </div>
 
                   <Invitations

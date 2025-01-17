@@ -5,6 +5,7 @@ import { useWakeLock } from "react-screen-wake-lock";
 
 export default function useWake() {
   // const [isVisible, setIsVisible] = useState(true);
+  const [isClient, setIsClient] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
   const { isSupported, released, request, release } = useWakeLock({
     onRequest: () => {},
@@ -13,14 +14,18 @@ export default function useWake() {
   });
 
   useEffect(() => {
+    setIsClient(true);
+
     const handleVisibilityChange = () => {
       setIsVisible(document.visibilityState === "visible");
     };
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
+    document.addEventListener("click", handleVisibilityChange);
 
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener("click", handleVisibilityChange);
     };
   }, []);
 
@@ -28,8 +33,7 @@ export default function useWake() {
     // if (request && (released === undefined || released === true) && isVisible) {
     //   request();
     // }
-    request && request();
-
+    // request && request();
     // return () => {
     //   if (release) release();
     // };
@@ -37,6 +41,10 @@ export default function useWake() {
   }, [request, released, isVisible]);
 
   // if (!isSupported) return {};
+
+  if (!isClient) {
+    return { isSupported: false, isVisible, released, request, release };
+  }
 
   return {
     isSupported,
