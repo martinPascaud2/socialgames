@@ -2179,7 +2179,7 @@ const Invitations = ({
   //   };
   // }, [user, router, updateLastCP]);
 
-  console.log("invitations", invitations);
+  const [threeFirsts, setThreeFirsts] = useState([]);
 
   useEffect(() => {
     setPublicRooms((prevPublics) => {
@@ -2203,8 +2203,24 @@ const Invitations = ({
     getRooms();
   }, [getPublicRooms, setPublicRooms]);
 
+  useEffect(() => {
+    let newThreeFirsts = [];
+    newThreeFirsts = invitations.slice(-3);
+    const freeSpotsNumber = 3 - newThreeFirsts.length;
+    if (freeSpotsNumber && Object.keys(publicRooms).length) {
+      const formattedPublicRooms = Object.values(publicRooms)
+        .slice(-freeSpotsNumber)
+        .map((publicRoom) => ({
+          ...publicRoom,
+          userName: publicRoom.friendName,
+        }));
+      newThreeFirsts = [...newThreeFirsts, ...formattedPublicRooms];
+    }
+    setThreeFirsts(newThreeFirsts);
+  }, [invitations, publicRooms]);
+
   return (
-    <div className="w-full h-full flex flex-col justify-start items-center relative py-6">
+    <div className="w-full h-full flex flex-col justify-start items-center relative py-6 gap-1">
       {/* <div
         onClick={async (event) => {
           event.stopPropagation();
@@ -2222,7 +2238,24 @@ const Invitations = ({
         </div>
       )}
 
-      {invitations.map((invitation, i) => (
+      {threeFirsts.map((invitation, i) => (
+        <div
+          key={i}
+          onClick={async (event) => {
+            event.stopPropagation();
+            // resetPermissions();
+            await updateLastCP({ userId: user.id, out: true });
+            window.location.href = invitation.link;
+          }}
+          className="w-[75%] z-30 h-full"
+        >
+          <div className="h-full flex items-center justify-center border border-2 border-purple-900 text-lg font-semibold text-purple-900 bg-gradient-to-br from-purple-300 to-purple-600">
+            {invitation.userName}
+          </div>
+        </div>
+      ))}
+
+      {/* {invitations.map((invitation, i) => (
         <div
           key={i}
           onClick={async (event) => {
@@ -2250,12 +2283,12 @@ const Invitations = ({
               }}
             >
               {invitation.userName}
-              {/* pour{" "}{`${invitation.mode || gamesRefs[invitation.gameName].name}`} */}
+              pour{" "}{`${invitation.mode || gamesRefs[invitation.gameName].name}`}
             </div>
           </div>
         </div>
-      ))}
-      {Object.entries(publicRooms).map((room) => {
+      ))} */}
+      {/* {Object.entries(publicRooms).map((room) => {
         const { friendName, gameName, gamersNumber } = room[1];
         return (
           <div
@@ -2284,12 +2317,12 @@ const Invitations = ({
                 }}
               >
                 {friendName}
-                {/* {gamersNumber > 1 && `(+${gamersNumber - 1})`} pour {gameName} */}
+                {gamersNumber > 1 && `(+${gamersNumber - 1})`} pour {gameName}
               </div>
             </div>
           </div>
         );
-      })}
+      })} */}
     </div>
   );
 };
