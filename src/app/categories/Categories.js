@@ -2319,6 +2319,7 @@ const PreventScreenSleep = () => {
         style={{ display: "none" }}
         loop
         muted
+        playsInline
       />
       <button onClick={startPreventSleep}>On</button>
       <button onClick={stopPreventSleep}>Off</button>
