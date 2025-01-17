@@ -2312,7 +2312,7 @@ const PreventScreenSleep = () => {
   };
 
   return (
-    <div>
+    <div className="z-50">
       <video
         ref={videoRef}
         src="/videoplayback.mp4"
