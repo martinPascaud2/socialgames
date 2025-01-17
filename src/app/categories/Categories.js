@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useMemo, useCallback, useRef } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { throttle } from "lodash";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -2292,41 +2292,6 @@ const Invitations = ({
   );
 };
 
-const PreventScreenSleep = () => {
-  const videoRef = useRef(null);
-
-  const startPreventSleep = () => {
-    const video = videoRef.current;
-    if (video) {
-      video.play().catch((error) => {
-        console.error("Erreur lors de la lecture de la vidéo :", error);
-      });
-    }
-  };
-
-  const stopPreventSleep = () => {
-    const video = videoRef.current;
-    if (video) {
-      video.pause();
-    }
-  };
-
-  return (
-    <div className="z-50">
-      <video
-        ref={videoRef}
-        src="/videoplayback.mp4"
-        style={{ display: "none" }}
-        loop
-        muted
-        playsInline
-      />
-      <button onClick={startPreventSleep}>On</button>
-      <button onClick={stopPreventSleep}>Off</button>
-    </div>
-  );
-};
-
 export default function Categories({
   user,
   updateParams,
@@ -2339,13 +2304,6 @@ export default function Categories({
   signOut,
 }) {
   const { isSupported, isVisible, released, request, release } = useWake();
-  // const { isSupported, isLocked, requestWakeLock, releaseWakeLock } = useWake();
-  // const { isSupported, released, request, release } = useWakeLock({
-  //   onRequest: () => {},
-  //   // onError: () => alert("WakeLock: error"), //check
-  //   onRelease: () => {},
-  // });
-
   const router = useRouter();
   const searchParams = useSearchParams();
   const isGroup = searchParams.get("group") === "true";
@@ -2667,20 +2625,6 @@ export default function Categories({
                   setToggledPrelobby={setToggledPrelobby}
                 />
                 <CentralZone onClick={handleOctaClick}>
-                  <div className="absolute w-full flex flex-col justify-center items-center h-full">
-                    {/* <button onClick={() => request()} className="z-50">
-                      {" "}
-                      super bouton
-                    </button> */}
-                    {/* <PreventScreenSleep /> */}
-                    {/* <div>isSupported: {`${isSupported}`}</div> */}
-                    <div className="z-50">{`isSupported ${isSupported}`}</div>
-                    <div className="z-50">{`released ${released}`}</div>
-                    <button onClick={() => request()} className="z-50">
-                      start
-                    </button>
-                  </div>
-
                   <Invitations
                     user={user}
                     router={router}

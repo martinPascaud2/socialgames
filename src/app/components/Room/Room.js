@@ -155,6 +155,7 @@ export default function Room({
   launchGame,
 }) {
   usePreventScroll();
+  const { isSupported, isVisible, released, request, release } = useWake();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -193,7 +194,6 @@ export default function Room({
   const [showRoomRefs, setShowRoomRefs] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
 
-  const { isSupported, isVisible, released, request, release } = useWake(); // check
   const userParams = user.params;
   const barsSizes = {
     bottom: userParams?.bottomBarSize || 8,
