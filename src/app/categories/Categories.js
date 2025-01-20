@@ -1423,11 +1423,8 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
               borderRight: isSettingsPressed ? "1px solid #581c87" : "",
             }}
           >
-            <div className="ml-3 mb-1.5">
-              <FriendsSettingsIcon
-                bgColor={isSettingsPressed ? "#7e22ce" : "#9333ea"}
-                color="#6b21a8"
-              />
+            <div className="ml-2 mb-3">
+              <FriendsSettingsIcon color="#6b21a8" />
             </div>
           </div>
           <div // background filler
@@ -1602,7 +1599,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
               borderLeft: isPrelobbyPressed ? "1px solid #581c87" : "",
             }}
           >
-            <MdOutlineVideogameAsset className="w-11 h-20 rotate-90 mb-5 text-purple-800" />
+            <MdOutlineVideogameAsset className="w-12 h-20 rotate-90 mb-3 text-purple-800" />
           </div>
           <div // background filler
             onTouchStart={() => setIsPrelobbyPressed(true)}
