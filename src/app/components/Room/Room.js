@@ -1003,6 +1003,7 @@ export default function Room({
                     ) : (
                       <div className="h-[4dvh] w-[4dvh]" />
                     )}
+
                     {isAdmin ? (
                       <div className="text-center text-amber-700 text-3xl flex justify-center items-center border border-amber-700 bg-amber-100 p-2 mx-2 min-w-[15dvh]">
                         {gamesRefs[gameName].categorie === "grouping" ? (
@@ -1016,16 +1017,13 @@ export default function Room({
                             +
                           </div>
                         ) : (
-                          gameName !== "grouping" &&
-                          group && (
+                          gameName !== "grouping" && (
                             <ChooseAnotherGame
                               group={group}
+                              roomId={roomId}
                               roomToken={roomToken}
                               gameData={gameData}
-                              lastGame={group.lastGame}
                               lastPosition={geoLocation}
-                              viceAdmin={group.viceAdmin}
-                              arrivalsOrder={group.arrivalsOrder}
                               deleteInvs={deleteInvs}
                             >
                               {gamesRefs[gameName].name}

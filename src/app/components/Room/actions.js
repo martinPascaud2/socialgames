@@ -656,6 +656,52 @@ export async function sendPresenceSign({
   });
 }
 
+export async function getGroup({ roomId }) {
+  const room = await prisma.room.findFirst({
+    where: { id: roomId },
+    select: {
+      gamers: true,
+      multiGuests: true,
+      private: true,
+      game: true,
+      adminLocation: true,
+      viceAdmin: true,
+      arrivalsOrder: true,
+      gameData: true,
+    },
+  });
+
+  const {
+    gamers,
+    multiGuests,
+    private: isPrivate, // reserved
+    game,
+    adminLocation,
+    viceAdmin,
+    arrivalsOrder,
+  } = room;
+
+  const gamersArray = Object.entries(gamers).map(([name, id]) => ({
+    id,
+    name,
+    multiGuest: false,
+  }));
+  const multiGuestsArray = Object.keys(multiGuests).map((name) => ({
+    name,
+    multiGuest: true,
+  }));
+
+  return {
+    gamers: gamersArray,
+    multiGuests: multiGuestsArray,
+    privacy: isPrivate ? "private" : "public",
+    lastGame: game,
+    lastPosition: adminLocation,
+    viceAdmin,
+    arrivalsOrder,
+  };
+}
+
 //dev
 export async function getAllRoomData({ roomId }) {
   const data = (await prisma.room.findFirst({ where: { id: roomId } }))

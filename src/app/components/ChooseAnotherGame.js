@@ -3,16 +3,15 @@
 import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 
+import { getGroup } from "./Room/actions";
 import { finishGame } from "./Room/actions";
 
 export default function ChooseAnotherGame({
   group,
+  roomId,
   roomToken,
   gameData,
-  lastGame,
   lastPosition,
-  viceAdmin,
-  arrivalsOrder,
   deleteInvs,
   children,
 }) {
@@ -21,34 +20,52 @@ export default function ChooseAnotherGame({
   const returnLobby = useCallback(async () => {
     await deleteInvs();
 
-    const gamers = [...group.gamers];
-    const multiGuests = [...group.multiGuests];
+    if (group) {
+      const gamers = [...group.gamers];
+      const multiGuests = [...group.multiGuests];
+      const lastGame = group.lastGame;
+      const viceAdmin = group.viceAdmin;
+      const arrivalsOrder = group.arrivalsOrder;
 
-    const stored = {
-      roomToken,
-      gamers,
-      multiGuests,
-      privacy: group.privacy,
-      lastGame,
-      lastPosition,
-      viceAdmin,
-      arrivalsOrder,
-    };
-    localStorage.setItem("group", JSON.stringify(stored));
+      const stored = {
+        roomToken,
+        gamers,
+        multiGuests,
+        privacy: group.privacy,
+        lastGame,
+        lastPosition,
+        viceAdmin,
+        arrivalsOrder,
+      };
+      localStorage.setItem("group", JSON.stringify(stored));
+    } else {
+      const {
+        gamers,
+        multiGuests,
+        privacy,
+        lastGame,
+        lastPosition,
+        viceAdmin,
+        arrivalsOrder,
+      } = await getGroup({ roomId });
+
+      const stored = {
+        roomToken,
+        gamers,
+        multiGuests,
+        privacy,
+        lastGame,
+        lastPosition,
+        viceAdmin,
+        arrivalsOrder,
+      };
+      localStorage.setItem("group", JSON.stringify(stored));
+    }
 
     await finishGame({ gameData, roomToken });
 
     router.push("/categories?group=true");
-  }, [
-    gameData,
-    roomToken,
-    router,
-    group,
-    lastGame,
-    lastPosition,
-    viceAdmin,
-    arrivalsOrder,
-  ]);
+  }, [gameData, roomToken, router, group, lastPosition]);
 
   return <button onClick={async () => await returnLobby()}>{children}</button>;
 }
