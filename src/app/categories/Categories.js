@@ -2246,7 +2246,7 @@ const Invitations = ({
           }}
           className="w-[75%] z-30 h-full"
         >
-          <div className="h-full flex items-center justify-center border border-2 border-purple-900 text-lg font-semibold text-purple-900 bg-gradient-to-br from-purple-300 to-purple-600">
+          <div className="h-full flex items-center justify-center border border-2 border-purple-900 text-lg font-semibold text-purple-900 bg-purple-500">
             {invitation.userName}
           </div>
         </div>
