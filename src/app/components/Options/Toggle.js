@@ -63,10 +63,17 @@ export default function Toggle({
     <ToggleCheckbox
       checked={checked}
       onChange={handleToggle}
-      colors={{
-        bg: { yes: "#fef3c7", no: "#e0f2fe" },
-        border: { yes: "#b45309", no: "#0369a1" },
-      }}
+      colors={
+        isAdmin
+          ? {
+              bg: { yes: "#fef3c7", no: "#dcfce7" },
+              border: { yes: "#b45309", no: "#15803d" },
+            }
+          : {
+              bg: { yes: "#e0f2fe", no: "#e0f2fe" },
+              border: { yes: "#0369a1", no: "#0369a1" },
+            }
+      }
       size={70}
     />
   );
