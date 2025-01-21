@@ -647,6 +647,15 @@ export default function Room({
   }, [roomToken, isAdmin]);
   // ------------------------------
 
+  // default show
+  useEffect(() => {
+    if (isAdmin) {
+      setShowGamerList(false);
+      setShowInvitations(true);
+    }
+  }, [isAdmin]);
+  // ------------------------------
+
   // CP friends
   const getFriends = useCallback(async () => {
     const friends = await getRoomFriendList({ userId: user.id });
