@@ -1630,7 +1630,7 @@ export default function Room({
                             <ChevronRightIcon className="h-8 w-8" />
                           </div>
                           <div className="text-xl absolute top-1.5 left-[50%] translate-x-[-50%]">
-                            Configuration
+                            {options?.mode}
                           </div>
                         </div>
                       )}
