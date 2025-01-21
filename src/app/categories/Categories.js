@@ -725,6 +725,135 @@ import Spinner from "@/components/spinners/Spinner";
 
 import { useWakeLock } from "react-screen-wake-lock";
 
+const OnlyShadows = () => {
+  return (
+    <>
+      <div className="absolute z-30 w-full h-full">
+        <div className="relative w-full h-full">
+          {/* left top */}
+          <div // square
+            className="absolute h-[20.2vw] w-[17vw] top-[0.3vw] left-[26.5vw] z-40 flex justify-center items-center"
+            style={{
+              boxShadow: "1vw 1vw 2vw -1vw #7e22ce, 2vw 2vw 2vw -1vw #7e22ce",
+              backgroundColor: "transparent",
+            }}
+          />
+          <div // border filler
+            className="absolute h-[5vw] w-[24vw] top-[15.55vw] left-[7vw] z-30"
+            style={{
+              boxShadow: "0vw 2vw 2vw -1vw #7e22ce",
+              backgroundColor: "transparent",
+            }}
+          />
+
+          {/* left middle */}
+          <div // skew top
+            className="absolute h-[10vw] w-[5.7vw] top-[23.9vw] -skew-y-[45deg] bg-transparent left-[0.1vw] z-30"
+            style={{
+              backgroundColor: "transparent",
+            }}
+          />
+          <div // middle right
+            className="absolute h-[37vw] w-[17vw] top-[50%] translate-y-[-50%] left-[0vw] z-50 bg-transparent flex justify-center items-center"
+            style={{
+              backgroundColor: "transparent",
+            }}
+          />
+          <div // middle
+            className="absolute h-[47.6vw] w-[11.3vw] top-[50%] translate-y-[-50%] left-[5.7vw] z-40"
+            style={{
+              backgroundColor: "transparent",
+              boxShadow: "3vw -2vw 1vw -2vw #7e22ce, 3vw 2vw 1vw -2vw #7e22ce",
+            }}
+          />
+          <div // skew bottom
+            className="absolute h-[10vw] w-[5.7vw] bottom-[23.9vw] skew-y-[45deg] bg-transparent left-[0.1vw] z-30"
+            style={{
+              backgroundColor: "transparent",
+            }}
+          />
+
+          {/* left bottom */}
+          <div // square
+            className="absolute h-[20.2vw] w-[17vw] bottom-[0.4vw] left-[26.5vw] z-40 flex justify-center items-center"
+            style={{
+              boxShadow: "1vw -1vw 2vw -1vw #7e22ce, 2vw -2vw 2vw -1vw #7e22ce",
+              backgroundColor: "transparent",
+            }}
+          />
+          <div // border filler
+            className="absolute h-[5vw] w-[24vw] bottom-[15.55vw] left-[7vw] z-30"
+            style={{
+              backgroundColor: "transparent",
+              boxShadow: "0vw -2vw 2vw -1vw #7e22ce",
+            }}
+          />
+
+          {/* right top */}
+          <div // square
+            className="absolute h-[20.2vw] w-[17vw] top-[0.3vw] right-[26.5vw] z-40 flex justify-center items-center"
+            style={{
+              boxShadow: "-1vw 1vw 2vw -1vw #7e22ce, -2vw 2vw 2vw -1vw #7e22ce",
+            }}
+          />
+          <div // border filler
+            className="absolute h-[5vw] w-[24vw] top-[15.55vw] right-[7vw] z-30"
+            style={{
+              boxShadow: "0vw 2vw 2vw -1vw #7e22ce",
+              backgroundColor: "transparent",
+            }}
+          />
+
+          {/* right middle */}
+          <div // skew top
+            className="absolute h-[10vw] w-[5.7vw] top-[23.9vw] skew-y-[45deg] bg-transparent right-[0.1vw] z-30"
+            style={{
+              backgroundColor: "transparent",
+            }}
+          />
+          <div // middle left
+            className="absolute h-[37vw] w-[17vw] top-[50%] translate-y-[-50%] right-[0vw] z-50 bg-transparent flex justify-center items-center"
+            style={{
+              backgroundColor: "transparent",
+            }}
+          />
+          <div // middle
+            className="absolute h-[47.6vw] w-[11.3vw] top-[50%] translate-y-[-50%] right-[5.7vw] z-40"
+            style={{
+              backgroundColor: "transparent",
+              boxShadow:
+                "-3vw -2vw 1vw -2vw #7e22ce, -3vw 2vw 1vw -2vw #7e22ce",
+            }}
+          />
+          <div // skew bottom
+            className="absolute h-[10vw] w-[5.7vw] bottom-[23.9vw] -skew-y-[45deg] bg-transparent right-[0.1vw] z-30"
+            style={{
+              backgroundColor: "transparent",
+            }}
+          />
+
+          {/* right bottom */}
+          <div // square
+            className="absolute h-[20.2vw] w-[17vw] bottom-[0.4vw] right-[26.5vw] z-40 flex justify-center items-center"
+            style={{
+              boxShadow:
+                "-1vw -1vw 2vw -1vw #7e22ce, -2vw -2vw 2vw -1vw #7e22ce",
+              backgroundColor: "transparent",
+            }}
+          />
+          <div // border filler
+            className="absolute h-[5vw] w-[24vw] bottom-[15.55vw] right-[7vw] z-30"
+            style={{
+              backgroundColor: "transparent",
+              boxShadow: "0vw -2vw 2vw -1vw #7e22ce",
+            }}
+          />
+        </div>
+      </div>
+    </>
+  );
+};
+
 const SettingsButtons = ({
   setSetting,
   setLocation,
@@ -743,14 +872,17 @@ const SettingsButtons = ({
   const [isCameraPressed, setIsCameraPressed] = useState(false);
   const [isFriendsPressed, setIsFriendsPressed] = useState(false);
   const [isQrcodePressed, setIsQrcodePressed] = useState(false);
-  const iconsColor =
-    setting === "camera" || setting === "qrCode" ? "purple-900" : "purple-100";
+  // const iconsColor =
+  //   setting === "camera" || setting === "qrCode" ? "purple-900" : "purple-100";
 
   useEffect(() => {
     setLocked(false);
   }, []);
 
-  if (setting !== "") return null;
+  if (setting !== "") {
+    if (setting === "camera" || setting === "qrCode") return <OnlyShadows />;
+    return null;
+  }
 
   return (
     <>
@@ -806,19 +938,43 @@ const SettingsButtons = ({
             style={{
               backgroundColor: isDiscoPressed ? "#7e22ce" : "transparent",
               boxShadow: !isDiscoPressed
-                ? "0vw 3vw 1vw -2vw #7e22ce"
+                ? // ? "0vw 3vw 1vw -2vw #7e22ce"
+                  ""
                 : "inset 9px 0px 5px -6px #581c87",
               borderBottom: isDiscoPressed ? "1px solid #581c87" : "",
             }}
           />
           <div // border filler
             onTouchStart={() => setIsDiscoPressed(true)}
-            onTouchEnd={() => {
+            onTouchEnd={async (event) => {
               setIsDiscoPressed(false);
+              if (locked) return;
+              event.stopPropagation();
+              await updateLastCP({ userId: user.id, out: true });
+              await signOut();
+              window.location.reload();
             }}
-            className="absolute h-[5vw] w-[17vw] top-[15.55vw] left-[15.4vw] z-30"
+            // className="absolute h-[5vw] w-[17vw] top-[15.55vw] left-[15.4vw] z-30"
+            className="absolute h-[5vw] w-[24vw] top-[15.55vw] left-[7vw] z-30"
             style={{
-              boxShadow: !isDiscoPressed ? "0vw 3vw 1vw -2vw #7e22ce" : "",
+              // boxShadow: !isDiscoPressed ? "0vw 3vw 1vw -2vw #7e22ce" : "",
+              boxShadow: !isDiscoPressed ? "0vw 2vw 2vw -1vw #7e22ce" : "",
+              // backgroundColor: isDiscoPressed ? "#7e22ce" : "transparent",
+              borderBottom: isDiscoPressed ? "1px solid #581c87" : "",
+            }}
+          />
+          <div // small BF
+            onTouchStart={() => setIsDiscoPressed(true)}
+            onTouchEnd={async (event) => {
+              setIsDiscoPressed(false);
+              if (locked) return;
+              event.stopPropagation();
+              await updateLastCP({ userId: user.id, out: true });
+              await signOut();
+              window.location.reload();
+            }}
+            className="absolute h-[5vw] w-[17vw] top-[15.5vw] left-[16.5vw] z-30"
+            style={{
               backgroundColor: isDiscoPressed ? "#7e22ce" : "transparent",
               borderBottom: isDiscoPressed ? "1px solid #581c87" : "",
             }}
@@ -962,20 +1118,50 @@ const SettingsButtons = ({
             style={{
               backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
               boxShadow: !isPasswordPressed
-                ? "0vw -3vw 1vw -2vw #7e22ce"
+                ? // ? "0vw -3vw 1vw -2vw #7e22ce"
+                  ""
                 : "inset 9px 0px 5px -6px #581c87",
               borderTop: isPasswordPressed ? "1px solid #581c87" : "",
             }}
           />
           <div // border filler
             onTouchStart={() => setIsPasswordPressed(true)}
-            onTouchEnd={() => {
+            onTouchEnd={(event) => {
               setIsPasswordPressed(false);
+              if (locked) return;
+              setSetting("password");
+              // setParam("bars");
+              setServerMessage("");
+              // setScanning(false);
+              resetPermissions();
+              event.stopPropagation();
+              updateLastCP({ userId: user.id }); // no await
+            }}
+            // className="absolute h-[5vw] w-[17vw] bottom-[15.6vw] left-[16.5vw] z-30"
+            className="absolute h-[5vw] w-[24vw] bottom-[15.55vw] left-[7vw] z-30"
+            style={{
+              // backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
+              // boxShadow: !isPasswordPressed ? "0vw -3vw 1vw -2vw #7e22ce" : "",
+              boxShadow: !isPasswordPressed ? "0vw -2vw 2vw -1vw #7e22ce" : "",
+              borderTop: isPasswordPressed ? "1px solid #581c87" : "",
+            }}
+          />
+          <div // small BF
+            onTouchStart={() => setIsPasswordPressed(true)}
+            onTouchEnd={(event) => {
+              setIsPasswordPressed(false);
+              if (locked) return;
+              setSetting("password");
+              // setParam("bars");
+              setServerMessage("");
+              // setScanning(false);
+              resetPermissions();
+              event.stopPropagation();
+              updateLastCP({ userId: user.id }); // no await
             }}
             className="absolute h-[5vw] w-[17vw] bottom-[15.6vw] left-[16.5vw] z-30"
             style={{
               backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
-              boxShadow: !isPasswordPressed ? "0vw -3vw 1vw -2vw #7e22ce" : "",
               borderTop: isPasswordPressed ? "1px solid #581c87" : "",
             }}
           />
@@ -1025,19 +1211,51 @@ const SettingsButtons = ({
             style={{
               backgroundColor: isCameraPressed ? "#7e22ce" : "transparent",
               boxShadow: !isCameraPressed
-                ? "0vw 3vw 1vw -2vw #7e22ce"
+                ? // ? "0vw 3vw 1vw -2vw #7e22ce"
+                  ""
                 : "inset -9px 0px 5px -6px #581c87",
               borderBottom: isCameraPressed ? "1px solid #581c87" : "",
             }}
           />
           <div // border filler
             onTouchStart={() => setIsCameraPressed(true)}
-            onTouchEnd={() => {
+            onTouchEnd={(event) => {
               setIsCameraPressed(false);
+              if (locked) return;
+              setSetting("camera");
+              // setScanning((prevScanning) => !prevScanning);
+              setScanning(true);
+              // resetPermissions();
+              event.stopPropagation();
+              updateLastCP({ userId: user.id }); // no await
+              setServerMessage("");
+              // setParam("bars");
             }}
-            className="absolute h-[5vw] w-[17vw] top-[15.55vw] right-[15.4vw] z-30"
+            // className="absolute h-[5vw] w-[17vw] top-[15.55vw] right-[15.4vw] z-30"
+            className="absolute h-[5vw] w-[24vw] top-[15.55vw] right-[7vw] z-30"
             style={{
-              boxShadow: !isCameraPressed ? "0vw 3vw 1vw -2vw #7e22ce" : "",
+              // boxShadow: !isCameraPressed ? "0vw 3vw 1vw -2vw #7e22ce" : "",
+              boxShadow: !isCameraPressed ? "0vw 2vw 2vw -1vw #7e22ce" : "",
+              // backgroundColor: isCameraPressed ? "#7e22ce" : "transparent",
+              borderBottom: isCameraPressed ? "1px solid #581c87" : "",
+            }}
+          />
+          <div // small BF
+            onTouchStart={() => setIsCameraPressed(true)}
+            onTouchEnd={(event) => {
+              setIsCameraPressed(false);
+              if (locked) return;
+              setSetting("camera");
+              // setScanning((prevScanning) => !prevScanning);
+              setScanning(true);
+              // resetPermissions();
+              event.stopPropagation();
+              updateLastCP({ userId: user.id }); // no await
+              setServerMessage("");
+              // setParam("bars");
+            }}
+            className="absolute h-[5vw] w-[17vw] top-[15.5vw] right-[16.5vw] z-30"
+            style={{
               backgroundColor: isCameraPressed ? "#7e22ce" : "transparent",
               borderBottom: isCameraPressed ? "1px solid #581c87" : "",
             }}
@@ -1198,20 +1416,86 @@ const SettingsButtons = ({
             style={{
               backgroundColor: isQrcodePressed ? "#7e22ce" : "transparent",
               boxShadow: !isQrcodePressed
-                ? "0vw -3vw 1vw -2vw #7e22ce"
+                ? // ? "0vw -3vw 1vw -2vw #7e22ce"
+                  ""
                 : "inset -9px 0px 5px -6px #581c87",
               borderTop: isQrcodePressed ? "1px solid #581c87" : "",
             }}
           />
           <div // border filler
             onTouchStart={() => setIsQrcodePressed(true)}
-            onTouchEnd={() => {
+            onTouchEnd={(event) => {
               setIsQrcodePressed(false);
+              if (locked) return;
+              setSetting("qrCode");
+              // setScanning(false);
+              resetPermissions();
+              event.stopPropagation();
+              updateLastCP({ userId: user.id }); // no await
+
+              try {
+                // setLocation(await getLocation());
+                setLocation({ latitude: "", longitude: "" });
+                // setServerMessage("QR code généré !");
+              } catch (error) {
+                console.error(error.message);
+                const errorInformations = getErrorInformations({
+                  window,
+                  fail: "location_permission",
+                }).map((info, i) => (
+                  <div key={i} className={`${i === 0 && "font-bold"}`}>
+                    {i !== 0 && "=>"}
+                    {info}
+                  </div>
+                ));
+                setServerMessage(errorInformations);
+                // setParam("bars");
+                setLocation();
+              }
             }}
-            className="absolute h-[5vw] w-[17vw] bottom-[15.6vw] right-[16.5vw] z-30"
+            // className="absolute h-[5vw] w-[17vw] bottom-[15.6vw] right-[16.5vw] z-30"
+            className="absolute h-[5vw] w-[24vw] bottom-[15.55vw] right-[7vw] z-30"
+            style={{
+              // backgroundColor: isQrcodePressed ? "#7e22ce" : "transparent",
+              // boxShadow: !isQrcodePressed ? "0vw -3vw 1vw -2vw #7e22ce" : "",
+              boxShadow: !isQrcodePressed ? "0vw -2vw 2vw -1vw #7e22ce" : "",
+              borderTop: isQrcodePressed ? "1px solid #581c87" : "",
+            }}
+          />
+          <div // small BF
+            onTouchStart={() => setIsQrcodePressed(true)}
+            onTouchEnd={(event) => {
+              setIsQrcodePressed(false);
+              if (locked) return;
+              setSetting("qrCode");
+              // setScanning(false);
+              resetPermissions();
+              event.stopPropagation();
+              updateLastCP({ userId: user.id }); // no await
+
+              try {
+                // setLocation(await getLocation());
+                setLocation({ latitude: "", longitude: "" });
+                // setServerMessage("QR code généré !");
+              } catch (error) {
+                console.error(error.message);
+                const errorInformations = getErrorInformations({
+                  window,
+                  fail: "location_permission",
+                }).map((info, i) => (
+                  <div key={i} className={`${i === 0 && "font-bold"}`}>
+                    {i !== 0 && "=>"}
+                    {info}
+                  </div>
+                ));
+                setServerMessage(errorInformations);
+                // setParam("bars");
+                setLocation();
+              }
+            }}
+            className="absolute h-[5vw] w-[17vw] bottom-[15.5vw] right-[16.5vw] z-30"
             style={{
               backgroundColor: isQrcodePressed ? "#7e22ce" : "transparent",
-              boxShadow: !isQrcodePressed ? "0vw -3vw 1vw -2vw #7e22ce" : "",
               borderTop: isQrcodePressed ? "1px solid #581c87" : "",
             }}
           />
@@ -1726,42 +2010,42 @@ const OctagonBackground = ({ handleBgClick, discreet }) => {
         onClick={handleBgClick}
       />
 
-      {!discreet && (
-        <>
-          <div
-            className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[-13.3vw] translate-x-[0vw] right-0 bottom-0 z-20 bg-transparent"
-            style={{ boxShadow: "13px 20px 15px -2px #3b0764" }}
-          />
-          <div
-            className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[5.6vw] translate-x-[-17.6vw] right-0 bottom-0 z-20 bg-transparent rotate-45"
-            style={{ boxShadow: "13px 20px 15px -2px #3b0764" }}
-          />
-          <div
-            className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[6.7vw] translate-x-[20vw] left-0 bottom-0 z-20 bg-transparent rotate-90"
-            style={{ boxShadow: "13px 20px 15px -2px #3b0764" }}
-          />
-          <div
-            className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[39vw] translate-x-[1vw] left-0 top-0 z-20 bg-transparent rotate-[-45deg]"
-            style={{ boxShadow: "-13px -20px 15px -2px #3b0764" }}
-          />
-          <div
-            className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[13.3vw] translate-x-[0vw] left-0 top-0 z-20 bg-transparent rotate-[0deg]"
-            style={{ boxShadow: "-13px -20px 15px -2px #3b0764" }}
-          />
-          <div
-            className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[-5.6vw] translate-x-[17.7vw] left-0 top-0 z-20 bg-transparent rotate-[-135deg]"
-            style={{ boxShadow: "13px 20px 15px -2px #3b0764" }}
-          />
-          <div
-            className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[-6.5vw] translate-x-[43.6vw] left-0 top-0 z-20 bg-transparent rotate-[90deg]"
-            style={{ boxShadow: "-13px -20px 15px -2px #3b0764" }}
-          />
-          <div
-            className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[11vw] translate-x-[-1.2vw] right-0 top-0 z-20 bg-transparent rotate-[135deg]"
-            style={{ boxShadow: "-13px -20px 15px -2px #3b0764" }}
-          />
-        </>
-      )}
+      {/* {!discreet && ( */}
+      <>
+        <div
+          className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[-13.3vw] translate-x-[0vw] right-0 bottom-0 z-20 bg-transparent"
+          style={{ boxShadow: "13px 20px 15px -2px #3b0764" }}
+        />
+        <div
+          className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[5.6vw] translate-x-[-17.6vw] right-0 bottom-0 z-20 bg-transparent rotate-45"
+          style={{ boxShadow: "13px 20px 15px -2px #3b0764" }}
+        />
+        <div
+          className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[6.7vw] translate-x-[20vw] left-0 bottom-0 z-20 bg-transparent rotate-90"
+          style={{ boxShadow: "13px 20px 15px -2px #3b0764" }}
+        />
+        <div
+          className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[39vw] translate-x-[1vw] left-0 top-0 z-20 bg-transparent rotate-[-45deg]"
+          style={{ boxShadow: "-13px -20px 15px -2px #3b0764" }}
+        />
+        <div
+          className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[13.3vw] translate-x-[0vw] left-0 top-0 z-20 bg-transparent rotate-[0deg]"
+          style={{ boxShadow: "-13px -20px 15px -2px #3b0764" }}
+        />
+        <div
+          className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[-5.6vw] translate-x-[17.7vw] left-0 top-0 z-20 bg-transparent rotate-[-135deg]"
+          style={{ boxShadow: "13px 20px 15px -2px #3b0764" }}
+        />
+        <div
+          className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[-6.5vw] translate-x-[43.6vw] left-0 top-0 z-20 bg-transparent rotate-[90deg]"
+          style={{ boxShadow: "-13px -20px 15px -2px #3b0764" }}
+        />
+        <div
+          className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[11vw] translate-x-[-1.2vw] right-0 top-0 z-20 bg-transparent rotate-[135deg]"
+          style={{ boxShadow: "-13px -20px 15px -2px #3b0764" }}
+        />
+      </>
+      {/* )} */}
 
       <div className="absolute top-1/2 translate-y-[-50%] bg-transparent w-[90vw] h-[90vw] z-10 flex items-center">
         <div className="relative">
@@ -2476,13 +2760,18 @@ export default function Categories({
     requestCameraAccess();
 
     return (
-      <div onClick={(event) => event.stopPropagation()} className="h-full">
-        <Html5QrcodePlugin
-          scanning={setting === "camera"}
-          fps={10}
-          qrCodeSuccessCallback={onNewScanResult}
-          setStopScan={setStopScan}
-        />
+      <div className="h-full flex items-center justify-center">
+        <div
+          onClick={(event) => event.stopPropagation()}
+          className="h-[45vw] flex items-center"
+        >
+          <Html5QrcodePlugin
+            scanning={setting === "camera"}
+            fps={10}
+            qrCodeSuccessCallback={onNewScanResult}
+            setStopScan={setStopScan}
+          />
+        </div>
       </div>
     );
     // }, [onNewScanResult, scanning]);
@@ -2620,11 +2909,11 @@ export default function Categories({
                   <CentralZone onClick={handleOctaClick} zIndex={60}>
                     {
                       location ? (
-                        <div className="w-full h-full flex justify-center items-center p-1">
+                        <div className="w-full h-full flex justify-center items-center">
                           <QRCode
                             value={`id=${user.id};mail=${user.email};name=${user.name};{"latitude":"${location?.latitude}","longitude":"${location?.longitude}"}`}
                             onClick={(event) => event.stopPropagation()}
-                            className="h-full w-auto p-1"
+                            className="h-[41vw] w-auto"
                             style={{
                               background: "white",
                               boxShadow: "0px 0px 5px 5px white",

@@ -64,7 +64,7 @@ export default function Html5QrcodePlugin(props) {
   return (
     <div
       id="reader"
-      className="border border-black aspect-square absolute left-1/2 translate-x-[-50%]"
+      className="border border-black aspect-square absolute left-1/2 translate-x-[-50%] top-1/2 translate-y-[-50%]"
     />
   );
 }
