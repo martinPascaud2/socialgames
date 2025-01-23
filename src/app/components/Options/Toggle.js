@@ -53,7 +53,7 @@ export default function Toggle({
   ]);
 
   useEffect(() => {
-    if (isAdmin || !options || !optionName || !possibleValues) return;
+    if (!options || !optionName || !possibleValues) return;
 
     if (options[optionName] === possibleValues[0]) setChecked(true);
     else setChecked(false);
