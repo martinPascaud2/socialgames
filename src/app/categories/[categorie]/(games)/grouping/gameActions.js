@@ -41,7 +41,8 @@ export async function launchGame({
       viceAdmin,
       arrivalsOrder,
       gamers: gamersAndGuests,
-      ended: true,
+      // ended: true,
+      isSearching: true,
     },
   });
 

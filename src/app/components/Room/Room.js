@@ -28,6 +28,7 @@ import { LobbyDeleteGroup } from "@/components/DeleteGroup";
 import ChooseAnotherGame from "@/components/ChooseAnotherGame";
 import ChooseLastGame from "@/components/ChooseLastGame";
 import NextStep from "../NextStep";
+import AnimatedDots from "../AnimatedDots";
 
 import {
   CheckIcon,
@@ -822,6 +823,16 @@ export default function Room({
   }, [deletedGamer]);
   // ------------------------------
 
+  // isSearching: not_admins showed block
+  useEffect(() => {
+    if (isAdmin) return;
+    if (gameData.isSearching) {
+      setShowPlayers(true);
+      setShowConfig(false);
+    }
+  }, [isAdmin, gameData]);
+  // ------------------------------
+
   // not_admins redirections
   useEffect(() => {
     if (
@@ -903,7 +914,7 @@ export default function Room({
 
   if (!roomId || !gameData) return null;
 
-  if (!isStarted) {
+  if (!isStarted || (!isAdmin && gameData.isSearching && !gameData.ended)) {
     return (
       <div className="absolute h-[100dvh] w-full px-2 overflow-x-hidden">
         <UserContext.Provider value={{ userParams }}>
@@ -1000,7 +1011,9 @@ export default function Room({
                     )}
                   </div>
                   <div className="absolute top-[7dvh] w-full flex justify-center items-center">
-                    {categorie !== "grouping" && categoriesIcons ? (
+                    {categorie !== "grouping" &&
+                    categoriesIcons &&
+                    !gameData.isSearching ? (
                       <Image
                         src={categoriesIcons[categorie]}
                         alt={`${categorie} image`}
@@ -1042,10 +1055,14 @@ export default function Room({
                       </div>
                     ) : (
                       <div className="text-center text-amber-400 text-3xl flex justify-center items-center mx-2 min-w-[15dvh]">
-                        {gamesRefs[gameName].categorie === "grouping" ? (
-                          <span>Lobby</span>
+                        {!gameData.isSearching ? (
+                          gamesRefs[gameName].categorie === "grouping" ? (
+                            <span>Lobby</span>
+                          ) : (
+                            gamesRefs[gameName].name
+                          )
                         ) : (
-                          gamesRefs[gameName].name
+                          <AnimatedDots color="#fbbf24" text="5xl" /> // text-amber-400
                         )}
                       </div>
                     )}
@@ -1606,7 +1623,7 @@ export default function Room({
                     )}
                   </div>
 
-                  {gameName !== "grouping" && (
+                  {gameName !== "grouping" && !gameData.isSearching && (
                     <div
                       onClick={() => {
                         if (!showConfig) {

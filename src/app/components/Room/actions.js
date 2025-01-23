@@ -82,10 +82,23 @@ export async function finishGame({ roomToken, gameData }) {
     gameData: {
       ...gameData,
       ended: true,
+      isSearching: false,
     },
   });
 }
 
+// ChooseAnotherGame (lobby)
+export async function searchGame({ roomToken, gameData }) {
+  await pusher.trigger(`room-${roomToken}`, "room-event", {
+    gameData: {
+      ...gameData,
+      // ended: true,
+      isSearching: true,
+    },
+  });
+}
+
+// admin: call group
 export async function goOneMoreGame({
   pathname,
   oldRoomToken,
@@ -97,6 +110,7 @@ export async function goOneMoreGame({
     await pusher.trigger(`room-${oldRoomToken}`, "room-event", {
       gameData: {
         ended: true,
+        isSearching: true, // from lobbies and from end_games
         nextGame: {
           name: gameName,
           path: `${pathname}?token=${newRoomToken}`,

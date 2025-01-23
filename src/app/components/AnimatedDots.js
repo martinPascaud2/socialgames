@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 
-export default function AnimatedDots({ color }) {
+export default function AnimatedDots({ color, text = "lg" }) {
   const [dots, setDots] = useState(".");
 
   useEffect(() => {
@@ -14,7 +14,7 @@ export default function AnimatedDots({ color }) {
   }, []);
 
   return (
-    <div className="text-lg font-bold" style={{ color }}>
+    <div className={`text-${text} font-bold`} style={{ color }}>
       {dots}
     </div>
   );

@@ -1,6 +1,5 @@
 "use client";
 
-import EndGame from "@/components/EndGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import { useEffect, useState } from "react";
 
@@ -16,13 +15,10 @@ export default function Grouping({
     if (gameData.admin === user.name) setIsAdmin(true);
   }, [gameData.admin, user.name]);
 
+  if (!isAdmin) return null;
+
   return (
     <>
-      {gameData.ended && (
-        <EndGame gameData={gameData} user={user} isFirst={true} />
-      )}
-
-      {/* check  */}
       {isAdmin && (
         <ChooseOneMoreGame
           gameData={gameData}

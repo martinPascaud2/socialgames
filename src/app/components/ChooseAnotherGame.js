@@ -4,7 +4,7 @@ import { useCallback } from "react";
 import { useRouter } from "next/navigation";
 
 import { getGroup } from "./Room/actions";
-import { finishGame } from "./Room/actions";
+import { searchGame } from "./Room/actions";
 
 export default function ChooseAnotherGame({
   group,
@@ -62,7 +62,7 @@ export default function ChooseAnotherGame({
       localStorage.setItem("group", JSON.stringify(stored));
     }
 
-    await finishGame({ gameData, roomToken });
+    await searchGame({ gameData, roomToken });
 
     router.push("/categories?group=true");
   }, [gameData, roomToken, router, group, lastPosition]);
