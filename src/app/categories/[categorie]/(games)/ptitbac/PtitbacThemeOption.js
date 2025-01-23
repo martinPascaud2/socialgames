@@ -197,13 +197,10 @@ export default function PtitbacThemeOption({
             <div className="border border-2 border-gray-950 w-full flex flex-col items-center rounded-b-lg">
               <div className="columns-2 gap-2 bg-[#848b98] (gray-450)">
                 {themes.map((theme, i) => {
-                  const selected =
-                    (isAdmin &&
-                      selectedThemes.find(
-                        (sel) => sel.theme === theme.theme
-                      )) ||
-                    (!isAdmin &&
-                      selectedThemes.find((sel) => sel.theme === theme.theme));
+                  const selected = selectedThemes.find(
+                    (sel) => sel.theme === theme.theme
+                  );
+
                   const isSelected = !!selected;
                   const isEnhanced = selected?.enhanced;
 
@@ -213,14 +210,20 @@ export default function PtitbacThemeOption({
                         className={`w-full flex items-center p-0 rounded-full ${
                           !isSelected && "text-gray-100"
                         } ${
-                          isEnhanced && "bg-green-700 text-gray-950 bg-gray-100"
+                          isEnhanced &&
+                          (isAdmin ? "bg-green-700" : "bg-sky-700")
                         }
                       `}
                       >
                         <div
                           className={`w-full flex justify-center p-[3px] ${
-                            isSelected && !isEnhanced && "text-green-600"
-                          } ${isEnhanced && "text-green-700"}`}
+                            isSelected &&
+                            !isEnhanced &&
+                            (isAdmin ? "text-green-600" : "text-sky-600")
+                          } ${
+                            isEnhanced &&
+                            (isAdmin ? "text-green-700" : "text-sky-700")
+                          }`}
                         >
                           <div
                             onClick={() => {
@@ -228,7 +231,11 @@ export default function PtitbacThemeOption({
                             }}
                             className={`w-full p-1.5 ${
                               isSelected &&
-                              "bg-gray-100 shadow-[inset_0_0_0_2px_#16a34a] (green 600) rounded-full"
+                              `bg-gray-100 ${
+                                isAdmin
+                                  ? "shadow-[inset_0_0_0_2px_#16a34a] (green 600)"
+                                  : "shadow-[inset_0_0_0_2px_#0284c7] (sky 600)"
+                              } rounded-full`
                             }`}
                           >
                             {theme.theme}

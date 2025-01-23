@@ -125,7 +125,9 @@ export default function MemoryThemeOption({
                   key={i}
                   className={`m-1 p-[2px] flex justify-center ${
                     isEnhanced &&
-                    "shadow-[inset_0_0_0_2px_#15803d] (green 700) bg-green-700"
+                    (isAdmin
+                      ? "shadow-[inset_0_0_0_2px_#15803d] (green 700) bg-green-700"
+                      : "shadow-[inset_0_0_0_2px_#0369a1] (sky 700) bg-sky-700")
                   }`}
                 >
                   <div
@@ -135,14 +137,21 @@ export default function MemoryThemeOption({
                     }
                     ${
                       isSelected &&
-                      "shadow-[inset_0_0_0_2px_#16a34a] (green 600)"
+                      (isAdmin
+                        ? "shadow-[inset_0_0_0_2px_#16a34a] (green 600)"
+                        : "shadow-[inset_0_0_0_2px_#0284c7] (sky 600)")
                     }`}
                   >
                     <div
                       className={`w-full py-1 px-2 ${
                         !isSelected && "text-gray-100"
-                      } ${isSelected && !isEnhanced && "text-green-600"} ${
-                        isEnhanced && "text-green-700"
+                      } ${
+                        isSelected &&
+                        !isEnhanced &&
+                        (isAdmin ? "text-green-600" : "text-sky-600")
+                      } ${
+                        isEnhanced &&
+                        (isAdmin ? "text-green-700" : "text-sky-700")
                       }`}
                     >
                       {theme.label}

@@ -453,7 +453,11 @@ export default function TableauThemeOption({
                             isDeletingCustom && isCustom
                               ? "text-red-600"
                               : isSelected &&
-                                (!isCustom ? "text-green-600" : "text-sky-600")
+                                (isAdmin
+                                  ? !isCustom
+                                    ? "text-green-600"
+                                    : "text-sky-600"
+                                  : "text-sky-700")
                           }`}
                         >
                           <div
@@ -469,9 +473,11 @@ export default function TableauThemeOption({
                               isDeletingCustom && isCustom
                                 ? "bg-red-100 shadow-[inset_0_0_0_2px_#dc2626] (red 600) rounded-full"
                                 : isSelected &&
-                                  (!isCustom
-                                    ? "bg-gray-100 shadow-[inset_0_0_0_2px_#16a34a] (green 600) rounded-full"
-                                    : "bg-gray-100 shadow-[inset_0_0_0_2px_#0284c7] (sky 600) rounded-full")
+                                  (isAdmin
+                                    ? !isCustom
+                                      ? "bg-gray-100 shadow-[inset_0_0_0_2px_#16a34a] (green 600) rounded-full"
+                                      : "bg-gray-100 shadow-[inset_0_0_0_2px_#0284c7] (sky 600) rounded-full"
+                                    : "bg-gray-100 shadow-[inset_0_0_0_2px_#0369a1] (sky 700) rounded-full")
                             }`}
                           >
                             {theme.theme}
