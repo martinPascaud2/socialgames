@@ -889,19 +889,6 @@ const SettingsButtons = ({
       <div className="absolute z-30 w-full h-full">
         <div className="relative w-full h-full">
           {/* left top */}
-          {/* {param === "bars" && (
-        <div
-          onClick={async (event) => {
-            event.stopPropagation();
-            await updateLastCP({ userId: user.id, out: true });
-            await signOut();
-            window.location.reload();
-          }}
-          className="absolute bottom-[10%]"
-        >
-          <ImExit className="ml-2 w-8 h-8 text-purple-900" />
-        </div>
-      )} */}
           <div // square
             onTouchStart={() => setIsDiscoPressed(true)}
             onTouchEnd={async (event) => {
@@ -994,25 +981,6 @@ const SettingsButtons = ({
                 : "inset 9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
             }}
           />
-          {/* <div
-          onClick={(event) => {
-            if (locked) return;
-            setSetting("params");
-            setParam("bars");
-            setServerMessage("");
-            // setScanning(false);
-            resetPermissions();
-            event.stopPropagation();
-            updateLastCP({ userId: user.id }); // no await
-          }}
-          className="border-black z-10"
-        >
-          <IoIosSettings
-            className={`w-10 h-10 text-${
-              setting === "params" ? "purple-900" : iconsColor
-            }`}
-          />
-        </div> */}
           <div // middle right
             onTouchStart={() => setIsParamsPressed(true)}
             onTouchEnd={(event) => {
@@ -1077,73 +1045,168 @@ const SettingsButtons = ({
 
           {/* left bottom */}
           <div // square
-            onTouchStart={() => setIsPasswordPressed(true)}
+            onTouchStart={() => setIsCameraPressed(true)}
             onTouchEnd={(event) => {
-              setIsPasswordPressed(false);
+              setIsCameraPressed(false);
               if (locked) return;
-              setSetting("password");
-              // setParam("bars");
-              setServerMessage("");
-              // setScanning(false);
-              resetPermissions();
+              setSetting("camera");
+              // setScanning((prevScanning) => !prevScanning);
+              setScanning(true);
+              // resetPermissions();
               event.stopPropagation();
               updateLastCP({ userId: user.id }); // no await
+              setServerMessage("");
+              // setParam("bars");
             }}
             className="absolute h-[20.2vw] w-[17vw] bottom-[0.4vw] left-[26.5vw] z-40 flex justify-center items-center"
             style={{
-              boxShadow: !isPasswordPressed
+              boxShadow: !isCameraPressed
                 ? "1vw -1vw 2vw -1vw #7e22ce, 2vw -2vw 2vw -1vw #7e22ce"
                 : "inset 0px -9px 5px -6px #581c87",
-              borderTop: isPasswordPressed ? "1px solid #581c87" : "",
-              borderRight: isPasswordPressed ? "1px solid #581c87" : "",
-              backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
+              borderTop: isCameraPressed ? "1px solid #581c87" : "",
+              borderRight: isCameraPressed ? "1px solid #581c87" : "",
+              backgroundColor: isCameraPressed ? "#7e22ce" : "transparent",
             }}
           >
-            <IoKeyOutline className="mr-2 w-10 h-10 text-purple-800" />
+            <CameraIcon className="w-10 h-10 text-purple-800 mb-1 mr-1.5" />
           </div>
           <div // skew
-            onTouchStart={() => setIsPasswordPressed(true)}
+            onTouchStart={() => setIsCameraPressed(true)}
             onTouchEnd={(event) => {
-              setIsPasswordPressed(false);
+              setIsCameraPressed(false);
               if (locked) return;
-              setSetting("password");
-              // setParam("bars");
-              setServerMessage("");
-              // setScanning(false);
-              resetPermissions();
+              setSetting("camera");
+              // setScanning((prevScanning) => !prevScanning);
+              setScanning(true);
+              // resetPermissions();
               event.stopPropagation();
               updateLastCP({ userId: user.id }); // no await
+              setServerMessage("");
+              // setParam("bars");
             }}
             className="absolute h-[20.2vw] w-[17vw] bottom-[0.4vw] skew-x-[45deg] bg-transparent left-[16.5vw] z-30"
             style={{
-              backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
-              boxShadow: !isPasswordPressed
+              backgroundColor: isCameraPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isCameraPressed
                 ? // ? "0vw -3vw 1vw -2vw #7e22ce"
                   ""
                 : "inset 9px 0px 5px -6px #581c87",
-              borderTop: isPasswordPressed ? "1px solid #581c87" : "",
+              borderTop: isCameraPressed ? "1px solid #581c87" : "",
             }}
           />
           <div // border filler
-            onTouchStart={() => setIsPasswordPressed(true)}
+            onTouchStart={() => setIsCameraPressed(true)}
             onTouchEnd={(event) => {
-              setIsPasswordPressed(false);
+              setIsCameraPressed(false);
               if (locked) return;
-              setSetting("password");
-              // setParam("bars");
-              setServerMessage("");
-              // setScanning(false);
-              resetPermissions();
+              setSetting("camera");
+              // setScanning((prevScanning) => !prevScanning);
+              setScanning(true);
+              // resetPermissions();
               event.stopPropagation();
               updateLastCP({ userId: user.id }); // no await
+              setServerMessage("");
+              // setParam("bars");
             }}
             // className="absolute h-[5vw] w-[17vw] bottom-[15.6vw] left-[16.5vw] z-30"
             className="absolute h-[5vw] w-[24vw] bottom-[15.55vw] left-[7vw] z-30"
             style={{
               // backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
               // boxShadow: !isPasswordPressed ? "0vw -3vw 1vw -2vw #7e22ce" : "",
-              boxShadow: !isPasswordPressed ? "0vw -2vw 2vw -1vw #7e22ce" : "",
-              borderTop: isPasswordPressed ? "1px solid #581c87" : "",
+              boxShadow: !isCameraPressed ? "0vw -2vw 2vw -1vw #7e22ce" : "",
+              borderTop: isCameraPressed ? "1px solid #581c87" : "",
+            }}
+          />
+          <div // small BF
+            onTouchStart={() => setIsCameraPressed(true)}
+            onTouchEnd={(event) => {
+              setIsCameraPressed(false);
+              if (locked) return;
+              setSetting("camera");
+              // setScanning((prevScanning) => !prevScanning);
+              setScanning(true);
+              // resetPermissions();
+              event.stopPropagation();
+              updateLastCP({ userId: user.id }); // no await
+              setServerMessage("");
+              // setParam("bars");
+            }}
+            className="absolute h-[5vw] w-[17vw] bottom-[15.6vw] left-[16.5vw] z-30"
+            style={{
+              backgroundColor: isCameraPressed ? "#7e22ce" : "transparent",
+              borderTop: isCameraPressed ? "1px solid #581c87" : "",
+            }}
+          />
+
+          {/* right top */}
+          <div // square
+            onTouchStart={() => setIsPasswordPressed(true)}
+            onTouchEnd={(event) => {
+              setIsPasswordPressed(false);
+              if (locked) return;
+              setSetting("password");
+              // setParam("bars");
+              setServerMessage("");
+              // setScanning(false);
+              resetPermissions();
+              event.stopPropagation();
+              updateLastCP({ userId: user.id }); // no await
+            }}
+            className="absolute h-[20.2vw] w-[17vw] top-[0.3vw] right-[26.5vw] z-40 flex justify-center items-center"
+            style={{
+              boxShadow: !isPasswordPressed
+                ? "-1vw 1vw 2vw -1vw #7e22ce, -2vw 2vw 2vw -1vw #7e22ce"
+                : "inset 0px 9px 5px -6px #581c87",
+              borderBottom: isPasswordPressed ? "1px solid #581c87" : "",
+              borderLeft: isPasswordPressed ? "1px solid #581c87" : "",
+              backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
+            }}
+          >
+            <IoKeyOutline className="ml-2 w-10 h-10 text-purple-800" />
+          </div>
+          <div // skew
+            onTouchStart={() => setIsPasswordPressed(true)}
+            onTouchEnd={(event) => {
+              setIsPasswordPressed(false);
+              if (locked) return;
+              setSetting("password");
+              // setParam("bars");
+              setServerMessage("");
+              // setScanning(false);
+              resetPermissions();
+              event.stopPropagation();
+              updateLastCP({ userId: user.id }); // no await
+            }}
+            className="absolute h-[20.2vw] w-[17vw] top-[0.4vw] skew-x-[45deg] bg-transparent right-[16.5vw] z-30"
+            style={{
+              backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isPasswordPressed
+                ? // ? "0vw 3vw 1vw -2vw #7e22ce"
+                  ""
+                : "inset -9px 0px 5px -6px #581c87",
+              borderBottom: isPasswordPressed ? "1px solid #581c87" : "",
+            }}
+          />
+          <div // border filler
+            onTouchStart={() => setIsPasswordPressed(true)}
+            onTouchEnd={(event) => {
+              setIsPasswordPressed(false);
+              if (locked) return;
+              setSetting("password");
+              // setParam("bars");
+              setServerMessage("");
+              // setScanning(false);
+              resetPermissions();
+              event.stopPropagation();
+              updateLastCP({ userId: user.id }); // no await
+            }}
+            // className="absolute h-[5vw] w-[17vw] top-[15.55vw] right-[15.4vw] z-30"
+            className="absolute h-[5vw] w-[24vw] top-[15.55vw] right-[7vw] z-30"
+            style={{
+              // boxShadow: !isCameraPressed ? "0vw 3vw 1vw -2vw #7e22ce" : "",
+              boxShadow: !isPasswordPressed ? "0vw 2vw 2vw -1vw #7e22ce" : "",
+              // backgroundColor: isCameraPressed ? "#7e22ce" : "transparent",
+              borderBottom: isPasswordPressed ? "1px solid #581c87" : "",
             }}
           />
           <div // small BF
@@ -1159,105 +1222,10 @@ const SettingsButtons = ({
               event.stopPropagation();
               updateLastCP({ userId: user.id }); // no await
             }}
-            className="absolute h-[5vw] w-[17vw] bottom-[15.6vw] left-[16.5vw] z-30"
-            style={{
-              backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
-              borderTop: isPasswordPressed ? "1px solid #581c87" : "",
-            }}
-          />
-
-          {/* right top */}
-          <div // square
-            onTouchStart={() => setIsCameraPressed(true)}
-            onTouchEnd={(event) => {
-              setIsCameraPressed(false);
-              if (locked) return;
-              setSetting("camera");
-              // setScanning((prevScanning) => !prevScanning);
-              setScanning(true);
-              // resetPermissions();
-              event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
-              setServerMessage("");
-              // setParam("bars");
-            }}
-            className="absolute h-[20.2vw] w-[17vw] top-[0.3vw] right-[26.5vw] z-40 flex justify-center items-center"
-            style={{
-              boxShadow: !isCameraPressed
-                ? "-1vw 1vw 2vw -1vw #7e22ce, -2vw 2vw 2vw -1vw #7e22ce"
-                : "inset 0px 9px 5px -6px #581c87",
-              borderBottom: isCameraPressed ? "1px solid #581c87" : "",
-              borderLeft: isCameraPressed ? "1px solid #581c87" : "",
-              backgroundColor: isCameraPressed ? "#7e22ce" : "transparent",
-            }}
-          >
-            <CameraIcon className="w-10 h-10 text-purple-800 mb-1.5 ml-1.5" />
-          </div>
-          <div // skew
-            onTouchStart={() => setIsCameraPressed(true)}
-            onTouchEnd={(event) => {
-              setIsCameraPressed(false);
-              if (locked) return;
-              setSetting("camera");
-              // setScanning((prevScanning) => !prevScanning);
-              setScanning(true);
-              // resetPermissions();
-              event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
-              setServerMessage("");
-              // setParam("bars");
-            }}
-            className="absolute h-[20.2vw] w-[17vw] top-[0.4vw] skew-x-[45deg] bg-transparent right-[16.5vw] z-30"
-            style={{
-              backgroundColor: isCameraPressed ? "#7e22ce" : "transparent",
-              boxShadow: !isCameraPressed
-                ? // ? "0vw 3vw 1vw -2vw #7e22ce"
-                  ""
-                : "inset -9px 0px 5px -6px #581c87",
-              borderBottom: isCameraPressed ? "1px solid #581c87" : "",
-            }}
-          />
-          <div // border filler
-            onTouchStart={() => setIsCameraPressed(true)}
-            onTouchEnd={(event) => {
-              setIsCameraPressed(false);
-              if (locked) return;
-              setSetting("camera");
-              // setScanning((prevScanning) => !prevScanning);
-              setScanning(true);
-              // resetPermissions();
-              event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
-              setServerMessage("");
-              // setParam("bars");
-            }}
-            // className="absolute h-[5vw] w-[17vw] top-[15.55vw] right-[15.4vw] z-30"
-            className="absolute h-[5vw] w-[24vw] top-[15.55vw] right-[7vw] z-30"
-            style={{
-              // boxShadow: !isCameraPressed ? "0vw 3vw 1vw -2vw #7e22ce" : "",
-              boxShadow: !isCameraPressed ? "0vw 2vw 2vw -1vw #7e22ce" : "",
-              // backgroundColor: isCameraPressed ? "#7e22ce" : "transparent",
-              borderBottom: isCameraPressed ? "1px solid #581c87" : "",
-            }}
-          />
-          <div // small BF
-            onTouchStart={() => setIsCameraPressed(true)}
-            onTouchEnd={(event) => {
-              setIsCameraPressed(false);
-              if (locked) return;
-              setSetting("camera");
-              // setScanning((prevScanning) => !prevScanning);
-              setScanning(true);
-              // resetPermissions();
-              event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
-              setServerMessage("");
-              // setParam("bars");
-            }}
             className="absolute h-[5vw] w-[17vw] top-[15.5vw] right-[16.5vw] z-30"
             style={{
-              backgroundColor: isCameraPressed ? "#7e22ce" : "transparent",
-              borderBottom: isCameraPressed ? "1px solid #581c87" : "",
+              backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
+              borderBottom: isPasswordPressed ? "1px solid #581c87" : "",
             }}
           />
 
@@ -1501,120 +1469,6 @@ const SettingsButtons = ({
           />
         </div>
       </div>
-
-      {/* <div className="absolute top-[0%] left-[24%] h-[20vw] w-[20vw] z-20 flex items-start justify-center mt-2">
-        <div
-          onClick={(event) => {
-            if (locked) return;
-            setSetting("friends");
-            // setScanning(false);
-            resetPermissions();
-            event.stopPropagation();
-            updateLastCP({ userId: user.id }); // no await
-            setParam("bars");
-            setServerMessage("");
-          }}
-          className="border-black z-10"
-        >
-          <FaUserFriends
-            className={`w-10 h-10 text-${
-              setting === "friends" ? "purple-900" : iconsColor
-            }`}
-          />
-        </div>
-      </div>
-
-      <div className="absolute top-[0%] right-[24%] h-[20vw] w-[20vw] z-20 flex items-start justify-center mt-2">
-        <div
-          onClick={(event) => {
-            if (locked) return;
-            setSetting("params");
-            setParam("bars");
-            setServerMessage("");
-            // setScanning(false);
-            resetPermissions();
-            event.stopPropagation();
-            updateLastCP({ userId: user.id }); // no await
-          }}
-          className="border-black z-10"
-        >
-          <IoIosSettings
-            className={`w-10 h-10 text-${
-              setting === "params" ? "purple-900" : iconsColor
-            }`}
-          />
-        </div>
-      </div>
-
-      <div className="absolute bottom-[0%] left-[24%] h-[20vw] w-[20vw] z-20 flex items-end justify-center mb-2">
-        <div
-          onClick={async (event) => {
-            if (locked) return;
-            setSetting("qrCode");
-            // setScanning(false);
-            resetPermissions();
-            event.stopPropagation();
-            updateLastCP({ userId: user.id }); // no await
-
-            try {
-              // setLocation(await getLocation());
-              setLocation({ latitude: "", longitude: "" });
-              // setServerMessage("QR code généré !");
-            } catch (error) {
-              console.error(error.message);
-              const errorInformations = getErrorInformations({
-                window,
-                fail: "location_permission",
-              }).map((info, i) => (
-                <div key={i} className={`${i === 0 && "font-bold"}`}>
-                  {i !== 0 && "=>"}
-                  {info}
-                </div>
-              ));
-              setServerMessage(errorInformations);
-              setParam("bars");
-              setLocation();
-            }
-          }}
-        >
-          <LiaQrcodeSolid className={`w-10 h-10 text-${iconsColor}`} />
-        </div>
-      </div>
-
-      <div className="absolute bottom-[0%] right-[24%] h-[20vw] w-[20vw] z-20 flex items-end justify-center mb-2">
-        <div
-          onClick={(event) => {
-            if (locked) return;
-            setSetting("camera");
-            // setScanning((prevScanning) => !prevScanning);
-            setScanning(true);
-            // resetPermissions();
-            event.stopPropagation();
-            updateLastCP({ userId: user.id }); // no await
-            setServerMessage("");
-            setParam("bars");
-          }}
-          className="border-black z-10"
-        >
-          <CameraIcon className={`w-10 h-10 text-${iconsColor}`} />
-        </div>
-      </div>
-
-      <div className="absolute bottom-[0vw] left-1/2 translate-x-[-50%] h-[0vw] w-[0vw] z-20 flex items-end justify-center mb-2">
-        <div
-          onClick={(event) => {
-            event.stopPropagation();
-            setServerMessage("");
-          }}
-          className="z-20 relative w-full h-full"
-        >
-          <div className="absolute bottom-0 flex left-1/2 translate-x-[-50%] items-center mb-0.5">
-            <IoMdArrowDropleft className="w-6 h-6 text-purple-900" />
-            <IoPersonAddOutline className="w-6 h-8 text-purple-900 pb-1 mr-0.5" />
-            <IoMdArrowDropright className="w-6 h-6 text-purple-900" />
-          </div>
-        </div>
-      </div> */}
     </>
   );
 };
