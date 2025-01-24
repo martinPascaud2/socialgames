@@ -23,6 +23,11 @@ const createConfig = (props) => {
   }
   config.supportedScanTypes = [Html5QrcodeScanType.SCAN_TYPE_CAMERA];
   config.rememberLastUsedCamera = true;
+  config.videoConstraints = {
+    facingMode: "environment",
+    width: { ideal: 1920 },
+    height: { ideal: 1080 },
+  };
 
   return config;
 };
