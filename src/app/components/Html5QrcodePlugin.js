@@ -15,7 +15,7 @@ const createConfig = (props) => {
   // if (props.qrbox) {
   //   config.qrbox = props.qrbox;
   // }
-  // config.qrbox = { width: 500, height: 500 };
+  config.qrbox = { width: 1000, height: 1000 };
   if (props.aspectRatio) {
     config.aspectRatio = props.aspectRatio;
   }
