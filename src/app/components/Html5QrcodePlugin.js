@@ -23,6 +23,10 @@ const createConfig = (props) => {
   }
   config.supportedScanTypes = [Html5QrcodeScanType.SCAN_TYPE_CAMERA];
   config.rememberLastUsedCamera = true;
+  config.videoConstraints = {
+    width: { ideal: 1920 }, // Résolution vidéo
+    height: { ideal: 1080 },
+  };
 
   return config;
 };
