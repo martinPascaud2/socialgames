@@ -11,33 +11,30 @@ export async function launchGame({
   multiGuests,
   options,
 }) {
-  const startedRoom = await prisma.room.update({
+  const notStartedRoom = await prisma.room.findFirst({
     where: {
       id: roomId,
-    },
-    data: {
-      started: true,
     },
   });
 
   const gamersAndGuests = initGamersAndGuests({
     adminId,
-    gamers: startedRoom.gamers,
+    gamers: notStartedRoom.gamers,
     guests,
     multiGuests,
   });
   const { newViceAdmin: viceAdmin, arrivalsOrder } =
     await checkViceAdminAndArrivals({
       roomId,
-      admin: startedRoom.admin,
-      viceAdmin: startedRoom.viceAdmin,
+      admin: notStartedRoom.admin,
+      viceAdmin: notStartedRoom.viceAdmin,
       gamersAndGuests,
     });
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
-    started: startedRoom.started,
+    started: notStartedRoom.started,
     gameData: {
-      admin: startedRoom.admin,
+      admin: notStartedRoom.admin,
       viceAdmin,
       arrivalsOrder,
       gamers: gamersAndGuests,

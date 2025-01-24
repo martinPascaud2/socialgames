@@ -2472,6 +2472,7 @@ export default function Categories({
   getCurrentGame,
   updateLastCP,
   signOut,
+  returnLobby,
 }) {
   const { isSupported, isVisible, released, request, release } = useWake();
   const router = useRouter();
@@ -2499,6 +2500,13 @@ export default function Categories({
     const user = await getUser();
     return user;
   };
+
+  const cancelAndReturnLobby = useCallback(async () => {
+    const group = JSON.parse(localStorage.getItem("group"));
+    const path = await returnLobby({ group });
+    localStorage.removeItem("group");
+    router.push(path);
+  }, [router]);
 
   useEffect(() => {
     const channel = pusher.subscribe(`user-${user.email}`);
@@ -2923,7 +2931,7 @@ export default function Categories({
       ) : (
         <main>
           <div
-            onClick={() => router.push("/categories/grouping/grouping")}
+            onClick={() => cancelAndReturnLobby()}
             className="z-10 absolute h-[100dvh] w-screen max-h-full"
           />
           <div className="m-auto">
