@@ -1321,6 +1321,7 @@ const SettingsButtons = ({
                 // setLocation(await getLocation());
                 setLocation({ latitude: "", longitude: "" });
                 // setServerMessage("QR code généré !");
+                setServerMessage("");
               } catch (error) {
                 console.error(error.message);
                 const errorInformations = getErrorInformations({
@@ -1364,6 +1365,7 @@ const SettingsButtons = ({
                 // setLocation(await getLocation());
                 setLocation({ latitude: "", longitude: "" });
                 // setServerMessage("QR code généré !");
+                setServerMessage("");
               } catch (error) {
                 console.error(error.message);
                 const errorInformations = getErrorInformations({
@@ -1405,6 +1407,7 @@ const SettingsButtons = ({
                 // setLocation(await getLocation());
                 setLocation({ latitude: "", longitude: "" });
                 // setServerMessage("QR code généré !");
+                setServerMessage("");
               } catch (error) {
                 console.error(error.message);
                 const errorInformations = getErrorInformations({
@@ -1445,6 +1448,7 @@ const SettingsButtons = ({
                 // setLocation(await getLocation());
                 setLocation({ latitude: "", longitude: "" });
                 // setServerMessage("QR code généré !");
+                setServerMessage("");
               } catch (error) {
                 console.error(error.message);
                 const errorInformations = getErrorInformations({
