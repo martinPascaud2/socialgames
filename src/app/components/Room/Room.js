@@ -823,12 +823,15 @@ export default function Room({
   }, [deletedGamer]);
   // ------------------------------
 
-  // isSearching: not_admins showed block
+  // isSearching: not_admins showed + delete invitations
   useEffect(() => {
     if (isAdmin) return;
     if (gameData.isSearching) {
       setShowPlayers(true);
+      setShowGamerList(true);
+      setShowInvitations(false);
       setShowConfig(false);
+      deleteInvs(); // no await
     }
   }, [isAdmin, gameData]);
   // ------------------------------
@@ -1201,25 +1204,27 @@ export default function Room({
                                   </div>
                                 )}
                               </div>
-                              <div
-                                onClick={() => {
-                                  setShowGamerList(false);
-                                  setShowInvitations(true);
-                                  setShowRoomRefs(false);
-                                }}
-                                className={`${
-                                  showInvitations
-                                    ? "border border-sky-100 text-sky-700 relative p-1"
-                                    : "border border-amber-700 bg-amber-100 text-amber-700 relative p-1"
-                                }`}
-                              >
-                                <IoPersonAddSharp className="w-8 h-8" />
-                                {showInvitations && (
-                                  <div className="absolute left-full top-1/2 translate-y-[-50%]">
-                                    <IoMdArrowDropright className="h-8 w-8 pr-2" />
-                                  </div>
-                                )}
-                              </div>
+                              {!gameData.isSearching && (
+                                <div
+                                  onClick={() => {
+                                    setShowGamerList(false);
+                                    setShowInvitations(true);
+                                    setShowRoomRefs(false);
+                                  }}
+                                  className={`${
+                                    showInvitations
+                                      ? "border border-sky-100 text-sky-700 relative p-1"
+                                      : "border border-amber-700 bg-amber-100 text-amber-700 relative p-1"
+                                  }`}
+                                >
+                                  <IoPersonAddSharp className="w-8 h-8" />
+                                  {showInvitations && (
+                                    <div className="absolute left-full top-1/2 translate-y-[-50%]">
+                                      <IoMdArrowDropright className="h-8 w-8 pr-2" />
+                                    </div>
+                                  )}
+                                </div>
+                              )}
 
                               {isAdmin && (
                                 <div
