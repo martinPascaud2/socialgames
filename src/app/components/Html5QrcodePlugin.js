@@ -28,7 +28,7 @@ const createConfig = (props) => {
     facingMode: "environment",
     // width: { min: 640, ideal: 1280 },
     // height: { min: 480, ideal: 720 },
-    // advanced: [{ zoom: 3.0 }],
+    advanced: [{ zoom: 2.0 }],
   };
 
   return config;
