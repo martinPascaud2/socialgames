@@ -2629,7 +2629,7 @@ export default function Categories({
         >
           <Html5QrcodePlugin
             scanning={setting === "camera"}
-            fps={10}
+            fps={60}
             qrCodeSuccessCallback={onNewScanResult}
             setStopScan={setStopScan}
           />
@@ -2778,7 +2778,7 @@ export default function Categories({
                             className="h-[41vw] w-auto"
                             style={{
                               background: "white",
-                              boxShadow: "0px 0px 5px 5px white",
+                              boxShadow: "0px 0px 6px 6px white",
                             }}
                           />
                         </div>
