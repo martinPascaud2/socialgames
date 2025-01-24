@@ -15,7 +15,7 @@ const createConfig = (props) => {
   // if (props.qrbox) {
   //   config.qrbox = props.qrbox;
   // }
-  config.qrbox = { width: 500, height: 500 };
+  // config.qrbox = { width: 500, height: 500 };
   if (props.aspectRatio) {
     config.aspectRatio = props.aspectRatio;
   }
@@ -28,7 +28,7 @@ const createConfig = (props) => {
     facingMode: "environment",
     width: { min: 640, ideal: 1280 },
     height: { min: 480, ideal: 720 },
-    // advanced: [{ zoom: 3.0 }],
+    advanced: [{ zoom: 3.0 }],
   };
 
   return config;
