@@ -12,9 +12,10 @@ const createConfig = (props) => {
   if (props.fps) {
     config.fps = props.fps;
   }
-  if (props.qrbox) {
-    config.qrbox = props.qrbox;
-  }
+  // if (props.qrbox) {
+  //   config.qrbox = props.qrbox;
+  // }
+  config.qrbox = { width: 500, height: 500 };
   if (props.aspectRatio) {
     config.aspectRatio = props.aspectRatio;
   }
