@@ -25,8 +25,9 @@ const createConfig = (props) => {
   config.rememberLastUsedCamera = true;
   config.videoConstraints = {
     facingMode: "environment",
-    width: { ideal: 1920 },
-    height: { ideal: 1080 },
+    width: { min: 640, ideal: 1280 },
+    height: { min: 480, ideal: 720 },
+    advanced: [{ zoom: 10.0 }],
   };
 
   return config;
