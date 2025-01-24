@@ -2589,7 +2589,10 @@ export default function Categories({
         userLocation,
         friendCode: decodedText,
       });
-      if (addFriendError) setServerMessage(addFriendError);
+      if (addFriendError) {
+        setServerMessage(addFriendError);
+        setSetting("");
+      }
       setTimeout(() => {
         setScanLocked(false);
       }, 1000);
