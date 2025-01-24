@@ -2778,7 +2778,7 @@ export default function Categories({
                             className="h-[41vw] w-auto"
                             style={{
                               background: "white",
-                              boxShadow: "0px 0px 6px 6px white",
+                              boxShadow: "0px 0px 5px 5px white",
                             }}
                           />
                         </div>
