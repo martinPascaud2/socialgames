@@ -715,7 +715,9 @@ import { GoTools } from "react-icons/go";
 import { FaRegFloppyDisk } from "react-icons/fa6";
 import { IoGameControllerOutline } from "react-icons/io5";
 import { MdOutlineVideogameAsset } from "react-icons/md";
+import { IoIosRefresh } from "react-icons/io";
 import { IoKeyOutline } from "react-icons/io5";
+import { MdOutlineCancel } from "react-icons/md";
 import FriendsSettingsIcon from "./FriendsSettingsIcon";
 
 import { updatePassword } from "@/signin/actions";
@@ -2261,6 +2263,8 @@ const Invitations = ({
   setPublicRooms,
   invitations,
   setInvitations,
+  currentGame,
+  setCurrentGame,
 }) => {
   // const [publicRooms, setPublicRooms] = useState({});
   // const [invitations, setInvitations] = useState([]);
@@ -2355,8 +2359,19 @@ const Invitations = ({
         }));
       newThreeFirsts = [...newThreeFirsts, ...formattedPublicRooms];
     }
+
+    if (currentGame) {
+      if (newThreeFirsts.length === 3) newThreeFirsts.pop();
+      newThreeFirsts.unshift({
+        gameName: currentGame.game,
+        link: `${process.env.NEXT_PUBLIC_APP_URL}${currentGame.path}`,
+        userName: currentGame.admin,
+        isCurrentGame: true,
+      });
+    }
+
     setThreeFirsts(newThreeFirsts);
-  }, [invitations, publicRooms]);
+  }, [invitations, publicRooms, currentGame]);
 
   return (
     <div className="w-full h-full flex flex-col justify-start items-center relative py-6 gap-1">
@@ -2371,25 +2386,43 @@ const Invitations = ({
         <ArrowPathIcon className="ml-2 h-6 w-6" />
       </div> */}
 
-      {!invitations.length && !Object.keys(publicRooms).length && (
-        <div className="text-center text-purple-800 absolute top-1/2 translate-y-[-50%]">
-          Aucune partie disponible
-        </div>
-      )}
+      {!invitations.length &&
+        !Object.keys(publicRooms).length &&
+        !currentGame && (
+          <div className="text-center text-purple-800 absolute top-1/2 translate-y-[-50%]">
+            Aucune partie disponible
+          </div>
+        )}
 
       {threeFirsts.map((invitation, i) => (
-        <div
-          key={i}
-          onClick={async (event) => {
-            event.stopPropagation();
-            // resetPermissions();
-            await updateLastCP({ userId: user.id, out: true });
-            window.location.href = invitation.link;
-          }}
-          className="w-[75%] z-30 h-full"
-        >
-          <div className="h-full flex items-center justify-center border border-2 border-purple-900 text-lg font-semibold text-purple-900 bg-purple-500">
-            {invitation.userName}
+        <div key={i} className="relative w-[75%] h-full z-30">
+          {invitation.isCurrentGame && (
+            <div
+              onClick={async () => {
+                setCurrentGame();
+                await cancelBack({ userId: user.id });
+              }}
+              className="absolute top-1 right-1 z-40 h-10 w-10 flex justify-center items-center"
+            >
+              <MdOutlineCancel className="h-8 w-8 text-red-900" />
+            </div>
+          )}
+          <div
+            onClick={async (event) => {
+              event.stopPropagation();
+              // resetPermissions();
+              await updateLastCP({ userId: user.id, out: true });
+              window.location.href = invitation.link;
+            }}
+            className="w-full z-30 h-full"
+          >
+            <div className="h-full flex items-center justify-center border border-2 border-purple-900 text-lg font-semibold text-purple-900 bg-purple-500">
+              {!invitation.isCurrentGame ? (
+                invitation.userName
+              ) : (
+                <IoIosRefresh className="w-8 h-8" />
+              )}
+            </div>
           </div>
         </div>
       ))}
@@ -2824,6 +2857,8 @@ export default function Categories({
                     setPublicRooms={setPublicRooms}
                     invitations={invitations}
                     setInvitations={setInvitations}
+                    currentGame={currentGame}
+                    setCurrentGame={setCurrentGame}
                   />
                 </CentralZone>
               </>
@@ -2881,53 +2916,6 @@ export default function Categories({
                   </div>
                 </div>
               </CentralZone>
-            )}
-
-            {currentGame && (
-              <Modal
-                isOpen={true}
-                onClose={() => {
-                  setCurrentGame();
-                  cancelBack({ userId: user.id }); // no await
-                  return;
-                }}
-              >
-                <div className="flex flex-col items-center gap-2 text-2xl p-2 text-black">
-                  <div className="w-full">Vous avez une partie en cours !</div>
-                  <div>
-                    Admin :{" "}
-                    <span className="font-semibold">{currentGame.admin}</span>
-                  </div>
-                  {currentGame.game === "grouping" ? (
-                    <div>Nouveau groupe de joueurs</div>
-                  ) : (
-                    <div>
-                      Jeu :{" "}
-                      <span className="font-semibold">
-                        {currentGame.mode || currentGame.game}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="w-full flex justify-evenly m-2">
-                    <Link
-                      href={currentGame.path}
-                      className="border border-blue-300 bg-blue-100 p-2 rounded-md"
-                    >
-                      Rejoindre
-                    </Link>
-                    <button
-                      onClick={async () => {
-                        setCurrentGame();
-                        await cancelBack({ userId: user.id });
-                      }}
-                      className="border border-red-300 bg-red-100 p-2 rounded-md"
-                    >
-                      Annuler
-                    </button>
-                  </div>
-                </div>
-              </Modal>
             )}
 
             <div className="absolute top-full z-20 w-full mt-4 text-center text-purple-100">
