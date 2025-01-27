@@ -188,10 +188,19 @@ export default async function CategoriesPage() {
         game,
         token: roomToken,
         options,
+        arrivalsOrder,
       } = await prisma.room.findFirst({
         where: { id: currentRoomId },
-        select: { admin: true, game: true, token: true, options: true },
+        select: {
+          admin: true,
+          game: true,
+          token: true,
+          options: true,
+          arrivalsOrder: true,
+        },
       });
+
+      if (arrivalsOrder.length <= 1) return null;
 
       const { categorie } = gamesRefs[game];
       const path = `/categories/${categorie}/${game}?token=${roomToken}`;
