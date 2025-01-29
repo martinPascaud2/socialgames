@@ -2396,7 +2396,7 @@ const Invitations = ({
 
       {threeFirsts.map((invitation, i) => (
         <div key={i} className="relative w-[75%] h-full z-30">
-          {invitation.isCurrentGame && (
+          {/* {invitation.isCurrentGame && (
             <div
               onClick={async () => {
                 setCurrentGame();
@@ -2406,7 +2406,7 @@ const Invitations = ({
             >
               <MdOutlineCancel className="h-8 w-8 text-red-900" />
             </div>
-          )}
+          )} */}
           <div
             onClick={async (event) => {
               event.stopPropagation();
