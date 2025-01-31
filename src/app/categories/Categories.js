@@ -716,9 +716,9 @@ import { FaRegFloppyDisk } from "react-icons/fa6";
 import { IoGameControllerOutline } from "react-icons/io5";
 import { MdOutlineVideogameAsset } from "react-icons/md";
 import { IoIosRefresh } from "react-icons/io";
-import { IoKeyOutline } from "react-icons/io5";
 import { MdOutlineCancel } from "react-icons/md";
 import FriendsSettingsIcon from "./FriendsSettingsIcon";
+import { MdOutlineAccountTree } from "react-icons/md";
 
 import { updatePassword } from "@/signin/actions";
 import ReactDOM, { useFormState } from "react-dom";
@@ -1164,7 +1164,7 @@ const SettingsButtons = ({
               backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
             }}
           >
-            <IoKeyOutline className="ml-2 w-10 h-10 text-purple-800" />
+            <MdOutlineAccountTree className="ml-2 w-10 h-10 text-purple-800" />
           </div>
           <div // skew
             onTouchStart={() => setIsPasswordPressed(true)}
