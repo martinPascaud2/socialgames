@@ -184,23 +184,31 @@ export default async function CategoriesPage() {
       return null;
     } else {
       const {
+        creationDate,
         admin,
         game,
         token: roomToken,
         options,
         arrivalsOrder,
+        started,
       } = await prisma.room.findFirst({
         where: { id: currentRoomId },
         select: {
+          creationDate: true,
           admin: true,
           game: true,
           token: true,
           options: true,
           arrivalsOrder: true,
+          started: true,
         },
       });
 
-      if (arrivalsOrder.length <= 1) return null;
+      const creationAgeInMn =
+        (new Date().getTime() - creationDate.getTime()) / (1000 * 60);
+
+      if (arrivalsOrder.length <= 1 || (!started && creationAgeInMn > 30))
+        return null;
 
       const { categorie } = gamesRefs[game];
       const path = `/categories/${categorie}/${game}?token=${roomToken}`;
