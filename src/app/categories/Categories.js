@@ -892,80 +892,92 @@ const SettingsButtons = ({
         <div className="relative w-full h-full">
           {/* left top */}
           <div // square
-            onTouchStart={() => setIsDiscoPressed(true)}
-            onTouchEnd={async (event) => {
-              setIsDiscoPressed(false);
+            onTouchStart={() => setIsPasswordPressed(true)}
+            onTouchEnd={(event) => {
+              setIsPasswordPressed(false);
               if (locked) return;
+              setSetting("password");
+              // setParam("bars");
+              setServerMessage("");
+              // setScanning(false);
+              resetPermissions();
               event.stopPropagation();
-              await updateLastCP({ userId: user.id, out: true });
-              await signOut();
-              window.location.reload();
+              updateLastCP({ userId: user.id }); // no await
             }}
             className="absolute h-[20.2vw] w-[17vw] top-[0.3vw] left-[26.5vw] z-40 flex justify-center items-center"
             style={{
-              boxShadow: !isDiscoPressed
+              boxShadow: !isPasswordPressed
                 ? "1vw 1vw 2vw -1vw #7e22ce, 2vw 2vw 2vw -1vw #7e22ce"
                 : "inset 0px 9px 5px -6px #581c87",
-              borderBottom: isDiscoPressed ? "1px solid #581c87" : "",
-              borderRight: isDiscoPressed ? "1px solid #581c87" : "",
-              backgroundColor: isDiscoPressed ? "#7e22ce" : "transparent",
+              borderBottom: isPasswordPressed ? "1px solid #581c87" : "",
+              borderRight: isPasswordPressed ? "1px solid #581c87" : "",
+              backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
             }}
           >
-            <ImExit className="w-8 h-8 text-purple-800" />
+            <MdOutlineAccountTree className="mr-2 w-10 h-10 text-purple-800" />
           </div>
           <div // skew
-            onTouchStart={() => setIsDiscoPressed(true)}
-            onTouchEnd={async (event) => {
-              setIsDiscoPressed(false);
+            onTouchStart={() => setIsPasswordPressed(true)}
+            onTouchEnd={(event) => {
+              setIsPasswordPressed(false);
               if (locked) return;
+              setSetting("password");
+              // setParam("bars");
+              setServerMessage("");
+              // setScanning(false);
+              resetPermissions();
               event.stopPropagation();
-              await updateLastCP({ userId: user.id, out: true });
-              await signOut();
-              window.location.reload();
+              updateLastCP({ userId: user.id }); // no await
             }}
             className="absolute h-[20.2vw] w-[17vw] top-[0.4vw] -skew-x-[45deg] bg-transparent left-[16.5vw] z-30"
             style={{
-              backgroundColor: isDiscoPressed ? "#7e22ce" : "transparent",
-              boxShadow: !isDiscoPressed
+              backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isPasswordPressed
                 ? // ? "0vw 3vw 1vw -2vw #7e22ce"
                   ""
                 : "inset 9px 0px 5px -6px #581c87",
-              borderBottom: isDiscoPressed ? "1px solid #581c87" : "",
+              borderBottom: isPasswordPressed ? "1px solid #581c87" : "",
             }}
           />
           <div // border filler
-            onTouchStart={() => setIsDiscoPressed(true)}
-            onTouchEnd={async (event) => {
-              setIsDiscoPressed(false);
+            onTouchStart={() => setIsPasswordPressed(true)}
+            onTouchEnd={(event) => {
+              setIsPasswordPressed(false);
               if (locked) return;
+              setSetting("password");
+              // setParam("bars");
+              setServerMessage("");
+              // setScanning(false);
+              resetPermissions();
               event.stopPropagation();
-              await updateLastCP({ userId: user.id, out: true });
-              await signOut();
-              window.location.reload();
+              updateLastCP({ userId: user.id }); // no await
             }}
             // className="absolute h-[5vw] w-[17vw] top-[15.55vw] left-[15.4vw] z-30"
             className="absolute h-[5vw] w-[24vw] top-[15.55vw] left-[7vw] z-30"
             style={{
               // boxShadow: !isDiscoPressed ? "0vw 3vw 1vw -2vw #7e22ce" : "",
-              boxShadow: !isDiscoPressed ? "0vw 2vw 2vw -1vw #7e22ce" : "",
+              boxShadow: !isPasswordPressed ? "0vw 2vw 2vw -1vw #7e22ce" : "",
               // backgroundColor: isDiscoPressed ? "#7e22ce" : "transparent",
-              borderBottom: isDiscoPressed ? "1px solid #581c87" : "",
+              borderBottom: isPasswordPressed ? "1px solid #581c87" : "",
             }}
           />
           <div // small BF
-            onTouchStart={() => setIsDiscoPressed(true)}
-            onTouchEnd={async (event) => {
-              setIsDiscoPressed(false);
+            onTouchStart={() => setIsPasswordPressed(true)}
+            onTouchEnd={(event) => {
+              setIsPasswordPressed(false);
               if (locked) return;
+              setSetting("password");
+              // setParam("bars");
+              setServerMessage("");
+              // setScanning(false);
+              resetPermissions();
               event.stopPropagation();
-              await updateLastCP({ userId: user.id, out: true });
-              await signOut();
-              window.location.reload();
+              updateLastCP({ userId: user.id }); // no await
             }}
             className="absolute h-[5vw] w-[17vw] top-[15.5vw] left-[16.5vw] z-30"
             style={{
-              backgroundColor: isDiscoPressed ? "#7e22ce" : "transparent",
-              borderBottom: isDiscoPressed ? "1px solid #581c87" : "",
+              backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
+              borderBottom: isPasswordPressed ? "1px solid #581c87" : "",
             }}
           />
 
@@ -1142,92 +1154,80 @@ const SettingsButtons = ({
 
           {/* right top */}
           <div // square
-            onTouchStart={() => setIsPasswordPressed(true)}
-            onTouchEnd={(event) => {
-              setIsPasswordPressed(false);
+            onTouchStart={() => setIsDiscoPressed(true)}
+            onTouchEnd={async (event) => {
+              setIsDiscoPressed(false);
               if (locked) return;
-              setSetting("password");
-              // setParam("bars");
-              setServerMessage("");
-              // setScanning(false);
-              resetPermissions();
               event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
+              await updateLastCP({ userId: user.id, out: true });
+              await signOut();
+              window.location.reload();
             }}
             className="absolute h-[20.2vw] w-[17vw] top-[0.3vw] right-[26.5vw] z-40 flex justify-center items-center"
             style={{
-              boxShadow: !isPasswordPressed
+              boxShadow: !isDiscoPressed
                 ? "-1vw 1vw 2vw -1vw #7e22ce, -2vw 2vw 2vw -1vw #7e22ce"
                 : "inset 0px 9px 5px -6px #581c87",
-              borderBottom: isPasswordPressed ? "1px solid #581c87" : "",
-              borderLeft: isPasswordPressed ? "1px solid #581c87" : "",
-              backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
+              borderBottom: isDiscoPressed ? "1px solid #581c87" : "",
+              borderLeft: isDiscoPressed ? "1px solid #581c87" : "",
+              backgroundColor: isDiscoPressed ? "#7e22ce" : "transparent",
             }}
           >
-            <MdOutlineAccountTree className="ml-2 w-10 h-10 text-purple-800" />
+            <ImExit className="ml-2 w-8 h-8 text-purple-800" />
           </div>
           <div // skew
-            onTouchStart={() => setIsPasswordPressed(true)}
-            onTouchEnd={(event) => {
-              setIsPasswordPressed(false);
+            onTouchStart={() => setIsDiscoPressed(true)}
+            onTouchEnd={async (event) => {
+              setIsDiscoPressed(false);
               if (locked) return;
-              setSetting("password");
-              // setParam("bars");
-              setServerMessage("");
-              // setScanning(false);
-              resetPermissions();
               event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
+              await updateLastCP({ userId: user.id, out: true });
+              await signOut();
+              window.location.reload();
             }}
             className="absolute h-[20.2vw] w-[17vw] top-[0.4vw] skew-x-[45deg] bg-transparent right-[16.5vw] z-30"
             style={{
-              backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
-              boxShadow: !isPasswordPressed
+              backgroundColor: isDiscoPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isDiscoPressed
                 ? // ? "0vw 3vw 1vw -2vw #7e22ce"
                   ""
                 : "inset -9px 0px 5px -6px #581c87",
-              borderBottom: isPasswordPressed ? "1px solid #581c87" : "",
+              borderBottom: isDiscoPressed ? "1px solid #581c87" : "",
             }}
           />
           <div // border filler
-            onTouchStart={() => setIsPasswordPressed(true)}
-            onTouchEnd={(event) => {
-              setIsPasswordPressed(false);
+            onTouchStart={() => setIsDiscoPressed(true)}
+            onTouchEnd={async (event) => {
+              setIsDiscoPressed(false);
               if (locked) return;
-              setSetting("password");
-              // setParam("bars");
-              setServerMessage("");
-              // setScanning(false);
-              resetPermissions();
               event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
+              await updateLastCP({ userId: user.id, out: true });
+              await signOut();
+              window.location.reload();
             }}
             // className="absolute h-[5vw] w-[17vw] top-[15.55vw] right-[15.4vw] z-30"
             className="absolute h-[5vw] w-[24vw] top-[15.55vw] right-[7vw] z-30"
             style={{
               // boxShadow: !isCameraPressed ? "0vw 3vw 1vw -2vw #7e22ce" : "",
-              boxShadow: !isPasswordPressed ? "0vw 2vw 2vw -1vw #7e22ce" : "",
+              boxShadow: !isDiscoPressed ? "0vw 2vw 2vw -1vw #7e22ce" : "",
               // backgroundColor: isCameraPressed ? "#7e22ce" : "transparent",
-              borderBottom: isPasswordPressed ? "1px solid #581c87" : "",
+              borderBottom: isDiscoPressed ? "1px solid #581c87" : "",
             }}
           />
           <div // small BF
-            onTouchStart={() => setIsPasswordPressed(true)}
-            onTouchEnd={(event) => {
-              setIsPasswordPressed(false);
+            onTouchStart={() => setIsDiscoPressed(true)}
+            onTouchEnd={async (event) => {
+              setIsDiscoPressed(false);
               if (locked) return;
-              setSetting("password");
-              // setParam("bars");
-              setServerMessage("");
-              // setScanning(false);
-              resetPermissions();
               event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
+              await updateLastCP({ userId: user.id, out: true });
+              await signOut();
+              window.location.reload();
             }}
             className="absolute h-[5vw] w-[17vw] top-[15.5vw] right-[16.5vw] z-30"
             style={{
-              backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
-              borderBottom: isPasswordPressed ? "1px solid #581c87" : "",
+              backgroundColor: isDiscoPressed ? "#7e22ce" : "transparent",
+              borderBottom: isDiscoPressed ? "1px solid #581c87" : "",
             }}
           />
 
