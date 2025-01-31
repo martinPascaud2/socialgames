@@ -2361,13 +2361,14 @@ const Invitations = ({
     }
 
     if (currentGame) {
-      if (newThreeFirsts.length === 3) newThreeFirsts.pop();
-      newThreeFirsts.unshift({
-        gameName: currentGame.game,
-        link: `${process.env.NEXT_PUBLIC_APP_URL}${currentGame.path}`,
-        userName: currentGame.admin,
-        isCurrentGame: true,
-      });
+      newThreeFirsts = [
+        {
+          gameName: currentGame.game,
+          link: `${process.env.NEXT_PUBLIC_APP_URL}${currentGame.path}`,
+          userName: currentGame.admin,
+          isCurrentGame: true,
+        },
+      ];
     }
 
     setThreeFirsts(newThreeFirsts);
