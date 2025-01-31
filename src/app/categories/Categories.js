@@ -2396,7 +2396,7 @@ const Invitations = ({
         )}
 
       {threeFirsts.map((invitation, i) => (
-        <div key={i} className="relative w-[75%] h-full z-30">
+        <div key={i} className="relative w-[75%] h-full z-30 opacity-60">
           {/* {invitation.isCurrentGame && (
             <div
               onClick={async () => {
@@ -2417,7 +2417,7 @@ const Invitations = ({
             }}
             className="w-full z-30 h-full"
           >
-            <div className="h-full flex items-center justify-center border border-2 border-purple-900 text-lg font-semibold text-purple-900 bg-purple-500">
+            <div className="h-full flex items-center justify-center border border-2 border-purple-800 text-lg font-semibold text-purple-900 bg-purple-500">
               {!invitation.isCurrentGame ? (
                 invitation.userName
               ) : (
