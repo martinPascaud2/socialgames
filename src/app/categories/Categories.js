@@ -755,17 +755,18 @@ const OnlyShadows = () => {
               backgroundColor: "transparent",
             }}
           />
-          <div // middle right
-            className="absolute h-[37vw] w-[17vw] top-[50%] translate-y-[-50%] left-[0vw] z-50 bg-transparent flex justify-center items-center"
+          <div // middle top
+            className="absolute h-[28.4vw] w-[14.8vw] top-[54.7%] translate-y-[-100%] left-[5.7vw] z-40"
             style={{
               backgroundColor: "transparent",
+              boxShadow: "3.1vw -2vw 1vw -2vw #7e22ce",
             }}
           />
-          <div // middle
-            className="absolute h-[47.6vw] w-[11.3vw] top-[50%] translate-y-[-50%] left-[5.7vw] z-40"
+          <div // middle bottom
+            className="absolute h-[28.4vw] w-[14.8vw] bottom-[54.7%] translate-y-[100%] left-[5.7vw] z-40"
             style={{
               backgroundColor: "transparent",
-              boxShadow: "3vw -2vw 1vw -2vw #7e22ce, 3vw 2vw 1vw -2vw #7e22ce",
+              boxShadow: "3.1vw 2vw 1vw -2vw #7e22ce",
             }}
           />
           <div // skew bottom
@@ -813,18 +814,18 @@ const OnlyShadows = () => {
               backgroundColor: "transparent",
             }}
           />
-          <div // middle left
-            className="absolute h-[37vw] w-[17vw] top-[50%] translate-y-[-50%] right-[0vw] z-50 bg-transparent flex justify-center items-center"
+          <div // middle top
+            className="absolute h-[28.4vw] w-[14.8vw] top-[54.7%] translate-y-[-100%] right-[5.7vw] z-40"
             style={{
               backgroundColor: "transparent",
+              boxShadow: "-3.1vw -2vw 1vw -2vw #7e22ce",
             }}
           />
-          <div // middle
-            className="absolute h-[47.6vw] w-[11.3vw] top-[50%] translate-y-[-50%] right-[5.7vw] z-40"
+          <div // middle bottom
+            className="absolute h-[28.4vw] w-[14.8vw] bottom-[54.7%] translate-y-[100%] right-[5.7vw] z-40"
             style={{
               backgroundColor: "transparent",
-              boxShadow:
-                "-3vw -2vw 1vw -2vw #7e22ce, -3vw 2vw 1vw -2vw #7e22ce",
+              boxShadow: "-3.1vw 2vw 1vw -2vw #7e22ce",
             }}
           />
           <div // skew bottom
@@ -868,14 +869,149 @@ const SettingsButtons = ({
   signOut,
 }) => {
   const [locked, setLocked] = useState(true);
-  const [isDiscoPressed, setIsDiscoPressed] = useState(false);
+  const [isAccountPressed, setIsAccountPressed] = useState(false);
   const [isParamsPressed, setIsParamsPressed] = useState(false);
-  const [isPasswordPressed, setIsPasswordPressed] = useState(false);
   const [isCameraPressed, setIsCameraPressed] = useState(false);
+  const [isDiscoPressed, setIsDiscoPressed] = useState(false);
   const [isFriendsPressed, setIsFriendsPressed] = useState(false);
   const [isQrcodePressed, setIsQrcodePressed] = useState(false);
-  // const iconsColor =
-  //   setting === "camera" || setting === "qrCode" ? "purple-900" : "purple-100";
+
+  const handleAccountPressed = useCallback(
+    (event) => {
+      setIsAccountPressed(false);
+      if (locked) return;
+      setSetting("password");
+      setServerMessage("");
+      // setScanning(false);
+      resetPermissions();
+      event.stopPropagation();
+      updateLastCP({ userId: user.id }); // no await
+    },
+    [
+      setIsAccountPressed,
+      locked,
+      setSetting,
+      setServerMessage,
+      resetPermissions,
+      updateLastCP,
+    ]
+  );
+
+  const handleParamsPressed = useCallback(
+    (event) => {
+      setIsParamsPressed(false);
+      if (locked) return;
+      setSetting("params");
+      setServerMessage("");
+      // setScanning(false);
+      resetPermissions();
+      event.stopPropagation();
+      updateLastCP({ userId: user.id }); // no await
+    },
+    [
+      setIsParamsPressed,
+      locked,
+      setSetting,
+      setServerMessage,
+      resetPermissions,
+      updateLastCP,
+    ]
+  );
+
+  const handleCameraPressed = useCallback(
+    (event) => {
+      setIsCameraPressed(false);
+      if (locked) return;
+      setSetting("camera");
+      setServerMessage("");
+      setScanning(true);
+      // resetPermissions();
+      event.stopPropagation();
+      updateLastCP({ userId: user.id }); // no await
+    },
+    [
+      setIsCameraPressed,
+      locked,
+      setSetting,
+      setServerMessage,
+      setScanning,
+      updateLastCP,
+    ]
+  );
+
+  const handleDiscoPressed = useCallback(
+    async (event) => {
+      setIsDiscoPressed(false);
+      if (locked) return;
+      event.stopPropagation();
+      await updateLastCP({ userId: user.id, out: true });
+      await signOut();
+      window.location.reload();
+    },
+    [setIsDiscoPressed, locked, updateLastCP, signOut]
+  );
+
+  const handleFriendsPressed = useCallback(
+    (event) => {
+      setIsFriendsPressed(false);
+      if (locked) return;
+      setSetting("friends");
+      setServerMessage("");
+      // setScanning(false);
+      resetPermissions();
+      event.stopPropagation();
+      updateLastCP({ userId: user.id }); // no await
+    },
+    [
+      setIsFriendsPressed,
+      locked,
+      setSetting,
+      setServerMessage,
+      resetPermissions,
+      updateLastCP,
+    ]
+  );
+
+  const handleQrcodePressed = useCallback(
+    async (event) => {
+      setIsQrcodePressed(false);
+      if (locked) return;
+      setSetting("qrCode");
+      // setScanning(false);
+      resetPermissions();
+      event.stopPropagation();
+      updateLastCP({ userId: user.id }); // no await
+
+      try {
+        // setLocation(await getLocation());
+        setLocation({ latitude: "", longitude: "" });
+        setServerMessage("");
+      } catch (error) {
+        console.error(error.message);
+        const errorInformations = getErrorInformations({
+          window,
+          fail: "location_permission",
+        }).map((info, i) => (
+          <div key={i} className={`${i === 0 && "font-bold"}`}>
+            {i !== 0 && "=>"}
+            {info}
+          </div>
+        ));
+        setServerMessage(errorInformations);
+        setLocation();
+      }
+    },
+    [
+      setIsQrcodePressed,
+      locked,
+      setSetting,
+      resetPermissions,
+      updateLastCP,
+      setLocation,
+      setServerMessage,
+      getErrorInformations,
+    ]
+  );
 
   useEffect(() => {
     setLocked(false);
@@ -892,101 +1028,55 @@ const SettingsButtons = ({
         <div className="relative w-full h-full">
           {/* left top */}
           <div // square
-            onTouchStart={() => setIsPasswordPressed(true)}
-            onTouchEnd={(event) => {
-              setIsPasswordPressed(false);
-              if (locked) return;
-              setSetting("password");
-              // setParam("bars");
-              setServerMessage("");
-              // setScanning(false);
-              resetPermissions();
-              event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
-            }}
+            onTouchStart={() => setIsAccountPressed(true)}
+            onTouchEnd={handleAccountPressed}
             className="absolute h-[20.2vw] w-[17vw] top-[0.3vw] left-[26.5vw] z-40 flex justify-center items-center"
             style={{
-              boxShadow: !isPasswordPressed
+              boxShadow: !isAccountPressed
                 ? "1vw 1vw 2vw -1vw #7e22ce, 2vw 2vw 2vw -1vw #7e22ce"
                 : "inset 0px 9px 5px -6px #581c87",
-              borderBottom: isPasswordPressed ? "1px solid #581c87" : "",
-              borderRight: isPasswordPressed ? "1px solid #581c87" : "",
-              backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
+              borderBottom: isAccountPressed ? "1px solid #581c87" : "",
+              borderRight: isAccountPressed ? "1px solid #581c87" : "",
+              backgroundColor: isAccountPressed ? "#7e22ce" : "transparent",
             }}
           >
             <MdOutlineAccountTree className="mr-2 w-10 h-10 text-purple-800" />
           </div>
           <div // skew
-            onTouchStart={() => setIsPasswordPressed(true)}
-            onTouchEnd={(event) => {
-              setIsPasswordPressed(false);
-              if (locked) return;
-              setSetting("password");
-              // setParam("bars");
-              setServerMessage("");
-              // setScanning(false);
-              resetPermissions();
-              event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
-            }}
+            onTouchStart={() => setIsAccountPressed(true)}
+            onTouchEnd={handleAccountPressed}
             className="absolute h-[20.2vw] w-[17vw] top-[0.4vw] -skew-x-[45deg] bg-transparent left-[16.5vw] z-30"
             style={{
-              backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
-              boxShadow: !isPasswordPressed
-                ? // ? "0vw 3vw 1vw -2vw #7e22ce"
-                  ""
+              backgroundColor: isAccountPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isAccountPressed
+                ? ""
                 : "inset 9px 0px 5px -6px #581c87",
-              borderBottom: isPasswordPressed ? "1px solid #581c87" : "",
+              borderBottom: isAccountPressed ? "1px solid #581c87" : "",
             }}
           />
           <div // border filler
-            onTouchStart={() => setIsPasswordPressed(true)}
-            onTouchEnd={(event) => {
-              setIsPasswordPressed(false);
-              if (locked) return;
-              setSetting("password");
-              // setParam("bars");
-              setServerMessage("");
-              // setScanning(false);
-              resetPermissions();
-              event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
-            }}
-            // className="absolute h-[5vw] w-[17vw] top-[15.55vw] left-[15.4vw] z-30"
+            onTouchStart={() => setIsAccountPressed(true)}
+            onTouchEnd={handleAccountPressed}
             className="absolute h-[5vw] w-[24vw] top-[15.55vw] left-[7vw] z-30"
             style={{
-              // boxShadow: !isDiscoPressed ? "0vw 3vw 1vw -2vw #7e22ce" : "",
-              boxShadow: !isPasswordPressed ? "0vw 2vw 2vw -1vw #7e22ce" : "",
-              // backgroundColor: isDiscoPressed ? "#7e22ce" : "transparent",
-              borderBottom: isPasswordPressed ? "1px solid #581c87" : "",
+              boxShadow: !isAccountPressed ? "0vw 2vw 2vw -1vw #7e22ce" : "",
+              borderBottom: isAccountPressed ? "1px solid #581c87" : "",
             }}
           />
           <div // small BF
-            onTouchStart={() => setIsPasswordPressed(true)}
-            onTouchEnd={(event) => {
-              setIsPasswordPressed(false);
-              if (locked) return;
-              setSetting("password");
-              // setParam("bars");
-              setServerMessage("");
-              // setScanning(false);
-              resetPermissions();
-              event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
-            }}
+            onTouchStart={() => setIsAccountPressed(true)}
+            onTouchEnd={handleAccountPressed}
             className="absolute h-[5vw] w-[17vw] top-[15.5vw] left-[16.5vw] z-30"
             style={{
-              backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
-              borderBottom: isPasswordPressed ? "1px solid #581c87" : "",
+              backgroundColor: isAccountPressed ? "#7e22ce" : "transparent",
+              borderBottom: isAccountPressed ? "1px solid #581c87" : "",
             }}
           />
 
           {/* left middle */}
           <div // skew top
             onTouchStart={() => setIsParamsPressed(true)}
-            onTouchEnd={() => {
-              setIsParamsPressed(false);
-            }}
+            onTouchEnd={handleParamsPressed}
             className="absolute h-[10vw] w-[5.7vw] top-[23.9vw] -skew-y-[45deg] bg-transparent left-[0.1vw] z-30"
             style={{
               backgroundColor: isParamsPressed ? "#7e22ce" : "transparent",
@@ -997,18 +1087,8 @@ const SettingsButtons = ({
           />
           <div // middle right
             onTouchStart={() => setIsParamsPressed(true)}
-            onTouchEnd={(event) => {
-              setIsParamsPressed(false);
-              if (locked) return;
-              setSetting("params");
-              // setParam("bars");
-              setServerMessage("");
-              // setScanning(false);
-              resetPermissions();
-              event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
-            }}
-            className="absolute h-[37vw] w-[17vw] top-[50%] translate-y-[-50%] left-[0vw] z-50 bg-transparent flex justify-center items-center"
+            onTouchEnd={handleParamsPressed}
+            className="absolute h-[37vw] w-[20.5vw] top-[50%] translate-y-[-50%] left-[0vw] z-50 bg-transparent flex justify-center items-center"
             style={{
               backgroundColor: isParamsPressed ? "#7e22ce" : "transparent",
               boxShadow: !isParamsPressed
@@ -1021,18 +1101,8 @@ const SettingsButtons = ({
           </div>
           <div // middle
             onTouchStart={() => setIsParamsPressed(true)}
-            onTouchEnd={(event) => {
-              setIsParamsPressed(false);
-              if (locked) return;
-              setSetting("params");
-              // setParam("bars");
-              setServerMessage("");
-              // setScanning(false);
-              resetPermissions();
-              event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
-            }}
-            className="absolute h-[47.6vw] w-[11.3vw] top-[50%] translate-y-[-50%] left-[5.7vw] z-40"
+            onTouchEnd={handleParamsPressed}
+            className="absolute h-[47.6vw] w-[14.8vw] top-[50%] translate-y-[-50%] left-[5.7vw] z-40"
             style={{
               backgroundColor: isParamsPressed ? "#7e22ce" : "transparent",
               boxShadow: !isParamsPressed
@@ -1045,9 +1115,7 @@ const SettingsButtons = ({
           />
           <div // skew bottom
             onTouchStart={() => setIsParamsPressed(true)}
-            onTouchEnd={() => {
-              setIsParamsPressed(false);
-            }}
+            onTouchEnd={handleParamsPressed}
             className="absolute h-[10vw] w-[5.7vw] bottom-[23.9vw] skew-y-[45deg] bg-transparent left-[0.1vw] z-30"
             style={{
               backgroundColor: isParamsPressed ? "#7e22ce" : "transparent",
@@ -1060,18 +1128,7 @@ const SettingsButtons = ({
           {/* left bottom */}
           <div // square
             onTouchStart={() => setIsCameraPressed(true)}
-            onTouchEnd={(event) => {
-              setIsCameraPressed(false);
-              if (locked) return;
-              setSetting("camera");
-              // setScanning((prevScanning) => !prevScanning);
-              setScanning(true);
-              // resetPermissions();
-              event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
-              setServerMessage("");
-              // setParam("bars");
-            }}
+            onTouchEnd={handleCameraPressed}
             className="absolute h-[20.2vw] w-[17vw] bottom-[0.4vw] left-[26.5vw] z-40 flex justify-center items-center"
             style={{
               boxShadow: !isCameraPressed
@@ -1086,65 +1143,28 @@ const SettingsButtons = ({
           </div>
           <div // skew
             onTouchStart={() => setIsCameraPressed(true)}
-            onTouchEnd={(event) => {
-              setIsCameraPressed(false);
-              if (locked) return;
-              setSetting("camera");
-              // setScanning((prevScanning) => !prevScanning);
-              setScanning(true);
-              // resetPermissions();
-              event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
-              setServerMessage("");
-              // setParam("bars");
-            }}
+            onTouchEnd={handleCameraPressed}
             className="absolute h-[20.2vw] w-[17vw] bottom-[0.4vw] skew-x-[45deg] bg-transparent left-[16.5vw] z-30"
             style={{
               backgroundColor: isCameraPressed ? "#7e22ce" : "transparent",
               boxShadow: !isCameraPressed
-                ? // ? "0vw -3vw 1vw -2vw #7e22ce"
-                  ""
+                ? ""
                 : "inset 9px 0px 5px -6px #581c87",
               borderTop: isCameraPressed ? "1px solid #581c87" : "",
             }}
           />
           <div // border filler
             onTouchStart={() => setIsCameraPressed(true)}
-            onTouchEnd={(event) => {
-              setIsCameraPressed(false);
-              if (locked) return;
-              setSetting("camera");
-              // setScanning((prevScanning) => !prevScanning);
-              setScanning(true);
-              // resetPermissions();
-              event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
-              setServerMessage("");
-              // setParam("bars");
-            }}
-            // className="absolute h-[5vw] w-[17vw] bottom-[15.6vw] left-[16.5vw] z-30"
+            onTouchEnd={handleCameraPressed}
             className="absolute h-[5vw] w-[24vw] bottom-[15.55vw] left-[7vw] z-30"
             style={{
-              // backgroundColor: isPasswordPressed ? "#7e22ce" : "transparent",
-              // boxShadow: !isPasswordPressed ? "0vw -3vw 1vw -2vw #7e22ce" : "",
               boxShadow: !isCameraPressed ? "0vw -2vw 2vw -1vw #7e22ce" : "",
               borderTop: isCameraPressed ? "1px solid #581c87" : "",
             }}
           />
           <div // small BF
             onTouchStart={() => setIsCameraPressed(true)}
-            onTouchEnd={(event) => {
-              setIsCameraPressed(false);
-              if (locked) return;
-              setSetting("camera");
-              // setScanning((prevScanning) => !prevScanning);
-              setScanning(true);
-              // resetPermissions();
-              event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
-              setServerMessage("");
-              // setParam("bars");
-            }}
+            onTouchEnd={handleCameraPressed}
             className="absolute h-[5vw] w-[17vw] bottom-[15.6vw] left-[16.5vw] z-30"
             style={{
               backgroundColor: isCameraPressed ? "#7e22ce" : "transparent",
@@ -1155,14 +1175,7 @@ const SettingsButtons = ({
           {/* right top */}
           <div // square
             onTouchStart={() => setIsDiscoPressed(true)}
-            onTouchEnd={async (event) => {
-              setIsDiscoPressed(false);
-              if (locked) return;
-              event.stopPropagation();
-              await updateLastCP({ userId: user.id, out: true });
-              await signOut();
-              window.location.reload();
-            }}
+            onTouchEnd={handleDiscoPressed}
             className="absolute h-[20.2vw] w-[17vw] top-[0.3vw] right-[26.5vw] z-40 flex justify-center items-center"
             style={{
               boxShadow: !isDiscoPressed
@@ -1177,53 +1190,28 @@ const SettingsButtons = ({
           </div>
           <div // skew
             onTouchStart={() => setIsDiscoPressed(true)}
-            onTouchEnd={async (event) => {
-              setIsDiscoPressed(false);
-              if (locked) return;
-              event.stopPropagation();
-              await updateLastCP({ userId: user.id, out: true });
-              await signOut();
-              window.location.reload();
-            }}
+            onTouchEnd={handleDiscoPressed}
             className="absolute h-[20.2vw] w-[17vw] top-[0.4vw] skew-x-[45deg] bg-transparent right-[16.5vw] z-30"
             style={{
               backgroundColor: isDiscoPressed ? "#7e22ce" : "transparent",
               boxShadow: !isDiscoPressed
-                ? // ? "0vw 3vw 1vw -2vw #7e22ce"
-                  ""
+                ? ""
                 : "inset -9px 0px 5px -6px #581c87",
               borderBottom: isDiscoPressed ? "1px solid #581c87" : "",
             }}
           />
           <div // border filler
             onTouchStart={() => setIsDiscoPressed(true)}
-            onTouchEnd={async (event) => {
-              setIsDiscoPressed(false);
-              if (locked) return;
-              event.stopPropagation();
-              await updateLastCP({ userId: user.id, out: true });
-              await signOut();
-              window.location.reload();
-            }}
-            // className="absolute h-[5vw] w-[17vw] top-[15.55vw] right-[15.4vw] z-30"
+            onTouchEnd={handleDiscoPressed}
             className="absolute h-[5vw] w-[24vw] top-[15.55vw] right-[7vw] z-30"
             style={{
-              // boxShadow: !isCameraPressed ? "0vw 3vw 1vw -2vw #7e22ce" : "",
               boxShadow: !isDiscoPressed ? "0vw 2vw 2vw -1vw #7e22ce" : "",
-              // backgroundColor: isCameraPressed ? "#7e22ce" : "transparent",
               borderBottom: isDiscoPressed ? "1px solid #581c87" : "",
             }}
           />
           <div // small BF
             onTouchStart={() => setIsDiscoPressed(true)}
-            onTouchEnd={async (event) => {
-              setIsDiscoPressed(false);
-              if (locked) return;
-              event.stopPropagation();
-              await updateLastCP({ userId: user.id, out: true });
-              await signOut();
-              window.location.reload();
-            }}
+            onTouchEnd={handleDiscoPressed}
             className="absolute h-[5vw] w-[17vw] top-[15.5vw] right-[16.5vw] z-30"
             style={{
               backgroundColor: isDiscoPressed ? "#7e22ce" : "transparent",
@@ -1234,9 +1222,7 @@ const SettingsButtons = ({
           {/* right middle */}
           <div // skew top
             onTouchStart={() => setIsFriendsPressed(true)}
-            onTouchEnd={() => {
-              setIsFriendsPressed(false);
-            }}
+            onTouchEnd={handleFriendsPressed}
             className="absolute h-[10vw] w-[5.7vw] top-[23.9vw] skew-y-[45deg] bg-transparent right-[0.1vw] z-30"
             style={{
               backgroundColor: isFriendsPressed ? "#7e22ce" : "transparent",
@@ -1247,18 +1233,8 @@ const SettingsButtons = ({
           />
           <div // middle left
             onTouchStart={() => setIsFriendsPressed(true)}
-            onTouchEnd={(event) => {
-              setIsFriendsPressed(false);
-              if (locked) return;
-              setSetting("friends");
-              // setScanning(false);
-              resetPermissions();
-              event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
-              // setParam("bars");
-              setServerMessage("");
-            }}
-            className="absolute h-[37vw] w-[17vw] top-[50%] translate-y-[-50%] right-[0vw] z-50 bg-transparent flex justify-center items-center"
+            onTouchEnd={handleFriendsPressed}
+            className="absolute h-[37vw] w-[20.5vw] top-[50%] translate-y-[-50%] right-[0vw] z-50 bg-transparent flex justify-center items-center"
             style={{
               backgroundColor: isFriendsPressed ? "#7e22ce" : "transparent",
               boxShadow: !isFriendsPressed
@@ -1271,18 +1247,8 @@ const SettingsButtons = ({
           </div>
           <div // middle
             onTouchStart={() => setIsFriendsPressed(true)}
-            onTouchEnd={(event) => {
-              setIsFriendsPressed(false);
-              if (locked) return;
-              setSetting("friends");
-              // setScanning(false);
-              resetPermissions();
-              event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
-              // setParam("bars");
-              setServerMessage("");
-            }}
-            className="absolute h-[47.6vw] w-[11.3vw] top-[50%] translate-y-[-50%] right-[5.7vw] z-40"
+            onTouchEnd={handleFriendsPressed}
+            className="absolute h-[47.6vw] w-[14.8vw] top-[50%] translate-y-[-50%] right-[5.7vw] z-40"
             style={{
               backgroundColor: isFriendsPressed ? "#7e22ce" : "transparent",
               boxShadow: !isFriendsPressed
@@ -1295,9 +1261,7 @@ const SettingsButtons = ({
           />
           <div // skew bottom
             onTouchStart={() => setIsFriendsPressed(true)}
-            onTouchEnd={() => {
-              setIsFriendsPressed(false);
-            }}
+            onTouchEnd={handleFriendsPressed}
             className="absolute h-[10vw] w-[5.7vw] bottom-[23.9vw] -skew-y-[45deg] bg-transparent right-[0.1vw] z-30"
             style={{
               backgroundColor: isFriendsPressed ? "#7e22ce" : "transparent",
@@ -1310,36 +1274,7 @@ const SettingsButtons = ({
           {/* right bottom */}
           <div // square
             onTouchStart={() => setIsQrcodePressed(true)}
-            onTouchEnd={async (event) => {
-              setIsQrcodePressed(false);
-              if (locked) return;
-              setSetting("qrCode");
-              // setScanning(false);
-              resetPermissions();
-              event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
-
-              try {
-                // setLocation(await getLocation());
-                setLocation({ latitude: "", longitude: "" });
-                // setServerMessage("QR code généré !");
-                setServerMessage("");
-              } catch (error) {
-                console.error(error.message);
-                const errorInformations = getErrorInformations({
-                  window,
-                  fail: "location_permission",
-                }).map((info, i) => (
-                  <div key={i} className={`${i === 0 && "font-bold"}`}>
-                    {i !== 0 && "=>"}
-                    {info}
-                  </div>
-                ));
-                setServerMessage(errorInformations);
-                // setParam("bars");
-                setLocation();
-              }
-            }}
+            onTouchEnd={handleQrcodePressed}
             className="absolute h-[20.2vw] w-[17vw] bottom-[0.4vw] right-[26.5vw] z-40 flex justify-center items-center"
             style={{
               boxShadow: !isQrcodePressed
@@ -1354,119 +1289,28 @@ const SettingsButtons = ({
           </div>
           <div // skew
             onTouchStart={() => setIsQrcodePressed(true)}
-            onTouchEnd={async (event) => {
-              setIsQrcodePressed(false);
-              if (locked) return;
-              setSetting("qrCode");
-              // setScanning(false);
-              resetPermissions();
-              event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
-
-              try {
-                // setLocation(await getLocation());
-                setLocation({ latitude: "", longitude: "" });
-                // setServerMessage("QR code généré !");
-                setServerMessage("");
-              } catch (error) {
-                console.error(error.message);
-                const errorInformations = getErrorInformations({
-                  window,
-                  fail: "location_permission",
-                }).map((info, i) => (
-                  <div key={i} className={`${i === 0 && "font-bold"}`}>
-                    {i !== 0 && "=>"}
-                    {info}
-                  </div>
-                ));
-                setServerMessage(errorInformations);
-                // setParam("bars");
-                setLocation();
-              }
-            }}
+            onTouchEnd={handleQrcodePressed}
             className="absolute h-[20.2vw] w-[17vw] bottom-[0.4vw] -skew-x-[45deg] bg-transparent right-[16.5vw] z-30"
             style={{
               backgroundColor: isQrcodePressed ? "#7e22ce" : "transparent",
               boxShadow: !isQrcodePressed
-                ? // ? "0vw -3vw 1vw -2vw #7e22ce"
-                  ""
+                ? ""
                 : "inset -9px 0px 5px -6px #581c87",
               borderTop: isQrcodePressed ? "1px solid #581c87" : "",
             }}
           />
           <div // border filler
             onTouchStart={() => setIsQrcodePressed(true)}
-            onTouchEnd={(event) => {
-              setIsQrcodePressed(false);
-              if (locked) return;
-              setSetting("qrCode");
-              // setScanning(false);
-              resetPermissions();
-              event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
-
-              try {
-                // setLocation(await getLocation());
-                setLocation({ latitude: "", longitude: "" });
-                // setServerMessage("QR code généré !");
-                setServerMessage("");
-              } catch (error) {
-                console.error(error.message);
-                const errorInformations = getErrorInformations({
-                  window,
-                  fail: "location_permission",
-                }).map((info, i) => (
-                  <div key={i} className={`${i === 0 && "font-bold"}`}>
-                    {i !== 0 && "=>"}
-                    {info}
-                  </div>
-                ));
-                setServerMessage(errorInformations);
-                // setParam("bars");
-                setLocation();
-              }
-            }}
-            // className="absolute h-[5vw] w-[17vw] bottom-[15.6vw] right-[16.5vw] z-30"
+            onTouchEnd={handleQrcodePressed}
             className="absolute h-[5vw] w-[24vw] bottom-[15.55vw] right-[7vw] z-30"
             style={{
-              // backgroundColor: isQrcodePressed ? "#7e22ce" : "transparent",
-              // boxShadow: !isQrcodePressed ? "0vw -3vw 1vw -2vw #7e22ce" : "",
               boxShadow: !isQrcodePressed ? "0vw -2vw 2vw -1vw #7e22ce" : "",
               borderTop: isQrcodePressed ? "1px solid #581c87" : "",
             }}
           />
           <div // small BF
             onTouchStart={() => setIsQrcodePressed(true)}
-            onTouchEnd={(event) => {
-              setIsQrcodePressed(false);
-              if (locked) return;
-              setSetting("qrCode");
-              // setScanning(false);
-              resetPermissions();
-              event.stopPropagation();
-              updateLastCP({ userId: user.id }); // no await
-
-              try {
-                // setLocation(await getLocation());
-                setLocation({ latitude: "", longitude: "" });
-                // setServerMessage("QR code généré !");
-                setServerMessage("");
-              } catch (error) {
-                console.error(error.message);
-                const errorInformations = getErrorInformations({
-                  window,
-                  fail: "location_permission",
-                }).map((info, i) => (
-                  <div key={i} className={`${i === 0 && "font-bold"}`}>
-                    {i !== 0 && "=>"}
-                    {info}
-                  </div>
-                ));
-                setServerMessage(errorInformations);
-                // setParam("bars");
-                setLocation();
-              }
-            }}
+            onTouchEnd={handleQrcodePressed}
             className="absolute h-[5vw] w-[17vw] bottom-[15.5vw] right-[16.5vw] z-30"
             style={{
               backgroundColor: isQrcodePressed ? "#7e22ce" : "transparent",
@@ -1483,6 +1327,16 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
   const [isSettingsPressed, setIsSettingsPressed] = useState(false);
   const [isPrelobbyPressed, setIsPrelobbyPressed] = useState(false);
 
+  const handleSettingsPressed = useCallback(() => {
+    setIsSettingsPressed(false);
+    setToggledSettings(true);
+  }, [setIsSettingsPressed, setToggledSettings]);
+
+  const handlePrelobbyPressed = useCallback(() => {
+    setIsPrelobbyPressed(false);
+    setToggledPrelobby(true);
+  }, [setIsPrelobbyPressed, setToggledPrelobby]);
+
   return (
     <>
       <div className="absolute z-30 w-full h-full">
@@ -1490,10 +1344,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
           {/* left */}
           <div // square
             onTouchStart={() => setIsSettingsPressed(true)}
-            onTouchEnd={() => {
-              setIsSettingsPressed(false);
-              setToggledSettings(true);
-            }}
+            onTouchEnd={handleSettingsPressed}
             className="absolute h-[20.2vw] w-[17vw] top-[0.3vw] left-[26.5vw] z-30"
             style={{
               boxShadow: !isSettingsPressed
@@ -1506,10 +1357,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
           />
           <div // skew
             onTouchStart={() => setIsSettingsPressed(true)}
-            onTouchEnd={() => {
-              setIsSettingsPressed(false);
-              setToggledSettings(true);
-            }}
+            onTouchEnd={handleSettingsPressed}
             className="absolute h-[20vw] w-[17vw] top-[0.1vw] -skew-x-[45deg] bg-transparent left-[16.5vw] z-30"
             style={{
               backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
@@ -1520,21 +1368,15 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
           />
           <div // shadow filler
             onTouchStart={() => setIsSettingsPressed(true)}
-            onTouchEnd={() => {
-              setIsSettingsPressed(false);
-              setToggledSettings(true);
-            }}
-            className="absolute h-[5vw] w-[16.5vw] top-[15.5vw] left-[15.5vw] z-30"
+            onTouchEnd={handleSettingsPressed}
+            className="absolute h-[5vw] w-[12.7vw] top-[15.5vw] left-[18.7vw] z-30"
             style={{
               boxShadow: !isSettingsPressed ? "0vw 3vw 1vw -2vw #7e22ce" : "",
             }}
           />
           <div // border filler
             onTouchStart={() => setIsSettingsPressed(true)}
-            onTouchEnd={() => {
-              setIsSettingsPressed(false);
-              setToggledSettings(true);
-            }}
+            onTouchEnd={handleSettingsPressed}
             className="absolute h-[5vw] w-[16.5vw] top-[15.5vw] left-[17vw] z-30"
             style={{
               backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
@@ -1544,11 +1386,8 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
 
           <div // skew top
             onTouchStart={() => setIsSettingsPressed(true)}
-            onTouchEnd={() => {
-              setIsSettingsPressed(false);
-              setToggledSettings(true);
-            }}
-            className="absolute h-[30vw] w-[17vw] top-[18.1vw] -skew-y-[45deg] bg-transparent left-[0.1vw] z-30"
+            onTouchEnd={handleSettingsPressed}
+            className="absolute h-[30vw] w-[20.5vw] top-[16.1vw] -skew-y-[45deg] bg-transparent left-[0.1vw] z-30"
             style={{
               backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
               boxShadow: !isSettingsPressed
@@ -1558,11 +1397,8 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
           />
           <div // border filler + icon
             onTouchStart={() => setIsSettingsPressed(true)}
-            onTouchEnd={() => {
-              setIsSettingsPressed(false);
-              setToggledSettings(true);
-            }}
-            className="absolute h-[49.2vw] w-[17vw] top-1/2 translate-y-[-50%] bg-transparent left-[0.1vw] z-40 flex justify-center items-center"
+            onTouchEnd={handleSettingsPressed}
+            className="absolute h-[49.2vw] w-[20.5vw] top-1/2 translate-y-[-50%] bg-transparent left-[0.1vw] z-40 flex justify-center items-center"
             style={{
               borderRight: isSettingsPressed ? "1px solid #581c87" : "",
             }}
@@ -1573,34 +1409,24 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
           </div>
           <div // background filler
             onTouchStart={() => setIsSettingsPressed(true)}
-            onTouchEnd={() => {
-              setIsSettingsPressed(false);
-              setToggledSettings(true);
-            }}
-            className="absolute h-[20vw] w-[17vw] top-1/2 translate-y-[-50%] left-[0.1vw] z-30 flex justify-center items-center"
+            onTouchEnd={handleSettingsPressed}
+            className="absolute h-[20vw] w-[20.5vw] top-1/2 translate-y-[-50%] left-[0.1vw] z-30 flex justify-center items-center"
             style={{
               backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
-              borderRight: isSettingsPressed ? "1px solid #581c87" : "",
             }}
           />
           <div // middle shadow
             onTouchStart={() => setIsSettingsPressed(true)}
-            onTouchEnd={() => {
-              setIsSettingsPressed(false);
-              setToggledSettings(true);
-            }}
-            className="absolute h-[52vw] w-[17vw] top-1/2 translate-y-[-50%] bg-transparent left-[0.1vw] z-30"
+            onTouchEnd={handleSettingsPressed}
+            className="absolute h-[52vw] w-[20.5vw] top-1/2 translate-y-[-50%] bg-transparent left-[0.1vw] z-30"
             style={{
               boxShadow: !isSettingsPressed ? "3vw 0vw 2vw -2vw #7e22ce" : "",
             }}
           />
           <div // skew bottom
             onTouchStart={() => setIsSettingsPressed(true)}
-            onTouchEnd={() => {
-              setIsSettingsPressed(false);
-              setToggledSettings(true);
-            }}
-            className="absolute h-[30vw] w-[17vw] bottom-[17.8vw] skew-y-[45deg] bg-transparent left-[0.1vw] z-30"
+            onTouchEnd={handleSettingsPressed}
+            className="absolute h-[30vw] w-[20.5vw] bottom-[16.1vw] skew-y-[45deg] bg-transparent left-[0.1vw] z-30"
             style={{
               backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
               boxShadow: !isSettingsPressed
@@ -1611,11 +1437,8 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
 
           <div // border filler
             onTouchStart={() => setIsSettingsPressed(true)}
-            onTouchEnd={() => {
-              setIsSettingsPressed(false);
-              setToggledSettings(true);
-            }}
-            className="absolute h-[5vw] w-[16.5vw] bottom-[15.5vw] left-[17vw] z-30"
+            onTouchEnd={handleSettingsPressed}
+            className="absolute h-[5vw] w-[16.5vw] bottom-[15.5vw] left-[20.5vw] z-30"
             style={{
               backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
               borderTop: isSettingsPressed ? "1px solid #581c87" : "",
@@ -1623,21 +1446,15 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
           />
           <div // shadow filler
             onTouchStart={() => setIsSettingsPressed(true)}
-            onTouchEnd={() => {
-              setIsSettingsPressed(false);
-              setToggledSettings(true);
-            }}
-            className="absolute h-[5vw] w-[17vw] bottom-[15.5vw] left-[15.5vw] z-30"
+            onTouchEnd={handleSettingsPressed}
+            className="absolute h-[5vw] w-[12.7vw] bottom-[15.5vw] left-[18.7vw] z-30"
             style={{
               boxShadow: !isSettingsPressed ? "0vw -3vw 1vw -2vw #7e22ce" : "",
             }}
           />
           <div // skew
             onTouchStart={() => setIsSettingsPressed(true)}
-            onTouchEnd={() => {
-              setIsSettingsPressed(false);
-              setToggledSettings(true);
-            }}
+            onTouchEnd={handleSettingsPressed}
             className="absolute h-[20vw] w-[17vw] bottom-[0.2vw] skew-x-[45deg] left-[16.2vw] z-30"
             style={{
               backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
@@ -1648,10 +1465,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
           />
           <div // square
             onTouchStart={() => setIsSettingsPressed(true)}
-            onTouchEnd={() => {
-              setIsSettingsPressed(false);
-              setToggledSettings(true);
-            }}
+            onTouchEnd={handleSettingsPressed}
             className="absolute h-[20.2vw] w-[17vw] bg-transparent bottom-[0.3vw] left-[26.5vw] z-30"
             style={{
               boxShadow: !isSettingsPressed
@@ -1666,10 +1480,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
           {/* right */}
           <div // square
             onTouchStart={() => setIsPrelobbyPressed(true)}
-            onTouchEnd={() => {
-              setIsPrelobbyPressed(false);
-              setToggledPrelobby(true);
-            }}
+            onTouchEnd={handlePrelobbyPressed}
             className="absolute h-[20.2vw] w-[17vw] top-[0.3vw] right-[26.5vw] z-30"
             style={{
               boxShadow: !isPrelobbyPressed
@@ -1682,10 +1493,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
           />
           <div // skew
             onTouchStart={() => setIsPrelobbyPressed(true)}
-            onTouchEnd={() => {
-              setIsPrelobbyPressed(false);
-              setToggledPrelobby(true);
-            }}
+            onTouchEnd={handlePrelobbyPressed}
             className="absolute h-[20vw] w-[17vw] top-[0.1vw] skew-x-[45deg] bg-transparent right-[16.5vw] z-30"
             style={{
               backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
@@ -1696,21 +1504,15 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
           />
           <div // shadow filler
             onTouchStart={() => setIsPrelobbyPressed(true)}
-            onTouchEnd={() => {
-              setIsPrelobbyPressed(false);
-              setToggledPrelobby(true);
-            }}
-            className="absolute h-[5vw] w-[16.5vw] top-[15.5vw] right-[15.5vw] z-30"
+            onTouchEnd={handlePrelobbyPressed}
+            className="absolute h-[5vw] w-[12.7vw] top-[15.5vw] right-[18.7vw] z-30"
             style={{
               boxShadow: !isPrelobbyPressed ? "0vw 3vw 1vw -2vw #7e22ce" : "",
             }}
           />
           <div // border filler
             onTouchStart={() => setIsPrelobbyPressed(true)}
-            onTouchEnd={() => {
-              setIsPrelobbyPressed(false);
-              setToggledPrelobby(true);
-            }}
+            onTouchEnd={handlePrelobbyPressed}
             className="absolute h-[5vw] w-[16.5vw] top-[15.5vw] right-[17vw] z-30"
             style={{
               backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
@@ -1720,11 +1522,8 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
 
           <div // skew top
             onTouchStart={() => setIsPrelobbyPressed(true)}
-            onTouchEnd={() => {
-              setIsPrelobbyPressed(false);
-              setToggledPrelobby(true);
-            }}
-            className="absolute h-[30vw] w-[17vw] top-[18.1vw] skew-y-[45deg] bg-transparent right-[0.1vw] z-30"
+            onTouchEnd={handlePrelobbyPressed}
+            className="absolute h-[30vw] w-[20.5vw] top-[16.1vw] skew-y-[45deg] bg-transparent right-[0.1vw] z-30"
             style={{
               backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
               boxShadow: !isPrelobbyPressed
@@ -1734,24 +1533,18 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
           />
           <div // border filler + icon
             onTouchStart={() => setIsPrelobbyPressed(true)}
-            onTouchEnd={() => {
-              setIsPrelobbyPressed(false);
-              setToggledPrelobby(true);
-            }}
-            className="absolute h-[49.2vw] w-[17vw] top-1/2 translate-y-[-50%] bg-transparent right-[0.1vw] z-40 flex justify-center items-center"
+            onTouchEnd={handlePrelobbyPressed}
+            className="absolute h-[49.2vw] w-[20.5vw] top-1/2 translate-y-[-50%] bg-transparent right-[0.1vw] z-40 flex justify-center items-center"
             style={{
               borderLeft: isPrelobbyPressed ? "1px solid #581c87" : "",
             }}
           >
-            <MdOutlineVideogameAsset className="w-12 h-20 rotate-90 mb-3 text-purple-800" />
+            <MdOutlineVideogameAsset className="w-14 h-20 rotate-90 mb-3 text-purple-800" />
           </div>
           <div // background filler
             onTouchStart={() => setIsPrelobbyPressed(true)}
-            onTouchEnd={() => {
-              setIsPrelobbyPressed(false);
-              setToggledPrelobby(true);
-            }}
-            className="absolute h-[20vw] w-[17vw] top-1/2 translate-y-[-50%] right-[0.1vw] z-30 flex justify-center items-center"
+            onTouchEnd={handlePrelobbyPressed}
+            className="absolute h-[20vw] w-[20.5vw] top-1/2 translate-y-[-50%] right-[0.1vw] z-30 flex justify-center items-center"
             style={{
               backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
               borderLeft: isPrelobbyPressed ? "1px solid #581c87" : "",
@@ -1759,30 +1552,16 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
           />
           <div // middle shadow
             onTouchStart={() => setIsPrelobbyPressed(true)}
-            onTouchEnd={() => {
-              setIsPrelobbyPressed(false);
-              setToggledPrelobby(true);
-            }}
-            className="absolute h-[52vw] w-[17vw] top-1/2 translate-y-[-50%] bg-transparent right-[0.1vw] z-30"
+            onTouchEnd={handlePrelobbyPressed}
+            className="absolute h-[52vw] w-[20.5vw] top-1/2 translate-y-[-50%] bg-transparent right-[0.1vw] z-30"
             style={{
               boxShadow: !isPrelobbyPressed ? "-3vw 0vw 2vw -2vw #7e22ce" : "",
             }}
           />
           <div // skew bottom
             onTouchStart={() => setIsPrelobbyPressed(true)}
-            onTouchEnd={() => {
-              setIsPrelobbyPressed(false);
-              setToggledPrelobby(true);
-            }}
-            className="absolute h-[30vw] w-[17vw] bottom-[18.1vw] -skew-y-[45deg] bg-transparent right-[0.1vw] z-30"
-          />
-          <div // skew bottom
-            onTouchStart={() => setIsPrelobbyPressed(true)}
-            onTouchEnd={() => {
-              setIsPrelobbyPressed(false);
-              setToggledPrelobby(true);
-            }}
-            className="absolute h-[30vw] w-[17vw] bottom-[17.8vw] -skew-y-[45deg] bg-transparent right-[0.1vw] z-30"
+            onTouchEnd={handlePrelobbyPressed}
+            className="absolute h-[30vw] w-[20.5vw] bottom-[16.1vw] -skew-y-[45deg] bg-transparent right-[0.1vw] z-30"
             style={{
               backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
               boxShadow: !isPrelobbyPressed
@@ -1793,11 +1572,8 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
 
           <div // border filler
             onTouchStart={() => setIsPrelobbyPressed(true)}
-            onTouchEnd={() => {
-              setIsPrelobbyPressed(false);
-              setToggledPrelobby(true);
-            }}
-            className="absolute h-[5vw] w-[16.5vw] bottom-[15.5vw] right-[17vw] z-30"
+            onTouchEnd={handlePrelobbyPressed}
+            className="absolute h-[5vw] w-[16.5vw] bottom-[15.5vw] right-[20.5vw] z-30"
             style={{
               backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
               borderTop: isPrelobbyPressed ? "1px solid #581c87" : "",
@@ -1805,21 +1581,15 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
           />
           <div // shadow filler
             onTouchStart={() => setIsPrelobbyPressed(true)}
-            onTouchEnd={() => {
-              setIsPrelobbyPressed(false);
-              setToggledPrelobby(true);
-            }}
-            className="absolute h-[5vw] w-[17vw] bottom-[15.5vw] right-[15.5vw] z-30"
+            onTouchEnd={handlePrelobbyPressed}
+            className="absolute h-[5vw] w-[12.7vw] bottom-[15.5vw] right-[18.7vw] z-30"
             style={{
               boxShadow: !isPrelobbyPressed ? "0vw -3vw 1vw -2vw #7e22ce" : "",
             }}
           />
           <div // skew
             onTouchStart={() => setIsPrelobbyPressed(true)}
-            onTouchEnd={() => {
-              setIsPrelobbyPressed(false);
-              setToggledPrelobby(true);
-            }}
+            onTouchEnd={handlePrelobbyPressed}
             className="absolute h-[20vw] w-[17vw] bottom-[0.2vw] -skew-x-[45deg] right-[16.2vw] z-30"
             style={{
               backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
@@ -1830,10 +1600,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
           />
           <div // square
             onTouchStart={() => setIsPrelobbyPressed(true)}
-            onTouchEnd={() => {
-              setIsPrelobbyPressed(false);
-              setToggledPrelobby(true);
-            }}
+            onTouchEnd={handlePrelobbyPressed}
             className="absolute h-[20.2vw] w-[17vw] bg-transparent bottom-[0.3vw] right-[26.5vw] z-30"
             style={{
               boxShadow: !isPrelobbyPressed
@@ -2349,6 +2116,7 @@ const Invitations = ({
   useEffect(() => {
     let newThreeFirsts = [];
     newThreeFirsts = invitations.slice(-3);
+
     const freeSpotsNumber = 3 - newThreeFirsts.length;
     if (freeSpotsNumber && Object.keys(publicRooms).length) {
       const formattedPublicRooms = Object.values(publicRooms)
@@ -2375,58 +2143,38 @@ const Invitations = ({
   }, [invitations, publicRooms, currentGame]);
 
   return (
-    <div className="w-full h-full flex flex-col justify-start items-center relative py-6 gap-1">
-      {/* <div
-        onClick={async (event) => {
-          event.stopPropagation();
-          setPublicRooms(await getPublicRooms());
-          updateLastCP({ userId: user.id }); // no await
-        }}
-        className="flex justify-center items-center text-center text-purple-800 mb-2 absolute bottom-full"
-      >
-        <ArrowPathIcon className="ml-2 h-6 w-6" />
-      </div> */}
-
+    <div className="w-full h-full flex flex-col justify-start items-center relative py-5 gap-1">
       {!invitations.length &&
         !Object.keys(publicRooms).length &&
         !currentGame && (
           <div className="text-center text-purple-800 absolute top-1/2 translate-y-[-50%]">
-            Aucune partie disponible
+            <div>Aucune partie</div>
+            <div>disponible</div>
           </div>
         )}
-
-      {threeFirsts.map((invitation, i) => (
-        <div key={i} className="relative w-[75%] h-full z-30 opacity-60">
-          {/* {invitation.isCurrentGame && (
+      <div className="h-full aspect-square flex flex-col gap-0.5">
+        {threeFirsts.map((invitation, i) => (
+          <div key={i} className="relative z-30 opacity-60 flex-1">
             <div
-              onClick={async () => {
-                setCurrentGame();
-                await cancelBack({ userId: user.id });
+              onClick={async (event) => {
+                event.stopPropagation();
+                // resetPermissions();
+                await updateLastCP({ userId: user.id, out: true });
+                window.location.href = invitation.link;
               }}
-              className="absolute top-1 right-1 z-40 h-10 w-10 flex justify-center items-center"
+              className="w-full z-30 h-full"
             >
-              <MdOutlineCancel className="h-8 w-8 text-red-900" />
-            </div>
-          )} */}
-          <div
-            onClick={async (event) => {
-              event.stopPropagation();
-              // resetPermissions();
-              await updateLastCP({ userId: user.id, out: true });
-              window.location.href = invitation.link;
-            }}
-            className="w-full z-30 h-full"
-          >
-            <div className="h-full flex items-center justify-center border border-2 border-purple-800 text-lg font-semibold text-purple-900 bg-purple-500">
-              {!invitation.isCurrentGame ? (
-                invitation.userName
-              ) : (
-                <IoIosRefresh className="w-8 h-8" />
-              )}
+              <div className="h-full flex items-center justify-center border border-2 border-purple-800 text-lg font-semibold text-purple-900 bg-purple-500">
+                {!invitation.isCurrentGame ? (
+                  invitation.userName
+                ) : (
+                  <IoIosRefresh className="w-8 h-8" />
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
 
       {/* {invitations.map((invitation, i) => (
         <div
