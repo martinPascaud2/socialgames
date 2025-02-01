@@ -876,16 +876,41 @@ const SettingsButtons = ({
   const [isFriendsPressed, setIsFriendsPressed] = useState(false);
   const [isQrcodePressed, setIsQrcodePressed] = useState(false);
 
+  // const handleAccountPressed = useCallback(
+  //   (event) => {
+  //     setIsAccountPressed(false);
+  //     if (locked) return;
+  //     setSetting("password");
+  //     setServerMessage("");
+  //     // setScanning(false);
+  //     resetPermissions();
+  //     event.stopPropagation();
+  //     updateLastCP({ userId: user.id }); // no await
+  //   },
+  //   [
+  //     setIsAccountPressed,
+  //     locked,
+  //     setSetting,
+  //     setServerMessage,
+  //     resetPermissions,
+  //     updateLastCP,
+  //   ]
+  // );
   const handleAccountPressed = useCallback(
     (event) => {
       setIsAccountPressed(false);
       if (locked) return;
-      setSetting("password");
+      // setSetting("password");
       setServerMessage("");
       // setScanning(false);
       resetPermissions();
       event.stopPropagation();
       updateLastCP({ userId: user.id }); // no await
+      window.open(
+        "http://localhost:3000/categories/",
+        "_blank",
+        "noopener,noreferrer"
+      );
     },
     [
       setIsAccountPressed,
