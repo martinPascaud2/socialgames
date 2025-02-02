@@ -25,6 +25,28 @@ export default async function getFriendList({ userId }) {
   return friendList;
 }
 
+const isNotReinvitated = async ({ friend }) => {
+  const { roomId: currentRoomId } = friend;
+
+  if (!currentRoomId) return true;
+
+  const { creationDate, arrivalsOrder, started } = await prisma.room.findFirst({
+    where: { id: currentRoomId },
+    select: {
+      creationDate: true,
+      arrivalsOrder: true,
+      started: true,
+    },
+  });
+
+  const creationAgeInMn =
+    (new Date().getTime() - creationDate.getTime()) / (1000 * 60);
+
+  if (arrivalsOrder.length <= 1 || (!started && creationAgeInMn > 30))
+    return true;
+  else return false;
+};
+
 export async function getRoomFriendList({ userId }) {
   const friendList = (
     await prisma.user.findUnique({
@@ -41,6 +63,7 @@ export async function getRoomFriendList({ userId }) {
                 name: true,
                 email: true,
                 lastControlPanel: true,
+                roomId: true,
               },
             },
           },
@@ -61,5 +84,16 @@ export async function getRoomFriendList({ userId }) {
     (a, b) => new Date(b.lastControlPanel) - new Date(a.lastControlPanel)
   );
 
-  return byLastCPFriendList;
+  const onlyNotReinvitated = (
+    await Promise.all(
+      byLastCPFriendList.map(async (friend) => ({
+        friend,
+        isValid: await isNotReinvitated({ friend }),
+      }))
+    )
+  )
+    .filter(({ isValid }) => isValid)
+    .map(({ friend }) => friend);
+
+  return onlyNotReinvitated;
 }
