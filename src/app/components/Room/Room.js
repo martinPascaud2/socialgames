@@ -1129,16 +1129,20 @@ export default function Room({
                             </div>
                           );
                         })()}
-                        <div className="absolute right-1 top-1">
-                          <ChevronRightIcon className="h-8 w-8" />
-                        </div>
+                        {gameName !== "grouping" && (
+                          <div className="absolute right-1 top-1">
+                            <ChevronRightIcon className="h-8 w-8" />
+                          </div>
+                        )}
                       </div>
                     )}
                     {showPlayers && (
                       <div>
-                        <div className="absolute right-2 top-2">
-                          <ChevronDownIcon className="h-8 w-8" />
-                        </div>
+                        {gameName !== "grouping" && (
+                          <div className="absolute right-2 top-2">
+                            <ChevronDownIcon className="h-8 w-8" />
+                          </div>
+                        )}
 
                         <div className="absolute top-2 left-2 flex flex-col gap-2">
                           <div
