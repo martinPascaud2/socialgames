@@ -1876,7 +1876,7 @@ const PasswordForm = ({ user }) => {
   );
 };
 
-const BarParam = ({ style }) => {
+const BarParam = ({ style, borderPosition }) => {
   const [key, setKey] = useState(0);
 
   useEffect(() => {
@@ -1887,12 +1887,20 @@ const BarParam = ({ style }) => {
     <>
       <style jsx>
         {`
-          @keyframes colorWipe {
+          @keyframes colorWipeTop {
             0% {
-              background-color: #9ca3af;
+              border-top: 2px solid #f3f4f6; // gray 100
             }
             100% {
-              background-color: #000000;
+              border-top: 2px solid #000000;
+            }
+          }
+          @keyframes colorWipeBottom {
+            0% {
+              border-bottom: 2px solid #f3f4f6; // gray 100
+            }
+            100% {
+              border-bottom: 2px solid #000000;
             }
           }
         `}
@@ -1900,7 +1908,11 @@ const BarParam = ({ style }) => {
       <div
         key={key}
         className="absolute w-full"
-        style={{ ...style, animation: "colorWipe 3s" }}
+        style={{
+          ...style,
+          animation:
+            borderPosition === "top" ? "colorWipeTop 7s" : "colorWipeBottom 7s",
+        }}
       />
     </>,
     document.body
@@ -1954,11 +1966,14 @@ const Params = ({ updateParams, updateLastCP, fetchUser }) => {
 
   return (
     <div className="w-full h-full flex flex-col items-center relative py-9">
-      <BarParam style={{ top: 0, height: `${barValues.topBarSize / 4}rem` }} />
+      <BarParam
+        style={{ top: 0, height: `${barValues.topBarSize / 4}rem` }}
+        borderPosition="bottom"
+      />
       <BarParam
         style={{ bottom: 0, height: `${barValues.bottomBarSize / 4}rem` }}
+        borderPosition="top"
       />
-      {/* {param === "bars" && ( */}
       <>
         {[
           { param: "topBarSize", label: "Taille barre supérieure" },
