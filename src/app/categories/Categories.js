@@ -2388,23 +2388,6 @@ export default function Categories({
     };
   }, [user, router, updateLastCP]);
 
-  // const onNewScanResult = () =>
-  //   throttle(async (decodedText) => {
-  //     console.log("coucou");
-  //     if (scanLocked) return;
-  //     let userLocation;
-  //     setScanLocked(true);
-  //     userLocation = await getLocation();
-  //     const { error: addFriendError } = await addFriend({
-  //       userLocation,
-  //       friendCode: decodedText,
-  //     });
-  //     if (addFriendError) setServerMessage(addFriendError);
-  //     setTimeout(() => {
-  //       setScanLocked(false);
-  //     }, 1000);
-  //   }, 1000);
-
   const onNewScanResult = throttle(
     async (decodedText) => {
       if (scanLocked) return;
@@ -2682,7 +2665,8 @@ export default function Categories({
                       event.stopPropagation();
                       resetPermissions();
                       await updateLastCP({ userId: user.id, out: true });
-                      window.location.href = "/categories/grouping/grouping";
+                      window.location.href =
+                        user.lastPlayed || "/categories/grouping/grouping";
                     }}
                   >
                     <FaPlay className="w-8 h-8 text-purple-100" />

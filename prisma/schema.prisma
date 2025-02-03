@@ -22,6 +22,7 @@ model User {
   friendOf                    Friend[]                  @relation("userFriendOf")
   room                        Room?                     @relation(fields: [roomId], references: [id])
   roomId                      Int?
+  lastPlayed                  String?
   alreadyActionouverite       Json?
   alreadyUndercovertheme      UndercoverthemesOnUsers[]
   alreadyPtitbactheme         PtitbacthemesOnUsers[]

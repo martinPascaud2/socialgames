@@ -4,6 +4,13 @@ import prisma from "@/utils/prisma";
 import pusher from "@/utils/pusher";
 import getDistance from "@/utils/getDistance";
 import { getRoomFriendList } from "@/utils/getFriendList";
+import { gamesRefs } from "@/assets/globals";
+
+const putLastPlayed = async ({ userId, game }) => {
+  const categorie = gamesRefs[game].categorie;
+  const lastPlayed = `/categories/${categorie}/${game}`;
+  await prisma.user.update({ where: { id: userId }, data: { lastPlayed } });
+};
 
 export async function serverCreate(
   token,
@@ -14,24 +21,25 @@ export async function serverCreate(
   viceAdmin,
   arrivalsOrder
 ) {
-  const roomId = (
-    await prisma.room.create({
-      data: {
-        private: privacy === "private",
-        game,
-        token,
-        admin: user.name,
-        adminLocation: geoLocation,
-        gamers: { [user.name]: user.id },
-        guests: {},
-        multiGuests: {},
-        creationDate: new Date(),
-        gameData: {},
-        options: {},
-        viceAdmin: viceAdmin || null,
-      },
-    })
-  ).id;
+  const room = await prisma.room.create({
+    data: {
+      private: privacy === "private",
+      game,
+      token,
+      admin: user.name,
+      adminLocation: geoLocation,
+      gamers: { [user.name]: user.id },
+      guests: {},
+      multiGuests: {},
+      creationDate: new Date(),
+      gameData: {},
+      options: {},
+      viceAdmin: viceAdmin || null,
+    },
+  });
+  const { id: roomId } = room;
+
+  if (game !== "grouping") await putLastPlayed({ userId: user.id, game });
 
   if (!arrivalsOrder) {
     await prisma.roomArrival.create({

@@ -1647,11 +1647,11 @@ export default function Room({
                       }`}
                     >
                       {!showConfig && (
-                        <div>
+                        <div className="w-full">
                           <div className="absolute right-1 top-1">
                             <ChevronRightIcon className="h-8 w-8" />
                           </div>
-                          <div className="text-xl absolute top-1.5 left-[50%] translate-x-[-50%]">
+                          <div className="text-xl absolute top-1.5 left-[50%] translate-x-[-50%] w-full text-center">
                             {options?.mode}
                           </div>
                         </div>
