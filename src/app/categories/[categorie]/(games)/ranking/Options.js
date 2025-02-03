@@ -58,35 +58,59 @@ export default function RankingOptions({
       {mode === "Podium" && (
         <div className="flex flex-col items-center">
           <div className="w-full flex justify-center my-2">
-            <div className="mr-2 text-sky-700">
+            <div
+              className={`mr-2 text-sky-700
+              ${!isAdmin && options?.target !== "players" && "opacity-50"}
+              `}
+            >
               <IoPeople className="h-8 w-8" />
             </div>
-            <Toggle
-              isAdmin={isAdmin}
-              options={options}
-              setOptions={setOptions}
-              optionName="target"
-              possibleValues={["players", "others"]}
-              defaultValue={lastParams?.target || "players"}
-            />
-            <div className="ml-2 text-sky-700">
+            {isAdmin ? (
+              <Toggle
+                isAdmin={isAdmin}
+                options={options}
+                setOptions={setOptions}
+                optionName="target"
+                possibleValues={["players", "others"]}
+                defaultValue={lastParams?.target || "players"}
+              />
+            ) : (
+              <div className="text-2xl">|</div>
+            )}
+            <div
+              className={`ml-2 text-sky-700 ${
+                !isAdmin && options?.target !== "others" && "opacity-50"
+              }`}
+            >
               <BsThreeDots className="h-8 w-8" />
             </div>
           </div>
 
           <div className="w-full flex justify-center items-center my-2">
-            <div className="mr-2 text-sky-700">
+            <div
+              className={`mr-2 text-sky-700 ${
+                !isAdmin && options?.top !== "3" && "opacity-50"
+              }`}
+            >
               <GiPodium className="h-8 w-8 mb-1" />
             </div>
-            <Toggle
-              isAdmin={isAdmin}
-              options={options}
-              setOptions={setOptions}
-              optionName="top"
-              possibleValues={["3", "infinite"]}
-              defaultValue={lastParams?.top || "3"}
-            />
-            <div className="ml-2 text-sky-700">
+            {isAdmin ? (
+              <Toggle
+                isAdmin={isAdmin}
+                options={options}
+                setOptions={setOptions}
+                optionName="top"
+                possibleValues={["3", "infinite"]}
+                defaultValue={lastParams?.top || "3"}
+              />
+            ) : (
+              <div className="text-2xl">|</div>
+            )}
+            <div
+              className={`ml-2 text-sky-700 ${
+                !isAdmin && options?.top !== "infinite" && "opacity-50"
+              }`}
+            >
               <Infinity size={32} />
             </div>
           </div>
