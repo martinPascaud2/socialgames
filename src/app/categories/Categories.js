@@ -1044,7 +1044,7 @@ const SettingsButtons = ({
 
   if (setting !== "") {
     if (setting === "camera" || setting === "qrCode") return <OnlyShadows />;
-    return null;
+    if (setting !== "params") return null;
   }
 
   return (
@@ -1104,10 +1104,14 @@ const SettingsButtons = ({
             onTouchEnd={handleParamsPressed}
             className="absolute h-[10vw] w-[5.7vw] top-[23.9vw] -skew-y-[45deg] bg-transparent left-[0.1vw] z-30"
             style={{
-              backgroundColor: isParamsPressed ? "#7e22ce" : "transparent",
-              boxShadow: !isParamsPressed
-                ? ""
-                : "inset 9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
+              backgroundColor:
+                isParamsPressed || setting === "params"
+                  ? "#7e22ce"
+                  : "transparent",
+              boxShadow:
+                !isParamsPressed && setting !== "params"
+                  ? ""
+                  : "inset 9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
             }}
           />
           <div // middle right
@@ -1115,11 +1119,18 @@ const SettingsButtons = ({
             onTouchEnd={handleParamsPressed}
             className="absolute h-[37vw] w-[20.5vw] top-[50%] translate-y-[-50%] left-[0vw] z-50 bg-transparent flex justify-center items-center"
             style={{
-              backgroundColor: isParamsPressed ? "#7e22ce" : "transparent",
-              boxShadow: !isParamsPressed
-                ? ""
-                : "inset 9px 0px 5px -6px #581c87",
-              borderRight: isParamsPressed ? "1px solid #581c87" : "",
+              backgroundColor:
+                isParamsPressed || setting === "params"
+                  ? "#7e22ce"
+                  : "transparent",
+              boxShadow:
+                !isParamsPressed && setting !== "params"
+                  ? ""
+                  : "inset 9px 0px 5px -6px #581c87",
+              borderRight:
+                isParamsPressed || setting === "params"
+                  ? "1px solid #581c87"
+                  : "",
             }}
           >
             <IoIosSettings className="mb-4 w-11 h-11 text-purple-800" />
@@ -1129,13 +1140,26 @@ const SettingsButtons = ({
             onTouchEnd={handleParamsPressed}
             className="absolute h-[47.6vw] w-[14.8vw] top-[50%] translate-y-[-50%] left-[5.7vw] z-40"
             style={{
-              backgroundColor: isParamsPressed ? "#7e22ce" : "transparent",
-              boxShadow: !isParamsPressed
-                ? "3vw -2vw 1vw -2vw #7e22ce, 3vw 2vw 1vw -2vw #7e22ce"
-                : "",
-              borderTop: isParamsPressed ? "1px solid #581c87" : "",
-              borderRight: isParamsPressed ? "1px solid #581c87" : "",
-              borderBottom: isParamsPressed ? "1px solid #581c87" : "",
+              backgroundColor:
+                isParamsPressed || setting === "params"
+                  ? "#7e22ce"
+                  : "transparent",
+              boxShadow:
+                !isParamsPressed && setting !== "params"
+                  ? "3vw -2vw 1vw -2vw #7e22ce, 3vw 2vw 1vw -2vw #7e22ce"
+                  : "",
+              borderTop:
+                isParamsPressed || setting === "params"
+                  ? "1px solid #581c87"
+                  : "",
+              borderRight:
+                isParamsPressed || setting === "params"
+                  ? "1px solid #581c87"
+                  : "",
+              borderBottom:
+                isParamsPressed || setting === "params"
+                  ? "1px solid #581c87"
+                  : "",
             }}
           />
           <div // skew bottom
@@ -1143,10 +1167,14 @@ const SettingsButtons = ({
             onTouchEnd={handleParamsPressed}
             className="absolute h-[10vw] w-[5.7vw] bottom-[23.9vw] skew-y-[45deg] bg-transparent left-[0.1vw] z-30"
             style={{
-              backgroundColor: isParamsPressed ? "#7e22ce" : "transparent",
-              boxShadow: !isParamsPressed
-                ? ""
-                : "inset 9px 0px 5px -6px #581c87, inset 0px -9px 5px -6px #581c87",
+              backgroundColor:
+                isParamsPressed || setting === "params"
+                  ? "#7e22ce"
+                  : "transparent",
+              boxShadow:
+                !isParamsPressed && setting !== "params"
+                  ? ""
+                  : "inset 9px 0px 5px -6px #581c87, inset 0px -9px 5px -6px #581c87",
             }}
           />
 
@@ -2269,7 +2297,7 @@ const Params = ({ updateParams, updateLastCP, fetchUser }) => {
   if (!barValues) return null;
 
   return (
-    <div className="w-full h-full flex flex-col items-center relative py-9">
+    <div className="h-full aspect-square flex flex-col items-center relative">
       <BarParam
         style={{ top: 0, height: `${barValues.topBarSize / 4}rem` }}
         borderPosition="bottom"
@@ -2280,87 +2308,52 @@ const Params = ({ updateParams, updateLastCP, fetchUser }) => {
       />
       <>
         {[
-          { param: "topBarSize", label: "Taille barre supérieure" },
+          { param: "topBarSize", label: "Barre supérieure" },
           {
             param: "bottomBarSize",
-            label: "Taille barre inférieure",
+            label: "Barre inférieure",
           },
         ].map((barParam, i) => (
           <div
             key={i}
             onClick={(event) => event.stopPropagation()}
-            className="relative border border-purple-200 bg-purple-400 p-1 my-1 w-full text-center flex items-center text-purple-900"
+            className="relative border border-purple-200 bg-purple-400 p-1 my-1 w-[95%] text-center flex items-center text-purple-900"
           >
-            {barValues &&
-              barValues[barParam.param] !== possibleBarValues[0] && (
-                <div className="absolute right-full mx-1">
-                  <ChevronLeftIcon
-                    onClick={() => {
-                      const index = possibleBarValues?.indexOf(
-                        (barValues && barValues[barParam.param]) ||
-                          possibleBarValues[0]
-                      );
-                      const newIndex = index === 0 ? index : index - 1;
-                      setBarValues((prevValues) => ({
-                        ...prevValues,
-                        [barParam.param]: possibleBarValues[newIndex],
-                      }));
-                    }}
-                    className="w-8 h-8"
-                  />
-                </div>
-              )}
-            <div className="text-center w-full">
+            <div className="text-center w-full relative">
+              <div
+                onClick={() => {
+                  const index = possibleBarValues?.indexOf(
+                    (barValues && barValues[barParam.param]) ||
+                      possibleBarValues[0]
+                  );
+                  const newIndex = index === 0 ? index : index - 1;
+                  setBarValues((prevValues) => ({
+                    ...prevValues,
+                    [barParam.param]: possibleBarValues[newIndex],
+                  }));
+                }}
+                className="absolute left-0 top-0 w-1/2 bg-white h-full z-30 opacity-0"
+              />
               {barParam.label} : {barValues && barValues[barParam.param]}
+              <div
+                onClick={() => {
+                  const index = possibleBarValues?.indexOf(
+                    (barValues && barValues[barParam.param]) ||
+                      possibleBarValues[0]
+                  );
+                  const newIndex =
+                    index >= possibleBarValues.length - 1 ? index : index + 1;
+                  setBarValues((prevValues) => ({
+                    ...prevValues,
+                    [barParam.param]: possibleBarValues[newIndex],
+                  }));
+                }}
+                className="absolute right-0 top-0 w-1/2 bg-white h-full z-30 opacity-0"
+              />
             </div>
-            {barValues &&
-              barValues[barParam.param] !==
-                possibleBarValues[possibleBarValues.length - 1] && (
-                <div
-                  className="absolute left-full mx-1"
-                  onClick={() => {
-                    const index = possibleBarValues?.indexOf(
-                      (barValues && barValues[barParam.param]) ||
-                        possibleBarValues[0]
-                    );
-                    const newIndex =
-                      index >= possibleBarValues.length - 1 ? index : index + 1;
-                    setBarValues((prevValues) => ({
-                      ...prevValues,
-                      [barParam.param]: possibleBarValues[newIndex],
-                    }));
-                  }}
-                >
-                  <ChevronRightIcon className="w-8 h-8" />
-                </div>
-              )}
           </div>
         ))}
       </>
-      {/* )} */}
-
-      {/* <div className="w-full flex justify-center">
-        {param !== "password" && (
-          <div onClick={() => setParam("password")}>
-            <IoKeyOutline className="w-8 h-8 mt-2" />
-          </div>
-        )}
-        {param === "password" && <PasswordForm user={user} />}
-      </div> */}
-
-      {/* {param === "bars" && (
-        <div
-          onClick={async (event) => {
-            event.stopPropagation();
-            await updateLastCP({ userId: user.id, out: true });
-            await signOut();
-            window.location.reload();
-          }}
-          className="absolute bottom-[10%]"
-        >
-          <ImExit className="ml-2 w-8 h-8 text-purple-900" />
-        </div>
-      )} */}
     </div>
   );
 };
@@ -2736,16 +2729,14 @@ export default function Categories({
                 )}
 
                 {setting === "params" && (
-                  <CentralZone onClick={handleOctaClick} zIndex={60}>
-                    <Params
-                      updateParams={updateParams}
-                      // user={user}
-                      updateLastCP={updateLastCP}
-                      signOut={signOut}
-                      fetchUser={fetchUser}
-                      // param={param}
-                      // setParam={setParam}
-                    />
+                  <CentralZone>
+                    <div className="flex w-full h-full justify-center items-center py-5">
+                      <Params
+                        updateParams={updateParams}
+                        updateLastCP={updateLastCP}
+                        fetchUser={fetchUser}
+                      />
+                    </div>
                   </CentralZone>
                 )}
 
