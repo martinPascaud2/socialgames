@@ -2367,72 +2367,13 @@ const Params = ({ updateParams, updateLastCP, fetchUser }) => {
 
 const Invitations = ({
   user,
-  router,
   updateLastCP,
   getPublicRooms,
   publicRooms,
   setPublicRooms,
   invitations,
-  setInvitations,
   currentGame,
-  setCurrentGame,
 }) => {
-  // const [publicRooms, setPublicRooms] = useState({});
-  // const [invitations, setInvitations] = useState([]);
-
-  // useEffect(() => {
-  //   const channel = pusher.subscribe(`user-${user.email}`);
-  //   channel.bind("user-event", function (data) {
-  //     if (data.message) {
-  //       setServerMessage(data.message);
-  //       router.refresh();
-  //     }
-  //     if (data.invitation) {
-  //       if (data.invitation.deleted) {
-  //         setPublicRooms((prevPublics) => {
-  //           const prevPubs = { ...prevPublics };
-  //           let deletedId;
-  //           Object.entries(prevPubs).find((pub) => {
-  //             if (pub[1].link === data.invitation.link) deletedId = pub[0];
-  //           });
-  //           if (deletedId) delete prevPubs[deletedId];
-  //           return prevPubs;
-  //         });
-  //       }
-  //       setInvitations((prevInvitations) => {
-  //         const prevInvs = [...prevInvitations];
-  //         if (data.invitation.deleted) {
-  //           const deletedInvs = prevInvs.filter(
-  //             (inv) => inv.link !== data.invitation.link
-  //           );
-  //           return deletedInvs;
-  //         }
-
-  //         const alreadyInviterIndex = prevInvs.findIndex(
-  //           (inv) => inv.userName === data.invitation.userName
-  //         );
-  //         if (alreadyInviterIndex !== -1) {
-  //           prevInvs.splice(alreadyInviterIndex, 1);
-  //           return [...prevInvs, data.invitation];
-  //         }
-
-  //         const sameInvLink = prevInvs.some(
-  //           (inv) => inv.link === data.invitation.link
-  //         );
-  //         if (sameInvLink) return [...prevInvs];
-
-  //         return [...prevInvs, data.invitation];
-  //       });
-  //     }
-  //   });
-
-  //   updateLastCP({ userId: user.id }); // no await
-
-  //   return () => {
-  //     pusher.unsubscribe(`user-${user.email}`);
-  //   };
-  // }, [user, router, updateLastCP]);
-
   const [threeFirsts, setThreeFirsts] = useState([]);
 
   useEffect(() => {
@@ -2519,75 +2460,6 @@ const Invitations = ({
           </div>
         ))}
       </div>
-
-      {/* {invitations.map((invitation, i) => (
-        <div
-          key={i}
-          onClick={async (event) => {
-            event.stopPropagation();
-            // resetPermissions();
-            await updateLastCP({ userId: user.id, out: true });
-            window.location.href = invitation.link;
-          }}
-          // href={invitation.link}
-          className="w-[75%] z-30"
-        >
-          <div
-            style={{
-              boxShadow: "2px 2px 2px black",
-              borderRadius: "100%",
-              animation: "float 4s ease-in-out infinite",
-            }}
-          >
-            <div
-              className="bg-purple-300 text-purple-950 rounded-full h-12 flex items-center justify-center"
-              style={{
-                border: "solid 1px black",
-                borderRadius: "100%",
-                clipPath: "ellipse(closest-side farthest-side)",
-              }}
-            >
-              {invitation.userName}
-              pour{" "}{`${invitation.mode || gamesRefs[invitation.gameName].name}`}
-            </div>
-          </div>
-        </div>
-      ))} */}
-      {/* {Object.entries(publicRooms).map((room) => {
-        const { friendName, gameName, gamersNumber } = room[1];
-        return (
-          <div
-            key={room[0]}
-            // href={`${room[1].link}`}
-            onClick={async (event) => {
-              event.stopPropagation();
-              await updateLastCP({ userId: user.id, out: true });
-              window.location.href = room[1].link;
-            }}
-            className="w-[75%] z-30"
-          >
-            <div
-              style={{
-                boxShadow: "2px 2px 2px black",
-                borderRadius: "100%",
-                animation: "float 4s ease-in-out infinite",
-              }}
-            >
-              <div
-                className="bg-purple-300 text-purple-950 rounded-full h-12 flex items-center justify-center"
-                style={{
-                  border: "solid 1px black",
-                  borderRadius: "100%",
-                  clipPath: "ellipse(closest-side farthest-side)",
-                }}
-              >
-                {friendName}
-                {gamersNumber > 1 && `(+${gamersNumber - 1})`} pour {gameName}
-              </div>
-            </div>
-          </div>
-        );
-      })} */}
     </div>
   );
 };
@@ -2926,15 +2798,12 @@ export default function Categories({
                 <CentralZone onClick={handleOctaClick}>
                   <Invitations
                     user={user}
-                    router={router}
                     updateLastCP={updateLastCP}
                     getPublicRooms={getPublicRooms}
                     publicRooms={publicRooms}
                     setPublicRooms={setPublicRooms}
                     invitations={invitations}
-                    setInvitations={setInvitations}
                     currentGame={currentGame}
-                    setCurrentGame={setCurrentGame}
                   />
                 </CentralZone>
               </>
