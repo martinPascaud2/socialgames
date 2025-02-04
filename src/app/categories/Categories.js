@@ -1642,6 +1642,310 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
   );
 };
 
+const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
+  const [isToolsPressed, setIsToolsPressed] = useState(false);
+  const [isPostgamesPressed, setIsPostgamesPressed] = useState(false);
+
+  const handleToolsPressed = useCallback(
+    async (event) => {
+      event.stopPropagation();
+      resetPermissions();
+      await updateLastCP({ userId: user.id, out: true });
+      window.location.href = "/tools/";
+    },
+    [resetPermissions, updateLastCP]
+  );
+
+  const handlePostgamesPressed = useCallback(
+    async (event) => {
+      event.stopPropagation();
+      resetPermissions();
+      await updateLastCP({ userId: user.id, out: true });
+      window.location.href = "/post-game/";
+    },
+    [resetPermissions, updateLastCP]
+  );
+
+  return (
+    <>
+      <div className="absolute z-30 w-full h-full">
+        <div className="relative w-full h-full">
+          {/* left */}
+          <div // square
+            onTouchStart={() => setIsToolsPressed(true)}
+            onTouchEnd={handleToolsPressed}
+            className="absolute h-[20.2vw] w-[17vw] top-[0.3vw] left-[26.5vw] z-30"
+            style={{
+              boxShadow: !isToolsPressed
+                ? "1vw 1vw 2vw -1vw #7e22ce, 2vw 2vw 2vw -1vw #7e22ce"
+                : "",
+              borderBottom: isToolsPressed ? "1px solid #581c87" : "",
+              borderRight: isToolsPressed ? "1px solid #581c87" : "",
+              backgroundColor: isToolsPressed ? "#7e22ce" : "transparent",
+            }}
+          />
+          <div // skew
+            onTouchStart={() => setIsToolsPressed(true)}
+            onTouchEnd={handleToolsPressed}
+            className="absolute h-[20vw] w-[17vw] top-[0.1vw] -skew-x-[45deg] bg-transparent left-[16.5vw] z-30"
+            style={{
+              backgroundColor: isToolsPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isToolsPressed
+                ? ""
+                : "inset 9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
+            }}
+          />
+          <div // shadow filler
+            onTouchStart={() => setIsToolsPressed(true)}
+            onTouchEnd={handleToolsPressed}
+            className="absolute h-[5vw] w-[12.7vw] top-[15.5vw] left-[18.7vw] z-30"
+            style={{
+              boxShadow: !isToolsPressed ? "0vw 3vw 1vw -2vw #7e22ce" : "",
+            }}
+          />
+          <div // border filler
+            onTouchStart={() => setIsToolsPressed(true)}
+            onTouchEnd={handleToolsPressed}
+            className="absolute h-[5vw] w-[16.5vw] top-[15.5vw] left-[17vw] z-30"
+            style={{
+              backgroundColor: isToolsPressed ? "#7e22ce" : "transparent",
+              borderBottom: isToolsPressed ? "1px solid #581c87" : "",
+            }}
+          />
+
+          <div // skew top
+            onTouchStart={() => setIsToolsPressed(true)}
+            onTouchEnd={handleToolsPressed}
+            className="absolute h-[30vw] w-[20.5vw] top-[16.1vw] -skew-y-[45deg] bg-transparent left-[0.1vw] z-30"
+            style={{
+              backgroundColor: isToolsPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isToolsPressed
+                ? ""
+                : "inset 9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
+            }}
+          />
+          <div // border filler + icon
+            onTouchStart={() => setIsToolsPressed(true)}
+            onTouchEnd={handleToolsPressed}
+            className="absolute h-[49.2vw] w-[20.5vw] top-1/2 translate-y-[-50%] bg-transparent left-[0.1vw] z-40 flex justify-center items-center"
+            style={{
+              borderRight: isToolsPressed ? "1px solid #581c87" : "",
+            }}
+          >
+            <div className="ml-2 mb-3">
+              <GoTools className="w-12 h-12 text-purple-800 mt-2" />
+            </div>
+          </div>
+          <div // background filler
+            onTouchStart={() => setIsToolsPressed(true)}
+            onTouchEnd={handleToolsPressed}
+            className="absolute h-[20vw] w-[20.5vw] top-1/2 translate-y-[-50%] left-[0.1vw] z-30 flex justify-center items-center"
+            style={{
+              backgroundColor: isToolsPressed ? "#7e22ce" : "transparent",
+            }}
+          />
+          <div // middle shadow
+            onTouchStart={() => setIsToolsPressed(true)}
+            onTouchEnd={handleToolsPressed}
+            className="absolute h-[52vw] w-[20.5vw] top-1/2 translate-y-[-50%] bg-transparent left-[0.1vw] z-30"
+            style={{
+              boxShadow: !isToolsPressed ? "3vw 0vw 2vw -2vw #7e22ce" : "",
+            }}
+          />
+          <div // skew bottom
+            onTouchStart={() => setIsToolsPressed(true)}
+            onTouchEnd={handleToolsPressed}
+            className="absolute h-[30vw] w-[20.5vw] bottom-[16.1vw] skew-y-[45deg] bg-transparent left-[0.1vw] z-30"
+            style={{
+              backgroundColor: isToolsPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isToolsPressed
+                ? ""
+                : "inset 9px 0px 5px -6px #581c87, inset 0px -9px 5px -6px #581c87",
+            }}
+          />
+
+          <div // border filler
+            onTouchStart={() => setIsToolsPressed(true)}
+            onTouchEnd={handleToolsPressed}
+            className="absolute h-[5vw] w-[16.5vw] bottom-[15.5vw] left-[20.5vw] z-30"
+            style={{
+              backgroundColor: isToolsPressed ? "#7e22ce" : "transparent",
+              borderTop: isToolsPressed ? "1px solid #581c87" : "",
+            }}
+          />
+          <div // shadow filler
+            onTouchStart={() => setIsToolsPressed(true)}
+            onTouchEnd={handleToolsPressed}
+            className="absolute h-[5vw] w-[12.7vw] bottom-[15.5vw] left-[18.7vw] z-30"
+            style={{
+              boxShadow: !isToolsPressed ? "0vw -3vw 1vw -2vw #7e22ce" : "",
+            }}
+          />
+          <div // skew
+            onTouchStart={() => setIsToolsPressed(true)}
+            onTouchEnd={handleToolsPressed}
+            className="absolute h-[20vw] w-[17vw] bottom-[0.2vw] skew-x-[45deg] left-[16.2vw] z-30"
+            style={{
+              backgroundColor: isToolsPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isToolsPressed
+                ? ""
+                : "inset 9px 0px 5px -6px #581c87",
+            }}
+          />
+          <div // square
+            onTouchStart={() => setIsToolsPressed(true)}
+            onTouchEnd={handleToolsPressed}
+            className="absolute h-[20.2vw] w-[17vw] bg-transparent bottom-[0.3vw] left-[26.5vw] z-30"
+            style={{
+              boxShadow: !isToolsPressed
+                ? "1vw -1vw 2vw -1vw #7e22ce, 2vw -2vw 2vw -1vw #7e22ce"
+                : "inset 0px -9px 5px -6px #581c87",
+              borderTop: isToolsPressed ? "1px solid #581c87" : "",
+              borderRight: isToolsPressed ? "1px solid #581c87" : "",
+              backgroundColor: isToolsPressed ? "#7e22ce" : "transparent",
+            }}
+          />
+
+          {/* right */}
+          <div // square
+            onTouchStart={() => setIsPostgamesPressed(true)}
+            onTouchEnd={handlePostgamesPressed}
+            className="absolute h-[20.2vw] w-[17vw] top-[0.3vw] right-[26.5vw] z-30"
+            style={{
+              boxShadow: !isPostgamesPressed
+                ? "-1vw 1vw 2vw -1vw #7e22ce, -2vw 2vw 2vw -1vw #7e22ce"
+                : "",
+              borderBottom: isPostgamesPressed ? "1px solid #581c87" : "",
+              borderLeft: isPostgamesPressed ? "1px solid #581c87" : "",
+              backgroundColor: isPostgamesPressed ? "#7e22ce" : "transparent",
+            }}
+          />
+          <div // skew
+            onTouchStart={() => setIsPostgamesPressed(true)}
+            onTouchEnd={handlePostgamesPressed}
+            className="absolute h-[20vw] w-[17vw] top-[0.1vw] skew-x-[45deg] bg-transparent right-[16.5vw] z-30"
+            style={{
+              backgroundColor: isPostgamesPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isPostgamesPressed
+                ? ""
+                : "inset -9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
+            }}
+          />
+          <div // shadow filler
+            onTouchStart={() => setIsPostgamesPressed(true)}
+            onTouchEnd={handlePostgamesPressed}
+            className="absolute h-[5vw] w-[12.7vw] top-[15.5vw] right-[18.7vw] z-30"
+            style={{
+              boxShadow: !isPostgamesPressed ? "0vw 3vw 1vw -2vw #7e22ce" : "",
+            }}
+          />
+          <div // border filler
+            onTouchStart={() => setIsPostgamesPressed(true)}
+            onTouchEnd={handlePostgamesPressed}
+            className="absolute h-[5vw] w-[16.5vw] top-[15.5vw] right-[17vw] z-30"
+            style={{
+              backgroundColor: isPostgamesPressed ? "#7e22ce" : "transparent",
+              borderBottom: isPostgamesPressed ? "1px solid #581c87" : "",
+            }}
+          />
+
+          <div // skew top
+            onTouchStart={() => setIsPostgamesPressed(true)}
+            onTouchEnd={handlePostgamesPressed}
+            className="absolute h-[30vw] w-[20.5vw] top-[16.1vw] skew-y-[45deg] bg-transparent right-[0.1vw] z-30"
+            style={{
+              backgroundColor: isPostgamesPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isPostgamesPressed
+                ? ""
+                : "inset -9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
+            }}
+          />
+          <div // border filler + icon
+            onTouchStart={() => setIsPostgamesPressed(true)}
+            onTouchEnd={handlePostgamesPressed}
+            className="absolute h-[49.2vw] w-[20.5vw] top-1/2 translate-y-[-50%] bg-transparent right-[0.1vw] z-40 flex justify-center items-center"
+            style={{
+              borderLeft: isPostgamesPressed ? "1px solid #581c87" : "",
+            }}
+          >
+            <FaRegFloppyDisk className="w-12 h-12 text-purple-800" />
+          </div>
+          <div // background filler
+            onTouchStart={() => setIsPostgamesPressed(true)}
+            onTouchEnd={handlePostgamesPressed}
+            className="absolute h-[20vw] w-[20.5vw] top-1/2 translate-y-[-50%] right-[0.1vw] z-30 flex justify-center items-center"
+            style={{
+              backgroundColor: isPostgamesPressed ? "#7e22ce" : "transparent",
+              borderLeft: isPostgamesPressed ? "1px solid #581c87" : "",
+            }}
+          />
+          <div // middle shadow
+            onTouchStart={() => setIsPostgamesPressed(true)}
+            onTouchEnd={handlePostgamesPressed}
+            className="absolute h-[52vw] w-[20.5vw] top-1/2 translate-y-[-50%] bg-transparent right-[0.1vw] z-30"
+            style={{
+              boxShadow: !isPostgamesPressed ? "-3vw 0vw 2vw -2vw #7e22ce" : "",
+            }}
+          />
+          <div // skew bottom
+            onTouchStart={() => setIsPostgamesPressed(true)}
+            onTouchEnd={handlePostgamesPressed}
+            className="absolute h-[30vw] w-[20.5vw] bottom-[16.1vw] -skew-y-[45deg] bg-transparent right-[0.1vw] z-30"
+            style={{
+              backgroundColor: isPostgamesPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isPostgamesPressed
+                ? ""
+                : "inset -9px 0px 5px -6px #581c87, inset 0px -9px 5px -6px #581c87",
+            }}
+          />
+
+          <div // border filler
+            onTouchStart={() => setIsPostgamesPressed(true)}
+            onTouchEnd={handlePostgamesPressed}
+            className="absolute h-[5vw] w-[16.5vw] bottom-[15.5vw] right-[20.5vw] z-30"
+            style={{
+              backgroundColor: isPostgamesPressed ? "#7e22ce" : "transparent",
+              borderTop: isPostgamesPressed ? "1px solid #581c87" : "",
+            }}
+          />
+          <div // shadow filler
+            onTouchStart={() => setIsPostgamesPressed(true)}
+            onTouchEnd={handlePostgamesPressed}
+            className="absolute h-[5vw] w-[12.7vw] bottom-[15.5vw] right-[18.7vw] z-30"
+            style={{
+              boxShadow: !isPostgamesPressed ? "0vw -3vw 1vw -2vw #7e22ce" : "",
+            }}
+          />
+          <div // skew
+            onTouchStart={() => setIsPostgamesPressed(true)}
+            onTouchEnd={handlePostgamesPressed}
+            className="absolute h-[20vw] w-[17vw] bottom-[0.2vw] -skew-x-[45deg] right-[16.2vw] z-30"
+            style={{
+              backgroundColor: isPostgamesPressed ? "#7e22ce" : "transparent",
+              boxShadow: !isPostgamesPressed
+                ? ""
+                : "inset -9px 0px 5px -6px #581c87",
+            }}
+          />
+          <div // square
+            onTouchStart={() => setIsPostgamesPressed(true)}
+            onTouchEnd={handlePostgamesPressed}
+            className="absolute h-[20.2vw] w-[17vw] bg-transparent bottom-[0.3vw] right-[26.5vw] z-30"
+            style={{
+              boxShadow: !isPostgamesPressed
+                ? "-1vw -1vw 2vw -1vw #7e22ce, -2vw -2vw 2vw -1vw #7e22ce"
+                : "inset 0px -9px 5px -6px #581c87",
+              borderTop: isPostgamesPressed ? "1px solid #581c87" : "",
+              borderLeft: isPostgamesPressed ? "1px solid #581c87" : "",
+              backgroundColor: isPostgamesPressed ? "#7e22ce" : "transparent",
+            }}
+          />
+        </div>
+      </div>
+    </>
+  );
+};
+
 const OctagonBackground = ({ handleBgClick, discreet }) => {
   return (
     <>
@@ -2637,58 +2941,50 @@ export default function Categories({
             )}
 
             {toggledPrelobby && !toggledSettings && (
-              <CentralZone onClick={handleOctaClick} zIndex={60}>
-                <div className="flex w-full h-full justify-around items-center">
-                  <div
-                    onClick={async (event) => {
-                      event.stopPropagation();
-                      resetPermissions();
-                      await updateLastCP({ userId: user.id, out: true });
-                      window.location.href = "/tools/";
-                    }}
-                  >
-                    <GoTools className="w-8 h-8 text-purple-100" />
-                  </div>
-                  {/* <div onClick={(event) => event.stopPropagation()}>
-                    <Link
-                      onClick={async () => {
-                        resetPermissions();
-                        await updateLastCP({ userId: user.id, out: true });
+              <>
+                <PostButtons
+                  resetPermissions={resetPermissions}
+                  updateLastCP={updateLastCP}
+                  user={user}
+                />
+                <CentralZone>
+                  <div className="flex w-full h-full justify-center items-center py-5">
+                    <div
+                      className="h-full aspect-square flex justify-center items-center bg-purple-600 z-30"
+                      style={{
+                        background:
+                          "radial-gradient(circle, #a855f7 0%, #7e22ce 100%)",
                       }}
-                      href="/categories/grouping/grouping"
                     >
-                      <FaPlay className="w-8 h-8 text-purple-100" />
-                    </Link>
-                  </div> */}
-                  <div
-                    onClick={async (event) => {
-                      event.stopPropagation();
-                      resetPermissions();
-                      await updateLastCP({ userId: user.id, out: true });
-                      window.location.href =
-                        user.lastPlayed || "/categories/grouping/grouping";
-                    }}
-                  >
-                    <FaPlay className="w-8 h-8 text-purple-100" />
+                      <div
+                        style={{
+                          width: "23vw",
+                          height: "23vw",
+                          borderRadius: "50%",
+                          background:
+                            "radial-gradient(circle, #7e22ce 0%, #9333ea 100%)",
+                          boxShadow: `inset 5px 5px 10px rgba(255, 255, 255, 0.3), inset -5px -5px 15px rgba(0, 0, 0, 0.3), 5px 5px 15px rgba(0, 0, 0, 0.3), 5px 5px 15px rgba(255, 255, 255, 0.1)`,
+                        }}
+                        className="flex justify-center items-center border border-purple-800"
+                      >
+                        <div
+                          onClick={async (event) => {
+                            event.stopPropagation();
+                            resetPermissions();
+                            await updateLastCP({ userId: user.id, out: true });
+                            window.location.href =
+                              user.lastPlayed ||
+                              "/categories/grouping/grouping";
+                          }}
+                          className="z-30"
+                        >
+                          <FaPlay className="ml-1.5 w-10 h-10 text-purple-800" />
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  {/* <div onClick={(event) => event.stopPropagation()}>
-                    <Link href="/post-game/">
-                      <FaRegFloppyDisk className="w-8 h-8 text-purple-100" />
-                    </Link>
-                  </div> */}
-
-                  <div
-                    onClick={async (event) => {
-                      event.stopPropagation();
-                      resetPermissions();
-                      await updateLastCP({ userId: user.id, out: true });
-                      window.location.href = "/post-game/";
-                    }}
-                  >
-                    <FaRegFloppyDisk className="w-8 h-8 text-purple-100" />
-                  </div>
-                </div>
-              </CentralZone>
+                </CentralZone>
+              </>
             )}
 
             <div className="absolute top-full z-20 w-full mt-4 text-center text-purple-100">

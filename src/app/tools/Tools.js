@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 
 import { audios } from "./audios";
 
@@ -67,7 +68,15 @@ export default function Tools() {
   console.log("selectedTool", selectedTool);
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full relative">
+      <div className="absolute z-20">
+        <Link
+          href={"/categories/?prelobby=true"}
+          className="border border-blue-300 bg-blue-100 p-1"
+        >
+          Retour
+        </Link>
+      </div>
       <div className="absolute flex items-center justify-around w-full mt-2 z-10">
         <div
           onClick={() => setSelectedTool("buzzer")}
