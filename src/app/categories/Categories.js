@@ -1046,7 +1046,7 @@ const SettingsButtons = ({
 
   if (setting !== "") {
     if (setting === "camera" || setting === "qrCode") return <OnlyShadows />;
-    if (setting !== "params") return null;
+    if (setting !== "params" && setting !== "friends") return null;
   }
 
   return (
@@ -1280,10 +1280,14 @@ const SettingsButtons = ({
             onTouchEnd={handleFriendsPressed}
             className="absolute h-[10vw] w-[5.7vw] top-[23.9vw] skew-y-[45deg] bg-transparent right-[0.1vw] z-30"
             style={{
-              backgroundColor: isFriendsPressed ? "#7e22ce" : "transparent",
-              boxShadow: !isFriendsPressed
-                ? ""
-                : "inset -9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
+              backgroundColor:
+                isFriendsPressed || setting === "friends"
+                  ? "#7e22ce"
+                  : "transparent",
+              boxShadow:
+                !isFriendsPressed && setting !== "friends"
+                  ? ""
+                  : "inset -9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
             }}
           />
           <div // middle left
@@ -1291,11 +1295,18 @@ const SettingsButtons = ({
             onTouchEnd={handleFriendsPressed}
             className="absolute h-[37vw] w-[20.5vw] top-[50%] translate-y-[-50%] right-[0vw] z-50 bg-transparent flex justify-center items-center"
             style={{
-              backgroundColor: isFriendsPressed ? "#7e22ce" : "transparent",
-              boxShadow: !isFriendsPressed
-                ? ""
-                : "inset -9px 0px 5px -6px #581c87",
-              borderLeft: isFriendsPressed ? "1px solid #581c87" : "",
+              backgroundColor:
+                isFriendsPressed || setting === "friends"
+                  ? "#7e22ce"
+                  : "transparent",
+              boxShadow:
+                !isFriendsPressed && setting !== "friends"
+                  ? ""
+                  : "inset -9px 0px 5px -6px #581c87",
+              borderLeft:
+                isFriendsPressed || setting === "friends"
+                  ? "1px solid #581c87"
+                  : "",
             }}
           >
             <FaUserFriends className={`mb-4 w-11 h-11 text-purple-800 z-50`} />
@@ -1305,13 +1316,26 @@ const SettingsButtons = ({
             onTouchEnd={handleFriendsPressed}
             className="absolute h-[47.6vw] w-[14.8vw] top-[50%] translate-y-[-50%] right-[5.7vw] z-40"
             style={{
-              backgroundColor: isFriendsPressed ? "#7e22ce" : "transparent",
-              boxShadow: !isFriendsPressed
-                ? "-3vw -2vw 1vw -2vw #7e22ce, -3vw 2vw 1vw -2vw #7e22ce"
-                : "",
-              borderTop: isFriendsPressed ? "1px solid #581c87" : "",
-              borderLeft: isFriendsPressed ? "1px solid #581c87" : "",
-              borderBottom: isFriendsPressed ? "1px solid #581c87" : "",
+              backgroundColor:
+                isFriendsPressed || setting === "friends"
+                  ? "#7e22ce"
+                  : "transparent",
+              boxShadow:
+                !isFriendsPressed && setting !== "friends"
+                  ? "-3vw -2vw 1vw -2vw #7e22ce, -3vw 2vw 1vw -2vw #7e22ce"
+                  : "",
+              borderTop:
+                isFriendsPressed || setting === "friends"
+                  ? "1px solid #581c87"
+                  : "",
+              borderLeft:
+                isFriendsPressed || setting === "friends"
+                  ? "1px solid #581c87"
+                  : "",
+              borderBottom:
+                isFriendsPressed || setting === "friends"
+                  ? "1px solid #581c87"
+                  : "",
             }}
           />
           <div // skew bottom
@@ -1319,10 +1343,14 @@ const SettingsButtons = ({
             onTouchEnd={handleFriendsPressed}
             className="absolute h-[10vw] w-[5.7vw] bottom-[23.9vw] -skew-y-[45deg] bg-transparent right-[0.1vw] z-30"
             style={{
-              backgroundColor: isFriendsPressed ? "#7e22ce" : "transparent",
-              boxShadow: !isFriendsPressed
-                ? ""
-                : "inset -9px 0px 5px -6px #581c87, inset 0px -9px 5px -6px #581c87",
+              backgroundColor:
+                isFriendsPressed || setting === "friends"
+                  ? "#7e22ce"
+                  : "transparent",
+              boxShadow:
+                !isFriendsPressed && setting !== "friends"
+                  ? ""
+                  : "inset -9px 0px 5px -6px #581c87, inset 0px -9px 5px -6px #581c87",
             }}
           />
 
@@ -2211,7 +2239,7 @@ const Friends = ({ friendList, user, deleteFriend, updateLastCP }) => {
     setLocked(false);
   }, []);
 
-  const onConfirmedSwipe = useCallback(
+  const onDeleteFriend = useCallback(
     async (friend) => {
       // event.stopPropagation();
       if (locked) return;
@@ -2225,23 +2253,25 @@ const Friends = ({ friendList, user, deleteFriend, updateLastCP }) => {
   );
 
   return (
-    <div className="h-full py-9">
-      {friendList.map((friend) => (
-        <div key={friend.friendId}>
-          <SwipableDiv
-            onConfirmedSwipe={() => onConfirmedSwipe(friend)}
-            height={10}
-            margin={1}
-          >
-            <div className="border border-purple-950 bg-purple-300 p-1 h-full">
-              <div className="text-purple-950	text-center">
-                {friend.customName}
+    <div className="h-full aspect-square flex flex-col items-center relative z-30">
+      <div className="h-full w-full py-1">
+        {friendList.map((friend) => (
+          <div key={friend.friendId} className="flex justify-center">
+            <SwipableDiv
+              onConfirmedSwipe={() => onDeleteFriend(friend)}
+              height={10}
+              margin={0.5}
+            >
+              <div className="border border-purple-950 bg-purple-300 p-1 h-full">
+                <div className="text-purple-950 text-center">
+                  {friend.customName}
+                </div>
               </div>
-            </div>
-          </SwipableDiv>
-        </div>
-      ))}
-      <SwipableDiv />
+            </SwipableDiv>
+          </div>
+        ))}
+        <SwipableDiv />
+      </div>
     </div>
   );
 };
@@ -2813,13 +2843,15 @@ export default function Categories({
                 />
 
                 {setting === "friends" && (
-                  <CentralZone onClick={handleOctaClick} zIndex={60}>
-                    <Friends
-                      friendList={friendList}
-                      user={user}
-                      deleteFriend={deleteFriend}
-                      updateLastCP={updateLastCP}
-                    />
+                  <CentralZone>
+                    <div className="flex w-full h-full justify-center items-center py-5">
+                      <Friends
+                        friendList={friendList}
+                        user={user}
+                        deleteFriend={deleteFriend}
+                        updateLastCP={updateLastCP}
+                      />
+                    </div>
                   </CentralZone>
                 )}
 
