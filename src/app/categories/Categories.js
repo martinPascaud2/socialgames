@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { throttle } from "lodash";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -719,6 +719,8 @@ import { IoIosRefresh } from "react-icons/io";
 import { MdOutlineCancel } from "react-icons/md";
 import FriendsSettingsIcon from "./FriendsSettingsIcon";
 import { MdOutlineAccountTree } from "react-icons/md";
+import { FaRegTrashAlt } from "react-icons/fa";
+import { FaCheck } from "react-icons/fa6";
 
 import { updatePassword } from "@/signin/actions";
 import ReactDOM, { useFormState } from "react-dom";
@@ -2115,6 +2117,93 @@ const CentralZone = ({ children, onClick, zIndex }) => {
   );
 };
 
+const SwipableDiv = ({ onConfirmedSwipe, height, margin, children }) => {
+  const divRef = useRef(null);
+  const [divHeight, setDivHeight] = useState(0);
+  const startX = useRef(0);
+  const swipeDistance = useRef(0);
+  const [swipedWidth, setSwipedWidth] = useState(0);
+  const [isSwiped, setIsSwiped] = useState(false);
+
+  useEffect(() => {
+    if (!divRef?.current) return;
+    setDivHeight(divRef.current.getBoundingClientRect().height);
+  }, [divRef]);
+
+  const handleTouchStart = (e) => {
+    if (isSwiped) return;
+    startX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    if (isSwiped) return;
+    const currentX = e.touches[0].clientX;
+    swipeDistance.current = Math.max(0, currentX - startX.current);
+    setSwipedWidth(swipeDistance.current);
+  };
+
+  const handleTouchEnd = () => {
+    if (!divRef?.current) return;
+    const widthThreshold = divRef.current.getBoundingClientRect().width / 2;
+    if (swipeDistance.current >= widthThreshold) {
+      setIsSwiped(true);
+    }
+    setSwipedWidth(0);
+    startX.current = 0;
+  };
+
+  return (
+    <div
+      className={`relative w-full h-${height} m-${margin} overflow-hidden touch-none`}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      <div
+        className={`absolute top-0 left-0 border border-red-900 bg-red-500 flex justify-center items-center transition-none z-10 ${
+          !startX?.current && "hidden"
+        }`}
+        style={{
+          width: `${swipedWidth}px`,
+          height: divRef?.current?.getBoundingClientRect().height,
+        }}
+      >
+        <FaRegTrashAlt className="w-8 h-8 text-red-900 py-1" />
+      </div>
+
+      <div ref={divRef} className="absolute w-full">
+        {!isSwiped ? (
+          children
+        ) : (
+          <div
+            className="w-full flex gap-1 border border-purple-950 bg-purple-300 p-1"
+            style={{ height: `${divHeight}px` }}
+          >
+            <div
+              onClick={() => setIsSwiped(false)}
+              className="h-full w-full flex justify-center items-center border border-red-800 bg-red-300"
+            >
+              <XMarkIcon
+                className="text-red-800 py-1"
+                style={{ height: `${divHeight}px` }}
+              />
+            </div>
+            <div
+              onClick={async () => await onConfirmedSwipe()}
+              className="h-full w-full flex justify-center items-center border border-green-800 bg-green-300"
+            >
+              <FaCheck
+                className="text-green-800"
+                style={{ height: `${divHeight}px` }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const Friends = ({ friendList, user, deleteFriend, updateLastCP }) => {
   const [locked, setLocked] = useState(true);
 
@@ -2122,31 +2211,37 @@ const Friends = ({ friendList, user, deleteFriend, updateLastCP }) => {
     setLocked(false);
   }, []);
 
+  const onConfirmedSwipe = useCallback(
+    async (friend) => {
+      // event.stopPropagation();
+      if (locked) return;
+      await deleteFriend({
+        userId: user.id,
+        friendId: friend.friendId,
+      });
+      updateLastCP({ userId: user.id }); // no await
+    },
+    [locked, deleteFriend, user]
+  );
+
   return (
     <div className="h-full py-9">
       {friendList.map((friend) => (
-        <div
-          key={friend.friendId}
-          className="relative border border-purple-950 bg-purple-300 p-1 my-1"
-          onClick={(event) => event.stopPropagation()}
-        >
-          <div className="text-center text-purple-950">{friend.customName}</div>
-          <div
-            onClick={async () => {
-              // event.stopPropagation();
-              if (locked) return;
-              await deleteFriend({
-                userId: user.id,
-                friendId: friend.friendId,
-              });
-              updateLastCP({ userId: user.id }); // no await
-            }}
-            className="absolute left-full top-1"
+        <div key={friend.friendId}>
+          <SwipableDiv
+            onConfirmedSwipe={() => onConfirmedSwipe(friend)}
+            height={10}
+            margin={1}
           >
-            <XMarkIcon className="ml-0 pb-3.5 w-10 h-10 text-red-500" />
-          </div>
+            <div className="border border-purple-950 bg-purple-300 p-1 h-full">
+              <div className="text-purple-950	text-center">
+                {friend.customName}
+              </div>
+            </div>
+          </SwipableDiv>
         </div>
       ))}
+      <SwipableDiv />
     </div>
   );
 };
@@ -2159,7 +2254,6 @@ const PasswordForm = ({ user }) => {
   });
 
   return (
-    // <div className="w-full h-full flex justify-center py-9">
     <div className="w-full h-full flex justify-center py-9">
       <form
         action={(formData) => formAction(formData)}
@@ -2430,6 +2524,7 @@ const Invitations = ({
             <div>disponible</div>
           </div>
         )}
+
       <div className="h-full aspect-square flex flex-col gap-0.5">
         {threeFirsts.map((invitation, i) => (
           <div key={i} className="relative z-30 opacity-60 flex-1">
