@@ -38,7 +38,6 @@ export function LobbyDeleteGroup({ roomToken, roomId }) {
       onClick={async () => {
         await deleteRoom({ roomId });
         await deleteGroup({ groupToken: roomToken });
-        // window.location.href = "/categories";
       }}
       className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
     >
