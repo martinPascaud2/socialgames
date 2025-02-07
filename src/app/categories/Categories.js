@@ -2375,21 +2375,17 @@ const BarParam = ({ style, borderPosition }) => {
   );
 };
 
-const Params = ({ updateParams, updateLastCP, fetchUser }) => {
+const Params = ({
+  updateParams,
+  updateLastCP,
+  user,
+  barValues,
+  setBarValues,
+}) => {
   const possibleBarValues = [4, 6, 8, 12, 14, 16, 18, 20];
-  const [barValues, setBarValues] = useState();
-  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const get = async () => {
-      const user = await fetchUser();
-      setUser(user);
-    };
-    get();
-  }, [fetchUser]);
-
-  useEffect(() => {
-    if (!user) return;
+    if (!user || barValues) return;
     if (!user?.params) {
       setBarValues({ bottomBarSize: 8, topBarSize: 8 });
       return;
@@ -2610,16 +2606,13 @@ export default function Categories({
   const [stopScan, setStopScan] = useState();
   const [scanning, setScanning] = useState(false);
 
+  const [barValues, setBarValues] = useState();
+
   const [serverMessage, setServerMessage] = useState();
 
   const [publicRooms, setPublicRooms] = useState({});
   const [invitations, setInvitations] = useState([]);
   const [currentGame, setCurrentGame] = useState();
-
-  const fetchUser = async () => {
-    const user = await getUser();
-    return user;
-  };
 
   const cancelAndReturnLobby = useCallback(async () => {
     const group = JSON.parse(localStorage.getItem("group"));
@@ -2861,7 +2854,9 @@ export default function Categories({
                       <Params
                         updateParams={updateParams}
                         updateLastCP={updateLastCP}
-                        fetchUser={fetchUser}
+                        user={user}
+                        barValues={barValues}
+                        setBarValues={setBarValues}
                       />
                     </div>
                   </CentralZone>
