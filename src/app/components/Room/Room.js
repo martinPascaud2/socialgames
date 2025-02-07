@@ -890,28 +890,23 @@ export default function Room({
   }, [roomToken, user]);
   // ------------------------------
 
+  // deleted_group: return home
+  useEffect(() => {
+    const leaveLobby = async () => {
+      if (gameData && gameData?.nextGame === "deleted group" && user) {
+        !user.multiGuest && (await deleteInvs());
+        router.push("/categories");
+      }
+    };
+    leaveLobby();
+  }, [gameData, user]);
+  // ------------------------------
+
   if (joinError) {
     return (
       <div className="h-screen w-screen flex justify-center items-center">
         {joinError}
       </div>
-    );
-  }
-
-  if (gameData && gameData?.nextGame === "deleted group" && user) {
-    return (
-      <>
-        <h1 className="mt-28">Le groupe a été supprimé</h1>
-        <button
-          onClick={async () => {
-            !user.multiGuest && (await deleteInvs());
-            router.push("/categories");
-          }}
-          className="border border-sky-300 bg-sky-100"
-        >
-          Quitter
-        </button>
-      </>
     );
   }
 
