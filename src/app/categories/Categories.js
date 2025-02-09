@@ -927,7 +927,7 @@ const SettingsButtons = ({
   const handleParamsPressed = useCallback(
     (event) => {
       setIsParamsPressed(false);
-      if (locked) return;
+      if (locked || setting === "params") return;
       setSetting("params");
       setServerMessage("");
       // setScanning(false);
@@ -948,7 +948,7 @@ const SettingsButtons = ({
   const handleCameraPressed = useCallback(
     (event) => {
       setIsCameraPressed(false);
-      if (locked) return;
+      if (locked || setting === "camera") return;
       setSetting("camera");
       setServerMessage("");
       setScanning(true);
@@ -981,7 +981,7 @@ const SettingsButtons = ({
   const handleFriendsPressed = useCallback(
     (event) => {
       setIsFriendsPressed(false);
-      if (locked) return;
+      if (locked || setting === "friends") return;
       setSetting("friends");
       setServerMessage("");
       // setScanning(false);
@@ -1002,7 +1002,7 @@ const SettingsButtons = ({
   const handleQrcodePressed = useCallback(
     async (event) => {
       setIsQrcodePressed(false);
-      if (locked) return;
+      if (locked || setting === "qrCode") return;
       setSetting("qrCode");
       // setScanning(false);
       resetPermissions();
@@ -2395,7 +2395,7 @@ const Params = ({
       bottomBarSize: userParams.bottomBarSize,
       topBarSize: userParams.topBarSize,
     });
-  }, [user]);
+  }, [user, barValues]);
 
   useEffect(() => {
     if (!barValues || !user) return;
