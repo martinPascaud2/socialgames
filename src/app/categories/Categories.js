@@ -2629,6 +2629,7 @@ export default function Categories({
         if (data.message.includes("ajouté")) setSetting("friends");
         router.refresh();
       }
+
       if (data.invitation) {
         if (data.invitation.deleted) {
           setPublicRooms((prevPublics) => {
@@ -2640,31 +2641,47 @@ export default function Categories({
             if (deletedId) delete prevPubs[deletedId];
             return prevPubs;
           });
+          if (!data.invitation.isPublicDel) {
+            setInvitations((prevInvitations) => {
+              const prevInvs = [...prevInvitations];
+              const deletedInvs = prevInvs.filter(
+                (inv) => inv.link !== data.invitation.link
+              );
+              return deletedInvs;
+            });
+          }
+        } else {
+          if (data.invitation.isPublic) {
+            setPublicRooms((prevPublics) => {
+              const publicRooms = { ...prevPublics };
+              publicRooms[data.invitation.roomId] = {
+                friendName: data.invitation.userName,
+                gameName: data.invitation.gameName,
+                link: data.invitation.link,
+              };
+              return publicRooms;
+            });
+          } else {
+            setInvitations((prevInvitations) => {
+              const prevInvs = [...prevInvitations];
+
+              const alreadyInviterIndex = prevInvs.findIndex(
+                (inv) => inv.userName === data.invitation.userName
+              );
+              if (alreadyInviterIndex !== -1) {
+                prevInvs.splice(alreadyInviterIndex, 1);
+                return [...prevInvs, data.invitation];
+              }
+
+              const sameInvLink = prevInvs.some(
+                (inv) => inv.link === data.invitation.link
+              );
+              if (sameInvLink) return [...prevInvs];
+
+              return [...prevInvs, data.invitation];
+            });
+          }
         }
-        setInvitations((prevInvitations) => {
-          const prevInvs = [...prevInvitations];
-          if (data.invitation.deleted) {
-            const deletedInvs = prevInvs.filter(
-              (inv) => inv.link !== data.invitation.link
-            );
-            return deletedInvs;
-          }
-
-          const alreadyInviterIndex = prevInvs.findIndex(
-            (inv) => inv.userName === data.invitation.userName
-          );
-          if (alreadyInviterIndex !== -1) {
-            prevInvs.splice(alreadyInviterIndex, 1);
-            return [...prevInvs, data.invitation];
-          }
-
-          const sameInvLink = prevInvs.some(
-            (inv) => inv.link === data.invitation.link
-          );
-          if (sameInvLink) return [...prevInvs];
-
-          return [...prevInvs, data.invitation];
-        });
       }
     });
 

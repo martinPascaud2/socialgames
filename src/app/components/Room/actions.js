@@ -180,6 +180,9 @@ export async function inviteFriend({
   mode,
   roomToken,
   deleted = false,
+  isPublicDel = false,
+  isPublic = false,
+  roomId = undefined,
 }) {
   await pusher.trigger(`user-${friendMail}`, "user-event", {
     invitation: {
@@ -188,17 +191,21 @@ export async function inviteFriend({
       mode,
       link: `${process.env.NEXT_PUBLIC_APP_URL}/categories/${categorie}/${gameName}?token=${roomToken}`,
       deleted,
+      isPublicDel,
+      isPublic,
+      roomId,
     },
   });
 }
 
-export async function inviteAll({
+export async function publicInviteAll({
   userId,
   userName,
   categorie,
   gameName,
   mode,
   roomToken,
+  roomId,
 }) {
   const friends = await getRoomFriendList({ userId });
 
@@ -211,6 +218,8 @@ export async function inviteAll({
         gameName,
         mode,
         roomToken,
+        isPublic: true,
+        roomId,
       });
     })
   );
@@ -231,6 +240,27 @@ export async function deleteInvitations({
         gameName,
         roomToken,
         deleted: true,
+      });
+    })
+  );
+}
+
+export async function deletePublicInvitations({
+  userId,
+  categorie,
+  gameName,
+  roomToken,
+}) {
+  const friends = await getRoomFriendList({ userId });
+  await Promise.all(
+    friends.map(async (friend) => {
+      await inviteFriend({
+        friendMail: friend.email,
+        categorie,
+        gameName,
+        roomToken,
+        deleted: true,
+        isPublicDel: true,
       });
     })
   );

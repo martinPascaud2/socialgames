@@ -72,12 +72,10 @@ export default async function CategoriesPage() {
           });
           if (!room.private && room.admin !== friendName) return;
 
-          const gamersNumber = publicRooms[`${roomId}`]?.gamersNumber || 0;
           publicRooms[roomId] = {
             friendName,
             gameName,
             link,
-            gamersNumber: gamersNumber + 1,
           };
         }
       })

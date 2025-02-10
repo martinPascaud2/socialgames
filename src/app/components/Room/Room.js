@@ -61,8 +61,9 @@ import {
   serverCreate,
   goOneMoreGame,
   inviteFriend,
-  inviteAll,
+  publicInviteAll,
   deleteInvitations,
+  deletePublicInvitations,
   removeArrival,
   serverJoin,
   triggerGamers,
@@ -678,9 +679,18 @@ export default function Room({
   }, [invitedList]);
   // ------------------------------
 
-  // delete CP_invitations when going out
+  // delete CP_invitations
   const deleteInvs = useCallback(async () => {
     await deleteInvitations({
+      userId: user.id,
+      categorie,
+      gameName,
+      roomToken,
+    });
+  }, [user.id, categorie, gameName, roomToken]);
+
+  const deletePublicInvs = useCallback(async () => {
+    await deletePublicInvitations({
       userId: user.id,
       categorie,
       gameName,
@@ -1151,13 +1161,14 @@ export default function Room({
                                 onClick={async () => {
                                   if (!isAdmin) return;
                                   await togglePriv();
-                                  await inviteAll({
+                                  await publicInviteAll({
                                     userId: user.id,
                                     userName: user.name,
                                     categorie,
                                     gameName,
                                     mode: options?.mode,
                                     roomToken,
+                                    roomId,
                                   });
                                   setInvitedList(() => {
                                     const friendsNames = friendsList.map(
@@ -1175,6 +1186,7 @@ export default function Room({
                                 onClick={async () => {
                                   if (!isAdmin) return;
                                   await togglePriv();
+                                  await deletePublicInvs();
                                 }}
                                 className={`w-8 h-8 ${
                                   isAdmin ? "text-amber-700" : "text-sky-700"
