@@ -1135,7 +1135,7 @@ const SettingsButtons = ({
                   : "",
             }}
           >
-            <IoIosSettings className="mb-4 w-11 h-11 text-purple-800" />
+            <IoIosSettings className="w-11 h-11 text-purple-800" />
           </div>
           <div // middle
             onTouchStart={() => setIsParamsPressed(true)}
@@ -1313,7 +1313,7 @@ const SettingsButtons = ({
                   : "",
             }}
           >
-            <FaUserFriends className={`mb-4 w-11 h-11 text-purple-800 z-50`} />
+            <FaUserFriends className={`w-11 h-11 text-purple-800 z-50`} />
           </div>
           <div // middle
             onTouchStart={() => setIsFriendsPressed(true)}
