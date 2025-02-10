@@ -1147,7 +1147,9 @@ const SettingsButtons = ({
                   ? "#7e22ce"
                   : "transparent",
               boxShadow:
-                !isParamsPressed && setting !== "params"
+                !isParamsPressed &&
+                setting !== "params" &&
+                setting !== "friends"
                   ? "3vw -2vw 1vw -2vw #7e22ce, 3vw 2vw 1vw -2vw #7e22ce"
                   : "",
               borderTop:
@@ -1157,6 +1159,8 @@ const SettingsButtons = ({
               borderRight:
                 isParamsPressed || setting === "params"
                   ? "1px solid #581c87"
+                  : setting === "friends"
+                  ? "1px solid #7e22ce"
                   : "",
               borderBottom:
                 isParamsPressed || setting === "params"
@@ -1321,7 +1325,9 @@ const SettingsButtons = ({
                   ? "#7e22ce"
                   : "transparent",
               boxShadow:
-                !isFriendsPressed && setting !== "friends"
+                !isFriendsPressed &&
+                setting !== "friends" &&
+                setting !== "params"
                   ? "-3vw -2vw 1vw -2vw #7e22ce, -3vw 2vw 1vw -2vw #7e22ce"
                   : "",
               borderTop:
@@ -1331,6 +1337,8 @@ const SettingsButtons = ({
               borderLeft:
                 isFriendsPressed || setting === "friends"
                   ? "1px solid #581c87"
+                  : setting === "params"
+                  ? "1px solid #7e22ce"
                   : "",
               borderBottom:
                 isFriendsPressed || setting === "friends"
