@@ -2264,8 +2264,8 @@ const Friends = ({ friendList, user, deleteFriend, updateLastCP }) => {
   );
 
   return (
-    <div className="h-full aspect-square flex flex-col items-center justify-center relative z-30">
-      <div className="h-full w-full py-1 flex flex-col justify-center gap-1">
+    <div className="h-full aspect-square translate-x-[0.12vw] translate-y-[0.1vw] flex flex-col items-center justify-center relative z-30">
+      <div className="h-full w-full py-1 flex flex-col justify-start gap-1">
         {friendList.map((friend) => (
           <div
             key={friend.friendId}
@@ -2430,7 +2430,7 @@ const Params = ({
   if (!barValues) return null;
 
   return (
-    <div className="h-full aspect-square flex flex-col items-center justify-center relative">
+    <div className="h-full aspect-square flex flex-col items-center justify-start relative translate-x-[0.12vw] translate-y-[0.1vw]">
       <BarParam
         style={{ top: 0, height: `${barValues.topBarSize / 4}rem` }}
         borderPosition="bottom"
@@ -2563,7 +2563,7 @@ const Invitations = ({
         )}
 
       {/* tricky: translate */}
-      <div className="h-full aspect-square flex flex-col gap-0.5 translate-x-[0.14vw] translate-y-[0.1vw] z-30">
+      <div className="h-full aspect-square flex flex-col gap-0.5 translate-x-[0.12vw] translate-y-[0.1vw] z-30">
         {threeFirsts.map((invitation, i) => (
           <div key={i} className="relative z-30 opacity-60 flex-1">
             <div
@@ -2961,7 +2961,7 @@ export default function Categories({
                 <CentralZone>
                   <div className="flex w-full h-full justify-center items-center py-5">
                     <div
-                      className="h-full aspect-square flex justify-center items-center bg-purple-600 z-30"
+                      className="h-full aspect-square translate-x-[0.12vw] translate-y-[0.1vw] flex justify-center items-center bg-purple-600 z-30"
                       style={{
                         background:
                           "radial-gradient(circle, #a855f7 0%, #7e22ce 100%)",
