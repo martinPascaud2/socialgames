@@ -2430,7 +2430,7 @@ const Params = ({
   if (!barValues) return null;
 
   return (
-    <div className="h-full aspect-square flex flex-col items-center relative">
+    <div className="h-full aspect-square flex flex-col items-center justify-center relative">
       <BarParam
         style={{ top: 0, height: `${barValues.topBarSize / 4}rem` }}
         borderPosition="bottom"
@@ -2439,54 +2439,52 @@ const Params = ({
         style={{ bottom: 0, height: `${barValues.bottomBarSize / 4}rem` }}
         borderPosition="top"
       />
-      <>
-        {[
-          { param: "topBarSize", label: "Barre supérieure" },
-          {
-            param: "bottomBarSize",
-            label: "Barre inférieure",
-          },
-        ].map((barParam, i) => (
-          <div
-            key={i}
-            onClick={(event) => event.stopPropagation()}
-            className="relative border border-purple-200 bg-purple-400 p-1 my-1 w-[95%] text-center flex items-center text-purple-900"
-          >
-            <div className="text-center w-full relative">
-              <div
-                onClick={() => {
-                  const index = possibleBarValues?.indexOf(
-                    (barValues && barValues[barParam.param]) ||
-                      possibleBarValues[0]
-                  );
-                  const newIndex = index === 0 ? index : index - 1;
-                  setBarValues((prevValues) => ({
-                    ...prevValues,
-                    [barParam.param]: possibleBarValues[newIndex],
-                  }));
-                }}
-                className="absolute left-0 top-0 w-1/2 bg-white h-full z-30 opacity-0"
-              />
-              {barParam.label} : {barValues && barValues[barParam.param]}
-              <div
-                onClick={() => {
-                  const index = possibleBarValues?.indexOf(
-                    (barValues && barValues[barParam.param]) ||
-                      possibleBarValues[0]
-                  );
-                  const newIndex =
-                    index >= possibleBarValues.length - 1 ? index : index + 1;
-                  setBarValues((prevValues) => ({
-                    ...prevValues,
-                    [barParam.param]: possibleBarValues[newIndex],
-                  }));
-                }}
-                className="absolute right-0 top-0 w-1/2 bg-white h-full z-30 opacity-0"
-              />
-            </div>
+      {[
+        { param: "topBarSize", label: "Barre supérieure" },
+        {
+          param: "bottomBarSize",
+          label: "Barre inférieure",
+        },
+      ].map((barParam, i) => (
+        <div
+          key={i}
+          onClick={(event) => event.stopPropagation()}
+          className="relative border border-purple-200 bg-purple-400 p-1 my-1 w-[95%] text-center flex items-center text-purple-900"
+        >
+          <div className="text-center w-full relative">
+            <div
+              onClick={() => {
+                const index = possibleBarValues?.indexOf(
+                  (barValues && barValues[barParam.param]) ||
+                    possibleBarValues[0]
+                );
+                const newIndex = index === 0 ? index : index - 1;
+                setBarValues((prevValues) => ({
+                  ...prevValues,
+                  [barParam.param]: possibleBarValues[newIndex],
+                }));
+              }}
+              className="absolute left-0 top-0 w-1/2 bg-white h-full z-30 opacity-0"
+            />
+            {barParam.label} : {barValues && barValues[barParam.param]}
+            <div
+              onClick={() => {
+                const index = possibleBarValues?.indexOf(
+                  (barValues && barValues[barParam.param]) ||
+                    possibleBarValues[0]
+                );
+                const newIndex =
+                  index >= possibleBarValues.length - 1 ? index : index + 1;
+                setBarValues((prevValues) => ({
+                  ...prevValues,
+                  [barParam.param]: possibleBarValues[newIndex],
+                }));
+              }}
+              className="absolute right-0 top-0 w-1/2 bg-white h-full z-30 opacity-0"
+            />
           </div>
-        ))}
-      </>
+        </div>
+      ))}
     </div>
   );
 };
