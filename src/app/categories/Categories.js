@@ -2153,142 +2153,6 @@ const CentralZone = ({ children, onClick, zIndex }) => {
   );
 };
 
-const SwipableDiv = ({ onConfirmedSwipe, height, margin, children }) => {
-  const divRef = useRef(null);
-  const [divHeight, setDivHeight] = useState(0);
-  const startX = useRef(0);
-  const swipeDistance = useRef(0);
-  const [swipedWidth, setSwipedWidth] = useState(0);
-  const [isSwiped, setIsSwiped] = useState(false);
-
-  useEffect(() => {
-    if (!divRef?.current) return;
-    setDivHeight(divRef.current.getBoundingClientRect().height);
-  }, [divRef]);
-
-  const handleTouchStart = (e) => {
-    if (isSwiped) return;
-    startX.current = e.touches[0].clientX;
-  };
-
-  const handleTouchMove = (e) => {
-    if (isSwiped) return;
-    const currentX = e.touches[0].clientX;
-    swipeDistance.current = Math.max(0, currentX - startX.current);
-    setSwipedWidth(swipeDistance.current);
-  };
-
-  const handleTouchEnd = () => {
-    if (!divRef?.current) return;
-    const widthThreshold = divRef.current.getBoundingClientRect().width / 2;
-    if (swipeDistance.current >= widthThreshold) {
-      setIsSwiped(true);
-    }
-    setSwipedWidth(0);
-    startX.current = 0;
-  };
-
-  return (
-    <div
-      className={`relative w-full h-${height} m-${margin} overflow-hidden touch-none`}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
-    >
-      <div
-        className={`absolute top-0 left-0 border border-red-900 bg-red-500 flex justify-center items-center transition-none z-10 ${
-          !startX?.current && "hidden"
-        }`}
-        style={{
-          width: `${swipedWidth}px`,
-          height: divRef?.current?.getBoundingClientRect().height,
-        }}
-      >
-        <FaRegTrashAlt className="w-8 h-8 text-red-900 py-1" />
-      </div>
-
-      <div
-        ref={divRef}
-        className="w-full h-full flex items-center justify-center"
-      >
-        {!isSwiped ? (
-          children
-        ) : (
-          <div
-            className="w-full flex gap-1 border border-purple-950 bg-purple-300 p-1"
-            style={{ height: `${divHeight}px` }}
-          >
-            <div
-              onClick={() => setIsSwiped(false)}
-              className="h-full w-full flex justify-center items-center border border-red-800 bg-red-300"
-            >
-              <XMarkIcon
-                className="text-red-800 py-1"
-                style={{ height: `${divHeight}px` }}
-              />
-            </div>
-            <div
-              onClick={async () => await onConfirmedSwipe()}
-              className="h-full w-full flex justify-center items-center border border-green-800 bg-green-300"
-            >
-              <FaCheck
-                className="text-green-800"
-                style={{ height: `${divHeight}px` }}
-              />
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-
-const Friends = ({ friendList, user, deleteFriend, updateLastCP }) => {
-  const [locked, setLocked] = useState(true);
-
-  useEffect(() => {
-    setLocked(false);
-  }, []);
-
-  const onDeleteFriend = useCallback(
-    async (friend) => {
-      // event.stopPropagation();
-      if (locked) return;
-      await deleteFriend({
-        userId: user.id,
-        friendId: friend.friendId,
-      });
-      updateLastCP({ userId: user.id }); // no await
-    },
-    [locked, deleteFriend, user]
-  );
-
-  return (
-    <div className="h-full aspect-square translate-x-[0.12vw] translate-y-[0.1vw] flex flex-col items-center justify-center relative z-30">
-      <div className="h-full w-full py-1 flex flex-col justify-start gap-1">
-        {friendList.map((friend) => (
-          <div
-            key={friend.friendId}
-            className="flex justify-center items-center"
-          >
-            <SwipableDiv
-              onConfirmedSwipe={() => onDeleteFriend(friend)}
-              height={8}
-              margin={0.5}
-            >
-              <div className="border border-purple-950 bg-purple-300 w-full h-full">
-                <div className="h-full w-full text-purple-950 flex items-center justify-center">
-                  {friend.customName}
-                </div>
-              </div>
-            </SwipableDiv>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
 const PasswordForm = ({ user }) => {
   const updateWithUserId = updatePassword.bind(null, user.id);
   const [state, formAction] = useFormState(updateWithUserId, {
@@ -2430,7 +2294,7 @@ const Params = ({
   if (!barValues) return null;
 
   return (
-    <div className="h-full aspect-square flex flex-col items-center justify-start relative translate-x-[0.12vw] translate-y-[0.1vw]">
+    <div className="h-full aspect-square flex flex-col items-center justify-start relative translate-x-[0.12vw] translate-y-[0.1vw] z-30 py-1.5">
       <BarParam
         style={{ top: 0, height: `${barValues.topBarSize / 4}rem` }}
         borderPosition="bottom"
@@ -2439,52 +2303,190 @@ const Params = ({
         style={{ bottom: 0, height: `${barValues.bottomBarSize / 4}rem` }}
         borderPosition="top"
       />
-      {[
-        { param: "topBarSize", label: "Barre supérieure" },
-        {
-          param: "bottomBarSize",
-          label: "Barre inférieure",
-        },
-      ].map((barParam, i) => (
-        <div
-          key={i}
-          onClick={(event) => event.stopPropagation()}
-          className="relative border border-purple-200 bg-purple-400 p-1 my-1 w-[95%] text-center flex items-center text-purple-900"
-        >
-          <div className="text-center w-full relative">
-            <div
-              onClick={() => {
-                const index = possibleBarValues?.indexOf(
-                  (barValues && barValues[barParam.param]) ||
-                    possibleBarValues[0]
-                );
-                const newIndex = index === 0 ? index : index - 1;
-                setBarValues((prevValues) => ({
-                  ...prevValues,
-                  [barParam.param]: possibleBarValues[newIndex],
-                }));
-              }}
-              className="absolute left-0 top-0 w-1/2 bg-white h-full z-30 opacity-0"
-            />
-            {barParam.label} : {barValues && barValues[barParam.param]}
-            <div
-              onClick={() => {
-                const index = possibleBarValues?.indexOf(
-                  (barValues && barValues[barParam.param]) ||
-                    possibleBarValues[0]
-                );
-                const newIndex =
-                  index >= possibleBarValues.length - 1 ? index : index + 1;
-                setBarValues((prevValues) => ({
-                  ...prevValues,
-                  [barParam.param]: possibleBarValues[newIndex],
-                }));
-              }}
-              className="absolute right-0 top-0 w-1/2 bg-white h-full z-30 opacity-0"
-            />
+      <div className="w-[95%] h-full flex flex-col items-center px-0.5">
+        {[
+          { param: "topBarSize", label: "Barre supérieure" },
+          {
+            param: "bottomBarSize",
+            label: "Barre inférieure",
+          },
+        ].map((barParam, i) => (
+          <div
+            key={i}
+            onClick={(event) => event.stopPropagation()}
+            className="relative border border-purple-200 bg-purple-400 p-1 mb-2 w-full text-center flex items-center text-purple-900 h-8"
+          >
+            <div className="text-center w-full relative">
+              <div
+                onClick={() => {
+                  const index = possibleBarValues?.indexOf(
+                    (barValues && barValues[barParam.param]) ||
+                      possibleBarValues[0]
+                  );
+                  const newIndex = index === 0 ? index : index - 1;
+                  setBarValues((prevValues) => ({
+                    ...prevValues,
+                    [barParam.param]: possibleBarValues[newIndex],
+                  }));
+                }}
+                className="absolute left-0 top-0 w-1/2 bg-white h-full z-30 opacity-0"
+              />
+              {barParam.label} : {barValues && barValues[barParam.param]}
+              <div
+                onClick={() => {
+                  const index = possibleBarValues?.indexOf(
+                    (barValues && barValues[barParam.param]) ||
+                      possibleBarValues[0]
+                  );
+                  const newIndex =
+                    index >= possibleBarValues.length - 1 ? index : index + 1;
+                  setBarValues((prevValues) => ({
+                    ...prevValues,
+                    [barParam.param]: possibleBarValues[newIndex],
+                  }));
+                }}
+                className="absolute right-0 top-0 w-1/2 bg-white h-full z-30 opacity-0"
+              />
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const SwipableDiv = ({ onConfirmedSwipe, height, margin, children }) => {
+  const divRef = useRef(null);
+  const [divHeight, setDivHeight] = useState(0);
+  const startX = useRef(0);
+  const swipeDistance = useRef(0);
+  const [swipedWidth, setSwipedWidth] = useState(0);
+  const [isSwiped, setIsSwiped] = useState(false);
+
+  useEffect(() => {
+    if (!divRef?.current) return;
+    setDivHeight(divRef.current.getBoundingClientRect().height);
+  }, [divRef]);
+
+  const handleTouchStart = (e) => {
+    if (isSwiped) return;
+    startX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    if (isSwiped) return;
+    const currentX = e.touches[0].clientX;
+    swipeDistance.current = Math.max(0, currentX - startX.current);
+    setSwipedWidth(swipeDistance.current);
+  };
+
+  const handleTouchEnd = () => {
+    if (!divRef?.current) return;
+    const widthThreshold = divRef.current.getBoundingClientRect().width / 2;
+    if (swipeDistance.current >= widthThreshold) {
+      setIsSwiped(true);
+    }
+    setSwipedWidth(0);
+    startX.current = 0;
+  };
+
+  return (
+    <div
+      className={`relative w-full h-${height} m-${margin} overflow-hidden touch-none`}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      <div
+        className={`absolute top-0 left-0 border border-red-900 bg-red-500 flex justify-center items-center transition-none z-10 ${
+          !startX?.current && "hidden"
+        }`}
+        style={{
+          width: `${swipedWidth}px`,
+          height: divRef?.current?.getBoundingClientRect().height,
+        }}
+      >
+        <FaRegTrashAlt className="w-8 h-8 text-red-900 py-1" />
+      </div>
+
+      <div
+        ref={divRef}
+        className="w-full h-full flex items-center justify-center"
+      >
+        {!isSwiped ? (
+          children
+        ) : (
+          <div
+            className="w-full flex gap-1 border border-purple-200 bg-purple-400 p-1"
+            style={{ height: `${divHeight}px` }}
+          >
+            <div
+              onClick={() => setIsSwiped(false)}
+              className="h-full w-full flex justify-center items-center border border-red-800 bg-red-300"
+            >
+              <XMarkIcon
+                className="text-red-800 py-1"
+                style={{ height: `${divHeight}px` }}
+              />
+            </div>
+            <div
+              onClick={async () => await onConfirmedSwipe()}
+              className="h-full w-full flex justify-center items-center border border-green-800 bg-green-300"
+            >
+              <FaCheck
+                className="text-green-800"
+                style={{ height: `${divHeight}px` }}
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const Friends = ({ friendList, user, deleteFriend, updateLastCP }) => {
+  const [locked, setLocked] = useState(true);
+
+  useEffect(() => {
+    setLocked(false);
+  }, []);
+
+  const onDeleteFriend = useCallback(
+    async (friend) => {
+      // event.stopPropagation();
+      if (locked) return;
+      await deleteFriend({
+        userId: user.id,
+        friendId: friend.friendId,
+      });
+      updateLastCP({ userId: user.id }); // no await
+    },
+    [locked, deleteFriend, user]
+  );
+
+  return (
+    <div className="h-full aspect-square translate-x-[0.12vw] translate-y-[0.1vw] py-1 flex flex-col items-center justify-center relative z-30">
+      <div className="h-full w-[95%] flex flex-col justify-start items-center gap-1">
+        {friendList.map((friend) => (
+          <div
+            key={friend.friendId}
+            className="flex justify-center items-center w-full"
+          >
+            <SwipableDiv
+              onConfirmedSwipe={() => onDeleteFriend(friend)}
+              height={8}
+              margin={0.5}
+            >
+              <div className="border border-purple-200 bg-purple-400 w-full h-full">
+                <div className="h-full w-full text-purple-900 flex items-center justify-center">
+                  {friend.customName}
+                </div>
+              </div>
+            </SwipableDiv>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
