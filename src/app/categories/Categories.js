@@ -2562,7 +2562,8 @@ const Invitations = ({
           </div>
         )}
 
-      <div className="h-full aspect-square flex flex-col gap-0.5">
+      {/* tricky: translate */}
+      <div className="h-full aspect-square flex flex-col gap-0.5 translate-x-[0.14vw] translate-y-[0.11vw] z-30">
         {threeFirsts.map((invitation, i) => (
           <div key={i} className="relative z-30 opacity-60 flex-1">
             <div
