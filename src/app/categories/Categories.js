@@ -2207,7 +2207,10 @@ const SwipableDiv = ({ onConfirmedSwipe, height, margin, children }) => {
         <FaRegTrashAlt className="w-8 h-8 text-red-900 py-1" />
       </div>
 
-      <div ref={divRef} className="absolute w-full">
+      <div
+        ref={divRef}
+        className="w-full h-full flex items-center justify-center"
+      >
         {!isSwiped ? (
           children
         ) : (
@@ -2261,24 +2264,26 @@ const Friends = ({ friendList, user, deleteFriend, updateLastCP }) => {
   );
 
   return (
-    <div className="h-full aspect-square flex flex-col items-center relative z-30">
-      <div className="h-full w-full py-1">
+    <div className="h-full aspect-square flex flex-col items-center justify-center relative z-30">
+      <div className="h-full w-full py-1 flex flex-col justify-center gap-1">
         {friendList.map((friend) => (
-          <div key={friend.friendId} className="flex justify-center">
+          <div
+            key={friend.friendId}
+            className="flex justify-center items-center"
+          >
             <SwipableDiv
               onConfirmedSwipe={() => onDeleteFriend(friend)}
-              height={10}
+              height={8}
               margin={0.5}
             >
-              <div className="border border-purple-950 bg-purple-300 p-1 h-full">
-                <div className="text-purple-950 text-center">
+              <div className="border border-purple-950 bg-purple-300 w-full h-full">
+                <div className="h-full w-full text-purple-950 flex items-center justify-center">
                   {friend.customName}
                 </div>
               </div>
             </SwipableDiv>
           </div>
         ))}
-        <SwipableDiv />
       </div>
     </div>
   );
