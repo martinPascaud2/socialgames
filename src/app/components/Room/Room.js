@@ -660,9 +660,16 @@ export default function Room({
 
   // CP friends
   const getFriends = useCallback(async () => {
+    if (!user || user.multiGuest) return;
     const friends = await getRoomFriendList({ userId: user.id });
     setFriendsList(friends);
-  }, [user.id]);
+  }, [user]);
+  useEffect(() => {
+    const friendsListInterval = setInterval(async () => {
+      await getFriends();
+    }, 5000);
+    return () => clearInterval(friendsListInterval);
+  }, [getFriends]);
 
   useEffect(() => {
     if (user.multiGuest) return;
@@ -1563,7 +1570,7 @@ export default function Room({
                           <div className="flex flex-col gap-1 items-center">
                             <div className="relative h-8 flex items-center">
                               <h1>Invite tes amis !</h1>
-                              <button
+                              {/* <button
                                 onClick={async () => {
                                   const friends = await getRoomFriendList({
                                     userId: user.id,
@@ -1573,7 +1580,7 @@ export default function Room({
                                 className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
                               >
                                 <ArrowPathIcon className="h-4 w-4" />
-                              </button>
+                              </button> */}
                             </div>
                             <div>
                               {friendsList &&

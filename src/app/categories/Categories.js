@@ -907,7 +907,7 @@ const SettingsButtons = ({
       // setScanning(false);
       resetPermissions();
       event.stopPropagation();
-      updateLastCP({ userId: user.id }); // no await
+      updateLastCP({ userId: user.id }); // no await // check
       window.open(
         "https://socialgames.vercel.app/categories/",
         "_blank",
@@ -2820,6 +2820,15 @@ export default function Categories({
     };
     backToRoom();
   }, [getCurrentGame, router]);
+
+  useEffect(() => {
+    if (!user || !updateLastCP) return;
+
+    const CPInterval = setInterval(async () => {
+      await updateLastCP({ userId: user.id });
+    }, 5000);
+    return () => clearInterval(CPInterval);
+  }, [updateLastCP, user]);
 
   const showInvitations = !toggledSettings && !toggledPrelobby;
 

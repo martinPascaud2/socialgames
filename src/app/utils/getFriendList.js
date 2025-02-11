@@ -72,7 +72,7 @@ export async function getRoomFriendList({ userId }) {
     })
   ).friends.filter(
     (friend) =>
-      friend.friend.lastControlPanel >= new Date(Date.now() - 30 * 60 * 1000)
+      friend.friend.lastControlPanel >= new Date(Date.now() - 12 * 1000)
   );
 
   const friendListFlat = friendList.map((friend) => ({
