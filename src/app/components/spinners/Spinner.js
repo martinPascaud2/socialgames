@@ -1,10 +1,53 @@
-export default function Spinner() {
+export function HexagonalSpinner({ size = 10 }) {
+  return (
+    <div role="status" className="flex justify-center">
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 100 100"
+        fill="none"
+        className={`w-${size} h-${size}`}
+      >
+        <polygon
+          points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5"
+          stroke="gray"
+          strokeWidth="4"
+          fill="transparent"
+        />
+
+        <polygon
+          points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5"
+          stroke="purple"
+          strokeWidth="4"
+          fill="transparent"
+          strokeDasharray="290"
+          strokeDashoffset="290"
+          style={{
+            animation: "hex-draw 1s linear infinite",
+          }}
+        />
+      </svg>
+
+      <style jsx>{`
+        @keyframes hex-draw {
+          0% {
+            stroke-dashoffset: 290;
+          }
+          100% {
+            stroke-dashoffset: 0;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+export default function Spinner({ size = 10 }) {
   return (
     <div role="status" className="flex justify-center">
       <div role="status">
         <svg
           aria-hidden="true"
-          className="inline w-10 h-10 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+          className={`inline w-${size} h-${size} text-gray-200 animate-spin dark:text-gray-100 fill-purple-600`}
           viewBox="0 0 100 101"
           fill="none"
         >

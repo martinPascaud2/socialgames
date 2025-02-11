@@ -23,6 +23,7 @@ import { saveLastParams } from "@/utils/getLastParams";
 import cancelBack from "@/utils/cancelBack";
 import { gamesRefs, modesRules, categoriesIcons } from "@/assets/globals";
 
+import { HexagonalSpinner } from "../spinners/Spinner";
 import { CornerTriangle } from "../Triangle";
 import { LobbyDeleteGroup } from "@/components/DeleteGroup";
 import ChooseAnotherGame from "@/components/ChooseAnotherGame";
@@ -927,10 +928,16 @@ export default function Room({
     );
   }
 
-  if (!roomId || !gameData) return null;
+  if (!roomId || !gameData)
+    return (
+      <div className="h-screen w-screen bg-black flex items-center justify-center">
+        <HexagonalSpinner size={28} />
+      </div>
+    );
 
   if (!isStarted || (!isAdmin && gameData.isSearching && !gameData.ended)) {
     return (
+      // <div className="absolute h-[100dvh] w-full px-2 overflow-x-hidden animate-[expandHeight_1.2s_ease-in-out]">
       <div className="absolute h-[100dvh] w-full px-2 overflow-x-hidden">
         <UserContext.Provider value={{ userParams }}>
           <div className={`relative h-full w-full`}>
