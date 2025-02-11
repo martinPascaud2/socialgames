@@ -56,7 +56,7 @@ export async function getRoomFriendList({ userId }) {
           where: {
             friend: {
               lastControlPanel: {
-                gte: new Date(Date.now() - 12 * 1000),
+                gte: new Date(Date.now() - 8 * 1000),
               },
             },
           },
