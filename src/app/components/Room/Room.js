@@ -1584,7 +1584,7 @@ export default function Room({
                             </div>
                             <div>
                               {friendsList &&
-                                friendsList.map((friend) => {
+                                friendsList.map(({ friend, customName }) => {
                                   if (
                                     gamerList.some(
                                       (gamer) => gamer === friend.name
@@ -1616,7 +1616,7 @@ export default function Room({
                                           : "border border-sky-100 text-sky-700 pulse-soft p-1 m-0.5"
                                       }`}
                                     >
-                                      {friend.customName}
+                                      {customName}
                                     </button>
                                   );
                                 })}

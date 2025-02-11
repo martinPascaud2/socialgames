@@ -50,11 +50,21 @@ const isNotReinvitated = async ({ friend }) => {
 export async function getRoomFriendList({ userId }) {
   const friendList = (
     await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-      include: {
+      where: { id: userId },
+      select: {
         friends: {
+          where: {
+            friend: {
+              lastControlPanel: {
+                gte: new Date(Date.now() - 12 * 1000),
+              },
+            },
+          },
+          orderBy: {
+            friend: {
+              lastControlPanel: "desc", // check
+            },
+          },
           select: {
             customName: true,
             friend: {
@@ -70,23 +80,11 @@ export async function getRoomFriendList({ userId }) {
         },
       },
     })
-  ).friends.filter(
-    (friend) =>
-      friend.friend.lastControlPanel >= new Date(Date.now() - 12 * 1000)
-  );
-
-  const friendListFlat = friendList.map((friend) => ({
-    customName: friend.customName,
-    ...friend.friend,
-  }));
-
-  const byLastCPFriendList = friendListFlat.sort(
-    (a, b) => new Date(b.lastControlPanel) - new Date(a.lastControlPanel)
-  );
+  ).friends;
 
   const onlyNotReinvitated = (
     await Promise.all(
-      byLastCPFriendList.map(async (friend) => ({
+      friendList.map(async (friend) => ({
         friend,
         isValid: await isNotReinvitated({ friend }),
       }))
