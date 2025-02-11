@@ -721,6 +721,8 @@ import FriendsSettingsIcon from "./FriendsSettingsIcon";
 import { MdOutlineAccountTree } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa6";
+import { FaRegCircle } from "react-icons/fa6";
+import { MdOutlineSquare } from "react-icons/md";
 
 import { updatePassword } from "@/signin/actions";
 import ReactDOM, { useFormState } from "react-dom";
@@ -1798,9 +1800,8 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
               borderRight: isToolsPressed ? "1px solid #581c87" : "",
             }}
           >
-            <div className="ml-2 mb-3">
-              <GoTools className="w-12 h-12 text-purple-800 mt-2" />
-            </div>
+            {/* <GoTools className="w-12 h-12 text-purple-800" /> */}
+            <FaRegCircle className="w-12 h-12 text-purple-800" />
           </div>
           <div // background filler
             onTouchStart={() => setIsToolsPressed(true)}
@@ -1934,7 +1935,8 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
               borderLeft: isPostgamesPressed ? "1px solid #581c87" : "",
             }}
           >
-            <FaRegFloppyDisk className="w-12 h-12 text-purple-800" />
+            {/* <FaRegFloppyDisk className="w-12 h-12 text-purple-800" /> */}
+            <MdOutlineSquare className="w-12 h-12 text-purple-800" />
           </div>
           <div // background filler
             onTouchStart={() => setIsPostgamesPressed(true)}
