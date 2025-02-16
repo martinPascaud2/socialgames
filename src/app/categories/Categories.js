@@ -2014,7 +2014,8 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
   );
 };
 
-const OctagonBackground = ({ handleBgClick, discreet }) => {
+// const OctagonBackground = ({ handleBgClick, discreet }) => {
+export function OctagonBackground({ handleBgClick, discreet }) {
   return (
     <>
       <div
@@ -2139,7 +2140,7 @@ const OctagonBackground = ({ handleBgClick, discreet }) => {
       </div>
     </>
   );
-};
+}
 
 const CentralZone = ({ children, onClick, zIndex }) => {
   return (
@@ -2623,6 +2624,7 @@ export default function Categories({
   const [scanning, setScanning] = useState(false);
 
   const [barValues, setBarValues] = useState();
+  const [octagonPosition, setOctagonPosition] = useState();
 
   const [serverMessage, setServerMessage] = useState();
 
@@ -2843,6 +2845,27 @@ export default function Categories({
     );
   }, [setting]);
 
+  useEffect(() => {
+    if (!user) return;
+
+    if (!barValues) {
+      const { params } = user;
+      const { bottomBarSize, topBarSize } = params;
+      const octagonPosition = `${(topBarSize - bottomBarSize) / 8}rem`;
+      setOctagonPosition(octagonPosition);
+    } else {
+      const { bottomBarSize, topBarSize } = barValues;
+      const octagonPosition = `${(topBarSize - bottomBarSize) / 8}rem`;
+      setOctagonPosition(octagonPosition);
+    }
+  }, [user, barValues]);
+
+  console.log("user", user);
+  console.log("barValues", barValues);
+  console.log("octagonPosition", octagonPosition);
+
+  const [isGoingGame, setIsGoingGame] = useState(false);
+
   return (
     <div
       onClick={(event) => {
@@ -2853,7 +2876,14 @@ export default function Categories({
       } text-white`}
     >
       {!isGroup ? (
-        <main className="relative h-[100dvh] w-screen">
+        // <main className="relative h-[100dvh] w-screen translate-y-[20rem]">
+        <main
+          // className={`relative h-[100dvh] w-screen translate-y-[${octagonPosition}]`}
+          className={`relative h-[100dvh] w-screen`}
+          style={{
+            transform: `translateY(${octagonPosition})`,
+          }}
+        >
           <div
             onClick={handleOctaClick}
             className="octagon left-5 top-[50dvh] translate-y-[-50%] relative z-0"
@@ -2863,156 +2893,169 @@ export default function Categories({
               discreet={setting === "camera" || setting === "qrCode"}
             />
 
-            {toggledSettings && (
-              <>
-                <SettingsButtons
-                  updateLastCP={updateLastCP}
-                  user={user}
-                  setSetting={setSetting}
-                  setLocation={setLocation}
-                  setServerMessage={setServerMessage}
-                  resetPermissions={resetPermissions}
-                  setScanning={setScanning}
-                  setting={setting}
-                  signOut={signOut}
-                />
-
-                {setting === "friends" && (
-                  <CentralZone>
-                    <div className="flex w-full h-full justify-center items-center py-5">
-                      <Friends
-                        friendList={friendList}
-                        user={user}
-                        deleteFriend={deleteFriend}
-                        updateLastCP={updateLastCP}
-                      />
-                    </div>
-                  </CentralZone>
-                )}
-
-                {setting === "params" && (
-                  <CentralZone>
-                    <div className="flex w-full h-full justify-center items-center py-5">
-                      <Params
-                        updateParams={updateParams}
-                        updateLastCP={updateLastCP}
-                        user={user}
-                        barValues={barValues}
-                        setBarValues={setBarValues}
-                      />
-                    </div>
-                  </CentralZone>
-                )}
-
-                {setting === "password" && (
-                  <CentralZone onClick={handleOctaClick} zIndex={60}>
-                    <PasswordForm user={user} />
-                  </CentralZone>
-                )}
-
-                {setting === "qrCode" && (
-                  <CentralZone onClick={handleOctaClick} zIndex={60}>
-                    {
-                      location ? (
-                        <div className="w-full h-full flex justify-center items-center">
-                          <QRCode
-                            value={`id=${user.id};mail=${user.email};name=${user.name};{"latitude":"${location?.latitude}","longitude":"${location?.longitude}"}`}
-                            onClick={(event) => event.stopPropagation()}
-                            className="h-[41vw] w-auto"
-                            style={{
-                              background: "white",
-                              boxShadow: "0px 0px 5px 5px white",
-                            }}
-                          />
-                        </div>
-                      ) : null
-
-                      // (
-                      //   <div className="h-full w-full flex justify-center items-center">
-                      //     <Spinner />
-                      //   </div>
-                      // )
-                    }
-                  </CentralZone>
-                )}
-
-                <div className={`${setting !== "camera" && "hidden"}`}>
-                  <CentralZone onClick={handleOctaClick} zIndex={60}>
-                    {QrCodeScanner}
-                  </CentralZone>
-                </div>
-              </>
-            )}
-
-            {showInvitations && (
-              <>
-                <MainButtons
-                  setToggledSettings={setToggledSettings}
-                  setToggledPrelobby={setToggledPrelobby}
-                />
-                <CentralZone onClick={handleOctaClick}>
-                  <Invitations
-                    user={user}
+            <div
+              // className={`${isGoingGame ? "hidden" : ""}`}
+              className={`${
+                isGoingGame
+                  ? "opacity-0 animate-[fadeOut_0.5s_ease-in-out]"
+                  : "opacity-100"
+              }`}
+            >
+              {toggledSettings && (
+                <>
+                  <SettingsButtons
                     updateLastCP={updateLastCP}
-                    getPublicRooms={getPublicRooms}
-                    publicRooms={publicRooms}
-                    setPublicRooms={setPublicRooms}
-                    invitations={invitations}
-                    currentGame={currentGame}
+                    user={user}
+                    setSetting={setSetting}
+                    setLocation={setLocation}
+                    setServerMessage={setServerMessage}
+                    resetPermissions={resetPermissions}
+                    setScanning={setScanning}
+                    setting={setting}
+                    signOut={signOut}
                   />
-                </CentralZone>
-              </>
-            )}
 
-            {toggledPrelobby && !toggledSettings && (
-              <>
-                <PostButtons
-                  resetPermissions={resetPermissions}
-                  updateLastCP={updateLastCP}
-                  user={user}
-                />
-                <CentralZone>
-                  <div className="flex w-full h-full justify-center items-center py-5">
-                    <div
-                      className="h-full aspect-square translate-x-[0.12vw] translate-y-[0.1vw] flex justify-center items-center bg-purple-600 z-30"
-                      style={{
-                        background:
-                          "radial-gradient(circle, #a855f7 0%, #7e22ce 100%)",
-                      }}
-                    >
+                  {setting === "friends" && (
+                    <CentralZone>
+                      <div className="flex w-full h-full justify-center items-center py-5">
+                        <Friends
+                          friendList={friendList}
+                          user={user}
+                          deleteFriend={deleteFriend}
+                          updateLastCP={updateLastCP}
+                        />
+                      </div>
+                    </CentralZone>
+                  )}
+
+                  {setting === "params" && (
+                    <CentralZone>
+                      <div className="flex w-full h-full justify-center items-center py-5">
+                        <Params
+                          updateParams={updateParams}
+                          updateLastCP={updateLastCP}
+                          user={user}
+                          barValues={barValues}
+                          setBarValues={setBarValues}
+                        />
+                      </div>
+                    </CentralZone>
+                  )}
+
+                  {setting === "password" && (
+                    <CentralZone onClick={handleOctaClick} zIndex={60}>
+                      <PasswordForm user={user} />
+                    </CentralZone>
+                  )}
+
+                  {setting === "qrCode" && (
+                    <CentralZone onClick={handleOctaClick} zIndex={60}>
+                      {
+                        location ? (
+                          <div className="w-full h-full flex justify-center items-center">
+                            <QRCode
+                              value={`id=${user.id};mail=${user.email};name=${user.name};{"latitude":"${location?.latitude}","longitude":"${location?.longitude}"}`}
+                              onClick={(event) => event.stopPropagation()}
+                              className="h-[41vw] w-auto"
+                              style={{
+                                background: "white",
+                                boxShadow: "0px 0px 5px 5px white",
+                              }}
+                            />
+                          </div>
+                        ) : null
+
+                        // (
+                        //   <div className="h-full w-full flex justify-center items-center">
+                        //     <Spinner />
+                        //   </div>
+                        // )
+                      }
+                    </CentralZone>
+                  )}
+
+                  <div className={`${setting !== "camera" && "hidden"}`}>
+                    <CentralZone onClick={handleOctaClick} zIndex={60}>
+                      {QrCodeScanner}
+                    </CentralZone>
+                  </div>
+                </>
+              )}
+
+              {showInvitations && (
+                <>
+                  <MainButtons
+                    setToggledSettings={setToggledSettings}
+                    setToggledPrelobby={setToggledPrelobby}
+                  />
+                  <CentralZone onClick={handleOctaClick}>
+                    <Invitations
+                      user={user}
+                      updateLastCP={updateLastCP}
+                      getPublicRooms={getPublicRooms}
+                      publicRooms={publicRooms}
+                      setPublicRooms={setPublicRooms}
+                      invitations={invitations}
+                      currentGame={currentGame}
+                    />
+                  </CentralZone>
+                </>
+              )}
+
+              {toggledPrelobby && !toggledSettings && (
+                <>
+                  <PostButtons
+                    resetPermissions={resetPermissions}
+                    updateLastCP={updateLastCP}
+                    user={user}
+                  />
+                  <CentralZone>
+                    <div className="flex w-full h-full justify-center items-center py-5">
                       <div
+                        className="h-full aspect-square translate-x-[0.12vw] translate-y-[0.1vw] flex justify-center items-center bg-purple-600 z-30"
                         style={{
-                          width: "23vw",
-                          height: "23vw",
-                          borderRadius: "50%",
                           background:
-                            "radial-gradient(circle, #7e22ce 0%, #9333ea 100%)",
-                          boxShadow: `inset 5px 5px 10px rgba(255, 255, 255, 0.3), inset -5px -5px 15px rgba(0, 0, 0, 0.3), 5px 5px 15px rgba(0, 0, 0, 0.3), 5px 5px 15px rgba(255, 255, 255, 0.1)`,
+                            "radial-gradient(circle, #a855f7 0%, #7e22ce 100%)",
                         }}
-                        className="flex justify-center items-center border border-purple-800"
                       >
                         <div
-                          onClick={async (event) => {
-                            event.stopPropagation();
-                            resetPermissions();
-                            await updateLastCP({ userId: user.id, out: true });
-                            window.location.href =
-                              user.lastPlayed ||
-                              "/categories/grouping/grouping";
+                          style={{
+                            width: "23vw",
+                            height: "23vw",
+                            borderRadius: "50%",
+                            background:
+                              "radial-gradient(circle, #7e22ce 0%, #9333ea 100%)",
+                            boxShadow: `inset 5px 5px 10px rgba(255, 255, 255, 0.3), inset -5px -5px 15px rgba(0, 0, 0, 0.3), 5px 5px 15px rgba(0, 0, 0, 0.3), 5px 5px 15px rgba(255, 255, 255, 0.1)`,
                           }}
-                          className="z-30"
+                          className="flex justify-center items-center border border-purple-800"
                         >
-                          <FaPlay className="ml-1.5 w-10 h-10 text-purple-800" />
+                          <div
+                            onClick={async (event) => {
+                              setIsGoingGame(true);
+                              event.stopPropagation();
+                              resetPermissions();
+                              await updateLastCP({
+                                userId: user.id,
+                                out: true,
+                              });
+                              window.location.href =
+                                user.lastPlayed ||
+                                "/categories/grouping/grouping";
+                            }}
+                            className="z-30"
+                          >
+                            <FaPlay className="ml-1.5 w-10 h-10 text-purple-800" />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </CentralZone>
-              </>
-            )}
+                  </CentralZone>
+                </>
+              )}
 
-            <div className="absolute top-full z-20 w-full mt-4 text-center text-purple-100">
-              {serverMessage}
+              <div className="absolute top-full z-20 w-full mt-4 text-center text-purple-100">
+                {serverMessage}
+              </div>
             </div>
           </div>
         </main>

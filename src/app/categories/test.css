@@ -39,6 +39,7 @@ body {
   border-top: 26.5vw solid var(--dynamic-border-color);
   border-left: 26.5vw solid black;
   border-right: 26.5vw solid black;
+  z-index: -1;
 }
 
 @keyframes float {
@@ -48,5 +49,14 @@ body {
   }
   50% {
     transform: translate(-1px, 4px);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 }

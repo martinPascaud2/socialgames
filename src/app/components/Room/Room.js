@@ -30,6 +30,8 @@ import ChooseAnotherGame from "@/components/ChooseAnotherGame";
 import ChooseLastGame from "@/components/ChooseLastGame";
 import NextStep from "../NextStep";
 import AnimatedDots from "../AnimatedDots";
+import AnimatedOctagon from "./AnimatedOctagon";
+import LoadingRoomOctagon from "./LoadingRoomOctagon";
 
 import {
   CheckIcon,
@@ -920,6 +922,24 @@ export default function Room({
   }, [gameData, user]);
   // ------------------------------
 
+  useEffect(() => {
+    if (!barsSizes) return;
+    const dynamicHeight = `calc(90vw + ${barsSizes.top / 4}rem + ${
+      barsSizes.bottom / 4
+      // }rem + 2rem)`;
+    }rem)`;
+    document.documentElement.style.setProperty(
+      "--dynamic-height",
+      dynamicHeight
+    );
+
+    const dynamicWidth = "100%";
+    document.documentElement.style.setProperty("--dynamic-width", dynamicWidth);
+  }, [barsSizes]);
+
+  const [hasLoadingOctagonAnimated, setHasLoadingOctagonAnimated] =
+    useState(false);
+
   if (joinError) {
     return (
       <div className="h-screen w-screen flex justify-center items-center">
@@ -928,656 +948,751 @@ export default function Room({
     );
   }
 
-  if (!roomId || !gameData)
+  console.log("user", user);
+  console.log("hasLoadingOctagonAnimated", hasLoadingOctagonAnimated);
+
+  // if (!roomId || !gameData)
+  //   return (
+  //     <div className="h-screen w-screen bg-black flex items-center justify-center">
+  //       <HexagonalSpinner size={28} />
+  //     </div>
+  //   );
+
+  if (!roomId || !gameData || !hasLoadingOctagonAnimated)
     return (
-      <div className="h-screen w-screen bg-black flex items-center justify-center">
-        <HexagonalSpinner size={28} />
+      <div
+        className="h-[100dvh] w-full px-2 overflow-x-hidden bg-black"
+        style={{
+          paddingTop: `${barsSizes.top / 4}rem`,
+          paddingBottom: `${barsSizes.bottom / 4}rem`,
+        }}
+      >
+        <LoadingRoomOctagon
+          setHasLoadingOctagonAnimated={setHasLoadingOctagonAnimated}
+        />
       </div>
     );
+  console.log("roomId", roomId);
+  console.log("gameData", gameData);
+  console.log("userParams", userParams);
+  console.log("barsSizes", barsSizes);
+
+  // if (!hasAnimated)
+  //   return (
+  //     <AnimatedOctagon
+  //       user={user}
+  //       hasAnimated={hasAnimated}
+  //       setHasAnimated={setHasAnimated}
+  //     />
+  //   );
+
+  // if (!roomId || !gameData)
+  //   return (
+  //     <div className="octagon z-50">
+  //       egr{/* <HexagonalSpinner size={28} /> */}
+  //     </div>
+  //   );
 
   if (!isStarted || (!isAdmin && gameData.isSearching && !gameData.ended)) {
     return (
-      // <div className="absolute h-[100dvh] w-full px-2 overflow-x-hidden animate-[expandHeight_1.2s_ease-in-out]">
-      <div className="absolute h-[100dvh] w-full px-2 overflow-x-hidden">
-        <UserContext.Provider value={{ userParams }}>
-          <div className={`relative h-full w-full`}>
-            <div
-              className="absolute left-0 translate-x-[-50%] translate-y-[-1rem] z-10"
-              style={{ top: `${barsSizes.top / 4}rem` }}
-            >
-              <CornerTriangle direction={{ y: "bottom", x: "left" }} />
+      <div className="bg-black w-screen h-screen">
+        {/* <div className="absolute h-[100dvh] w-full px-2 overflow-x-hidden"> */}
+        {/* <div className="absolute h-[100dvh] w-[calc(100%-1rem)] overflow-x-hidden animate-[expandSize_10s_ease-in-out] top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]"> */}
+        <div
+          // className={` h-[100dvh] absolute w-full overflow-x-hidden animate-[expandSize_3s_ease-in-out] top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]`}
+          className={`h-[100dvh] absolute w-[95vw] overflow-x-hidden animate-[expandSize_1.5s_ease-in-out] top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]`}
+          // className={`px-2 absolute w-full overflow-x-hidden animatee-[expandSize_3s_ease-in-out] top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]`}
+          // style={{
+          //   height: `calc(90vw + ${barsSizes.top / 4}rem + ${
+          //     barsSizes.bottom / 4
+          //   }rem + 1rem)`,
+          //   width: `calc(100% - 1.5rem)`,
+          // }}
+        >
+          <UserContext.Provider value={{ userParams }}>
+            <div className={`relative h-full w-full overflow-hidden`}>
+              <div
+                className="absolute top-0 w-full bg-black z-50"
+                style={{ height: `${barsSizes.top / 4}rem` }}
+              />
+              <div
+                className="absolute bottom-0 w-full bg-black z-50"
+                style={{ height: `${barsSizes.bottom / 4}rem` }}
+              />
+
+              <div
+                // className="absolute left-0 translate-x-[-50%] translate-y-[-1rem] z-10"
+                className={`absolute left-0 translate-x-[-50%] translate-y-[-1.5rem] z-10`}
+                // className={`absolute left-0 translate-x-[-50%] z-10`}
+                style={{
+                  top: `${barsSizes.top / 4}rem`,
+                  // transform: `translateY(calc(-${
+                  //   barsSizes.top / 4
+                  // }rem + 1rem))`,
+                }}
+              >
+                <CornerTriangle direction={{ y: "bottom", x: "left" }} />
+              </div>
+              <div
+                // className="absolute right-0 translate-x-[50%] translate-y-[-1rem] z-10"
+                className="absolute right-0 translate-x-[50%] translate-y-[-1.5rem] z-10"
+                // className="absolute right-0 translate-x-[50%] z-10"
+                style={{
+                  top: `${barsSizes.top / 4}rem`,
+                  // transform: `translateY(calc(-${
+                  //   barsSizes.top / 4
+                  // }rem + 1rem))`,
+                }}
+              >
+                <CornerTriangle direction={{ y: "bottom", x: "right" }} />
+              </div>
+              <div
+                // className="absolute left-0 translate-x-[-50%] translate-y-[1rem] z-10"
+                className="absolute left-0 translate-x-[-50%] translate-y-[1.5rem] z-10"
+                // className="absolute left-0 translate-x-[-50%] z-10"
+                style={{
+                  bottom: `${barsSizes.bottom / 4}rem`,
+                  // transform: `translateY(calc(${
+                  //   barsSizes.bottom / 4
+                  // }rem - 1rem))`,
+                }}
+              >
+                <CornerTriangle direction={{ y: "top", x: "left" }} />
+              </div>
+              <div
+                // className="absolute right-0 translate-x-[50%] translate-y-[1rem] z-10"
+                className="absolute right-0 translate-x-[50%] translate-y-[1.5rem] z-10"
+                // className="absolute right-0 translate-x-[50%] z-10"
+                style={{
+                  bottom: `${barsSizes.bottom / 4}rem`,
+                  // transform: `translateY(calc(${
+                  //   barsSizes.bottom / 4
+                  // }rem - 1rem))`,
+                }}
+              >
+                <CornerTriangle direction={{ y: "top", x: "right" }} />
+              </div>
+              <div className="absolute right-full w-2.5 bg-black h-full z-10" />
+              <div className="absolute left-full w-2.5 bg-black h-full z-10" />
+              <div
+                className="h-full w-full relative bg-purple-600"
+                // style={{
+                //   paddingTop: `${barsSizes.top / 4}rem`,
+                //   paddingBottom: `${barsSizes.bottom / 4}rem`,
+                // }}
+              >
+                <div
+                  className="absolute left-0 w-full bg-transparent"
+                  style={{
+                    top: `${barsSizes.top / 4}rem`,
+                    height: `calc(100% - ${barsSizes.top / 4}rem - ${
+                      barsSizes.bottom / 4
+                    }rem)`,
+                    boxShadow:
+                      "inset -9px 0px 5px -6px #581c87, inset 9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87, inset 0px -9px 5px -6px #581c87",
+                  }}
+                />
+              </div>
             </div>
+            {isAdmin && gameName !== "grouping" && (
+              <div
+                onClick={async () => await deleteInvs()}
+                className="opacity-100 animate-[fadeIn_1.5s_ease-in-out]"
+              >
+                <NextStep onClick={() => launchRoom()}>
+                  <div>Lancer</div>
+                </NextStep>
+              </div>
+            )}
+
             <div
-              className="absolute right-0 translate-x-[50%] translate-y-[-1rem] z-10"
-              style={{ top: `${barsSizes.top / 4}rem` }}
-            >
-              <CornerTriangle direction={{ y: "bottom", x: "right" }} />
-            </div>
-            <div
-              className="absolute left-0 translate-x-[-50%] translate-y-[1rem] z-10"
-              style={{ bottom: `${barsSizes.bottom / 4}rem` }}
-            >
-              <CornerTriangle direction={{ y: "top", x: "left" }} />
-            </div>
-            <div
-              className="absolute right-0 translate-x-[50%] translate-y-[1rem] z-10"
-              style={{ bottom: `${barsSizes.bottom / 4}rem` }}
-            >
-              <CornerTriangle direction={{ y: "top", x: "right" }} />
-            </div>
-            <div className="absolute right-full w-2.5 bg-black h-full z-10" />
-            <div className="absolute left-full w-2.5 bg-black h-full z-10" />
-            <div
-              className="h-full w-full relative bg-purple-600"
+              className="h-full w-full absolute top-0 left-0 z-20 px-2"
+              // className="h-full w-full absolute top-0 left-0 z-20"
               style={{
                 paddingTop: `${barsSizes.top / 4}rem`,
                 paddingBottom: `${barsSizes.bottom / 4}rem`,
               }}
             >
-              <div
-                className="absolute left-0 w-full bg-transparent"
-                style={{
-                  top: `${barsSizes.top / 4}rem`,
-                  height: `calc(100% - ${barsSizes.top / 4}rem - ${
-                    barsSizes.bottom / 4
-                  }rem)`,
-                  boxShadow:
-                    "inset -9px 0px 5px -6px #581c87, inset 9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87, inset 0px -9px 5px -6px #581c87",
-                }}
-              />
-            </div>
-          </div>
-          {isAdmin && gameName !== "grouping" && (
-            <div onClick={async () => await deleteInvs()}>
-              <NextStep onClick={() => launchRoom()}>
-                <div>Lancer</div>
-              </NextStep>
-            </div>
-          )}
-
-          <div
-            className="h-full w-full absolute top-0 left-0 z-20 px-2"
-            style={{
-              paddingTop: `${barsSizes.top / 4}rem`,
-              paddingBottom: `${barsSizes.bottom / 4}rem`,
-            }}
-          >
-            {(!isChosen && !group) || isPrivate === undefined ? (
-              <div>Chargement...</div>
-            ) : (
-              <div className="relative h-full w-full">
-                <div className="absolute left-1/2 translate-x-[-50%] h-[10dvh] w-full">
-                  <div className="w-full flex justify-center translate-y-[1rem]">
-                    {categorie !== "grouping" && (
-                      <div className="flex items-center">
-                        <div>
-                          {options?.mode
-                            ? modesRules[options?.mode].limits.min
-                            : gamesRefs[gameName].limits.min}
-                          &nbsp;
-                        </div>
-                        <FaLongArrowAltRight className="mr-1 w-6 h-6" />
-                        <div className="text-2xl text-amber-400">
-                          {options?.mode
-                            ? modesRules[options?.mode].limits.opti
-                            : gamesRefs[gameName].limits.opti}
-                        </div>
-                        <FaLongArrowAltLeft className="ml-1 w-6 h-6" />
-                        <div>
-                          &nbsp;
-                          {options?.mode
-                            ? modesRules[options?.mode].limits.max
-                            : gamesRefs[gameName].limits.max}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                  <div className="absolute top-[7dvh] w-full flex justify-center items-center">
-                    {categorie !== "grouping" &&
-                    categoriesIcons &&
-                    !gameData.isSearching ? (
-                      <Image
-                        src={categoriesIcons[categorie]}
-                        alt={`${categorie} image`}
-                        className="max-h-[4dvh] max-w-[4dvh] aspect-square"
-                        style={{ objectFit: "contain" }}
-                        width={500}
-                        height={500}
-                      />
-                    ) : (
-                      <div className="h-[4dvh] w-[4dvh]" />
-                    )}
-
-                    {isAdmin ? (
-                      <div className="text-center text-amber-700 text-3xl flex justify-center items-center border border-amber-700 bg-amber-100 p-2 mx-2 min-w-[15dvh]">
-                        {gamesRefs[gameName].categorie === "grouping" ? (
-                          <div
-                            onClick={async () => {
-                              await deleteInvs();
-                              launchRoom();
-                            }}
-                            className="w-full h-full"
-                          >
-                            +
+              {(!isChosen && !group) || isPrivate === undefined ? (
+                <div>Chargement...</div>
+              ) : (
+                // <div className="relative h-full w-full">
+                <div className="opacity-100 animate-[fadeIn_1.5s_ease-in-out] relative h-full w-full">
+                  <div className="absolute left-1/2 translate-x-[-50%] h-[10dvh] w-full">
+                    <div className="w-full flex justify-center translate-y-[1rem]">
+                      {categorie !== "grouping" && (
+                        <div className="flex items-center">
+                          <div>
+                            {options?.mode
+                              ? modesRules[options?.mode].limits.min
+                              : gamesRefs[gameName].limits.min}
+                            &nbsp;
                           </div>
-                        ) : (
-                          gameName !== "grouping" && (
-                            <ChooseAnotherGame
-                              group={group}
-                              roomId={roomId}
-                              roomToken={roomToken}
-                              gameData={gameData}
-                              lastPosition={geoLocation}
-                              deleteInvs={deleteInvs}
-                            >
-                              {gamesRefs[gameName].name}
-                            </ChooseAnotherGame>
-                          )
-                        )}
-                      </div>
-                    ) : (
-                      <div className="text-center text-amber-400 text-3xl flex justify-center items-center mx-2 min-w-[15dvh]">
-                        {!gameData.isSearching ? (
-                          gamesRefs[gameName].categorie === "grouping" ? (
-                            <span>Lobby</span>
-                          ) : (
-                            gamesRefs[gameName].name
-                          )
-                        ) : (
-                          <AnimatedDots color="#fbbf24" text="5xl" /> // text-amber-400
-                        )}
-                      </div>
-                    )}
-                    <div className="rounded-full h-[4dvh] w-[4dvh] border border-amber-700 bg-amber-100 flex justify-center items-center">
-                      <FaInfo className="h-[2.5dvh] w-[2.5dvh] text-amber-700" />
+                          <FaLongArrowAltRight className="mr-1 w-6 h-6" />
+                          <div className="text-2xl text-amber-400">
+                            {options?.mode
+                              ? modesRules[options?.mode].limits.opti
+                              : gamesRefs[gameName].limits.opti}
+                          </div>
+                          <FaLongArrowAltLeft className="ml-1 w-6 h-6" />
+                          <div>
+                            &nbsp;
+                            {options?.mode
+                              ? modesRules[options?.mode].limits.max
+                              : gamesRefs[gameName].limits.max}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                </div>
+                    <div className="absolute top-[7dvh] w-full flex justify-center items-center">
+                      {categorie !== "grouping" &&
+                      categoriesIcons &&
+                      !gameData.isSearching ? (
+                        <Image
+                          src={categoriesIcons[categorie]}
+                          alt={`${categorie} image`}
+                          className="max-h-[4dvh] max-w-[4dvh] aspect-square"
+                          style={{ objectFit: "contain" }}
+                          width={500}
+                          height={500}
+                        />
+                      ) : (
+                        <div className="h-[4dvh] w-[4dvh]" />
+                      )}
 
-                <div
-                  className="le_test absolute top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%] w-full flex flex-col items-center gap-2"
-                  style={{ height: "calc(100% - 30vh)" }}
-                >
-                  <div
-                    onClick={() => {
-                      if (!showPlayers) {
-                        setShowPlayers(true);
-                        setShowConfig(false);
-                      }
-                    }}
-                    className={`overflow-hidden relative flex flex-col items-center border w-[80%] transition-[height] duration-1000 ease-in-out ${
-                      !showPlayers
-                        ? "h-12 border border-2 rounded-md border-amber-700 bg-amber-100 text-amber-700 p-2"
-                        : "h-full border border-2 rounded-md border-sky-700 bg-sky-100 text-sky-700 p-2"
-                    }`}
-                  >
-                    {!showPlayers && (
-                      <div>
-                        <div className="flex items-center absolute left-2 top-1">
-                          {isPrivate ? (
-                            <LockClosedIcon className="h-8 w-8 mb-0.5" />
+                      {isAdmin ? (
+                        <div className="text-center text-amber-700 text-3xl flex justify-center items-center border border-amber-700 bg-amber-100 p-2 mx-2 min-w-[15dvh]">
+                          {gamesRefs[gameName].categorie === "grouping" ? (
+                            <div
+                              onClick={async () => {
+                                await deleteInvs();
+                                launchRoom();
+                              }}
+                              className="w-full h-full"
+                            >
+                              +
+                            </div>
                           ) : (
-                            <LockOpenIcon className="h-8 w-8 mb-0.5" />
+                            gameName !== "grouping" && (
+                              <ChooseAnotherGame
+                                group={group}
+                                roomId={roomId}
+                                roomToken={roomToken}
+                                gameData={gameData}
+                                lastPosition={geoLocation}
+                                deleteInvs={deleteInvs}
+                              >
+                                {gamesRefs[gameName].name}
+                              </ChooseAnotherGame>
+                            )
                           )}
                         </div>
-                        {(() => {
-                          if (!gamerList || !multiGuestList) return;
-                          const gamersNumber =
-                            gamerList.length +
-                            guestList.length +
-                            multiGuestList.length;
-                          const badGamersNumber =
-                            gamersNumber < gamesRefs[gameName].limits?.min ||
-                            gamersNumber > gamesRefs[gameName].limits?.max;
-
-                          return (
-                            <div className="text-xl absolute top-1.5 left-[50%] translate-x-[-50%]">
-                              <span>Joueurs&nbsp;:&nbsp;</span>
-                              <span
-                                className={`${
-                                  badGamersNumber &&
-                                  "text-red-800 font-semibold"
-                                }`}
-                              >
-                                {gamersNumber}
-                              </span>
-                              <span>
-                                {gamesRefs[gameName].limits &&
-                                  `\u00A0/\u00A0${gamesRefs[gameName].limits.max}`}
-                              </span>
-                            </div>
-                          );
-                        })()}
-                        {gameName !== "grouping" && (
-                          <div className="absolute right-1 top-1">
-                            <ChevronRightIcon className="h-8 w-8" />
-                          </div>
-                        )}
-                      </div>
-                    )}
-                    {showPlayers && (
-                      <div>
-                        {gameName !== "grouping" && (
-                          <div className="absolute right-2 top-2">
-                            <ChevronDownIcon className="h-8 w-8" />
-                          </div>
-                        )}
-
-                        <div className="absolute top-2 left-2 flex flex-col gap-2">
-                          <div
-                            className={`p-1 ${
-                              isAdmin &&
-                              "border border-amber-700 bg-amber-100 w-fit"
-                            }`}
-                          >
-                            {isPrivate ? (
-                              <LockClosedIcon
-                                onClick={async () => {
-                                  if (!isAdmin) return;
-                                  await togglePriv();
-                                  await publicInviteAll({
-                                    userId: user.id,
-                                    userName: user.name,
-                                    categorie,
-                                    gameName,
-                                    mode: options?.mode,
-                                    roomToken,
-                                    roomId,
-                                  });
-                                  setInvitedList(() => {
-                                    const friendsNames = friendsList.map(
-                                      (friend) => friend.name
-                                    );
-                                    return friendsNames;
-                                  });
-                                }}
-                                className={`w-8 h-8 ${
-                                  isAdmin ? "text-amber-700" : "text-sky-700"
-                                }`}
-                              />
+                      ) : (
+                        <div className="text-center text-amber-400 text-3xl flex justify-center items-center mx-2 min-w-[15dvh]">
+                          {!gameData.isSearching ? (
+                            gamesRefs[gameName].categorie === "grouping" ? (
+                              <span>Lobby</span>
                             ) : (
-                              <LockOpenIcon
-                                onClick={async () => {
-                                  if (!isAdmin) return;
-                                  await togglePriv();
-                                  await deletePublicInvs();
-                                }}
-                                className={`w-8 h-8 ${
-                                  isAdmin ? "text-amber-700" : "text-sky-700"
-                                }`}
-                              />
+                              gamesRefs[gameName].name
+                            )
+                          ) : (
+                            <AnimatedDots color="#fbbf24" text="5xl" /> // text-amber-400
+                          )}
+                        </div>
+                      )}
+                      <div className="rounded-full h-[4dvh] w-[4dvh] border border-amber-700 bg-amber-100 flex justify-center items-center">
+                        <FaInfo className="h-[2.5dvh] w-[2.5dvh] text-amber-700" />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div
+                    className="opacity-100 animate-[fadeIn_1.5s_ease-in-out] le_test absolute top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%] w-full flex flex-col items-center gap-2"
+                    style={{ height: "calc(100% - 30vh)" }}
+                  >
+                    <div
+                      onClick={() => {
+                        if (!showPlayers) {
+                          setShowPlayers(true);
+                          setShowConfig(false);
+                        }
+                      }}
+                      className={`overflow-hidden relative flex flex-col items-center border w-[80%] transition-[height] duration-1000 ease-in-out ${
+                        !showPlayers
+                          ? "h-12 border border-2 rounded-md border-amber-700 bg-amber-100 text-amber-700 p-2"
+                          : "h-full border border-2 rounded-md border-sky-700 bg-sky-100 text-sky-700 p-2"
+                      }`}
+                    >
+                      {!showPlayers && (
+                        <div>
+                          <div className="flex items-center absolute left-2 top-1">
+                            {isPrivate ? (
+                              <LockClosedIcon className="h-8 w-8 mb-0.5" />
+                            ) : (
+                              <LockOpenIcon className="h-8 w-8 mb-0.5" />
                             )}
                           </div>
-                          {!user.multiGuest && (
-                            <>
-                              <div
-                                onClick={() => {
-                                  setShowGamerList(true);
-                                  setShowInvitations(false);
-                                  setShowRoomRefs(false);
-                                }}
-                                className={`${
-                                  showGamerList
-                                    ? "border border-sky-100 text-sky-700 relative p-1"
-                                    : "border border-amber-700 bg-amber-100 text-amber-700 relative p-1"
-                                }`}
-                              >
-                                <FaUserFriends className="w-8 h-8" />
-                                {showGamerList && (
-                                  <div className="absolute left-full top-1/2 translate-y-[-50%]">
-                                    <IoMdArrowDropright className="h-8 w-8 pr-2" />
-                                  </div>
-                                )}
+                          {(() => {
+                            if (!gamerList || !multiGuestList) return;
+                            const gamersNumber =
+                              gamerList.length +
+                              guestList.length +
+                              multiGuestList.length;
+                            const badGamersNumber =
+                              gamersNumber < gamesRefs[gameName].limits?.min ||
+                              gamersNumber > gamesRefs[gameName].limits?.max;
+
+                            return (
+                              <div className="text-xl absolute top-1.5 left-[50%] translate-x-[-50%]">
+                                <span>Joueurs&nbsp;:&nbsp;</span>
+                                <span
+                                  className={`${
+                                    badGamersNumber &&
+                                    "text-red-800 font-semibold"
+                                  }`}
+                                >
+                                  {gamersNumber}
+                                </span>
+                                <span>
+                                  {gamesRefs[gameName].limits &&
+                                    `\u00A0/\u00A0${gamesRefs[gameName].limits.max}`}
+                                </span>
                               </div>
-                              {!gameData.isSearching && (
+                            );
+                          })()}
+                          {gameName !== "grouping" && (
+                            <div className="absolute right-1 top-1">
+                              <ChevronRightIcon className="h-8 w-8" />
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      {showPlayers && (
+                        <div>
+                          {gameName !== "grouping" && (
+                            <div className="absolute right-2 top-2">
+                              <ChevronDownIcon className="h-8 w-8" />
+                            </div>
+                          )}
+
+                          <div className="absolute top-2 left-2 flex flex-col gap-2">
+                            <div
+                              className={`p-1 ${
+                                isAdmin &&
+                                "border border-amber-700 bg-amber-100 w-fit"
+                              }`}
+                            >
+                              {isPrivate ? (
+                                <LockClosedIcon
+                                  onClick={async () => {
+                                    if (!isAdmin) return;
+                                    await togglePriv();
+                                    await publicInviteAll({
+                                      userId: user.id,
+                                      userName: user.name,
+                                      categorie,
+                                      gameName,
+                                      mode: options?.mode,
+                                      roomToken,
+                                      roomId,
+                                    });
+                                    setInvitedList(() => {
+                                      const friendsNames = friendsList.map(
+                                        (friend) => friend.name
+                                      );
+                                      return friendsNames;
+                                    });
+                                  }}
+                                  className={`w-8 h-8 ${
+                                    isAdmin ? "text-amber-700" : "text-sky-700"
+                                  }`}
+                                />
+                              ) : (
+                                <LockOpenIcon
+                                  onClick={async () => {
+                                    if (!isAdmin) return;
+                                    await togglePriv();
+                                    await deletePublicInvs();
+                                  }}
+                                  className={`w-8 h-8 ${
+                                    isAdmin ? "text-amber-700" : "text-sky-700"
+                                  }`}
+                                />
+                              )}
+                            </div>
+                            {!user.multiGuest && (
+                              <>
                                 <div
                                   onClick={() => {
-                                    setShowGamerList(false);
-                                    setShowInvitations(true);
+                                    setShowGamerList(true);
+                                    setShowInvitations(false);
                                     setShowRoomRefs(false);
                                   }}
                                   className={`${
-                                    showInvitations
+                                    showGamerList
                                       ? "border border-sky-100 text-sky-700 relative p-1"
                                       : "border border-amber-700 bg-amber-100 text-amber-700 relative p-1"
                                   }`}
                                 >
-                                  <IoPersonAddSharp className="w-8 h-8" />
-                                  {showInvitations && (
+                                  <FaUserFriends className="w-8 h-8" />
+                                  {showGamerList && (
                                     <div className="absolute left-full top-1/2 translate-y-[-50%]">
                                       <IoMdArrowDropright className="h-8 w-8 pr-2" />
                                     </div>
                                   )}
                                 </div>
-                              )}
-
-                              {isAdmin && (
-                                <div
-                                  onClick={async () => {
-                                    try {
-                                      // if (!geoLocation) {
-                                      //   const loc = await getLocation();
-                                      //   await saveLocation({
-                                      //     geoLocation: loc,
-                                      //     roomId,
-                                      //   });
-                                      //   setGeoLocation(loc);
-                                      // }
+                                {!gameData.isSearching && (
+                                  <div
+                                    onClick={() => {
                                       setShowGamerList(false);
-                                      setShowInvitations(false);
-                                      setShowRoomRefs(true);
-                                    } catch (error) {
-                                      console.error(error.message);
-                                      const errorInformations =
-                                        getErrorInformations({
-                                          window,
-                                          fail: "location_permission",
-                                        }).map((info, i) => (
-                                          <div
-                                            key={i}
-                                            className={`${
-                                              i === 0 && "font-bold"
-                                            }`}
-                                          >
-                                            {i !== 0 && "=>"}
-                                            {info}
-                                          </div>
-                                        ));
-                                      setServerMessage(errorInformations);
-                                    }
-                                  }}
-                                  className={`${
-                                    showRoomRefs
-                                      ? "border border-sky-100 text-sky-700 relative p-1"
-                                      : "border border-amber-700 bg-amber-100 text-amber-700 relative p-1"
-                                  }`}
-                                >
-                                  <LiaQrcodeSolid className="w-8 h-8" />
-                                  {showRoomRefs && (
-                                    <div className="absolute left-full top-1/2 translate-y-[-50%]">
-                                      <IoMdArrowDropright className="h-8 w-8 pr-2" />
-                                    </div>
-                                  )}
-                                </div>
-                              )}
-                            </>
-                          )}
-                        </div>
-
-                        {showGamerList && (
-                          <>
-                            {(() => {
-                              if (!gamerList || !multiGuestList) return;
-                              const gamersNumber =
-                                gamerList.length +
-                                guestList.length +
-                                multiGuestList.length;
-                              const badGamersNumber =
-                                gamersNumber <
-                                  gamesRefs[gameName].limits?.min ||
-                                gamersNumber > gamesRefs[gameName].limits?.max;
-
-                              return (
-                                <div className="flex justify-center items-center h-8">
-                                  <div className="relative">
-                                    Liste des joueurs&nbsp;:&nbsp;
-                                    <div className="absolute left-full top-1/2 translate-y-[-50%] w-full flex items-baseline">
-                                      <div
-                                        className={`font-semibold ${
-                                          badGamersNumber && "text-red-800"
-                                        }`}
-                                      >
-                                        {gamersNumber}&nbsp;
+                                      setShowInvitations(true);
+                                      setShowRoomRefs(false);
+                                    }}
+                                    className={`${
+                                      showInvitations
+                                        ? "border border-sky-100 text-sky-700 relative p-1"
+                                        : "border border-amber-700 bg-amber-100 text-amber-700 relative p-1"
+                                    }`}
+                                  >
+                                    <IoPersonAddSharp className="w-8 h-8" />
+                                    {showInvitations && (
+                                      <div className="absolute left-full top-1/2 translate-y-[-50%]">
+                                        <IoMdArrowDropright className="h-8 w-8 pr-2" />
                                       </div>
-                                      {gamesRefs[gameName].limits && (
-                                        <div>
-                                          {`/\u0020${gamesRefs[gameName].limits.max}`}
+                                    )}
+                                  </div>
+                                )}
+
+                                {isAdmin && (
+                                  <div
+                                    onClick={async () => {
+                                      try {
+                                        // if (!geoLocation) {
+                                        //   const loc = await getLocation();
+                                        //   await saveLocation({
+                                        //     geoLocation: loc,
+                                        //     roomId,
+                                        //   });
+                                        //   setGeoLocation(loc);
+                                        // }
+                                        setShowGamerList(false);
+                                        setShowInvitations(false);
+                                        setShowRoomRefs(true);
+                                      } catch (error) {
+                                        console.error(error.message);
+                                        const errorInformations =
+                                          getErrorInformations({
+                                            window,
+                                            fail: "location_permission",
+                                          }).map((info, i) => (
+                                            <div
+                                              key={i}
+                                              className={`${
+                                                i === 0 && "font-bold"
+                                              }`}
+                                            >
+                                              {i !== 0 && "=>"}
+                                              {info}
+                                            </div>
+                                          ));
+                                        setServerMessage(errorInformations);
+                                      }
+                                    }}
+                                    className={`${
+                                      showRoomRefs
+                                        ? "border border-sky-100 text-sky-700 relative p-1"
+                                        : "border border-amber-700 bg-amber-100 text-amber-700 relative p-1"
+                                    }`}
+                                  >
+                                    <LiaQrcodeSolid className="w-8 h-8" />
+                                    {showRoomRefs && (
+                                      <div className="absolute left-full top-1/2 translate-y-[-50%]">
+                                        <IoMdArrowDropright className="h-8 w-8 pr-2" />
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </>
+                            )}
+                          </div>
+
+                          {showGamerList && (
+                            <>
+                              {(() => {
+                                if (!gamerList || !multiGuestList) return;
+                                const gamersNumber =
+                                  gamerList.length +
+                                  guestList.length +
+                                  multiGuestList.length;
+                                const badGamersNumber =
+                                  gamersNumber <
+                                    gamesRefs[gameName].limits?.min ||
+                                  gamersNumber >
+                                    gamesRefs[gameName].limits?.max;
+
+                                return (
+                                  <div className="flex justify-center items-center h-8">
+                                    <div className="relative">
+                                      Liste des joueurs&nbsp;:&nbsp;
+                                      <div className="absolute left-full top-1/2 translate-y-[-50%] w-full flex items-baseline">
+                                        <div
+                                          className={`font-semibold ${
+                                            badGamersNumber && "text-red-800"
+                                          }`}
+                                        >
+                                          {gamersNumber}&nbsp;
                                         </div>
+                                        {gamesRefs[gameName].limits && (
+                                          <div>
+                                            {`/\u0020${gamesRefs[gameName].limits.max}`}
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })()}
+                              {group?.gamers &&
+                                group.gamers.map((gamer) => {
+                                  const gamerName = gamer.name;
+                                  const isHere = gamerList?.includes(gamerName);
+                                  return (
+                                    <div
+                                      key={gamerName}
+                                      className="w-full flex justify-center"
+                                    >
+                                      <div
+                                        className={`${
+                                          gamerName === uniqueName
+                                            ? "font-semibold"
+                                            : ""
+                                        } relative`}
+                                      >
+                                        <span className="text-lg">
+                                          {gamerName}
+                                        </span>
+                                        <div className="absolute right-full top-0">
+                                          {gamerName !== user.name ? (
+                                            isHere ? (
+                                              <CheckIcon className="h-6 w-6 " />
+                                            ) : (
+                                              " ... "
+                                            )
+                                          ) : null}
+                                        </div>
+                                        {isHere && gamerName !== user.name && (
+                                          <button
+                                            onClick={async () => {
+                                              const newGamersGroup = [
+                                                ...group.gamers,
+                                              ].filter(
+                                                (gamer) =>
+                                                  gamer.name !== gamerName
+                                              );
+                                              setGroup((prevGroup) => ({
+                                                ...prevGroup,
+                                                gamers: newGamersGroup,
+                                              }));
+                                              await deleteGamer(gamerName);
+                                            }}
+                                            className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
+                                          >
+                                            <XMarkIcon className="w-5 h-5" />
+                                          </button>
+                                        )}
+                                        {isHere && gamerName === user.name && (
+                                          <div
+                                            onClick={async () =>
+                                              await deleteInvs()
+                                            }
+                                          >
+                                            <LobbyDeleteGroup
+                                              roomToken={roomToken}
+                                              roomId={roomId}
+                                            />
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              {group?.multiGuests &&
+                                group.multiGuests.map((multi) => {
+                                  const multiName = multi.name;
+                                  const isHere =
+                                    multiGuestList?.includes(multiName);
+                                  return (
+                                    <div
+                                      key={multiName}
+                                      className="w-full flex justify-center"
+                                    >
+                                      <div className="flex justify-center items-center relative">
+                                        <span className="text-lg">
+                                          {multiName}
+                                        </span>{" "}
+                                        <span className="italic text-sm">
+                                          (invité)
+                                        </span>
+                                        <div className="absolute right-full top-0">
+                                          {isHere ? (
+                                            <CheckIcon className="h-6 w-6 " />
+                                          ) : (
+                                            " ... "
+                                          )}
+                                        </div>
+                                        {isHere && (
+                                          <button
+                                            onClick={() => {
+                                              const newMultiGroup = [
+                                                ...group.multiGuests,
+                                              ].filter(
+                                                (multi) =>
+                                                  multi.name !== multiName
+                                              );
+                                              setGroup((prevGroup) => ({
+                                                ...prevGroup,
+                                                multiGuests: newMultiGroup,
+                                              }));
+                                              deleteMultiGuest(multiName);
+                                            }}
+                                            className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
+                                          >
+                                            <XMarkIcon className="w-5 h-5" />
+                                          </button>
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              {gamerList?.map((gamer) => {
+                                const gamerNameList =
+                                  group?.gamers?.map((gamer) => gamer.name) ||
+                                  [];
+                                const multiNameList =
+                                  group?.multiGuests?.map(
+                                    (multi) => multi.name
+                                  ) || [];
+                                if (
+                                  gamerNameList.includes(gamer) ||
+                                  multiNameList.includes(gamer)
+                                )
+                                  return;
+                                return (
+                                  <div
+                                    key={gamer}
+                                    className="w-full flex justify-center my-0.5"
+                                  >
+                                    <div
+                                      className={`${
+                                        gamer === uniqueName
+                                          ? "font-semibold"
+                                          : ""
+                                      } relative
+                                  `}
+                                    >
+                                      <span className="text-lg">{gamer}</span>
+                                      {isAdmin && gamer !== user.name && (
+                                        <button
+                                          onClick={async () =>
+                                            await deleteGamer(gamer)
+                                          }
+                                          className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
+                                        >
+                                          <XMarkIcon className="h-5 w-5" />
+                                        </button>
+                                      )}
+                                      {isAdmin && gamer === user.name && (
+                                        <>
+                                          <div
+                                            onClick={async () =>
+                                              await deleteInvs()
+                                            }
+                                          >
+                                            <LobbyDeleteGroup
+                                              roomToken={roomToken}
+                                              roomId={roomId}
+                                            />
+                                          </div>
+                                        </>
+                                      )}
+                                      {!isAdmin && gamer === user.name && (
+                                        <button
+                                          onClick={async () =>
+                                            await deleteGamer(uniqueName)
+                                          }
+                                          className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
+                                        >
+                                          <ImExit className="ml-1 w-5 h-5 p-0.5" />
+                                        </button>
                                       )}
                                     </div>
                                   </div>
-                                </div>
-                              );
-                            })()}
-                            {group?.gamers &&
-                              group.gamers.map((gamer) => {
-                                const gamerName = gamer.name;
-                                const isHere = gamerList?.includes(gamerName);
+                                );
+                              })}
+                              {multiGuestList?.map((multiGuest, i) => {
+                                const gamerNameList =
+                                  group?.gamers?.map((gamer) => gamer.name) ||
+                                  [];
+                                const multiNameList =
+                                  group?.multiGuests?.map(
+                                    (multi) => multi.name
+                                  ) || [];
+                                if (
+                                  multiNameList.includes(multiGuest) ||
+                                  gamerNameList.includes(multiGuest)
+                                )
+                                  return;
                                 return (
                                   <div
-                                    key={gamerName}
+                                    key={i}
                                     className="w-full flex justify-center"
                                   >
                                     <div
                                       className={`${
-                                        gamerName === uniqueName
+                                        multiGuest === uniqueName
                                           ? "font-semibold"
                                           : ""
-                                      } relative`}
+                                      } relative
+                                  `}
                                     >
                                       <span className="text-lg">
-                                        {gamerName}
+                                        {multiGuest}
                                       </span>
-                                      <div className="absolute right-full top-0">
-                                        {gamerName !== user.name ? (
-                                          isHere ? (
-                                            <CheckIcon className="h-6 w-6 " />
-                                          ) : (
-                                            " ... "
-                                          )
-                                        ) : null}
-                                      </div>
-                                      {isHere && gamerName !== user.name && (
-                                        <button
-                                          onClick={async () => {
-                                            const newGamersGroup = [
-                                              ...group.gamers,
-                                            ].filter(
-                                              (gamer) =>
-                                                gamer.name !== gamerName
-                                            );
-                                            setGroup((prevGroup) => ({
-                                              ...prevGroup,
-                                              gamers: newGamersGroup,
-                                            }));
-                                            await deleteGamer(gamerName);
-                                          }}
-                                          className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
-                                        >
-                                          <XMarkIcon className="w-5 h-5" />
-                                        </button>
-                                      )}
-                                      {isHere && gamerName === user.name && (
-                                        <div
-                                          onClick={async () =>
-                                            await deleteInvs()
-                                          }
-                                        >
-                                          <LobbyDeleteGroup
-                                            roomToken={roomToken}
-                                            roomId={roomId}
-                                          />
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            {group?.multiGuests &&
-                              group.multiGuests.map((multi) => {
-                                const multiName = multi.name;
-                                const isHere =
-                                  multiGuestList?.includes(multiName);
-                                return (
-                                  <div
-                                    key={multiName}
-                                    className="w-full flex justify-center"
-                                  >
-                                    <div className="flex justify-center items-center relative">
-                                      <span className="text-lg">
-                                        {multiName}
-                                      </span>{" "}
-                                      <span className="italic text-sm">
+                                      <span className="italic text-sm font-normal">
                                         (invité)
                                       </span>
-                                      <div className="absolute right-full top-0">
-                                        {isHere ? (
-                                          <CheckIcon className="h-6 w-6 " />
-                                        ) : (
-                                          " ... "
-                                        )}
-                                      </div>
-                                      {isHere && (
+                                      {isAdmin && (
                                         <button
-                                          onClick={() => {
-                                            const newMultiGroup = [
-                                              ...group.multiGuests,
-                                            ].filter(
-                                              (multi) =>
-                                                multi.name !== multiName
-                                            );
-                                            setGroup((prevGroup) => ({
-                                              ...prevGroup,
-                                              multiGuests: newMultiGroup,
-                                            }));
-                                            deleteMultiGuest(multiName);
-                                          }}
+                                          onClick={() =>
+                                            deleteMultiGuest(multiGuest)
+                                          }
                                           className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
                                         >
-                                          <XMarkIcon className="w-5 h-5" />
+                                          <XMarkIcon className="h-5 w-5" />
+                                        </button>
+                                      )}
+                                      {multiGuest === user.name && (
+                                        <button
+                                          onClick={async () =>
+                                            await deleteMultiGuest(uniqueName)
+                                          }
+                                          className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
+                                        >
+                                          <ImExit className="ml-1 w-5 h-5 p-0.5" />
                                         </button>
                                       )}
                                     </div>
                                   </div>
                                 );
                               })}
-                            {gamerList?.map((gamer) => {
-                              const gamerNameList =
-                                group?.gamers?.map((gamer) => gamer.name) || [];
-                              const multiNameList =
-                                group?.multiGuests?.map(
-                                  (multi) => multi.name
-                                ) || [];
-                              if (
-                                gamerNameList.includes(gamer) ||
-                                multiNameList.includes(gamer)
-                              )
-                                return;
-                              return (
-                                <div
-                                  key={gamer}
-                                  className="w-full flex justify-center my-0.5"
-                                >
-                                  <div
-                                    className={`${
-                                      gamer === uniqueName
-                                        ? "font-semibold"
-                                        : ""
-                                    } relative
-                                  `}
-                                  >
-                                    <span className="text-lg">{gamer}</span>
-                                    {isAdmin && gamer !== user.name && (
-                                      <button
-                                        onClick={async () =>
-                                          await deleteGamer(gamer)
-                                        }
-                                        className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
-                                      >
-                                        <XMarkIcon className="h-5 w-5" />
-                                      </button>
-                                    )}
-                                    {isAdmin && gamer === user.name && (
-                                      <>
-                                        <div
-                                          onClick={async () =>
-                                            await deleteInvs()
-                                          }
-                                        >
-                                          <LobbyDeleteGroup
-                                            roomToken={roomToken}
-                                            roomId={roomId}
-                                          />
-                                        </div>
-                                      </>
-                                    )}
-                                    {!isAdmin && gamer === user.name && (
-                                      <button
-                                        onClick={async () =>
-                                          await deleteGamer(uniqueName)
-                                        }
-                                        className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
-                                      >
-                                        <ImExit className="ml-1 w-5 h-5 p-0.5" />
-                                      </button>
-                                    )}
-                                  </div>
-                                </div>
-                              );
-                            })}
-                            {multiGuestList?.map((multiGuest, i) => {
-                              const gamerNameList =
-                                group?.gamers?.map((gamer) => gamer.name) || [];
-                              const multiNameList =
-                                group?.multiGuests?.map(
-                                  (multi) => multi.name
-                                ) || [];
-                              if (
-                                multiNameList.includes(multiGuest) ||
-                                gamerNameList.includes(multiGuest)
-                              )
-                                return;
-                              return (
-                                <div
-                                  key={i}
-                                  className="w-full flex justify-center"
-                                >
-                                  <div
-                                    className={`${
-                                      multiGuest === uniqueName
-                                        ? "font-semibold"
-                                        : ""
-                                    } relative
-                                  `}
-                                  >
-                                    <span className="text-lg">
-                                      {multiGuest}
-                                    </span>
-                                    <span className="italic text-sm font-normal">
-                                      (invité)
-                                    </span>
-                                    {isAdmin && (
-                                      <button
-                                        onClick={() =>
-                                          deleteMultiGuest(multiGuest)
-                                        }
-                                        className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
-                                      >
-                                        <XMarkIcon className="h-5 w-5" />
-                                      </button>
-                                    )}
-                                    {multiGuest === user.name && (
-                                      <button
-                                        onClick={async () =>
-                                          await deleteMultiGuest(uniqueName)
-                                        }
-                                        className="absolute left-full top-1/2 translate-y-[-50%] border border-amber-700 rounded-sm bg-amber-100 text-amber-700 ml-2"
-                                      >
-                                        <ImExit className="ml-1 w-5 h-5 p-0.5" />
-                                      </button>
-                                    )}
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </>
-                        )}
+                            </>
+                          )}
 
-                        {showInvitations && (
-                          <div className="flex flex-col gap-1 items-center">
-                            <div className="relative h-8 flex items-center">
-                              <h1>Invite tes amis !</h1>
-                              {/* <button
+                          {showInvitations && (
+                            <div className="flex flex-col gap-1 items-center">
+                              <div className="relative h-8 flex items-center">
+                                <h1>Invite tes amis !</h1>
+                                {/* <button
                                 onClick={async () => {
                                   const friends = await getRoomFriendList({
                                     userId: user.id,
@@ -1588,127 +1703,131 @@ export default function Room({
                               >
                                 <ArrowPathIcon className="h-4 w-4" />
                               </button> */}
-                            </div>
-                            <div>
-                              {friendsList &&
-                                friendsList.map(({ friend, customName }) => {
-                                  if (
-                                    gamerList.some(
-                                      (gamer) => gamer === friend.name
+                              </div>
+                              <div>
+                                {friendsList &&
+                                  friendsList.map(({ friend, customName }) => {
+                                    if (
+                                      gamerList.some(
+                                        (gamer) => gamer === friend.name
+                                      )
                                     )
-                                  )
-                                    return;
-                                  const invited = invitedList.some(
-                                    (inv) => inv === friend.name
-                                  );
-                                  return (
-                                    <button
-                                      key={friend.id}
-                                      onClick={async () => {
-                                        await inviteFriend({
-                                          userName: user.name,
-                                          friendMail: friend.email,
-                                          categorie,
-                                          gameName,
-                                          mode: options?.mode,
-                                          roomToken,
-                                        });
-                                        setInvitedList((prevInv) => [
-                                          ...new Set([...prevInv, friend.name]),
-                                        ]);
-                                      }}
-                                      className={`${
-                                        !invited
-                                          ? "border border-amber-700 bg-amber-100 text-amber-700 p-1 m-0.5"
-                                          : "border border-sky-100 text-sky-700 pulse-soft p-1 m-0.5"
-                                      }`}
-                                    >
-                                      {customName}
-                                    </button>
-                                  );
-                                })}
+                                      return;
+                                    const invited = invitedList.some(
+                                      (inv) => inv === friend.name
+                                    );
+                                    return (
+                                      <button
+                                        key={friend.id}
+                                        onClick={async () => {
+                                          await inviteFriend({
+                                            userName: user.name,
+                                            friendMail: friend.email,
+                                            categorie,
+                                            gameName,
+                                            mode: options?.mode,
+                                            roomToken,
+                                          });
+                                          setInvitedList((prevInv) => [
+                                            ...new Set([
+                                              ...prevInv,
+                                              friend.name,
+                                            ]),
+                                          ]);
+                                        }}
+                                        className={`${
+                                          !invited
+                                            ? "border border-amber-700 bg-amber-100 text-amber-700 p-1 m-0.5"
+                                            : "border border-sky-100 text-sky-700 pulse-soft p-1 m-0.5"
+                                        }`}
+                                      >
+                                        {customName}
+                                      </button>
+                                    );
+                                  })}
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
 
-                        {/* {showRoomRefs && geoLocation && ( */}
-                        {showRoomRefs && (
+                          {/* {showRoomRefs && geoLocation && ( */}
+                          {showRoomRefs && (
+                            <div className="w-full">
+                              <div className="w-full h-8 flex justify-center items-center ml-6">
+                                Qr code de la partie
+                              </div>
+
+                              <div className="w-full ml-16 pl-1">
+                                <QRCode
+                                  value={`${process.env.NEXT_PUBLIC_APP_URL}/invitation/?categorie=${categorie}&gameName=${gameName}&token=${roomToken}`}
+                                  style={{
+                                    width: "calc(100% - 5rem)",
+                                    aspectRatio: "1 / 1",
+                                  }}
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {gameName !== "grouping" && !gameData.isSearching && (
+                      <div
+                        onClick={() => {
+                          if (!showConfig) {
+                            setShowConfig(true);
+                            setShowPlayers(false);
+                          }
+                        }}
+                        className={`overflow-hidden relative border w-[80%] transition-[height] duration-1000 ease-in-out ${
+                          !showConfig
+                            ? `h-12 border border-2 rounded-md border-amber-700 bg-amber-100 text-amber-700 p-2`
+                            : `h-full border border-2 rounded-md border-sky-700 bg-sky-100 text-sky-700 p-2`
+                        }`}
+                      >
+                        {!showConfig && (
                           <div className="w-full">
-                            <div className="w-full h-8 flex justify-center items-center ml-6">
-                              Qr code de la partie
+                            <div className="absolute right-1 top-1">
+                              <ChevronRightIcon className="h-8 w-8" />
                             </div>
-
-                            <div className="w-full ml-16 pl-1">
-                              <QRCode
-                                value={`${process.env.NEXT_PUBLIC_APP_URL}/invitation/?categorie=${categorie}&gameName=${gameName}&token=${roomToken}`}
-                                style={{
-                                  width: "calc(100% - 5rem)",
-                                  aspectRatio: "1 / 1",
-                                }}
-                              />
+                            <div className="text-xl absolute top-1.5 left-[50%] translate-x-[-50%] w-full text-center">
+                              {options?.mode}
                             </div>
                           </div>
                         )}
+
+                        <div className={`${!showConfig && "hidden"}`}>
+                          <div className="absolute right-2 top-2">
+                            <ChevronDownIcon className="h-8 w-8" />
+                          </div>
+                          {Options &&
+                            options &&
+                            setOptions &&
+                            setServerMessage && (
+                              <Options
+                                userId={user.id}
+                                isAdmin={isAdmin}
+                                options={options}
+                                setOptions={setOptions}
+                                lastMode={group?.lastMode}
+                                serverMessage={serverMessage}
+                                setServerMessage={setServerMessage}
+                                gamersNumber={
+                                  gamerList.length +
+                                  guestList.length +
+                                  multiGuestList.length
+                                }
+                              />
+                            )}
+                        </div>
                       </div>
                     )}
                   </div>
-
-                  {gameName !== "grouping" && !gameData.isSearching && (
-                    <div
-                      onClick={() => {
-                        if (!showConfig) {
-                          setShowConfig(true);
-                          setShowPlayers(false);
-                        }
-                      }}
-                      className={`overflow-hidden relative border w-[80%] transition-[height] duration-1000 ease-in-out ${
-                        !showConfig
-                          ? `h-12 border border-2 rounded-md border-amber-700 bg-amber-100 text-amber-700 p-2`
-                          : `h-full border border-2 rounded-md border-sky-700 bg-sky-100 text-sky-700 p-2`
-                      }`}
-                    >
-                      {!showConfig && (
-                        <div className="w-full">
-                          <div className="absolute right-1 top-1">
-                            <ChevronRightIcon className="h-8 w-8" />
-                          </div>
-                          <div className="text-xl absolute top-1.5 left-[50%] translate-x-[-50%] w-full text-center">
-                            {options?.mode}
-                          </div>
-                        </div>
-                      )}
-
-                      <div className={`${!showConfig && "hidden"}`}>
-                        <div className="absolute right-2 top-2">
-                          <ChevronDownIcon className="h-8 w-8" />
-                        </div>
-                        {Options &&
-                          options &&
-                          setOptions &&
-                          setServerMessage && (
-                            <Options
-                              userId={user.id}
-                              isAdmin={isAdmin}
-                              options={options}
-                              setOptions={setOptions}
-                              lastMode={group?.lastMode}
-                              serverMessage={serverMessage}
-                              setServerMessage={setServerMessage}
-                              gamersNumber={
-                                gamerList.length +
-                                guestList.length +
-                                multiGuestList.length
-                              }
-                            />
-                          )}
-                      </div>
-                    </div>
-                  )}
                 </div>
-              </div>
-            )}
-          </div>
-        </UserContext.Provider>
+              )}
+            </div>
+          </UserContext.Provider>
+        </div>
       </div>
     );
   } else {

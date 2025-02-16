@@ -29,43 +29,68 @@ export function CornerTriangle({
   // childrenPosition,
   // children,
 }) {
-  const [dimension, setDimension] = useState();
-  const [points, setPoints] = useState();
-  const [borderInset, setBorderInset] = useState();
+  // const [dimension, setDimension] = useState();
+  // const [points, setPoints] = useState();
+  // const [borderInset, setBorderInset] = useState();
 
-  useEffect(() => {
-    if (!size) return;
+  // useEffect(() => {
+  //   if (!size) return;
 
-    const viewportHeight = window.innerHeight;
-    const vh = Math.round(viewportHeight / 100);
+  //   const viewportHeight = window.innerHeight;
+  //   const vh = Math.round(viewportHeight / 100);
 
-    const dimension = parseInt(size) * parseInt(vh);
-    setDimension(dimension);
+  //   const dimension = parseInt(size) * parseInt(vh);
+  //   setDimension(dimension);
 
-    const points = {
-      top: [
-        `${dimension / 2},${dimension / 2}`,
-        `0,${dimension}`,
-        `${dimension},${dimension}`,
-      ],
-      // right: [`0,0`, `0,${dimension}`, `${dimension},${dimension / 2}`],
-      bottom: [`0,0`, `${dimension},0`, `${dimension / 2},${dimension / 2}`],
-      // left: [`${dimension},0`, `${dimension},${dimension}`, `0,${dimension / 2}`],
-    };
-    setPoints(points);
+  //   const points = {
+  //     top: [
+  //       `${dimension / 2},${dimension / 2}`,
+  //       `0,${dimension}`,
+  //       `${dimension},${dimension}`,
+  //     ],
+  //     // right: [`0,0`, `0,${dimension}`, `${dimension},${dimension / 2}`],
+  //     bottom: [`0,0`, `${dimension},0`, `${dimension / 2},${dimension / 2}`],
+  //     // left: [`${dimension},0`, `${dimension},${dimension}`, `0,${dimension / 2}`],
+  //   };
+  //   setPoints(points);
 
-    if (direction.y === "bottom" && direction.x === "left") {
-      setBorderInset("inset 9px 0px 5px -6px #581c87");
-    } else if (direction.y === "bottom" && direction.x === "right") {
-      setBorderInset("inset 0px 9px 5px -6px #581c87");
-    } else if (direction.y === "top" && direction.x === "left") {
-      setBorderInset("inset 0px -9px 5px -6px #581c87");
-    } else if (direction.y === "top" && direction.x === "right") {
-      setBorderInset("inset -9px 0px 5px -6px #581c87");
-    }
-  }, [size, direction]);
+  //   if (direction.y === "bottom" && direction.x === "left") {
+  //     setBorderInset("inset 9px 0px 5px -6px #581c87");
+  //   } else if (direction.y === "bottom" && direction.x === "right") {
+  //     setBorderInset("inset 0px 9px 5px -6px #581c87");
+  //   } else if (direction.y === "top" && direction.x === "left") {
+  //     setBorderInset("inset 0px -9px 5px -6px #581c87");
+  //   } else if (direction.y === "top" && direction.x === "right") {
+  //     setBorderInset("inset -9px 0px 5px -6px #581c87");
+  //   }
+  // }, [size, direction]);
 
-  if (!dimension || !points || !borderInset) return null;
+  // if (!dimension || !points || !borderInset) return null;
+
+  const viewportHeight =
+    typeof window !== "undefined" ? window.innerHeight : 800; // Valeur par défaut pour SSR
+  const vh = Math.round(viewportHeight / 100);
+  const dimension = parseInt(size) * vh;
+
+  // 🔹 Pré-calcul des points
+  const points = {
+    top: [
+      `${dimension / 2},${dimension / 2}`,
+      `0,${dimension}`,
+      `${dimension},${dimension}`,
+    ],
+    bottom: [`0,0`, `${dimension},0`, `${dimension / 2},${dimension / 2}`],
+  };
+
+  // 🔹 Pré-calcul du box-shadow
+  const borderInset =
+    direction.y === "bottom" && direction.x === "left"
+      ? "inset 9px 0px 5px -6px #581c87"
+      : direction.y === "bottom" && direction.x === "right"
+      ? "inset 0px 9px 5px -6px #581c87"
+      : direction.y === "top" && direction.x === "left"
+      ? "inset 0px -9px 5px -6px #581c87"
+      : "inset -9px 0px 5px -6px #581c87";
 
   return (
     <div className="relative w-full h-full">

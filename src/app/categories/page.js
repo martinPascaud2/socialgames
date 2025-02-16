@@ -11,7 +11,7 @@ import Categories from "./Categories";
 import { gamesRefs } from "@/assets/globals";
 
 export default async function CategoriesPage() {
-  const user = await getUser();
+  const user = await getUser(); // check: only what needed
   const friendList = user?.id ? await getFriendList({ userId: user.id }) : [];
 
   const updateParams = async (up) => {
