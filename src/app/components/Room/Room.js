@@ -1000,7 +1000,8 @@ export default function Room({
         {/* <div className="absolute h-[100dvh] w-[calc(100%-1rem)] overflow-x-hidden animate-[expandSize_10s_ease-in-out] top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]"> */}
         <div
           // className={` h-[100dvh] absolute w-full overflow-x-hidden animate-[expandSize_3s_ease-in-out] top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]`}
-          className={`h-[100dvh] absolute w-[95vw] overflow-x-hidden animate-[expandSize_1.5s_ease-in-out] top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]`}
+          // className={`h-[100dvh] absolute w-[95vw] overflow-x-hidden animate-[expandSize_1.5s_ease-in-out] top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]`}
+          className={`h-full absolute w-[95vw] overflow-x-hidden animate-[expandSize_1.5s_ease-in-out] top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]`}
           // className={`px-2 absolute w-full overflow-x-hidden animatee-[expandSize_3s_ease-in-out] top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]`}
           // style={{
           //   height: `calc(90vw + ${barsSizes.top / 4}rem + ${
