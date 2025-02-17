@@ -2637,7 +2637,7 @@ export default function Categories({
     const path = await returnLobby({ group });
     localStorage.removeItem("group");
     router.push(path);
-  }, [router]);
+  }, [router, returnLobby]);
 
   useEffect(() => {
     const channel = pusher.subscribe(`user-${user.email}`);
@@ -3038,9 +3038,14 @@ export default function Categories({
                                 userId: user.id,
                                 out: true,
                               });
-                              window.location.href =
+                              router.push(
                                 user.lastPlayed ||
-                                "/categories/grouping/grouping";
+                                  "/categories/grouping/grouping"
+                              );
+
+                              // window.location.href =
+                              //   user.lastPlayed ||
+                              //   "/categories/grouping/grouping";
                             }}
                             className="z-30"
                           >
