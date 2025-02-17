@@ -2879,7 +2879,7 @@ export default function Categories({
         // <main className="relative h-[100dvh] w-screen translate-y-[20rem]">
         <main
           // className={`relative h-[100dvh] w-screen translate-y-[${octagonPosition}]`}
-          className={`relative h-[100dvh] w-screen`}
+          className={`relative h-[100dvh] w-screen transition-transform duration-500`}
           style={{
             transform: `translateY(${octagonPosition})`,
           }}
