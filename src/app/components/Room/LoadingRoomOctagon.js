@@ -8,7 +8,7 @@ export default function LoadingRoomOctagon({ setHasLoadingOctagonAnimated }) {
   const [startAnimation, setStartAnimation] = useState(false);
 
   useEffect(() => {
-    setTimeout(() => setStartAnimation(true), 10); // Petit délai pour s'assurer du rendu
+    setTimeout(() => setStartAnimation(true), 10);
   }, []);
 
   return (

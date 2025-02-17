@@ -961,7 +961,8 @@ export default function Room({
   if (!roomId || !gameData || !hasLoadingOctagonAnimated)
     return (
       <div
-        className="h-[100dvh] w-full px-2 overflow-x-hidden bg-black"
+        // className="h-[100dvh] w-full px-2 overflow-x-hidden bg-black"
+        className="h-screen w-full px-2 overflow-x-hidden bg-black"
         style={{
           paddingTop: `${barsSizes.top / 4}rem`,
           paddingBottom: `${barsSizes.bottom / 4}rem`,
@@ -995,7 +996,7 @@ export default function Room({
 
   if (!isStarted || (!isAdmin && gameData.isSearching && !gameData.ended)) {
     return (
-      <div className="bg-black w-screen h-screen">
+      <div className="bg-black w-screen h-screen relative">
         {/* <div className="absolute h-[100dvh] w-full px-2 overflow-x-hidden"> */}
         {/* <div className="absolute h-[100dvh] w-[calc(100%-1rem)] overflow-x-hidden animate-[expandSize_10s_ease-in-out] top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]"> */}
         <div

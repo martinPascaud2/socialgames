@@ -23,7 +23,7 @@ export default function Triangle({
 }
 
 export function CornerTriangle({
-  size = "31",
+  size = "30",
   direction,
   color = "#00000",
   // childrenPosition,
