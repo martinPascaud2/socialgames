@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 
 import { gamesRefs } from "@/assets/globals";
 
+// check: to remove ?
 export default function ChooseLastGame({
   lastGame,
   lastMode,

@@ -1,4 +1,4 @@
-export function HexagonalSpinner({ size = 10 }) {
+export function OctogonalLoader({ size = 10 }) {
   return (
     <div role="status" className="flex justify-center">
       <svg
@@ -8,29 +8,29 @@ export function HexagonalSpinner({ size = 10 }) {
         className={`w-${size} h-${size}`}
       >
         <polygon
-          points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5"
+          points="30,5 70,5 95,30 95,70 70,95 30,95 5,70 5,30"
           stroke="gray"
           strokeWidth="4"
           fill="transparent"
         />
 
         <polygon
-          points="50,5 95,27.5 95,72.5 50,95 5,72.5 5,27.5"
+          points="30,5 70,5 95,30 95,70 70,95 30,95 5,70 5,30"
           stroke="purple"
           strokeWidth="4"
           fill="transparent"
-          strokeDasharray="290"
-          strokeDashoffset="290"
+          strokeDasharray="300"
+          strokeDashoffset="300"
           style={{
-            animation: "hex-draw 1s linear infinite",
+            animation: "oct-draw 1s linear infinite",
           }}
         />
       </svg>
 
       <style jsx>{`
-        @keyframes hex-draw {
+        @keyframes oct-draw {
           0% {
-            stroke-dashoffset: 290;
+            stroke-dashoffset: 300;
           }
           100% {
             stroke-dashoffset: 0;
