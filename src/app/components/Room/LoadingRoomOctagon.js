@@ -13,25 +13,12 @@ export default function LoadingRoomOctagon({ setHasLoadingOctagonAnimated }) {
 
   return (
     <div className="relative octagon top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]">
-      <div
-        className="absolute w-[26.3vw] h-[36vw] -skew-y-[45deg] translate-y-[-22.7vw] translate-x-[-1px] left-0 z-0 bg-black"
-        // onClick={handleBgClick}
-      />
-      <div
-        className="absolute w-[26.3vw] h-[36vw] skew-y-[45deg] translate-y-[-22.7vw] translate-x-[1px] right-0 z-0 bg-black"
-        // onClick={handleBgClick}
-      />
-      <div
-        className="absolute w-[26.3vw] h-[36vw] skew-y-[45deg] translate-y-[25.7vw] translate-x-[-1px] left-0 bottom-0 z-0 bg-black"
-        // onClick={handleBgClick}
-      />
-      <div
-        className="absolute w-[26.3vw] h-[36vw] -skew-y-[45deg] translate-y-[25.7vw] translate-x-[1px] right-0 bottom-0 z-0 bg-black"
-        // onClick={handleBgClick}
-      />
+      <div className="absolute w-[26.3vw] h-[36vw] -skew-y-[45deg] translate-y-[-22.7vw] translate-x-[-1px] left-0 z-0 bg-black" />
+      <div className="absolute w-[26.3vw] h-[36vw] skew-y-[45deg] translate-y-[-22.7vw] translate-x-[1px] right-0 z-0 bg-black" />
+      <div className="absolute w-[26.3vw] h-[36vw] skew-y-[45deg] translate-y-[25.7vw] translate-x-[-1px] left-0 bottom-0 z-0 bg-black" />
+      <div className="absolute w-[26.3vw] h-[36vw] -skew-y-[45deg] translate-y-[25.7vw] translate-x-[1px] right-0 bottom-0 z-0 bg-black" />
 
       <div
-        // className="opacity-0 animate-[fadeOut_0.5s_ease-in-out]"
         className={`${
           startAnimation
             ? "opacity-0 animate-[fadeOut_1.5s_ease-in-out]"
@@ -74,14 +61,6 @@ export default function LoadingRoomOctagon({ setHasLoadingOctagonAnimated }) {
       </div>
 
       <div className="absolute top-1/2 translate-y-[-50%] bg-transparent w-[90vw] h-[90vw] z-10 flex items-center">
-        {/* <div className="relative">
-          <div className="absolute w-[90.2vw] h-[90.2vw] bg-transparent translate-x-[0vw] translate-y-[-50%] z-0">
-            <div className="relative h-full w-full bg-transparent">
-              <div className="absolute w-full h-full bg-transparent border border-black"></div>
-            </div>
-          </div>
-        </div> */}
-
         <div className="relative w-full h-full">
           <div
             className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-0 h-[37vw]"

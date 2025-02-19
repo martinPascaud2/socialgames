@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  useMemo,
   useState,
   useEffect,
   useCallback,
@@ -30,7 +31,6 @@ import ChooseAnotherGame from "@/components/ChooseAnotherGame";
 import ChooseLastGame from "@/components/ChooseLastGame";
 import NextStep from "../NextStep";
 import AnimatedDots from "../AnimatedDots";
-import AnimatedOctagon from "./AnimatedOctagon";
 import LoadingRoomOctagon from "./LoadingRoomOctagon";
 
 import {
@@ -199,11 +199,29 @@ export default function Room({
   const [showRoomRefs, setShowRoomRefs] = useState(false);
   const [showConfig, setShowConfig] = useState(false);
 
+  const [hasLoadingOctagonAnimated, setHasLoadingOctagonAnimated] =
+    useState(false);
   const userParams = user.params;
-  const barsSizes = {
-    bottom: userParams?.bottomBarSize || 8,
-    top: userParams?.topBarSize || 8,
-  };
+  const barsSizes = useMemo(
+    () => ({
+      bottom: userParams?.bottomBarSize || 8,
+      top: userParams?.topBarSize || 8,
+    }),
+    [userParams?.bottomBarSize, userParams?.topBarSize]
+  );
+  useEffect(() => {
+    if (!barsSizes) return;
+    const dynamicHeight = `calc(90vw + ${barsSizes.top / 4}rem + ${
+      barsSizes.bottom / 4
+    }rem)`;
+    document.documentElement.style.setProperty(
+      "--dynamic-height",
+      dynamicHeight
+    );
+
+    const dynamicWidth = "100%";
+    document.documentElement.style.setProperty("--dynamic-width", dynamicWidth);
+  }, [barsSizes]);
 
   // admin room_creation
   const createRoom = useCallback(
@@ -922,24 +940,6 @@ export default function Room({
   }, [gameData, user]);
   // ------------------------------
 
-  useEffect(() => {
-    if (!barsSizes) return;
-    const dynamicHeight = `calc(90vw + ${barsSizes.top / 4}rem + ${
-      barsSizes.bottom / 4
-      // }rem + 2rem)`;
-    }rem)`;
-    document.documentElement.style.setProperty(
-      "--dynamic-height",
-      dynamicHeight
-    );
-
-    const dynamicWidth = "100%";
-    document.documentElement.style.setProperty("--dynamic-width", dynamicWidth);
-  }, [barsSizes]);
-
-  const [hasLoadingOctagonAnimated, setHasLoadingOctagonAnimated] =
-    useState(false);
-
   if (joinError) {
     return (
       <div className="h-screen w-screen flex justify-center items-center">
@@ -947,9 +947,6 @@ export default function Room({
       </div>
     );
   }
-
-  console.log("user", user);
-  console.log("hasLoadingOctagonAnimated", hasLoadingOctagonAnimated);
 
   // if (!roomId || !gameData)
   //   return (
@@ -961,7 +958,6 @@ export default function Room({
   if (!roomId || !gameData || !hasLoadingOctagonAnimated)
     return (
       <div
-        // className="h-[100dvh] w-full px-2 overflow-x-hidden bg-black"
         className="h-screen w-full px-2 overflow-x-hidden bg-black"
         style={{
           paddingTop: `${barsSizes.top / 4}rem`,
@@ -973,43 +969,12 @@ export default function Room({
         />
       </div>
     );
-  console.log("roomId", roomId);
-  console.log("gameData", gameData);
-  console.log("userParams", userParams);
-  console.log("barsSizes", barsSizes);
-
-  // if (!hasAnimated)
-  //   return (
-  //     <AnimatedOctagon
-  //       user={user}
-  //       hasAnimated={hasAnimated}
-  //       setHasAnimated={setHasAnimated}
-  //     />
-  //   );
-
-  // if (!roomId || !gameData)
-  //   return (
-  //     <div className="octagon z-50">
-  //       egr{/* <HexagonalSpinner size={28} /> */}
-  //     </div>
-  //   );
 
   if (!isStarted || (!isAdmin && gameData.isSearching && !gameData.ended)) {
     return (
       <div className="bg-black w-screen h-screen relative">
-        {/* <div className="absolute h-[100dvh] w-full px-2 overflow-x-hidden"> */}
-        {/* <div className="absolute h-[100dvh] w-[calc(100%-1rem)] overflow-x-hidden animate-[expandSize_10s_ease-in-out] top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]"> */}
         <div
-          // className={` h-[100dvh] absolute w-full overflow-x-hidden animate-[expandSize_3s_ease-in-out] top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]`}
-          // className={`h-[100dvh] absolute w-[95vw] overflow-x-hidden animate-[expandSize_1.5s_ease-in-out] top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]`}
           className={`h-full absolute w-[95vw] overflow-x-hidden animate-[expandSize_1.5s_ease-in-out] top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]`}
-          // className={`px-2 absolute w-full overflow-x-hidden animatee-[expandSize_3s_ease-in-out] top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]`}
-          // style={{
-          //   height: `calc(90vw + ${barsSizes.top / 4}rem + ${
-          //     barsSizes.bottom / 4
-          //   }rem + 1rem)`,
-          //   width: `calc(100% - 1.5rem)`,
-          // }}
         >
           <UserContext.Provider value={{ userParams }}>
             <div className={`relative h-full w-full overflow-hidden`}>
@@ -1023,68 +988,42 @@ export default function Room({
               />
 
               <div
-                // className="absolute left-0 translate-x-[-50%] translate-y-[-1rem] z-10"
-                // className={`absolute left-0 translate-x-[-50%] translate-y-[-2vh] z-10`}
-                // className={`absolute left-0 translate-x-[-50%] z-10`}
                 className="absolute left-0 translate-x-[-50%] translate-y-[-1rem] z-10"
-                // className={`absolute left-0 translate-x-[-50%] z-10`}
                 style={{
                   top: `${barsSizes.top / 4}rem`,
-                  // transform: `translateY(calc(-2.2vh))`,
-                  // transform: `translateY(-${barsSizes.top / 4}rem)`,
-                  // transform: `translateY(1px)`,
                 }}
               >
                 <CornerTriangle direction={{ y: "bottom", x: "left" }} />
               </div>
               <div
-                // className="absolute right-0 translate-x-[50%] translate-y-[-1rem] z-10"
                 className="absolute right-0 translate-x-[50%] translate-y-[-1rem] z-10"
-                // className="absolute right-0 translate-x-[50%] z-10"
                 style={{
                   top: `${barsSizes.top / 4}rem`,
-                  // transform: `translateY(calc(-${
-                  //   barsSizes.top / 4
-                  // }rem + 1rem))`,
                 }}
               >
                 <CornerTriangle direction={{ y: "bottom", x: "right" }} />
               </div>
               <div
-                // className="absolute left-0 translate-x-[-50%] translate-y-[1rem] z-10"
                 className="absolute left-0 translate-x-[-50%] translate-y-[1rem] z-10"
-                // className="absolute left-0 translate-x-[-50%] z-10"
                 style={{
                   bottom: `${barsSizes.bottom / 4}rem`,
-                  // transform: `translateY(calc(${
-                  //   barsSizes.bottom / 4
-                  // }rem - 1rem))`,
                 }}
               >
                 <CornerTriangle direction={{ y: "top", x: "left" }} />
               </div>
               <div
-                // className="absolute right-0 translate-x-[50%] translate-y-[1rem] z-10"
                 className="absolute right-0 translate-x-[50%] translate-y-[1rem] z-10"
-                // className="absolute right-0 translate-x-[50%] z-10"
                 style={{
                   bottom: `${barsSizes.bottom / 4}rem`,
-                  // transform: `translateY(calc(${
-                  //   barsSizes.bottom / 4
-                  // }rem - 1rem))`,
                 }}
               >
                 <CornerTriangle direction={{ y: "top", x: "right" }} />
               </div>
+
               <div className="absolute right-full w-2.5 bg-black h-full z-10" />
               <div className="absolute left-full w-2.5 bg-black h-full z-10" />
-              <div
-                className="h-full w-full relative bg-purple-600"
-                // style={{
-                //   paddingTop: `${barsSizes.top / 4}rem`,
-                //   paddingBottom: `${barsSizes.bottom / 4}rem`,
-                // }}
-              >
+
+              <div className="h-full w-full relative bg-purple-600">
                 <div
                   className="absolute left-0 w-full bg-transparent"
                   style={{
@@ -1098,6 +1037,7 @@ export default function Room({
                 />
               </div>
             </div>
+
             {isAdmin && gameName !== "grouping" && (
               <div
                 onClick={async () => await deleteInvs()}
@@ -1111,7 +1051,6 @@ export default function Room({
 
             <div
               className="h-full w-full absolute top-0 left-0 z-20 px-2"
-              // className="h-full w-full absolute top-0 left-0 z-20"
               style={{
                 paddingTop: `${barsSizes.top / 4}rem`,
                 paddingBottom: `${barsSizes.bottom / 4}rem`,
@@ -1120,7 +1059,6 @@ export default function Room({
               {(!isChosen && !group) || isPrivate === undefined ? (
                 <div>Chargement...</div>
               ) : (
-                // <div className="relative h-full w-full">
                 <div className="opacity-100 animate-[fadeIn_1.5s_ease-in-out] relative h-full w-full">
                   <div className="absolute left-1/2 translate-x-[-50%] h-[10dvh] w-full">
                     <div className="w-full flex justify-center translate-y-[1rem]">
@@ -1850,7 +1788,6 @@ export default function Room({
           <div
             className={`overflow-y-auto z-[60] w-full`}
             style={{
-              // height: `calc(100dvh - ${barsSizes.top / 4}rem)`,
               height: `calc(100dvh - ${barsSizes.top / 4}rem - ${
                 barsSizes.bottom / 4
               }rem)`,

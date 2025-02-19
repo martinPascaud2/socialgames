@@ -2014,28 +2014,26 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
   );
 };
 
-// const OctagonBackground = ({ handleBgClick, discreet }) => {
-export function OctagonBackground({ handleBgClick, discreet }) {
+export function OctagonBackground({ handleBgClick }) {
   return (
     <>
       <div
-        className="absolute w-[26.3vw] h-[36vw] -skew-y-[45deg] translate-y-[-22.7vw] translate-x-[-1px] left-0 z-20 bg-black"
+        className="absolute w-[26.3vw] h-[36vw] -skew-y-[45deg] translate-y-[-28vw] translate-x-[-1px] left-0 z-40 bg-black"
         onClick={handleBgClick}
       />
       <div
-        className="absolute w-[26.3vw] h-[36vw] skew-y-[45deg] translate-y-[-22.7vw] translate-x-[1px] right-0 z-20 bg-black"
+        className="absolute w-[26.3vw] h-[36vw] skew-y-[45deg] translate-y-[-28vw] translate-x-[1px] right-0 z-40 bg-black"
         onClick={handleBgClick}
       />
       <div
-        className="absolute w-[26.3vw] h-[36vw] skew-y-[45deg] translate-y-[25.7vw] translate-x-[-1px] left-0 bottom-0 z-20 bg-black"
+        className="absolute w-[26.3vw] h-[36vw] skew-y-[45deg] translate-y-[28vw] translate-x-[-1px] left-0 bottom-0 z-40 bg-black"
         onClick={handleBgClick}
       />
       <div
-        className="absolute w-[26.3vw] h-[36vw] -skew-y-[45deg] translate-y-[25.7vw] translate-x-[1px] right-0 bottom-0 z-20 bg-black"
+        className="absolute w-[26.3vw] h-[36vw] -skew-y-[45deg] translate-y-[28vw] translate-x-[1px] right-0 bottom-0 z-40 bg-black"
         onClick={handleBgClick}
       />
 
-      {/* {!discreet && ( */}
       <>
         <div
           className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[-13.3vw] translate-x-[0vw] right-0 bottom-0 z-20 bg-transparent"
@@ -2070,17 +2068,8 @@ export function OctagonBackground({ handleBgClick, discreet }) {
           style={{ boxShadow: "-13px -20px 15px -2px #3b0764" }}
         />
       </>
-      {/* )} */}
 
       <div className="absolute top-1/2 translate-y-[-50%] bg-transparent w-[90vw] h-[90vw] z-10 flex items-center">
-        <div className="relative">
-          <div className="absolute w-[90.1vw] h-[90.1vw] bg-transparent translate-x-[0vw] translate-y-[-50%] z-0">
-            <div className="relative h-full w-full bg-transparent">
-              <div className="absolute w-full h-full bg-transparent border border-black"></div>
-            </div>
-          </div>
-        </div>
-
         <div className="relative w-full h-full">
           <div
             className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-0 h-[37vw]"
@@ -2465,7 +2454,7 @@ const Friends = ({ friendList, user, deleteFriend, updateLastCP }) => {
       });
       updateLastCP({ userId: user.id }); // no await
     },
-    [locked, deleteFriend, user]
+    [locked, deleteFriend, user, updateLastCP]
   );
 
   return (
@@ -2632,6 +2621,8 @@ export default function Categories({
   const [invitations, setInvitations] = useState([]);
   const [currentGame, setCurrentGame] = useState();
 
+  const [isGoingGame, setIsGoingGame] = useState(false);
+
   const cancelAndReturnLobby = useCallback(async () => {
     const group = JSON.parse(localStorage.getItem("group"));
     const path = await returnLobby({ group });
@@ -2770,8 +2761,6 @@ export default function Categories({
         </div>
       </div>
     );
-    // }, [onNewScanResult, scanning]);
-    // }, [setting, onNewScanResult, scanning]);
   }, [setting, scanning]);
 
   const resetPermissions = useCallback(() => {
@@ -2783,26 +2772,15 @@ export default function Categories({
     (event) => {
       event.stopPropagation();
       resetPermissions();
-      // toggledPrelobby && setToggledPrelobby(false);
-      // !toggledPrelobby && setToggledSettings(true);
-      // if (toggledSettings) {
-      //   if (setting === "") setToggledSettings(false);
-      //   else setSetting("");
-      // }
       setToggledPrelobby(false);
-      // if (param === "bars") {
-      //   setToggledSettings(false);
-      //   setSetting("");
-      // } else setParam("bars");
       if (setting !== "") {
-        // setParam("")
         setSetting("");
       } else {
         setToggledSettings(false);
       }
       setServerMessage("");
     },
-    [toggledSettings, resetPermissions, toggledPrelobby, setting]
+    [resetPermissions, setting]
   );
 
   const handleOctaClick = useCallback(
@@ -2860,12 +2838,6 @@ export default function Categories({
     }
   }, [user, barValues]);
 
-  console.log("user", user);
-  console.log("barValues", barValues);
-  console.log("octagonPosition", octagonPosition);
-
-  const [isGoingGame, setIsGoingGame] = useState(false);
-
   return (
     <div
       onClick={(event) => {
@@ -2876,9 +2848,7 @@ export default function Categories({
       } text-white`}
     >
       {!isGroup ? (
-        // <main className="relative h-[100dvh] w-screen translate-y-[20rem]">
         <main
-          // className={`relative h-[100dvh] w-screen translate-y-[${octagonPosition}]`}
           className={`relative h-[100dvh] w-screen transition-transform duration-500`}
           style={{
             transform: `translateY(${octagonPosition})`,
@@ -2888,13 +2858,9 @@ export default function Categories({
             onClick={handleOctaClick}
             className="octagon left-5 top-[50dvh] translate-y-[-50%] relative z-0"
           >
-            <OctagonBackground
-              handleBgClick={handleBgClick}
-              discreet={setting === "camera" || setting === "qrCode"}
-            />
+            <OctagonBackground handleBgClick={handleBgClick} />
 
             <div
-              // className={`${isGoingGame ? "hidden" : ""}`}
               className={`${
                 isGoingGame
                   ? "opacity-0 animate-[fadeOut_0.5s_ease-in-out]"
@@ -3042,10 +3008,6 @@ export default function Categories({
                                 user.lastPlayed ||
                                   "/categories/grouping/grouping"
                               );
-
-                              // window.location.href =
-                              //   user.lastPlayed ||
-                              //   "/categories/grouping/grouping";
                             }}
                             className="z-30"
                           >
