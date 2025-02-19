@@ -23,7 +23,7 @@ export default function Triangle({
 }
 
 export function CornerTriangle({
-  size = "30",
+  size = "60",
   direction,
   color = "#00000",
   // childrenPosition,
@@ -67,12 +67,15 @@ export function CornerTriangle({
 
   // if (!dimension || !points || !borderInset) return null;
 
-  const viewportHeight =
-    typeof window !== "undefined" ? window.innerHeight : 800; // Valeur par défaut pour SSR
-  const vh = Math.round(viewportHeight / 100);
-  const dimension = parseInt(size) * vh;
+  // const viewportHeight =
+  //   typeof window !== "undefined" ? window.innerHeight : 800;
+  // const vh = Math.round(viewportHeight / 100);
+  // const dimension = parseInt(size) * vh;
+  const viewportWidth = typeof window !== "undefined" ? window.innerWidth : 800;
+  const vw = Math.round(viewportWidth / 100);
+  // const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+  const dimension = parseInt(size) * vw;
 
-  // 🔹 Pré-calcul des points
   const points = {
     top: [
       `${dimension / 2},${dimension / 2}`,
@@ -82,7 +85,6 @@ export function CornerTriangle({
     bottom: [`0,0`, `${dimension},0`, `${dimension / 2},${dimension / 2}`],
   };
 
-  // 🔹 Pré-calcul du box-shadow
   const borderInset =
     direction.y === "bottom" && direction.x === "left"
       ? "inset 9px 0px 5px -6px #581c87"

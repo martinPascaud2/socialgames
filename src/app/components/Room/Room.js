@@ -1024,20 +1024,22 @@ export default function Room({
 
               <div
                 // className="absolute left-0 translate-x-[-50%] translate-y-[-1rem] z-10"
-                className={`absolute left-0 translate-x-[-50%] translate-y-[-1.5rem] z-10`}
+                // className={`absolute left-0 translate-x-[-50%] translate-y-[-2vh] z-10`}
+                // className={`absolute left-0 translate-x-[-50%] z-10`}
+                className="absolute left-0 translate-x-[-50%] translate-y-[-1rem] z-10"
                 // className={`absolute left-0 translate-x-[-50%] z-10`}
                 style={{
                   top: `${barsSizes.top / 4}rem`,
-                  // transform: `translateY(calc(-${
-                  //   barsSizes.top / 4
-                  // }rem + 1rem))`,
+                  // transform: `translateY(calc(-2.2vh))`,
+                  // transform: `translateY(-${barsSizes.top / 4}rem)`,
+                  // transform: `translateY(1px)`,
                 }}
               >
                 <CornerTriangle direction={{ y: "bottom", x: "left" }} />
               </div>
               <div
                 // className="absolute right-0 translate-x-[50%] translate-y-[-1rem] z-10"
-                className="absolute right-0 translate-x-[50%] translate-y-[-1.5rem] z-10"
+                className="absolute right-0 translate-x-[50%] translate-y-[-1rem] z-10"
                 // className="absolute right-0 translate-x-[50%] z-10"
                 style={{
                   top: `${barsSizes.top / 4}rem`,
@@ -1050,7 +1052,7 @@ export default function Room({
               </div>
               <div
                 // className="absolute left-0 translate-x-[-50%] translate-y-[1rem] z-10"
-                className="absolute left-0 translate-x-[-50%] translate-y-[1.5rem] z-10"
+                className="absolute left-0 translate-x-[-50%] translate-y-[1rem] z-10"
                 // className="absolute left-0 translate-x-[-50%] z-10"
                 style={{
                   bottom: `${barsSizes.bottom / 4}rem`,
@@ -1063,7 +1065,7 @@ export default function Room({
               </div>
               <div
                 // className="absolute right-0 translate-x-[50%] translate-y-[1rem] z-10"
-                className="absolute right-0 translate-x-[50%] translate-y-[1.5rem] z-10"
+                className="absolute right-0 translate-x-[50%] translate-y-[1rem] z-10"
                 // className="absolute right-0 translate-x-[50%] z-10"
                 style={{
                   bottom: `${barsSizes.bottom / 4}rem`,
