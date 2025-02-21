@@ -5,7 +5,11 @@ import { jwtVerify } from "./jwtVerify";
 import prisma from "./prisma";
 
 export default async function getUser() {
-  const token = cookies().get("SG_token");
+  // const token = cookies().get("SG_token");
+
+  const cookieStore = await cookies(); // check
+  const token = cookieStore.get("SG_token");
+
   const { userMail } = await jwtVerify(token);
 
   let user;

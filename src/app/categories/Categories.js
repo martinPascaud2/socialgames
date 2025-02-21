@@ -911,7 +911,8 @@ const SettingsButtons = ({
       event.stopPropagation();
       updateLastCP({ userId: user.id }); // no await // check
       window.open(
-        "https://socialgames.vercel.app/categories/",
+        // "https://socialgames.vercel.app/categories/",
+        "https://socialgames-me.vercel.app/",
         "_blank",
         "noopener,noreferrer"
       );
