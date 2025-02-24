@@ -725,6 +725,7 @@ import { FaRegCircle } from "react-icons/fa6";
 import { MdOutlineSquare } from "react-icons/md";
 
 import { updatePassword } from "@/signin/actions";
+import putTmpAccountToken from "@/utils/putTmpAccountToken";
 import ReactDOM, { useFormState } from "react-dom";
 
 import Spinner from "@/components/spinners/Spinner";
@@ -901,7 +902,7 @@ const SettingsButtons = ({
   //   ]
   // );
   const handleAccountPressed = useCallback(
-    (event) => {
+    async (event) => {
       setIsAccountPressed(false);
       if (locked) return;
       // setSetting("password");
@@ -910,9 +911,10 @@ const SettingsButtons = ({
       resetPermissions();
       event.stopPropagation();
       updateLastCP({ userId: user.id }); // no await // check
+      const tmpToken = await putTmpAccountToken({ userId: user.id });
+
       window.open(
-        // "https://socialgames.vercel.app/categories/",
-        "https://socialgames-me.vercel.app/",
+        `${process.env.NEXT_PUBLIC_ACCOUNT_APP_URL}/?i=${user.id}&t=${tmpToken}`,
         "_blank",
         "noopener,noreferrer"
       );
@@ -920,10 +922,11 @@ const SettingsButtons = ({
     [
       setIsAccountPressed,
       locked,
-      setSetting,
+      // setSetting,
       setServerMessage,
       resetPermissions,
       updateLastCP,
+      user.id,
     ]
   );
 
