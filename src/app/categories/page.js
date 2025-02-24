@@ -1,17 +1,20 @@
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 
+import { gamesRefs } from "@/assets/globals";
+
 import pusher from "@/utils/pusher";
 import prisma from "@/utils/prisma";
 import getUser from "@/utils/getUser";
 import getDistance from "@/utils/getDistance";
 import getFriendList from "@/utils/getFriendList";
-import Categories from "./Categories";
+import putTmpAccountToken from "@/utils/putTmpAccountToken";
 
-import { gamesRefs } from "@/assets/globals";
+import Categories from "./Categories";
 
 export default async function CategoriesPage() {
   const user = await getUser(); // check: only what needed
+  const tmpToken = await putTmpAccountToken({ userId: user.id });
   const friendList = user?.id ? await getFriendList({ userId: user.id }) : [];
 
   const updateParams = async (up) => {
@@ -262,6 +265,7 @@ export default async function CategoriesPage() {
     <>
       <Categories
         user={user}
+        tmpToken={tmpToken}
         updateParams={updateParams}
         friendList={friendList}
         addFriend={addFriend}

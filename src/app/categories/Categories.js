@@ -867,6 +867,7 @@ const SettingsButtons = ({
   setLocation,
   updateLastCP,
   user,
+  tmpToken,
   setServerMessage,
   resetPermissions,
   setScanning,
@@ -910,32 +911,14 @@ const SettingsButtons = ({
       // setScanning(false);
       resetPermissions();
       event.stopPropagation();
-      // updateLastCP({ userId: user.id }); // no await // check
+      updateLastCP({ userId: user.id }); // no await // check
       // const tmpToken = await putTmpAccountToken({ userId: user.id });
 
-      // window.open(
-      //   `${process.env.NEXT_PUBLIC_ACCOUNT_APP_URL}/?i=${user.id}&t=${tmpToken}`,
-      //   "_blank",
-      //   "noopener,noreferrer"
-      // );
-
-      const newWindow = window.open(
-        "about:blank",
+      window.open(
+        `${process.env.NEXT_PUBLIC_ACCOUNT_APP_URL}/?i=${user.id}&t=${tmpToken}`,
         "_blank",
         "noopener,noreferrer"
       );
-
-      const tmpToken = await putTmpAccountToken({ userId: user.id });
-
-      if (newWindow) {
-        newWindow.location.href = `${process.env.NEXT_PUBLIC_ACCOUNT_APP_URL}/?i=${user.id}&t=${tmpToken}`;
-      }
-
-      // window.open(
-      //   `${process.env.NEXT_PUBLIC_ACCOUNT_APP_URL}/?i=${user.id}&t=${tmpToken}`,
-      //   "_blank",
-      //   "noopener,noreferrer"
-      // );
     },
     [
       setIsAccountPressed,
@@ -943,8 +926,9 @@ const SettingsButtons = ({
       // setSetting,
       setServerMessage,
       resetPermissions,
-      // updateLastCP,
+      updateLastCP,
       user.id,
+      tmpToken,
     ]
   );
 
@@ -2608,6 +2592,7 @@ const Invitations = ({
 
 export default function Categories({
   user,
+  tmpToken,
   updateParams,
   friendList,
   addFriend,
@@ -2894,6 +2879,7 @@ export default function Categories({
                   <SettingsButtons
                     updateLastCP={updateLastCP}
                     user={user}
+                    tmpToken={tmpToken}
                     setSetting={setSetting}
                     setLocation={setLocation}
                     setServerMessage={setServerMessage}
