@@ -910,14 +910,32 @@ const SettingsButtons = ({
       // setScanning(false);
       resetPermissions();
       event.stopPropagation();
-      updateLastCP({ userId: user.id }); // no await // check
-      const tmpToken = await putTmpAccountToken({ userId: user.id });
+      // updateLastCP({ userId: user.id }); // no await // check
+      // const tmpToken = await putTmpAccountToken({ userId: user.id });
 
-      window.open(
-        `${process.env.NEXT_PUBLIC_ACCOUNT_APP_URL}/?i=${user.id}&t=${tmpToken}`,
+      // window.open(
+      //   `${process.env.NEXT_PUBLIC_ACCOUNT_APP_URL}/?i=${user.id}&t=${tmpToken}`,
+      //   "_blank",
+      //   "noopener,noreferrer"
+      // );
+
+      const newWindow = window.open(
+        "about:blank",
         "_blank",
         "noopener,noreferrer"
       );
+
+      const tmpToken = await putTmpAccountToken({ userId: user.id });
+
+      if (newWindow) {
+        newWindow.location.href = `${process.env.NEXT_PUBLIC_ACCOUNT_APP_URL}/?i=${user.id}&t=${tmpToken}`;
+      }
+
+      // window.open(
+      //   `${process.env.NEXT_PUBLIC_ACCOUNT_APP_URL}/?i=${user.id}&t=${tmpToken}`,
+      //   "_blank",
+      //   "noopener,noreferrer"
+      // );
     },
     [
       setIsAccountPressed,
@@ -925,7 +943,7 @@ const SettingsButtons = ({
       // setSetting,
       setServerMessage,
       resetPermissions,
-      updateLastCP,
+      // updateLastCP,
       user.id,
     ]
   );
