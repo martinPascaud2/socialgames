@@ -881,11 +881,6 @@ const SettingsButtons = ({
   const [isFriendsPressed, setIsFriendsPressed] = useState(false);
   const [isQrcodePressed, setIsQrcodePressed] = useState(false);
 
-  console.log(
-    "process.env.NEXT_PUBLIC_ACCOUNT_APP_URL",
-    process.env.NEXT_PUBLIC_ACCOUNT_APP_URL
-  );
-
   // const handleAccountPressed = useCallback(
   //   (event) => {
   //     setIsAccountPressed(false);
