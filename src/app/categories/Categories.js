@@ -724,7 +724,6 @@ import { FaCheck } from "react-icons/fa6";
 import { FaRegCircle } from "react-icons/fa6";
 import { MdOutlineSquare } from "react-icons/md";
 
-import { updatePassword } from "@/signin/actions";
 import putTmpAccountToken from "@/utils/putTmpAccountToken";
 import ReactDOM, { useFormState } from "react-dom";
 
@@ -2130,62 +2129,6 @@ const CentralZone = ({ children, onClick, zIndex }) => {
   );
 };
 
-const PasswordForm = ({ user }) => {
-  const updateWithUserId = updatePassword.bind(null, user.id);
-  const [state, formAction] = useFormState(updateWithUserId, {
-    status: 200,
-    message: null,
-  });
-
-  return (
-    <div className="w-full h-full flex justify-center py-9">
-      <form
-        action={(formData) => formAction(formData)}
-        className="flex flex-col items-center"
-      >
-        <label className="text-purple-900">Ancien mot de passe</label>
-        <input
-          type="password"
-          name="oldPassword"
-          id="oldPassword"
-          className="text-purple-900 focus:outline-none"
-          style={{ backgroundColor: "#f3e8ff" }}
-          autoComplete=""
-        />
-
-        <label className="text-purple-900">Nouveau mot de passe</label>
-        <input
-          type="password"
-          name="newPassword"
-          id="newPassword"
-          className="text-purple-900 focus:outline-none"
-          style={{ backgroundColor: "#f3e8ff" }}
-          autoComplete=""
-        />
-
-        <label className="text-purple-900">Confirmer</label>
-        <input
-          type="password"
-          name="confirmedPassword"
-          id="confirmedPassword"
-          className="text-purple-900 focus:outline-none"
-          style={{ backgroundColor: "#f3e8ff" }}
-          autoComplete=""
-        />
-
-        <button
-          type="submit"
-          className="border border-purple-200 bg-purple-400 text-purple-900 mt-2 p-1"
-        >
-          Valider
-        </button>
-
-        <div style={{ color: "#581c87" }}>{state.message}</div>
-      </form>
-    </div>
-  );
-};
-
 const BarParam = ({ style, borderPosition }) => {
   const [key, setKey] = useState(0);
 
@@ -2892,12 +2835,6 @@ export default function Categories({
                           setBarValues={setBarValues}
                         />
                       </div>
-                    </CentralZone>
-                  )}
-
-                  {setting === "password" && (
-                    <CentralZone onClick={handleOctaClick} zIndex={60}>
-                      <PasswordForm user={user} />
                     </CentralZone>
                   )}
 

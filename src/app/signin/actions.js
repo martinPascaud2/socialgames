@@ -21,6 +21,14 @@ export async function createAccount(prevState, formData) {
     };
   }
 
+  if (password.length < 5) {
+    return {
+      status: 400,
+      message: "Mot de passe trop court",
+      srMessage: "Mot de passe trop court",
+    };
+  }
+
   let hashedPassword;
   try {
     hashedPassword = await bcrypt.hash(password, saltRounds);
@@ -58,42 +66,4 @@ export async function createAccount(prevState, formData) {
     message: "Création du compte réalisée avec succès",
     srMessage: "Création du compte réalisée avec succès",
   };
-}
-
-export async function updatePassword(userId, prevState, formData) {
-  const oldPassword = formData.get("oldPassword");
-  const newPassword = formData.get("newPassword");
-  const confirmedPassword = formData.get("confirmedPassword");
-
-  const hashedPassword = (
-    await prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
-      select: {
-        password: true,
-      },
-    })
-  ).password;
-
-  const isValidPassword = await bcrypt.compare(oldPassword, hashedPassword);
-
-  if (!isValidPassword) {
-    return { status: 200, message: "Mot de passe incorrect" };
-  } else {
-    if (newPassword !== confirmedPassword) {
-      return { status: 200, message: "Mots de passe différents" };
-    } else {
-      const newHashedPassword = await bcrypt.hash(newPassword, saltRounds);
-
-      await prisma.user.update({
-        where: { id: userId },
-        data: {
-          password: newHashedPassword,
-        },
-      });
-
-      return { status: 200, message: "Mot de passe modifié" };
-    }
-  }
 }
