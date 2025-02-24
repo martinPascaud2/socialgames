@@ -14,7 +14,7 @@ import Categories from "./Categories";
 
 export default async function CategoriesPage() {
   const user = await getUser(); // check: only what needed
-  const tmpToken = await putTmpAccountToken({ userId: user.id });
+  const tmpToken = await putTmpAccountToken({ userId: user.id }); // upped for iphones
   const friendList = user?.id ? await getFriendList({ userId: user.id }) : [];
 
   const updateParams = async (up) => {

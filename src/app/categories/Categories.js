@@ -882,26 +882,6 @@ const SettingsButtons = ({
   const [isFriendsPressed, setIsFriendsPressed] = useState(false);
   const [isQrcodePressed, setIsQrcodePressed] = useState(false);
 
-  // const handleAccountPressed = useCallback(
-  //   (event) => {
-  //     setIsAccountPressed(false);
-  //     if (locked) return;
-  //     setSetting("password");
-  //     setServerMessage("");
-  //     // setScanning(false);
-  //     resetPermissions();
-  //     event.stopPropagation();
-  //     updateLastCP({ userId: user.id }); // no await
-  //   },
-  //   [
-  //     setIsAccountPressed,
-  //     locked,
-  //     setSetting,
-  //     setServerMessage,
-  //     resetPermissions,
-  //     updateLastCP,
-  //   ]
-  // );
   const handleAccountPressed = useCallback(
     async (event) => {
       setIsAccountPressed(false);
@@ -912,7 +892,6 @@ const SettingsButtons = ({
       resetPermissions();
       event.stopPropagation();
       updateLastCP({ userId: user.id }); // no await // check
-      // const tmpToken = await putTmpAccountToken({ userId: user.id });
 
       window.open(
         `${process.env.NEXT_PUBLIC_ACCOUNT_APP_URL}/?i=${user.id}&t=${tmpToken}`,
