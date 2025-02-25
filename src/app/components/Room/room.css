@@ -2,6 +2,10 @@ body {
   overflow: hidden;
 }
 
+::-webkit-scrollbar {
+  display: none;
+}
+
 @keyframes pulseSoft {
   0%,
   100% {

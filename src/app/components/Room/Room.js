@@ -968,6 +968,49 @@ export default function Room({
         <div
           className={`h-full absolute w-[95vw] overflow-x-hidden animate-[expandSize_1.5s_ease-in-out] top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]`}
         >
+          <div className="absolute h-full w-full">
+            <div
+              className="w-1 bg-transparent z-60 border border-l-[10px] border-y-0 border-r-0 border-black"
+              style={{
+                position: "absolute",
+                left: "100%",
+                height: "100%",
+                boxShadow: "1px 0 0 0 black",
+                zIndex: 10,
+              }}
+            />
+            <div
+              className="w-1 bg-black z-60 border border-r-[10px] border-y-0 border-l-0 border-black"
+              style={{
+                position: "absolute",
+                right: "100%",
+                height: "100%",
+                boxShadow: "-1px 0 0 0 black",
+                zIndex: 10,
+              }}
+            />
+            <div
+              className="h-1 bg-black z-60 border border-t-[2px] border-x-0 border-b-0 border-black"
+              style={{
+                position: "absolute",
+                top: "100%",
+                width: "100%",
+                boxShadow: "0 -10px 0 0 black",
+                zIndex: 10,
+              }}
+            />
+            <div
+              className="h-1 bg-black z-60 border border-b-[2px] border-x-0 border-t-0 border-black"
+              style={{
+                position: "absolute",
+                bottom: "100%",
+                width: "100%",
+                boxShadow: "0 10px 0 0 black",
+                zIndex: 10,
+              }}
+            />
+          </div>
+
           <UserContext.Provider value={{ userParams }}>
             <div className={`relative h-full w-full overflow-hidden`}>
               <div
@@ -1011,9 +1054,6 @@ export default function Room({
               >
                 <CornerTriangle direction={{ y: "top", x: "right" }} />
               </div>
-
-              <div className="absolute right-full w-2.5 bg-black h-full z-10" />
-              <div className="absolute left-full w-2.5 bg-black h-full z-10" />
 
               <div className="h-full w-full relative bg-purple-600">
                 <div
