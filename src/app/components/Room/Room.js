@@ -1778,7 +1778,7 @@ export default function Room({
           />
 
           <div
-            className={`overflow-y-auto z-[60] w-full`}
+            className={`overflow-y-auto z-[60] w-full relative`}
             style={{
               height: `calc(100dvh - ${barsSizes.top / 4}rem - ${
                 barsSizes.bottom / 4
@@ -1786,6 +1786,34 @@ export default function Room({
               marginTop: `${barsSizes.top / 4}rem`,
             }}
           >
+            <div className="absolute h-full w-full bg-black">
+              <div className="relative h-full w-full">
+                <div className="w-full h-full bg-gradient-to-r from-transparent via-gray-200 to-transparent opacity-60 blur-[200px] animate-blurMovement"></div>
+                <style jsx>
+                  {`
+                    @keyframes blurMovement {
+                      0% {
+                        background-position: 90% 0;
+                      }
+                      50% {
+                        background-position: 20% 0;
+                      }
+                      100% {
+                        background-position: 90% 0;
+                      }
+                    }
+
+                    .animate-blurMovement {
+                      animation: blurMovement 15s infinite linear;
+                      background-size: 170% 100%;
+                    }
+                  `}
+                </style>
+
+                <div className="absolute top-0 w-full h-20 bg-gradient-to-b from-black via-transparent to-transparent opacity-100" />
+                <div className="absolute bottom-0 w-full h-20 bg-gradient-to-t from-black via-transparent to-transparent opacity-100" />
+              </div>
+            </div>
             <Game
               roomId={roomId}
               roomToken={roomToken}
