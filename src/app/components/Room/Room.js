@@ -178,6 +178,9 @@ export default function Room({
   const [isPrivate, setIsPrivate] = useState();
   const [geoLocation, setGeoLocation] = useState(null);
   const [isStarted, setIsStarted] = useState(false);
+  const [isLaunching, setIsLaunching] = useState(false);
+  const [isLaunched, setIsLaunched] = useState(false);
+  const [isJoinStarted, setIsJoinStarted] = useState(false);
   const [serverMessage, setServerMessage] = useState("");
 
   const [friendsList, setFriendsList] = useState();
@@ -464,6 +467,7 @@ export default function Room({
       if (joinData === undefined) return;
       if (joinData.isJoinAgain) {
         setIsStarted(joinData.isStarted);
+        setIsJoinStarted(joinData.isStarted);
         setGameData(joinData.gameData);
         setIsAdmin(joinData.admin === uniqueUserName);
         joinData.admin === uniqueUserName &&
@@ -572,6 +576,7 @@ export default function Room({
       if (data === undefined) return;
       if (data.isJoinAgain) {
         setIsStarted(data.isStarted);
+        setIsJoinStarted(joinData.isStarted);
         setGameData(data.gameData);
         setOptions(data.options);
       }
@@ -939,6 +944,15 @@ export default function Room({
   }, [gameData, user]);
   // ------------------------------
 
+  // launching_animation
+  useEffect(() => {
+    if (isStarted) {
+      setIsLaunching(true);
+      setTimeout(() => setIsLaunched(true), 3000);
+    }
+  }, [isStarted, isLaunching, isLaunched]);
+  // ------------------------------
+
   if (joinError) {
     return (
       <div className="h-screen w-screen flex justify-center items-center">
@@ -962,11 +976,28 @@ export default function Room({
       </div>
     );
 
-  if (!isStarted || (!isAdmin && gameData.isSearching && !gameData.ended)) {
+  if (isJoinStarted && !isLaunched)
+    return (
+      <div
+        className="h-screen w-full px-2 overflow-x-hidden bg-black"
+        style={{
+          paddingTop: `${barsSizes.top / 4}rem`,
+          paddingBottom: `${barsSizes.bottom / 4}rem`,
+        }}
+      >
+        <LoadingRoomOctagon isJoinStarted />
+      </div>
+    );
+
+  if (!isLaunched || (!isAdmin && gameData.isSearching && !gameData.ended)) {
     return (
       <div className="bg-black w-screen h-screen relative">
         <div
-          className={`h-full absolute w-[95vw] overflow-x-hidden animate-[expandSize_1.5s_ease-in-out] top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]`}
+          className={`${
+            !isLaunching
+              ? "h-full w-[95vw] animate-[expandSize_1.5s_ease-in-out]"
+              : "h-[105vw] w-[85vw] animate-[shrinkSize_3s_ease-in-out] opacity-0"
+          } absolute overflow-x-hidden top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]`}
         >
           <div className="absolute h-full w-full">
             <div
@@ -1073,7 +1104,11 @@ export default function Room({
             {isAdmin && gameName !== "grouping" && (
               <div
                 onClick={async () => await deleteInvs()}
-                className="opacity-100 animate-[fadeIn_1.5s_ease-in-out]"
+                className={`${
+                  !isLaunching
+                    ? "opacity-100 animate-[fadeIn_1.5s_ease-in-out]"
+                    : "opacity-0 animate-[fadeOut_1.5s_ease-in-out]"
+                }`}
               >
                 <NextStep onClick={() => launchRoom()}>
                   <div>Lancer</div>
@@ -1091,7 +1126,13 @@ export default function Room({
               {(!isChosen && !group) || isPrivate === undefined ? (
                 <div>Chargement...</div>
               ) : (
-                <div className="opacity-100 animate-[fadeIn_1.5s_ease-in-out] relative h-full w-full">
+                <div
+                  className={`${
+                    !isLaunching
+                      ? "opacity-100 animate-[fadeIn_1.5s_ease-in-out]"
+                      : "opacity-0 animate-[fadeOut_1.5s_ease-in-out]"
+                  } relative h-full w-full`}
+                >
                   <div className="absolute left-1/2 translate-x-[-50%] h-[10dvh] w-full">
                     <div className="w-full flex justify-center translate-y-[1rem]">
                       {categorie !== "grouping" && (
@@ -1806,7 +1847,7 @@ export default function Room({
     );
   } else {
     return (
-      <div className="absolute h-screen w-full z-50">
+      <div className="absolute h-screen w-full z-50 bg-black">
         <UserContext.Provider value={{ userParams }}>
           <div
             className={`fixed w-full z-[70] bg-black`}
@@ -1827,8 +1868,8 @@ export default function Room({
             }}
           >
             <div className="absolute h-full w-full bg-black">
-              <div className="relative h-full w-full">
-                <div className="w-full h-full bg-gradient-to-r from-transparent via-gray-200 to-transparent opacity-60 blur-[200px] animate-blurMovement"></div>
+              <div className="relative h-full w-full animate-[fadeIn_1.5s_ease-in-out] bg-black">
+                <div className="w-full h-full bg-gradient-to-r from-transparent via-gray-200 to-transparent opacity-60 blur-[200px] animate-blurMovement" />
                 <style jsx>
                   {`
                     @keyframes blurMovement {
@@ -1854,19 +1895,22 @@ export default function Room({
                 <div className="absolute bottom-0 w-full h-20 bg-gradient-to-t from-black via-transparent to-transparent opacity-100" />
               </div>
             </div>
-            <Game
-              roomId={roomId}
-              roomToken={roomToken}
-              user={{
-                ...user,
-                name: uniqueName,
-                ...(!!multiGuestId ? { id: multiGuestId } : {}),
-                ...(!!multiGuestDataId ? { dataId: multiGuestDataId } : {}),
-              }}
-              onlineGamers={onlineGamers}
-              gameData={gameData}
-              storedLocation={geoLocation} //searching game only
-            />
+
+            <div className="w-full h-full bg-black">
+              <Game
+                roomId={roomId}
+                roomToken={roomToken}
+                user={{
+                  ...user,
+                  name: uniqueName,
+                  ...(!!multiGuestId ? { id: multiGuestId } : {}),
+                  ...(!!multiGuestDataId ? { dataId: multiGuestDataId } : {}),
+                }}
+                onlineGamers={onlineGamers}
+                gameData={gameData}
+                storedLocation={geoLocation} //searching game only
+              />
+            </div>
           </div>
         </UserContext.Provider>
       </div>

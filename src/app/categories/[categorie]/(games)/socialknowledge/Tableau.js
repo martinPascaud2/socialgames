@@ -1221,7 +1221,7 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
   );
 
   return (
-    <>
+    <div className="relative animate-[fadeIn_1.5s_ease-in-out]">
       <div className="flex flex-col items-center justify-start h-full p-2 bg-gray-100 relative overflow-hidden">
         {phase === "writing" && (
           <div className="flex justify-center items-center h-full">
@@ -1426,6 +1426,6 @@ export default function Tableau({ roomId, roomToken, user, gameData }) {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }

@@ -228,7 +228,7 @@ export default function ChainDrawing({ roomId, roomToken, user, gameData }) {
   }, [gameData.isDeletedUser]);
 
   return (
-    <div className="overflow-y-auto">
+    <div className="relative overflow-y-auto animate-[fadeIn_1.5s_ease-in-out]">
       {!gameData.ended && (
         <>
           {phase === "waiting" && (

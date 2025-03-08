@@ -129,7 +129,7 @@ export default function TeamDrawing({ roomId, roomToken, user, gameData }) {
   }, [phase, receivedImage, activePlayers, userTeam, gameData.alreadySent]);
 
   return (
-    <>
+    <div className="relative animate-[fadeIn_1.5s_ease-in-out]">
       {phase === "waiting" && !gameData.ended && isAdmin && (
         <NextStep onClick={() => startDrawing({ roomId, roomToken, gameData })}>
           Lancer
@@ -296,6 +296,6 @@ export default function TeamDrawing({ roomId, roomToken, user, gameData }) {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 }

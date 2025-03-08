@@ -490,7 +490,7 @@ export default function Triaction({
   }, [showChoose, chooseTimeout]);
 
   return (
-    <div className="flex flex-col items-center justify-center h-full w-full relative bg-gradient-to-b from-slate-300 to-amber-300 overflow-y-auto">
+    <div className="flex flex-col items-center justify-center h-full w-full relative bg-gradient-to-b from-slate-300 to-amber-300 overflow-y-auto animate-[fadeIn_1.5s_ease-in-out]">
       {phase === "peek" && (
         <>
           <div className="mx-3 text-center">

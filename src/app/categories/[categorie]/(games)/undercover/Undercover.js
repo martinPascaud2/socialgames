@@ -234,7 +234,7 @@ export default function Undercover({
   }, [gameData.voters, user.name]);
 
   return (
-    <>
+    <div className="relative animate-[fadeIn_1.5s_ease-in-out]">
       <div className="overflow-y-auto">
         {!isEnded ? (
           <>
@@ -411,6 +411,6 @@ export default function Undercover({
         gameData={gameData}
         user={user}
       />
-    </>
+    </div>
   );
 }

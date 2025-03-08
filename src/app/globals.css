@@ -54,3 +54,12 @@ body {
   overflow: hidden;
 }
 /*----------disabling scroll----------*/
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

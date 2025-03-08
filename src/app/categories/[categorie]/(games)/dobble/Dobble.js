@@ -121,7 +121,7 @@ export default function Dobble({
   }, [gameData.ended]);
 
   return (
-    <>
+    <div className="relative animate-[fadeIn_1.5s_ease-in-out]">
       {isAdmin && roundNumber === 0 && (
         <NextStep
           onClick={() => {
@@ -248,6 +248,6 @@ export default function Dobble({
         gameData={gameData}
         user={user}
       />
-    </>
+    </div>
   );
 }

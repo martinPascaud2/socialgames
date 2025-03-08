@@ -850,7 +850,7 @@ export default function Podium({ roomId, roomToken, user, gameData }) {
   const { phase } = gameData;
 
   return (
-    <div className="bg-gray-100 h-full w-full">
+    <div className="relative h-full w-full animate-[fadeIn_1.5s_ease-in-out]">
       {phase === "preparing" && (
         <PreparingPhase
           gameData={gameData}

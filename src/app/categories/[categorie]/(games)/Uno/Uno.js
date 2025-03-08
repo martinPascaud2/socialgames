@@ -192,7 +192,7 @@ export default function Uno({
   }, [phase]);
 
   return (
-    <>
+    <div className="relative animate-[fadeIn_1.5s_ease-in-out]">
       <div className="overflow-y-auto">
         <DndProvider backend={MultiBackend} options={HTML5toTouch}>
           <Preview>{generatePreview}</Preview>
@@ -371,6 +371,6 @@ export default function Uno({
         gameData={gameData}
         user={user}
       />
-    </>
+    </div>
   );
 }

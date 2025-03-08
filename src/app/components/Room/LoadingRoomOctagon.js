@@ -4,7 +4,10 @@ import { useState, useEffect } from "react";
 
 import "./room.css";
 
-export default function LoadingRoomOctagon({ setHasLoadingOctagonAnimated }) {
+export default function LoadingRoomOctagon({
+  setHasLoadingOctagonAnimated,
+  isJoinStarted,
+}) {
   const [startAnimation, setStartAnimation] = useState(false);
 
   useEffect(() => {
@@ -12,7 +15,11 @@ export default function LoadingRoomOctagon({ setHasLoadingOctagonAnimated }) {
   }, []);
 
   return (
-    <div className="relative octagon top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]">
+    <div
+      className={`relative octagon top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%] ${
+        !isJoinStarted ? "" : "animate-[joinAgainShrink_3s_ease-in-out]"
+      }`}
+    >
       <div className="absolute w-[26.3vw] h-[36vw] -skew-y-[45deg] translate-y-[-22.7vw] translate-x-[-1px] left-0 z-0 bg-black" />
       <div className="absolute w-[26.3vw] h-[36vw] skew-y-[45deg] translate-y-[-22.7vw] translate-x-[1px] right-0 z-0 bg-black" />
       <div className="absolute w-[26.3vw] h-[36vw] skew-y-[45deg] translate-y-[25.7vw] translate-x-[-1px] left-0 bottom-0 z-0 bg-black" />
@@ -24,7 +31,9 @@ export default function LoadingRoomOctagon({ setHasLoadingOctagonAnimated }) {
             ? "opacity-0 animate-[fadeOut_1.5s_ease-in-out]"
             : "opacity-100"
         }`}
-        onAnimationEnd={() => setHasLoadingOctagonAnimated(true)}
+        onAnimationEnd={() =>
+          setHasLoadingOctagonAnimated && setHasLoadingOctagonAnimated(true)
+        }
       >
         <div
           className="absolute w-[26.5vw] h-[40vw] -skew-y-[45deg] translate-y-[-13.3vw] translate-x-[0vw] right-0 bottom-0 z-20 bg-transparent"

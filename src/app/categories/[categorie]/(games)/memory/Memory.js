@@ -325,8 +325,8 @@ export default function Memory({
   );
 
   return (
-    <>
-      <div className="overflow-y-auto">
+    <div className="relative overflow-y-auto animate-[fadeIn_1.5s_ease-in-out]">
+      <div>
         {!isEnded && (
           <>
             {roundScoresList}
@@ -382,6 +382,6 @@ export default function Memory({
         gameData={gameData}
         user={user}
       />
-    </>
+    </div>
   );
 }
