@@ -2419,6 +2419,7 @@ const Invitations = ({
   setPublicRooms,
   invitations,
   currentGame,
+  setIsGoingGame,
 }) => {
   const [threeFirsts, setThreeFirsts] = useState([]);
 
@@ -2493,6 +2494,7 @@ const Invitations = ({
                 event.stopPropagation();
                 // resetPermissions();
                 await updateLastCP({ userId: user.id, out: true });
+                setIsGoingGame(true);
                 window.location.href = invitation.link;
               }}
               className="w-full z-30 h-full"
@@ -2887,6 +2889,7 @@ export default function Categories({
                       setPublicRooms={setPublicRooms}
                       invitations={invitations}
                       currentGame={currentGame}
+                      setIsGoingGame={setIsGoingGame}
                     />
                   </CentralZone>
                 </>
