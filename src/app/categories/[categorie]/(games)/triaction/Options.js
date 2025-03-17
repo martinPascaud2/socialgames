@@ -19,6 +19,7 @@ export default function PtitbacOptions({
   const [modeList, setModeList] = useState([]);
 
   useEffect(() => {
+    if (!mode) return;
     const loadLasts = async () => {
       const params = await getLastParams({ userId, mode });
       setOptions({ ...params, mode });

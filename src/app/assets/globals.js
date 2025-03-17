@@ -3,31 +3,37 @@ export const categories = [
     name: "CEREBRAL",
     href: "/categories/categorie1",
     src: "/categoriesIcons/cerebral.png",
+    subCats: "categorie1",
   },
   {
     name: "CULTURE",
     href: "/categories/categorie2",
     src: "/categoriesIcons/knowledge2.png",
+    subCats: "categorie2",
   },
   {
     name: "FAMILLE",
     href: "/categories/categorie3",
     src: "/categoriesIcons/family1.png",
+    subCats: "categorie3",
   },
   {
     name: "CARTES",
     href: "/categories/categorie4",
     src: "/categoriesIcons/cards2.png",
+    subCats: "categorie4",
   },
   {
     name: "SOCIAL",
     href: "/categories/categorie5",
     src: "/categoriesIcons/social.png",
+    subCats: "categorie5",
   },
   {
     name: "DEUX",
     href: "/categories/categorie6",
     src: "/categoriesIcons/duo1.png",
+    subCats: "categorie6",
   },
   {
     name: "APPLI",
@@ -163,13 +169,13 @@ export const gamesRefs = {
   ptitbac: {
     name: "Quel mot ?",
     categorie: "categorie3",
-    limits: { min: 2, max: 15 },
+    limits: { min: 2, max: 15, opti: 7 },
     isGuestsAllowed: false,
   },
   drawing: {
     name: "Dessin",
     categorie: "categorie3",
-    limits: { min: 4, max: 10 },
+    limits: { min: 4, max: 10, opti: 7 },
     isGuestsAllowed: false,
   },
   uno: {
@@ -181,25 +187,25 @@ export const gamesRefs = {
   triaction: {
     name: "Triaction",
     categorie: "categorie5",
-    limits: { min: 3, max: 8 },
+    limits: { min: 3, max: 8, opti: 5 },
     isGuestsAllowed: false,
   },
   ranking: {
     name: "Classement",
     categorie: "categorie5",
-    limits: { min: 2, max: 10 },
+    limits: { min: 2, max: 10, opti: 6 },
     isGuestsAllowed: false,
   },
   sort: {
     name: "Placement",
     categorie: "categorie2",
-    limits: { min: 2, max: 8 },
+    limits: { min: 2, max: 8, opti: 5 },
     isGuestsAllowed: false,
   },
   socialknowledge: {
     name: "Mentalisme",
     categorie: "categorie5",
-    limits: { min: 2, max: 10 },
+    limits: { min: 2, max: 10, opti: 6 },
     isGuestsAllowed: false,
   },
 };

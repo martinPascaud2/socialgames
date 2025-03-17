@@ -2420,6 +2420,7 @@ const Invitations = ({
   invitations,
   currentGame,
   setIsGoingGame,
+  router,
 }) => {
   const [threeFirsts, setThreeFirsts] = useState([]);
 
@@ -2495,7 +2496,7 @@ const Invitations = ({
                 // resetPermissions();
                 await updateLastCP({ userId: user.id, out: true });
                 setIsGoingGame(true);
-                window.location.href = invitation.link;
+                router.push(invitation.link);
               }}
               className="w-full z-30 h-full"
             >
@@ -2890,6 +2891,7 @@ export default function Categories({
                       invitations={invitations}
                       currentGame={currentGame}
                       setIsGoingGame={setIsGoingGame}
+                      router={router}
                     />
                   </CentralZone>
                 </>

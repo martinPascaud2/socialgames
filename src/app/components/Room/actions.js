@@ -96,14 +96,21 @@ export async function finishGame({ roomToken, gameData }) {
 }
 
 // ChooseAnotherGame (lobby)
-export async function searchGame({ roomToken, gameData }) {
-  await pusher.trigger(`room-${roomToken}`, "room-event", {
-    gameData: {
-      ...gameData,
-      // ended: true,
-      isSearching: true,
-    },
-  });
+export async function searchGame({ roomId, roomToken, gameData }) {
+  const newData = {
+    ...gameData,
+    // ended: true,
+    isSearching: true,
+  };
+  await saveAndDispatchData({ roomId, roomToken, newData });
+}
+
+export async function cancelSearchGame({ roomId, roomToken, gameData }) {
+  const newData = {
+    ...gameData,
+    isSearching: false,
+  };
+  await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
 // admin: call group
@@ -113,6 +120,7 @@ export async function goOneMoreGame({
   newRoomToken,
   gameName,
   roomId,
+  changeGame,
 }) {
   try {
     await pusher.trigger(`room-${oldRoomToken}`, "room-event", {
@@ -121,7 +129,9 @@ export async function goOneMoreGame({
         isSearching: true, // from lobbies and from end_games
         nextGame: {
           name: gameName,
-          path: `${pathname}?token=${newRoomToken}`,
+          path: `${pathname}?token=${newRoomToken}${
+            changeGame ? "&changeGame=true" : ""
+          }`,
           roomId,
         },
       },

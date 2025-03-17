@@ -29,7 +29,7 @@ export default function MemoryOptions({
   const [isFetched, setIsFetched] = useState(false);
 
   useEffect(() => {
-    if (isFetched) return;
+    if (isFetched || !mode) return;
 
     const loadLasts = async () => {
       const params = await getLastParams({ userId, mode });

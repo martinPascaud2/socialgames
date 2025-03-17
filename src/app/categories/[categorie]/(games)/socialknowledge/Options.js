@@ -29,6 +29,7 @@ export default function SocialKnowledgeOptions({
   const [show, setShow] = useState(false);
 
   useEffect(() => {
+    if (!mode) return;
     const loadLasts = async () => {
       const params = await getLastParams({ userId, mode });
       setLastParams(params);

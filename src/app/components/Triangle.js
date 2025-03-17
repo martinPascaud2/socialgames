@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 
 export default function Triangle({
   w = "20",
@@ -20,8 +20,19 @@ export default function Triangle({
   );
 }
 
-export function CornerTriangle({ size = "60", direction, color = "#00000" }) {
-  const viewportWidth = typeof window !== "undefined" ? window.innerWidth : 800;
+export function CornerTriangle({
+  size = "60",
+  direction,
+  color = "#00000",
+  localWidth,
+}) {
+  const viewportWidth =
+    typeof window !== "undefined"
+      ? window.innerWidth
+      : localWidth
+      ? localWidth
+      : 800;
+
   const vw = Math.round(viewportWidth / 100);
   const dimension = parseInt(size) * vw;
 
