@@ -1025,23 +1025,26 @@ const SettingsButtons = ({
               boxShadow: !isAccountPressed
                 ? "1vw 1vw 2vw -1vw #7e22ce, 2vw 2vw 2vw -1vw #7e22ce"
                 : "inset 0px 9px 5px -6px #581c87",
-              borderBottom: isAccountPressed ? "1px solid #581c87" : "",
-              borderRight: isAccountPressed ? "1px solid #581c87" : "",
+              borderBottom: isAccountPressed ? "1px solid #6b21a8" : "",
+              borderRight: isAccountPressed ? "1px solid #6b21a8" : "",
               backgroundColor: isAccountPressed ? "#7e22ce" : "transparent",
             }}
           >
-            <MdOutlineAccountTree className="mr-2 w-10 h-10 text-purple-800" />
+            <MdOutlineAccountTree
+              className={`mr-2 w-10 h-10 ${
+                setting !== "" && !isAccountPressed && "opacity-75"
+              } text-purple-${!isAccountPressed ? "800" : "900"}`}
+            />
           </div>
           <div // skew
             onTouchStart={() => setIsAccountPressed(true)}
             onTouchEnd={handleAccountPressed}
-            className="absolute h-[20.2vw] w-[17vw] top-[0.4vw] -skew-x-[45deg] bg-transparent left-[16.5vw] z-30"
+            className="absolute h-[20.2vw] w-[17vw] top-[0.3vw] -skew-x-[45deg] bg-transparent left-[16.5vw] z-30"
             style={{
               backgroundColor: isAccountPressed ? "#7e22ce" : "transparent",
               boxShadow: !isAccountPressed
                 ? ""
                 : "inset 9px 0px 5px -6px #581c87",
-              borderBottom: isAccountPressed ? "1px solid #581c87" : "",
             }}
           />
           <div // border filler
@@ -1050,7 +1053,7 @@ const SettingsButtons = ({
             className="absolute h-[5vw] w-[24vw] top-[15.55vw] left-[7vw] z-30"
             style={{
               boxShadow: !isAccountPressed ? "0vw 2vw 2vw -1vw #7e22ce" : "",
-              borderBottom: isAccountPressed ? "1px solid #581c87" : "",
+              borderBottom: isAccountPressed ? "1px solid #6b21a8" : "",
             }}
           />
           <div // small BF
@@ -1059,7 +1062,7 @@ const SettingsButtons = ({
             className="absolute h-[5vw] w-[17vw] top-[15.5vw] left-[16.5vw] z-30"
             style={{
               backgroundColor: isAccountPressed ? "#7e22ce" : "transparent",
-              borderBottom: isAccountPressed ? "1px solid #581c87" : "",
+              borderBottom: isAccountPressed ? "1px solid #6b21a8" : "",
             }}
           />
 
@@ -1094,11 +1097,20 @@ const SettingsButtons = ({
                   : "inset 9px 0px 5px -6px #581c87",
               borderRight:
                 isParamsPressed || setting === "params"
-                  ? "1px solid #581c87"
+                  ? "1px solid #6b21a8"
                   : "",
             }}
           >
-            <IoIosSettings className="w-11 h-11 text-purple-800" />
+            <IoIosSettings
+              className={`w-11 h-11 ${
+                setting !== "" &&
+                setting !== "params" &&
+                !isParamsPressed &&
+                "opacity-75"
+              } text-purple-${
+                setting !== "params" && !isParamsPressed ? "800" : "900"
+              }`}
+            />
           </div>
           <div // middle
             onTouchStart={() => setIsParamsPressed(true)}
@@ -1117,17 +1129,17 @@ const SettingsButtons = ({
                   : "",
               borderTop:
                 isParamsPressed || setting === "params"
-                  ? "1px solid #581c87"
+                  ? "1px solid #6b21a8"
                   : "",
               borderRight:
                 isParamsPressed || setting === "params"
-                  ? "1px solid #581c87"
+                  ? "1px solid #6b21a8"
                   : setting === "friends"
                   ? "1px solid #7e22ce"
                   : "",
               borderBottom:
                 isParamsPressed || setting === "params"
-                  ? "1px solid #581c87"
+                  ? "1px solid #6b21a8"
                   : "",
             }}
           />
@@ -1156,12 +1168,18 @@ const SettingsButtons = ({
               boxShadow: !isCameraPressed
                 ? "1vw -1vw 2vw -1vw #7e22ce, 2vw -2vw 2vw -1vw #7e22ce"
                 : "inset 0px -9px 5px -6px #581c87",
-              borderTop: isCameraPressed ? "1px solid #581c87" : "",
-              borderRight: isCameraPressed ? "1px solid #581c87" : "",
+              borderTop: isCameraPressed ? "1px solid #6b21a8" : "",
+              borderRight: isCameraPressed ? "1px solid #6b21a8" : "",
               backgroundColor: isCameraPressed ? "#7e22ce" : "transparent",
             }}
           >
-            <CameraIcon className="w-10 h-10 text-purple-800 mb-1 mr-1.5" />
+            <CameraIcon
+              className={`w-10 h-10 mb-1 mr-1.5 ${
+                setting !== "" && !isCameraPressed && "opacity-75"
+              } text-purple-${
+                setting !== "camera" && !isCameraPressed ? "800" : "900"
+              }`}
+            />
           </div>
           <div // skew
             onTouchStart={() => setIsCameraPressed(true)}
@@ -1172,7 +1190,6 @@ const SettingsButtons = ({
               boxShadow: !isCameraPressed
                 ? ""
                 : "inset 9px 0px 5px -6px #581c87",
-              borderTop: isCameraPressed ? "1px solid #581c87" : "",
             }}
           />
           <div // border filler
@@ -1181,7 +1198,7 @@ const SettingsButtons = ({
             className="absolute h-[5vw] w-[24vw] bottom-[15.55vw] left-[7vw] z-30"
             style={{
               boxShadow: !isCameraPressed ? "0vw -2vw 2vw -1vw #7e22ce" : "",
-              borderTop: isCameraPressed ? "1px solid #581c87" : "",
+              borderTop: isCameraPressed ? "1px solid #6b21a8" : "",
             }}
           />
           <div // small BF
@@ -1190,7 +1207,7 @@ const SettingsButtons = ({
             className="absolute h-[5vw] w-[17vw] bottom-[15.6vw] left-[16.5vw] z-30"
             style={{
               backgroundColor: isCameraPressed ? "#7e22ce" : "transparent",
-              borderTop: isCameraPressed ? "1px solid #581c87" : "",
+              borderTop: isCameraPressed ? "1px solid #6b21a8" : "",
             }}
           />
 
@@ -1203,23 +1220,26 @@ const SettingsButtons = ({
               boxShadow: !isDiscoPressed
                 ? "-1vw 1vw 2vw -1vw #7e22ce, -2vw 2vw 2vw -1vw #7e22ce"
                 : "inset 0px 9px 5px -6px #581c87",
-              borderBottom: isDiscoPressed ? "1px solid #581c87" : "",
-              borderLeft: isDiscoPressed ? "1px solid #581c87" : "",
+              borderBottom: isDiscoPressed ? "1px solid #6b21a8" : "",
+              borderLeft: isDiscoPressed ? "1px solid #6b21a8" : "",
               backgroundColor: isDiscoPressed ? "#7e22ce" : "transparent",
             }}
           >
-            <ImExit className="ml-2 w-8 h-8 text-purple-800" />
+            <ImExit
+              className={`ml-2 w-8 h-8 ${
+                setting !== "" && !isDiscoPressed && "opacity-75"
+              } text-purple-${!isDiscoPressed ? "800" : "900"}`}
+            />
           </div>
           <div // skew
             onTouchStart={() => setIsDiscoPressed(true)}
             onTouchEnd={handleDiscoPressed}
-            className="absolute h-[20.2vw] w-[17vw] top-[0.4vw] skew-x-[45deg] bg-transparent right-[16.5vw] z-30"
+            className="absolute h-[20.2vw] w-[17vw] top-[0.3vw] skew-x-[45deg] bg-transparent right-[16.5vw] z-30"
             style={{
               backgroundColor: isDiscoPressed ? "#7e22ce" : "transparent",
               boxShadow: !isDiscoPressed
                 ? ""
                 : "inset -9px 0px 5px -6px #581c87",
-              borderBottom: isDiscoPressed ? "1px solid #581c87" : "",
             }}
           />
           <div // border filler
@@ -1228,7 +1248,7 @@ const SettingsButtons = ({
             className="absolute h-[5vw] w-[24vw] top-[15.55vw] right-[7vw] z-30"
             style={{
               boxShadow: !isDiscoPressed ? "0vw 2vw 2vw -1vw #7e22ce" : "",
-              borderBottom: isDiscoPressed ? "1px solid #581c87" : "",
+              borderBottom: isDiscoPressed ? "1px solid #6b21a8" : "",
             }}
           />
           <div // small BF
@@ -1237,7 +1257,7 @@ const SettingsButtons = ({
             className="absolute h-[5vw] w-[17vw] top-[15.5vw] right-[16.5vw] z-30"
             style={{
               backgroundColor: isDiscoPressed ? "#7e22ce" : "transparent",
-              borderBottom: isDiscoPressed ? "1px solid #581c87" : "",
+              borderBottom: isDiscoPressed ? "1px solid #6b21a8" : "",
             }}
           />
 
@@ -1272,11 +1292,20 @@ const SettingsButtons = ({
                   : "inset -9px 0px 5px -6px #581c87",
               borderLeft:
                 isFriendsPressed || setting === "friends"
-                  ? "1px solid #581c87"
+                  ? "1px solid #6b21a8"
                   : "",
             }}
           >
-            <FaUserFriends className={`w-11 h-11 text-purple-800 z-50`} />
+            <FaUserFriends
+              className={`w-11 h-11 z-50 ${
+                setting !== "" &&
+                setting !== "friends" &&
+                !isFriendsPressed &&
+                "opacity-75"
+              } text-purple-${
+                setting !== "friends" && !isFriendsPressed ? "800" : "900"
+              }`}
+            />
           </div>
           <div // middle
             onTouchStart={() => setIsFriendsPressed(true)}
@@ -1295,17 +1324,17 @@ const SettingsButtons = ({
                   : "",
               borderTop:
                 isFriendsPressed || setting === "friends"
-                  ? "1px solid #581c87"
+                  ? "1px solid #6b21a8"
                   : "",
               borderLeft:
                 isFriendsPressed || setting === "friends"
-                  ? "1px solid #581c87"
+                  ? "1px solid #6b21a8"
                   : setting === "params"
                   ? "1px solid #7e22ce"
                   : "",
               borderBottom:
                 isFriendsPressed || setting === "friends"
-                  ? "1px solid #581c87"
+                  ? "1px solid #6b21a8"
                   : "",
             }}
           />
@@ -1334,12 +1363,16 @@ const SettingsButtons = ({
               boxShadow: !isQrcodePressed
                 ? "-1vw -1vw 2vw -1vw #7e22ce, -2vw -2vw 2vw -1vw #7e22ce"
                 : "inset 0px -9px 5px -6px #581c87",
-              borderTop: isQrcodePressed ? "1px solid #581c87" : "",
-              borderLeft: isQrcodePressed ? "1px solid #581c87" : "",
+              borderTop: isQrcodePressed ? "1px solid #6b21a8" : "",
+              borderLeft: isQrcodePressed ? "1px solid #6b21a8" : "",
               backgroundColor: isQrcodePressed ? "#7e22ce" : "transparent",
             }}
           >
-            <LiaQrcodeSolid className={`w-11 h-11 text-purple-800 ml-2 mb-1`} />
+            <LiaQrcodeSolid
+              className={`w-11 h-11 ml-2 mb-1 ${
+                setting !== "" && !isQrcodePressed && "opacity-75"
+              } text-purple-${!isQrcodePressed ? "800" : "900"}`}
+            />
           </div>
           <div // skew
             onTouchStart={() => setIsQrcodePressed(true)}
@@ -1350,7 +1383,6 @@ const SettingsButtons = ({
               boxShadow: !isQrcodePressed
                 ? ""
                 : "inset -9px 0px 5px -6px #581c87",
-              borderTop: isQrcodePressed ? "1px solid #581c87" : "",
             }}
           />
           <div // border filler
@@ -1359,7 +1391,7 @@ const SettingsButtons = ({
             className="absolute h-[5vw] w-[24vw] bottom-[15.55vw] right-[7vw] z-30"
             style={{
               boxShadow: !isQrcodePressed ? "0vw -2vw 2vw -1vw #7e22ce" : "",
-              borderTop: isQrcodePressed ? "1px solid #581c87" : "",
+              borderTop: isQrcodePressed ? "1px solid #6b21a8" : "",
             }}
           />
           <div // small BF
@@ -1368,7 +1400,7 @@ const SettingsButtons = ({
             className="absolute h-[5vw] w-[17vw] bottom-[15.5vw] right-[16.5vw] z-30"
             style={{
               backgroundColor: isQrcodePressed ? "#7e22ce" : "transparent",
-              borderTop: isQrcodePressed ? "1px solid #581c87" : "",
+              borderTop: isQrcodePressed ? "1px solid #6b21a8" : "",
             }}
           />
         </div>
