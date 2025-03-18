@@ -1307,6 +1307,7 @@ export default function Room({
                         style={{ objectFit: "contain" }}
                         width={500}
                         height={500}
+                        priority
                       />
                     ) : (
                       <div className="h-[4dvh] w-[4dvh]" />
