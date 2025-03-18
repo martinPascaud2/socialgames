@@ -1404,9 +1404,9 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
               boxShadow: !isSettingsPressed
                 ? "1vw 1vw 2vw -1vw #7e22ce, 2vw 2vw 2vw -1vw #7e22ce"
                 : "",
-              borderBottom: isSettingsPressed ? "1px solid #581c87" : "",
-              borderRight: isSettingsPressed ? "1px solid #581c87" : "",
-              backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
+              borderBottom: isSettingsPressed ? "1px solid #7e22ce" : "",
+              borderRight: isSettingsPressed ? "1px solid #7e22ce" : "",
+              backgroundColor: "transparent",
             }}
           />
           <div // skew
@@ -1414,7 +1414,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
             onTouchEnd={handleSettingsPressed}
             className="absolute h-[20vw] w-[17vw] top-[0.1vw] -skew-x-[45deg] bg-transparent left-[16.5vw] z-30"
             style={{
-              backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
+              backgroundColor: "transparent",
               boxShadow: !isSettingsPressed
                 ? ""
                 : "inset 9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
@@ -1431,10 +1431,10 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
           <div // border filler
             onTouchStart={() => setIsSettingsPressed(true)}
             onTouchEnd={handleSettingsPressed}
-            className="absolute h-[5vw] w-[16.5vw] top-[15.5vw] left-[17vw] z-30"
+            className="absolute h-[5vw] w-[16.5vw] top-[15.5vw] left-[20.2vw] z-30"
             style={{
-              backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
-              borderBottom: isSettingsPressed ? "1px solid #581c87" : "",
+              backgroundColor: "transparent",
+              borderBottom: isSettingsPressed ? "1px solid #7e22ce" : "",
             }}
           />
 
@@ -1443,7 +1443,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
             onTouchEnd={handleSettingsPressed}
             className="absolute h-[30vw] w-[20.5vw] top-[16.1vw] -skew-y-[45deg] bg-transparent left-[0.1vw] z-30"
             style={{
-              backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
+              backgroundColor: "transparent",
               boxShadow: !isSettingsPressed
                 ? ""
                 : "inset 9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
@@ -1454,7 +1454,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
             onTouchEnd={handleSettingsPressed}
             className="absolute h-[49.2vw] w-[20.5vw] top-1/2 translate-y-[-50%] bg-transparent left-[0.1vw] z-40 flex justify-center items-center"
             style={{
-              borderRight: isSettingsPressed ? "1px solid #581c87" : "",
+              borderRight: isSettingsPressed ? "1px solid #7e22ce" : "",
             }}
           >
             <div className="ml-2 mb-3">
@@ -1466,7 +1466,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
             onTouchEnd={handleSettingsPressed}
             className="absolute h-[20vw] w-[20.5vw] top-1/2 translate-y-[-50%] left-[0.1vw] z-30 flex justify-center items-center"
             style={{
-              backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
+              backgroundColor: "transparent",
             }}
           />
           <div // middle shadow
@@ -1482,7 +1482,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
             onTouchEnd={handleSettingsPressed}
             className="absolute h-[30vw] w-[20.5vw] bottom-[16.1vw] skew-y-[45deg] bg-transparent left-[0.1vw] z-30"
             style={{
-              backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
+              backgroundColor: "transparent",
               boxShadow: !isSettingsPressed
                 ? ""
                 : "inset 9px 0px 5px -6px #581c87, inset 0px -9px 5px -6px #581c87",
@@ -1492,10 +1492,10 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
           <div // border filler
             onTouchStart={() => setIsSettingsPressed(true)}
             onTouchEnd={handleSettingsPressed}
-            className="absolute h-[5vw] w-[16.5vw] bottom-[15.5vw] left-[20.5vw] z-30"
+            className="absolute h-[5vw] w-[16.5vw] bottom-[15.5vw] left-[20.2vw] z-30"
             style={{
-              backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
-              borderTop: isSettingsPressed ? "1px solid #581c87" : "",
+              backgroundColor: "transparent",
+              borderTop: isSettingsPressed ? "1px solid #7e22ce" : "",
             }}
           />
           <div // shadow filler
@@ -1511,7 +1511,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
             onTouchEnd={handleSettingsPressed}
             className="absolute h-[20vw] w-[17vw] bottom-[0.2vw] skew-x-[45deg] left-[16.2vw] z-30"
             style={{
-              backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
+              backgroundColor: "transparent",
               boxShadow: !isSettingsPressed
                 ? ""
                 : "inset 9px 0px 5px -6px #581c87",
@@ -1525,9 +1525,9 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
               boxShadow: !isSettingsPressed
                 ? "1vw -1vw 2vw -1vw #7e22ce, 2vw -2vw 2vw -1vw #7e22ce"
                 : "inset 0px -9px 5px -6px #581c87",
-              borderTop: isSettingsPressed ? "1px solid #581c87" : "",
-              borderRight: isSettingsPressed ? "1px solid #581c87" : "",
-              backgroundColor: isSettingsPressed ? "#7e22ce" : "transparent",
+              borderTop: isSettingsPressed ? "1px solid #7e22ce" : "",
+              borderRight: isSettingsPressed ? "1px solid #7e22ce" : "",
+              backgroundColor: "transparent",
             }}
           />
 
@@ -1540,9 +1540,9 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
               boxShadow: !isPrelobbyPressed
                 ? "-1vw 1vw 2vw -1vw #7e22ce, -2vw 2vw 2vw -1vw #7e22ce"
                 : "",
-              borderBottom: isPrelobbyPressed ? "1px solid #581c87" : "",
-              borderLeft: isPrelobbyPressed ? "1px solid #581c87" : "",
-              backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
+              borderBottom: isPrelobbyPressed ? "1px solid #7e22ce" : "",
+              borderLeft: isPrelobbyPressed ? "1px solid #7e22ce" : "",
+              backgroundColor: "transparent",
             }}
           />
           <div // skew
@@ -1550,7 +1550,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
             onTouchEnd={handlePrelobbyPressed}
             className="absolute h-[20vw] w-[17vw] top-[0.1vw] skew-x-[45deg] bg-transparent right-[16.5vw] z-30"
             style={{
-              backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
+              backgroundColor: "transparent",
               boxShadow: !isPrelobbyPressed
                 ? ""
                 : "inset -9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
@@ -1567,10 +1567,10 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
           <div // border filler
             onTouchStart={() => setIsPrelobbyPressed(true)}
             onTouchEnd={handlePrelobbyPressed}
-            className="absolute h-[5vw] w-[16.5vw] top-[15.5vw] right-[17vw] z-30"
+            className="absolute h-[5vw] w-[16.5vw] top-[15.5vw] right-[20.2vw] z-30"
             style={{
-              backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
-              borderBottom: isPrelobbyPressed ? "1px solid #581c87" : "",
+              backgroundColor: "transparent",
+              borderBottom: isPrelobbyPressed ? "1px solid #7e22ce" : "",
             }}
           />
 
@@ -1579,7 +1579,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
             onTouchEnd={handlePrelobbyPressed}
             className="absolute h-[30vw] w-[20.5vw] top-[16.1vw] skew-y-[45deg] bg-transparent right-[0.1vw] z-30"
             style={{
-              backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
+              backgroundColor: "transparent",
               boxShadow: !isPrelobbyPressed
                 ? ""
                 : "inset -9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
@@ -1590,7 +1590,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
             onTouchEnd={handlePrelobbyPressed}
             className="absolute h-[49.2vw] w-[20.5vw] top-1/2 translate-y-[-50%] bg-transparent right-[0.1vw] z-40 flex justify-center items-center"
             style={{
-              borderLeft: isPrelobbyPressed ? "1px solid #581c87" : "",
+              borderLeft: isPrelobbyPressed ? "1px solid #7e22ce" : "",
             }}
           >
             <MdOutlineVideogameAsset className="w-14 h-20 rotate-90 mb-3 text-purple-800" />
@@ -1600,8 +1600,8 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
             onTouchEnd={handlePrelobbyPressed}
             className="absolute h-[20vw] w-[20.5vw] top-1/2 translate-y-[-50%] right-[0.1vw] z-30 flex justify-center items-center"
             style={{
-              backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
-              borderLeft: isPrelobbyPressed ? "1px solid #581c87" : "",
+              backgroundColor: "transparent",
+              borderLeft: isPrelobbyPressed ? "1px solid #7e22ce" : "",
             }}
           />
           <div // middle shadow
@@ -1617,7 +1617,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
             onTouchEnd={handlePrelobbyPressed}
             className="absolute h-[30vw] w-[20.5vw] bottom-[16.1vw] -skew-y-[45deg] bg-transparent right-[0.1vw] z-30"
             style={{
-              backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
+              backgroundColor: "transparent",
               boxShadow: !isPrelobbyPressed
                 ? ""
                 : "inset -9px 0px 5px -6px #581c87, inset 0px -9px 5px -6px #581c87",
@@ -1627,10 +1627,10 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
           <div // border filler
             onTouchStart={() => setIsPrelobbyPressed(true)}
             onTouchEnd={handlePrelobbyPressed}
-            className="absolute h-[5vw] w-[16.5vw] bottom-[15.5vw] right-[20.5vw] z-30"
+            className="absolute h-[5vw] w-[16.5vw] bottom-[15.5vw] right-[20.2vw] z-30"
             style={{
-              backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
-              borderTop: isPrelobbyPressed ? "1px solid #581c87" : "",
+              backgroundColor: "transparent",
+              borderTop: isPrelobbyPressed ? "1px solid #7e22ce" : "",
             }}
           />
           <div // shadow filler
@@ -1646,7 +1646,7 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
             onTouchEnd={handlePrelobbyPressed}
             className="absolute h-[20vw] w-[17vw] bottom-[0.2vw] -skew-x-[45deg] right-[16.2vw] z-30"
             style={{
-              backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
+              backgroundColor: "transparent",
               boxShadow: !isPrelobbyPressed
                 ? ""
                 : "inset -9px 0px 5px -6px #581c87",
@@ -1660,9 +1660,9 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
               boxShadow: !isPrelobbyPressed
                 ? "-1vw -1vw 2vw -1vw #7e22ce, -2vw -2vw 2vw -1vw #7e22ce"
                 : "inset 0px -9px 5px -6px #581c87",
-              borderTop: isPrelobbyPressed ? "1px solid #581c87" : "",
-              borderLeft: isPrelobbyPressed ? "1px solid #581c87" : "",
-              backgroundColor: isPrelobbyPressed ? "#7e22ce" : "transparent",
+              borderTop: isPrelobbyPressed ? "1px solid #7e22ce" : "",
+              borderLeft: isPrelobbyPressed ? "1px solid #7e22ce" : "",
+              backgroundColor: "transparent",
             }}
           />
         </div>
