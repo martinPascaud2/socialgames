@@ -7,8 +7,6 @@ body {
 }
 
 .octagon {
-  /* width: 100px;
-  height: 100px; */
   width: 90vw;
   height: 90vw;
   background: var(--dynamic-border-color);
@@ -27,29 +25,15 @@ body {
 }
 .octagon:after {
   content: "";
-  /* width: 100px; */
   width: 90vw;
   height: 0;
   position: absolute;
   bottom: 0;
   left: 0;
-  /* border-top: 29px solid red;
-  border-left: 29px solid #eee;
-  border-right: 29px solid #eee; */
   border-top: 26.5vw solid var(--dynamic-border-color);
   border-left: 26.5vw solid black;
   border-right: 26.5vw solid black;
   z-index: -1;
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-  50% {
-    transform: translate(-1px, 4px);
-  }
 }
 
 @keyframes fadeOut {

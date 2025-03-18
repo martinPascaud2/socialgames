@@ -2757,7 +2757,7 @@ export default function Categories({
       >
         <div
           onClick={handleOctaClick}
-          className="octagon left-5 top-[50dvh] translate-y-[-50%] relative z-0"
+          className="octagon left-1/2 translate-x-[-50%] top-[50dvh] translate-y-[-50%] relative z-0"
         >
           <OctagonBackground handleBgClick={handleBgClick} />
 
