@@ -1708,9 +1708,9 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
               boxShadow: !isToolsPressed
                 ? "1vw 1vw 2vw -1vw #7e22ce, 2vw 2vw 2vw -1vw #7e22ce"
                 : "",
-              borderBottom: isToolsPressed ? "1px solid #581c87" : "",
-              borderRight: isToolsPressed ? "1px solid #581c87" : "",
-              backgroundColor: isToolsPressed ? "#7e22ce" : "transparent",
+              borderBottom: isToolsPressed ? "1px solid #7e22ce" : "",
+              borderRight: isToolsPressed ? "1px solid #7e22ce" : "",
+              backgroundColor: "transparent",
             }}
           />
           <div // skew
@@ -1718,7 +1718,7 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
             onTouchEnd={handleToolsPressed}
             className="absolute h-[20vw] w-[17vw] top-[0.1vw] -skew-x-[45deg] bg-transparent left-[16.5vw] z-30"
             style={{
-              backgroundColor: isToolsPressed ? "#7e22ce" : "transparent",
+              backgroundColor: "transparent",
               boxShadow: !isToolsPressed
                 ? ""
                 : "inset 9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
@@ -1735,10 +1735,10 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
           <div // border filler
             onTouchStart={() => setIsToolsPressed(true)}
             onTouchEnd={handleToolsPressed}
-            className="absolute h-[5vw] w-[16.5vw] top-[15.5vw] left-[17vw] z-30"
+            className="absolute h-[5vw] w-[16.5vw] top-[15.5vw] left-[20.2vw] z-30"
             style={{
-              backgroundColor: isToolsPressed ? "#7e22ce" : "transparent",
-              borderBottom: isToolsPressed ? "1px solid #581c87" : "",
+              backgroundColor: "transparent",
+              borderBottom: isToolsPressed ? "1px solid #7e22ce" : "",
             }}
           />
 
@@ -1747,7 +1747,7 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
             onTouchEnd={handleToolsPressed}
             className="absolute h-[30vw] w-[20.5vw] top-[16.1vw] -skew-y-[45deg] bg-transparent left-[0.1vw] z-30"
             style={{
-              backgroundColor: isToolsPressed ? "#7e22ce" : "transparent",
+              backgroundColor: "transparent",
               boxShadow: !isToolsPressed
                 ? ""
                 : "inset 9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
@@ -1758,7 +1758,7 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
             onTouchEnd={handleToolsPressed}
             className="absolute h-[49.2vw] w-[20.5vw] top-1/2 translate-y-[-50%] bg-transparent left-[0.1vw] z-40 flex justify-center items-center"
             style={{
-              borderRight: isToolsPressed ? "1px solid #581c87" : "",
+              borderRight: isToolsPressed ? "1px solid #7e22ce" : "",
             }}
           >
             {/* <GoTools className="w-12 h-12 text-purple-800" /> */}
@@ -1769,7 +1769,7 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
             onTouchEnd={handleToolsPressed}
             className="absolute h-[20vw] w-[20.5vw] top-1/2 translate-y-[-50%] left-[0.1vw] z-30 flex justify-center items-center"
             style={{
-              backgroundColor: isToolsPressed ? "#7e22ce" : "transparent",
+              backgroundColor: "transparent",
             }}
           />
           <div // middle shadow
@@ -1785,7 +1785,7 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
             onTouchEnd={handleToolsPressed}
             className="absolute h-[30vw] w-[20.5vw] bottom-[16.1vw] skew-y-[45deg] bg-transparent left-[0.1vw] z-30"
             style={{
-              backgroundColor: isToolsPressed ? "#7e22ce" : "transparent",
+              backgroundColor: "transparent",
               boxShadow: !isToolsPressed
                 ? ""
                 : "inset 9px 0px 5px -6px #581c87, inset 0px -9px 5px -6px #581c87",
@@ -1797,8 +1797,8 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
             onTouchEnd={handleToolsPressed}
             className="absolute h-[5vw] w-[16.5vw] bottom-[15.5vw] left-[20.5vw] z-30"
             style={{
-              backgroundColor: isToolsPressed ? "#7e22ce" : "transparent",
-              borderTop: isToolsPressed ? "1px solid #581c87" : "",
+              backgroundColor: "transparent",
+              borderTop: isToolsPressed ? "1px solid #7e22ce" : "",
             }}
           />
           <div // shadow filler
@@ -1814,7 +1814,7 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
             onTouchEnd={handleToolsPressed}
             className="absolute h-[20vw] w-[17vw] bottom-[0.2vw] skew-x-[45deg] left-[16.2vw] z-30"
             style={{
-              backgroundColor: isToolsPressed ? "#7e22ce" : "transparent",
+              backgroundColor: "transparent",
               boxShadow: !isToolsPressed
                 ? ""
                 : "inset 9px 0px 5px -6px #581c87",
@@ -1828,9 +1828,9 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
               boxShadow: !isToolsPressed
                 ? "1vw -1vw 2vw -1vw #7e22ce, 2vw -2vw 2vw -1vw #7e22ce"
                 : "inset 0px -9px 5px -6px #581c87",
-              borderTop: isToolsPressed ? "1px solid #581c87" : "",
-              borderRight: isToolsPressed ? "1px solid #581c87" : "",
-              backgroundColor: isToolsPressed ? "#7e22ce" : "transparent",
+              borderTop: isToolsPressed ? "1px solid #7e22ce" : "",
+              borderRight: isToolsPressed ? "1px solid #7e22ce" : "",
+              backgroundColor: "transparent",
             }}
           />
 
@@ -1843,9 +1843,9 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
               boxShadow: !isPostgamesPressed
                 ? "-1vw 1vw 2vw -1vw #7e22ce, -2vw 2vw 2vw -1vw #7e22ce"
                 : "",
-              borderBottom: isPostgamesPressed ? "1px solid #581c87" : "",
-              borderLeft: isPostgamesPressed ? "1px solid #581c87" : "",
-              backgroundColor: isPostgamesPressed ? "#7e22ce" : "transparent",
+              borderBottom: isPostgamesPressed ? "1px solid #7e22ce" : "",
+              borderLeft: isPostgamesPressed ? "1px solid #7e22ce" : "",
+              backgroundColor: "transparent",
             }}
           />
           <div // skew
@@ -1853,7 +1853,7 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
             onTouchEnd={handlePostgamesPressed}
             className="absolute h-[20vw] w-[17vw] top-[0.1vw] skew-x-[45deg] bg-transparent right-[16.5vw] z-30"
             style={{
-              backgroundColor: isPostgamesPressed ? "#7e22ce" : "transparent",
+              backgroundColor: "transparent",
               boxShadow: !isPostgamesPressed
                 ? ""
                 : "inset -9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
@@ -1870,10 +1870,10 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
           <div // border filler
             onTouchStart={() => setIsPostgamesPressed(true)}
             onTouchEnd={handlePostgamesPressed}
-            className="absolute h-[5vw] w-[16.5vw] top-[15.5vw] right-[17vw] z-30"
+            className="absolute h-[5vw] w-[16.5vw] top-[15.5vw] right-[20.2vw] z-30"
             style={{
-              backgroundColor: isPostgamesPressed ? "#7e22ce" : "transparent",
-              borderBottom: isPostgamesPressed ? "1px solid #581c87" : "",
+              backgroundColor: "transparent",
+              borderBottom: isPostgamesPressed ? "1px solid #7e22ce" : "",
             }}
           />
 
@@ -1882,7 +1882,7 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
             onTouchEnd={handlePostgamesPressed}
             className="absolute h-[30vw] w-[20.5vw] top-[16.1vw] skew-y-[45deg] bg-transparent right-[0.1vw] z-30"
             style={{
-              backgroundColor: isPostgamesPressed ? "#7e22ce" : "transparent",
+              backgroundColor: "transparent",
               boxShadow: !isPostgamesPressed
                 ? ""
                 : "inset -9px 0px 5px -6px #581c87, inset 0px 9px 5px -6px #581c87",
@@ -1893,7 +1893,7 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
             onTouchEnd={handlePostgamesPressed}
             className="absolute h-[49.2vw] w-[20.5vw] top-1/2 translate-y-[-50%] bg-transparent right-[0.1vw] z-40 flex justify-center items-center"
             style={{
-              borderLeft: isPostgamesPressed ? "1px solid #581c87" : "",
+              borderLeft: isPostgamesPressed ? "1px solid #7e22ce" : "",
             }}
           >
             {/* <FaRegFloppyDisk className="w-12 h-12 text-purple-800" /> */}
@@ -1904,8 +1904,8 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
             onTouchEnd={handlePostgamesPressed}
             className="absolute h-[20vw] w-[20.5vw] top-1/2 translate-y-[-50%] right-[0.1vw] z-30 flex justify-center items-center"
             style={{
-              backgroundColor: isPostgamesPressed ? "#7e22ce" : "transparent",
-              borderLeft: isPostgamesPressed ? "1px solid #581c87" : "",
+              backgroundColor: "transparent",
+              borderLeft: isPostgamesPressed ? "1px solid #7e22ce" : "",
             }}
           />
           <div // middle shadow
@@ -1921,7 +1921,7 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
             onTouchEnd={handlePostgamesPressed}
             className="absolute h-[30vw] w-[20.5vw] bottom-[16.1vw] -skew-y-[45deg] bg-transparent right-[0.1vw] z-30"
             style={{
-              backgroundColor: isPostgamesPressed ? "#7e22ce" : "transparent",
+              backgroundColor: "transparent",
               boxShadow: !isPostgamesPressed
                 ? ""
                 : "inset -9px 0px 5px -6px #581c87, inset 0px -9px 5px -6px #581c87",
@@ -1933,8 +1933,8 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
             onTouchEnd={handlePostgamesPressed}
             className="absolute h-[5vw] w-[16.5vw] bottom-[15.5vw] right-[20.5vw] z-30"
             style={{
-              backgroundColor: isPostgamesPressed ? "#7e22ce" : "transparent",
-              borderTop: isPostgamesPressed ? "1px solid #581c87" : "",
+              backgroundColor: "transparent",
+              borderTop: isPostgamesPressed ? "1px solid #7e22ce" : "",
             }}
           />
           <div // shadow filler
@@ -1950,7 +1950,7 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
             onTouchEnd={handlePostgamesPressed}
             className="absolute h-[20vw] w-[17vw] bottom-[0.2vw] -skew-x-[45deg] right-[16.2vw] z-30"
             style={{
-              backgroundColor: isPostgamesPressed ? "#7e22ce" : "transparent",
+              backgroundColor: "transparent",
               boxShadow: !isPostgamesPressed
                 ? ""
                 : "inset -9px 0px 5px -6px #581c87",
@@ -1964,9 +1964,9 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
               boxShadow: !isPostgamesPressed
                 ? "-1vw -1vw 2vw -1vw #7e22ce, -2vw -2vw 2vw -1vw #7e22ce"
                 : "inset 0px -9px 5px -6px #581c87",
-              borderTop: isPostgamesPressed ? "1px solid #581c87" : "",
-              borderLeft: isPostgamesPressed ? "1px solid #581c87" : "",
-              backgroundColor: isPostgamesPressed ? "#7e22ce" : "transparent",
+              borderTop: isPostgamesPressed ? "1px solid #7e22ce" : "",
+              borderLeft: isPostgamesPressed ? "1px solid #7e22ce" : "",
+              backgroundColor: "transparent",
             }}
           />
         </div>
