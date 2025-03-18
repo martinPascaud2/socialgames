@@ -222,37 +222,6 @@ export default async function CategoriesPage() {
     cookies().delete("SG_token");
   };
 
-  const returnLobby = async ({ group }) => {
-    "use server";
-    if (!group) return;
-
-    const { roomToken } = group;
-
-    const roomId = (
-      await prisma.room.findFirst({
-        where: { token: roomToken },
-        select: { id: true },
-      })
-    ).id;
-    const room = await prisma.room.update({
-      where: { id: roomId },
-      data: { started: false },
-    });
-
-    await pusher.trigger(`room-${roomToken}`, "room-event", {
-      gameData: {
-        ...room.gameData,
-        ended: false,
-        isSearching: false,
-      },
-    });
-
-    const { game } = room;
-    const { categorie } = gamesRefs[game];
-    const path = `/categories/${categorie}/${game}?token=${roomToken}`;
-    return path;
-  };
-
   // check TEST
   // const ip = "78.243.220.125";
   // const response = await fetch(
@@ -274,7 +243,6 @@ export default async function CategoriesPage() {
         getCurrentGame={getCurrentGame}
         updateLastCP={updateLastCP}
         signOut={signOut}
-        returnLobby={returnLobby}
       />
     </>
   );

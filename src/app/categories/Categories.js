@@ -2,30 +2,22 @@
 import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { throttle } from "lodash";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
-import classNames from "classnames";
 import QRCode from "react-qr-code";
 import Pusher from "pusher-js";
 
-import { ArrowPathIcon, CameraIcon } from "@heroicons/react/24/outline";
+import { CameraIcon } from "@heroicons/react/24/outline";
 
 import Html5QrcodePlugin from "@/components/Html5QrcodePlugin";
-import Modal from "@/components/Modal";
 import useWake from "@/utils/useWake";
 import { useDeviceDetector } from "@/utils/useGetBarsSizes";
 import getLocation from "@/utils/getLocation";
 import getErrorInformations from "@/utils/getErrorInformations";
-import cancelBack from "@/utils/cancelBack";
 
-import { categories, gamesRefs } from "@/assets/globals";
 var pusher = new Pusher("61853af9f30abf9d5b3d", {
   cluster: "eu",
 });
 
 import "./test.css";
-
-import getUser from "@/utils/getUser";
 
 // export default function Categories({
 //   user,
@@ -700,23 +692,13 @@ import getUser from "@/utils/getUser";
 //   );
 // }
 
-import {
-  XMarkIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from "@heroicons/react/24/outline";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { ImExit } from "react-icons/im";
 import { FaUserFriends, FaPlay } from "react-icons/fa";
 import { IoIosSettings } from "react-icons/io";
 import { LiaQrcodeSolid } from "react-icons/lia";
-import { IoMdArrowDropleft, IoMdArrowDropright } from "react-icons/io";
-import { IoPersonAddOutline } from "react-icons/io5";
-import { GoTools } from "react-icons/go";
-import { FaRegFloppyDisk } from "react-icons/fa6";
-import { IoGameControllerOutline } from "react-icons/io5";
 import { MdOutlineVideogameAsset } from "react-icons/md";
 import { IoIosRefresh } from "react-icons/io";
-import { MdOutlineCancel } from "react-icons/md";
 import FriendsSettingsIcon from "./FriendsSettingsIcon";
 import { MdOutlineAccountTree } from "react-icons/md";
 import { FaRegTrashAlt } from "react-icons/fa";
@@ -724,12 +706,7 @@ import { FaCheck } from "react-icons/fa6";
 import { FaRegCircle } from "react-icons/fa6";
 import { MdOutlineSquare } from "react-icons/md";
 
-import putTmpAccountToken from "@/utils/putTmpAccountToken";
-import ReactDOM, { useFormState } from "react-dom";
-
-import Spinner from "@/components/spinners/Spinner";
-
-import { useWakeLock } from "react-screen-wake-lock";
+import ReactDOM from "react-dom";
 
 const OnlyShadows = () => {
   return (
@@ -2526,7 +2503,6 @@ export default function Categories({
   getCurrentGame,
   updateLastCP,
   signOut,
-  returnLobby,
 }) {
   const { isSupported, isVisible, released, request, release } = useWake();
   const router = useRouter();
@@ -2554,13 +2530,6 @@ export default function Categories({
   const [currentGame, setCurrentGame] = useState();
 
   const [isGoingGame, setIsGoingGame] = useState(false);
-
-  const cancelAndReturnLobby = useCallback(async () => {
-    const group = JSON.parse(localStorage.getItem("group"));
-    const path = await returnLobby({ group });
-    localStorage.removeItem("group");
-    router.push(path);
-  }, [router, returnLobby]);
 
   useEffect(() => {
     const channel = pusher.subscribe(`user-${user.email}`);
@@ -2715,6 +2684,7 @@ export default function Categories({
     [resetPermissions, setting]
   );
 
+  // check
   const handleOctaClick = useCallback(
     (event) => {
       // resetPermissions();
@@ -2779,224 +2749,172 @@ export default function Categories({
         !isGroup ? "bg-black" : "bg-white"
       } text-white`}
     >
-      {!isGroup ? (
-        <main
-          className={`relative h-[100dvh] w-screen transition-transform duration-500`}
-          style={{
-            transform: `translateY(${octagonPosition})`,
-          }}
+      <main
+        className={`relative h-[100dvh] w-screen transition-transform duration-500`}
+        style={{
+          transform: `translateY(${octagonPosition})`,
+        }}
+      >
+        <div
+          onClick={handleOctaClick}
+          className="octagon left-5 top-[50dvh] translate-y-[-50%] relative z-0"
         >
+          <OctagonBackground handleBgClick={handleBgClick} />
+
           <div
-            onClick={handleOctaClick}
-            className="octagon left-5 top-[50dvh] translate-y-[-50%] relative z-0"
+            className={`${
+              isGoingGame
+                ? "opacity-0 animate-[fadeOut_0.5s_ease-in-out]"
+                : "opacity-100"
+            }`}
           >
-            <OctagonBackground handleBgClick={handleBgClick} />
+            {toggledSettings && (
+              <>
+                <SettingsButtons
+                  updateLastCP={updateLastCP}
+                  user={user}
+                  tmpToken={tmpToken}
+                  setSetting={setSetting}
+                  setLocation={setLocation}
+                  setServerMessage={setServerMessage}
+                  resetPermissions={resetPermissions}
+                  setScanning={setScanning}
+                  setting={setting}
+                  signOut={signOut}
+                />
 
-            <div
-              className={`${
-                isGoingGame
-                  ? "opacity-0 animate-[fadeOut_0.5s_ease-in-out]"
-                  : "opacity-100"
-              }`}
-            >
-              {toggledSettings && (
-                <>
-                  <SettingsButtons
-                    updateLastCP={updateLastCP}
-                    user={user}
-                    tmpToken={tmpToken}
-                    setSetting={setSetting}
-                    setLocation={setLocation}
-                    setServerMessage={setServerMessage}
-                    resetPermissions={resetPermissions}
-                    setScanning={setScanning}
-                    setting={setting}
-                    signOut={signOut}
-                  />
-
-                  {setting === "friends" && (
-                    <CentralZone>
-                      <div className="flex w-full h-full justify-center items-center py-5">
-                        <Friends
-                          friendList={friendList}
-                          user={user}
-                          deleteFriend={deleteFriend}
-                          updateLastCP={updateLastCP}
-                        />
-                      </div>
-                    </CentralZone>
-                  )}
-
-                  {setting === "params" && (
-                    <CentralZone>
-                      <div className="flex w-full h-full justify-center items-center py-5">
-                        <Params
-                          updateParams={updateParams}
-                          updateLastCP={updateLastCP}
-                          user={user}
-                          barValues={barValues}
-                          setBarValues={setBarValues}
-                        />
-                      </div>
-                    </CentralZone>
-                  )}
-
-                  {setting === "qrCode" && (
-                    <CentralZone onClick={handleOctaClick} zIndex={60}>
-                      {
-                        location ? (
-                          <div className="w-full h-full flex justify-center items-center">
-                            <QRCode
-                              value={`id=${user.id};mail=${user.email};name=${user.name};{"latitude":"${location?.latitude}","longitude":"${location?.longitude}"}`}
-                              onClick={(event) => event.stopPropagation()}
-                              className="h-[41vw] w-auto"
-                              style={{
-                                background: "white",
-                                boxShadow: "0px 0px 5px 5px white",
-                              }}
-                            />
-                          </div>
-                        ) : null
-
-                        // (
-                        //   <div className="h-full w-full flex justify-center items-center">
-                        //     <Spinner />
-                        //   </div>
-                        // )
-                      }
-                    </CentralZone>
-                  )}
-
-                  <div className={`${setting !== "camera" && "hidden"}`}>
-                    <CentralZone onClick={handleOctaClick} zIndex={60}>
-                      {QrCodeScanner}
-                    </CentralZone>
-                  </div>
-                </>
-              )}
-
-              {showInvitations && (
-                <>
-                  <MainButtons
-                    setToggledSettings={setToggledSettings}
-                    setToggledPrelobby={setToggledPrelobby}
-                  />
-                  <CentralZone onClick={handleOctaClick}>
-                    <Invitations
-                      user={user}
-                      updateLastCP={updateLastCP}
-                      getPublicRooms={getPublicRooms}
-                      publicRooms={publicRooms}
-                      setPublicRooms={setPublicRooms}
-                      invitations={invitations}
-                      currentGame={currentGame}
-                      setIsGoingGame={setIsGoingGame}
-                      router={router}
-                    />
-                  </CentralZone>
-                </>
-              )}
-
-              {toggledPrelobby && !toggledSettings && (
-                <>
-                  <PostButtons
-                    resetPermissions={resetPermissions}
-                    updateLastCP={updateLastCP}
-                    user={user}
-                  />
+                {setting === "friends" && (
                   <CentralZone>
                     <div className="flex w-full h-full justify-center items-center py-5">
+                      <Friends
+                        friendList={friendList}
+                        user={user}
+                        deleteFriend={deleteFriend}
+                        updateLastCP={updateLastCP}
+                      />
+                    </div>
+                  </CentralZone>
+                )}
+
+                {setting === "params" && (
+                  <CentralZone>
+                    <div className="flex w-full h-full justify-center items-center py-5">
+                      <Params
+                        updateParams={updateParams}
+                        updateLastCP={updateLastCP}
+                        user={user}
+                        barValues={barValues}
+                        setBarValues={setBarValues}
+                      />
+                    </div>
+                  </CentralZone>
+                )}
+
+                {setting === "qrCode" && (
+                  <CentralZone onClick={handleOctaClick} zIndex={60}>
+                    {location ? (
+                      <div className="w-full h-full flex justify-center items-center">
+                        <QRCode
+                          value={`id=${user.id};mail=${user.email};name=${user.name};{"latitude":"${location?.latitude}","longitude":"${location?.longitude}"}`}
+                          onClick={(event) => event.stopPropagation()}
+                          className="h-[41vw] w-auto"
+                          style={{
+                            background: "white",
+                            boxShadow: "0px 0px 5px 5px white",
+                          }}
+                        />
+                      </div>
+                    ) : null}
+                  </CentralZone>
+                )}
+
+                <div className={`${setting !== "camera" && "hidden"}`}>
+                  <CentralZone onClick={handleOctaClick} zIndex={60}>
+                    {QrCodeScanner}
+                  </CentralZone>
+                </div>
+              </>
+            )}
+
+            {showInvitations && (
+              <>
+                <MainButtons
+                  setToggledSettings={setToggledSettings}
+                  setToggledPrelobby={setToggledPrelobby}
+                />
+                <CentralZone onClick={handleOctaClick}>
+                  <Invitations
+                    user={user}
+                    updateLastCP={updateLastCP}
+                    getPublicRooms={getPublicRooms}
+                    publicRooms={publicRooms}
+                    setPublicRooms={setPublicRooms}
+                    invitations={invitations}
+                    currentGame={currentGame}
+                    setIsGoingGame={setIsGoingGame}
+                    router={router}
+                  />
+                </CentralZone>
+              </>
+            )}
+
+            {toggledPrelobby && !toggledSettings && (
+              <>
+                <PostButtons
+                  resetPermissions={resetPermissions}
+                  updateLastCP={updateLastCP}
+                  user={user}
+                />
+                <CentralZone>
+                  <div className="flex w-full h-full justify-center items-center py-5">
+                    <div
+                      className="h-full aspect-square translate-x-[0.12vw] translate-y-[0.1vw] flex justify-center items-center bg-purple-600 z-30"
+                      style={{
+                        background:
+                          "radial-gradient(circle, #a855f7 0%, #7e22ce 100%)",
+                      }}
+                    >
                       <div
-                        className="h-full aspect-square translate-x-[0.12vw] translate-y-[0.1vw] flex justify-center items-center bg-purple-600 z-30"
                         style={{
+                          width: "23vw",
+                          height: "23vw",
+                          borderRadius: "50%",
                           background:
-                            "radial-gradient(circle, #a855f7 0%, #7e22ce 100%)",
+                            "radial-gradient(circle, #7e22ce 0%, #9333ea 100%)",
+                          boxShadow: `inset 5px 5px 10px rgba(255, 255, 255, 0.3), inset -5px -5px 15px rgba(0, 0, 0, 0.3), 5px 5px 15px rgba(0, 0, 0, 0.3), 5px 5px 15px rgba(255, 255, 255, 0.1)`,
                         }}
+                        className="flex justify-center items-center border border-purple-800"
                       >
                         <div
-                          style={{
-                            width: "23vw",
-                            height: "23vw",
-                            borderRadius: "50%",
-                            background:
-                              "radial-gradient(circle, #7e22ce 0%, #9333ea 100%)",
-                            boxShadow: `inset 5px 5px 10px rgba(255, 255, 255, 0.3), inset -5px -5px 15px rgba(0, 0, 0, 0.3), 5px 5px 15px rgba(0, 0, 0, 0.3), 5px 5px 15px rgba(255, 255, 255, 0.1)`,
+                          onClick={async (event) => {
+                            setIsGoingGame(true);
+                            event.stopPropagation();
+                            resetPermissions();
+                            await updateLastCP({
+                              userId: user.id,
+                              out: true,
+                            });
+                            router.push(
+                              user.lastPlayed || "/categories/grouping/grouping"
+                            );
                           }}
-                          className="flex justify-center items-center border border-purple-800"
+                          className="z-30"
                         >
-                          <div
-                            onClick={async (event) => {
-                              setIsGoingGame(true);
-                              event.stopPropagation();
-                              resetPermissions();
-                              await updateLastCP({
-                                userId: user.id,
-                                out: true,
-                              });
-                              router.push(
-                                user.lastPlayed ||
-                                  "/categories/grouping/grouping"
-                              );
-                            }}
-                            className="z-30"
-                          >
-                            <FaPlay className="ml-1.5 w-10 h-10 text-purple-800" />
-                          </div>
+                          <FaPlay className="ml-1.5 w-10 h-10 text-purple-800" />
                         </div>
                       </div>
                     </div>
-                  </CentralZone>
-                </>
-              )}
+                  </div>
+                </CentralZone>
+              </>
+            )}
 
-              <div className="absolute top-full z-20 w-full mt-4 text-center text-purple-100">
-                {serverMessage}
-              </div>
+            <div className="absolute top-full z-20 w-full mt-4 text-center text-purple-100">
+              {serverMessage}
             </div>
           </div>
-        </main>
-      ) : (
-        <main>
-          <div
-            onClick={() => cancelAndReturnLobby()}
-            className="z-10 absolute h-[100dvh] w-screen max-h-full"
-          />
-          <div className="m-auto">
-            {categories.map((categorie, index) => {
-              const isLast = index === 6;
-              return (
-                <Link
-                  key={index}
-                  onClick={async () => {
-                    resetPermissions();
-                    await updateLastCP({ userId: user.id, out: true });
-                  }}
-                  href={`${categorie.href}${isGroup ? "?group=true" : ""}`}
-                  className={classNames(`z-20 absolute  max-h-[15dvh]`)}
-                  style={{
-                    top: `${Math.floor(index / 2) * 20 + 12.5}dvh`,
-                    left: !isLast ? index % 2 === 0 && "8%" : "33%",
-                    right: index % 2 === 1 && "8%",
-                    width: "33.333333%",
-                    aspectRatio: !isLast ? "1 / 1" : "auto",
-                  }}
-                >
-                  <div className="flex items-center justify-center h-[15dvh] p-1">
-                    <Image
-                      src={categorie.src}
-                      alt={`${categorie.name} image`}
-                      className="max-h-full aspect-square"
-                      style={{ objectFit: "contain" }}
-                      width={500}
-                      height={500}
-                    />
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </main>
-      )}
+        </div>
+      </main>
     </div>
   );
 }

@@ -1219,7 +1219,6 @@ export default function Room({
                 >
                   <NextStep
                     onClick={async () => {
-                      console.log("coucou");
                       if (!adminSelectedCategorie) {
                         launchRoom();
                       } else if (
@@ -1267,29 +1266,31 @@ export default function Room({
               >
                 <div className="absolute left-1/2 translate-x-[-50%] h-[10dvh] w-full">
                   <div className="w-full flex justify-center translate-y-[1rem]">
-                    {categorie !== "grouping" && !gameData.isSearching && (
-                      <div className="flex items-center">
-                        <div>
-                          {options?.mode
-                            ? modesRules[options?.mode].limits.min
-                            : gamesRefs[gameName].limits.min}
-                          &nbsp;
+                    {categorie !== "grouping" &&
+                      !gameData.isSearching &&
+                      !!Object.keys(options).length && (
+                        <div className="flex items-center">
+                          <div>
+                            {options?.mode
+                              ? modesRules[options?.mode].limits.min
+                              : gamesRefs[gameName].limits.min}
+                            &nbsp;
+                          </div>
+                          <FaLongArrowAltRight className="mr-1 w-6 h-6" />
+                          <div className="text-2xl text-amber-400">
+                            {options?.mode
+                              ? modesRules[options?.mode].limits.opti
+                              : gamesRefs[gameName].limits.opti}
+                          </div>
+                          <FaLongArrowAltLeft className="ml-1 w-6 h-6" />
+                          <div>
+                            &nbsp;
+                            {options?.mode
+                              ? modesRules[options?.mode].limits.max
+                              : gamesRefs[gameName].limits.max}
+                          </div>
                         </div>
-                        <FaLongArrowAltRight className="mr-1 w-6 h-6" />
-                        <div className="text-2xl text-amber-400">
-                          {options?.mode
-                            ? modesRules[options?.mode].limits.opti
-                            : gamesRefs[gameName].limits.opti}
-                        </div>
-                        <FaLongArrowAltLeft className="ml-1 w-6 h-6" />
-                        <div>
-                          &nbsp;
-                          {options?.mode
-                            ? modesRules[options?.mode].limits.max
-                            : gamesRefs[gameName].limits.max}
-                        </div>
-                      </div>
-                    )}
+                      )}
                   </div>
                   <div className="absolute top-[7dvh] w-full flex justify-center items-center">
                     {categorie !== "grouping" &&
@@ -1330,7 +1331,19 @@ export default function Room({
                             />
                           </div>
                         ) : (
-                          <div className="text-center text-3xl flex justify-center items-center outline outline-amber-700 bg-amber-100 p-2 mx-2 min-w-[15dvh]">
+                          <div
+                            onClick={async () => {
+                              await cancelSearchGame({
+                                roomId,
+                                roomToken,
+                                gameData,
+                              });
+                              setAdminSelectedCategorie(null);
+                              setAdminSearchtCategorie(null);
+                              setAdminSelectedGame(null);
+                            }}
+                            className="text-center text-3xl flex justify-center items-center outline outline-amber-700 bg-amber-100 p-2 mx-2 min-w-[15dvh]"
+                          >
                             {!adminSelectedGame ? (
                               <span className="text-amber-100">TEXTE</span>
                             ) : (
@@ -1382,8 +1395,8 @@ export default function Room({
                       }
                     ${
                       searchChangeGame && isJoining
-                        ? "opacity-0"
-                        : "opacity-100 animate-[fadeIn_1.5s_ease-in-out]"
+                        ? " opacity-0"
+                        : " opacity-100 animate-[fadeIn_1.5s_ease-in-out]"
                     }
                     `}
                     >
@@ -1943,6 +1956,7 @@ export default function Room({
                       setAdminSearchtCategorie={setAdminSearchtCategorie}
                       adminSelectedGame={adminSelectedGame}
                       setAdminSelectedGame={setAdminSelectedGame}
+                      initialHeight={showConfig ? "3rem" : "100%"}
                     />
                   )}
 
