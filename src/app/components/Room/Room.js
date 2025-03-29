@@ -37,6 +37,7 @@ import GameChooser from "./GameChooser";
 import NextStep from "../NextStep";
 import AnimatedDots from "../AnimatedDots";
 import LoadingRoomOctagon from "./LoadingRoomOctagon";
+import ThreeSmoke from "./ThreeSmoke";
 
 import {
   CheckIcon,
@@ -2026,14 +2027,7 @@ export default function Room({
     return (
       <div className="absolute h-screen w-full z-50 bg-black">
         <UserContext.Provider value={{ userParams }}>
-          <div
-            className={`fixed w-full z-[70] bg-black`}
-            style={{ height: `${barsSizes.top / 4}rem` }}
-          />
-          <div
-            className={`fixed bottom-0 w-full z-0 bg-black`}
-            style={{ height: `${barsSizes.bottom / 4}rem` }}
-          />
+          <ThreeSmoke />
 
           <div
             className={`overflow-y-auto z-[60] w-full relative`}
@@ -2044,7 +2038,7 @@ export default function Room({
               marginTop: `${barsSizes.top / 4}rem`,
             }}
           >
-            <div className="absolute h-full w-full bg-black">
+            {/* <div className="absolute h-full w-full bg-black">
               <div className="relative h-full w-full animate-[fadeIn_1.5s_ease-in-out] bg-black">
                 <div className="w-full h-full bg-gradient-to-r from-transparent via-gray-200 to-transparent opacity-60 blur-[200px] animate-blurMovement" />
                 <style jsx>
@@ -2071,9 +2065,9 @@ export default function Room({
                 <div className="absolute top-0 w-full h-20 bg-gradient-to-b from-black via-transparent to-transparent opacity-100" />
                 <div className="absolute bottom-0 w-full h-20 bg-gradient-to-t from-black via-transparent to-transparent opacity-100" />
               </div>
-            </div>
+            </div> */}
 
-            <div className="w-full h-full bg-black">
+            <div className="w-full h-full">
               <Game
                 roomId={roomId}
                 roomToken={roomToken}

@@ -326,7 +326,7 @@ export default function Ptitbac({
   };
 
   return (
-    <div className="relative animate-[fadeIn_1.5s_ease-in-out]">
+    <div className="relative animate-[fadeIn_1.5s_ease-in-out] w-full h-full">
       <div className="flex flex-col overflow-y-auto">
         <div className="flex flex-col items-center">
           <div className="font-semibold">Points</div>
@@ -352,8 +352,6 @@ export default function Ptitbac({
               );
             })}
         </div>
-
-        <hr />
 
         {!isEnded && (
           <>

@@ -21,7 +21,7 @@ export default function NextEndingPossibilities({
 
   return (
     <div
-      className={`fixed bottom-0 bg-black w-full`}
+      className={`fixed bottom-0 w-full`}
       style={{ height: `${userParams?.bottomBarSize / 4 || 2}rem` }}
     >
       <div className="w-full flex justify-around">

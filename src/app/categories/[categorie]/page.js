@@ -1,4 +1,5 @@
 "use client";
+// check: unused
 
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
