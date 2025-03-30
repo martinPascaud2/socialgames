@@ -1094,7 +1094,7 @@ export default function Room({
                   !searchChangeGame && "animate-[expandSize_1.5s_ease-in-out]"
                 }`
               : "h-[105vw] w-[85vw] animate-[shrinkSize_3s_ease-in-out] opacity-0"
-          } absolute overflow-x-hidden top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%]`}
+          } absolute overflow-x-hidden top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2`}
         >
           <div className="absolute h-full w-full">
             <div
