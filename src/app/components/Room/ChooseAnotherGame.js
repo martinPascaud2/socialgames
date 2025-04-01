@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 
 import Image from "next/image";
 
@@ -39,6 +39,7 @@ export default function ChooseAnotherGame({
           width={500}
           height={500}
           priority
+          loading="eager"
         />
       )}
 
