@@ -2782,7 +2782,9 @@ export default function Categories({
       } text-white`}
     >
       <main
-        className={`relative h-[100dvh] w-screen transition-transform duration-500`}
+        className={`relative h-[100dvh] w-screen transition-transform duration-500 ${
+          !octagonPosition && "hidden"
+        }`}
         style={{
           transform: `translateY(${octagonPosition})`,
         }}
