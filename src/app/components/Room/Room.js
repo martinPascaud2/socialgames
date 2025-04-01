@@ -1294,35 +1294,20 @@ export default function Room({
                       )}
                   </div>
                   <div className="absolute top-[7dvh] w-full flex justify-center items-center">
-                    {categorie !== "grouping" &&
-                    categoriesIcons &&
-                    (!gameData.isSearching || adminSelectedCategorie) ? (
-                      <Image
-                        src={
-                          !adminSelectedCategorie
-                            ? categoriesIcons[categorie]
-                            : categoriesIcons[adminSelectedCategorie]
-                        }
-                        alt={`${categorie} image`}
-                        className="max-h-[4dvh] max-w-[4dvh] aspect-square"
-                        style={{ objectFit: "contain" }}
-                        width={500}
-                        height={500}
-                        priority
-                      />
-                    ) : (
-                      <div className="h-[4dvh] w-[4dvh]" />
-                    )}
+                    <div className="h-[4dvh] w-[4dvh]" />
 
                     {isAdmin || searchIsAdmin ? (
-                      <>
+                      <div className="relative">
                         {!gameData.isSearching ? (
-                          <div className="text-center text-amber-700 text-3xl flex justify-center items-center outline outline-amber-700 bg-amber-100 p-2 mx-2 min-w-[15dvh]">
+                          <div className="relative text-center text-amber-700 text-3xl flex justify-center items-center outline outline-amber-700 bg-amber-100 p-2 mx-2 min-w-[15dvh]">
                             <ChooseAnotherGame
                               gameName={
                                 gamesRefs[gameName].categorie === "grouping"
                                   ? "+"
                                   : gamesRefs[gameName].name
+                              }
+                              categorieSrc={
+                                categoriesIcons[gamesRefs[gameName].categorie]
                               }
                               setShowPlayers={setShowPlayers}
                               setShowConfig={setShowConfig}
@@ -1344,18 +1329,46 @@ export default function Room({
                               setAdminSearchtCategorie(null);
                               setAdminSelectedGame(null);
                             }}
-                            className="text-center text-3xl flex justify-center items-center outline outline-amber-700 bg-amber-100 p-2 mx-2 min-w-[15dvh]"
+                            className="relative text-center text-3xl flex justify-center items-center outline outline-amber-700 bg-amber-100 p-2 mx-2 min-w-[15dvh]"
                           >
+                            <div>
+                              {categorie !== "grouping" &&
+                                categoriesIcons &&
+                                (!gameData.isSearching ||
+                                  adminSelectedCategorie) && (
+                                  <Image
+                                    src={
+                                      !adminSelectedCategorie
+                                        ? categoriesIcons[categorie]
+                                        : categoriesIcons[
+                                            adminSelectedCategorie
+                                          ]
+                                    }
+                                    alt={`${categorie} image`}
+                                    className={`absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] max-h-[4dvh] max-w-[4dvh] aspect-square opacity-50`}
+                                    style={{
+                                      objectFit: "contain",
+                                      pointerEvents: "none",
+                                      filter:
+                                        "invert(31%) sepia(61%) saturate(1242%) hue-rotate(357deg) brightness(103%) contrast(96%)", // amber-700
+                                      zIndex: 0,
+                                    }}
+                                    width={500}
+                                    height={500}
+                                    priority
+                                  />
+                                )}
+                            </div>
                             {!adminSelectedGame ? (
                               <span className="text-amber-100">TEXTE</span>
                             ) : (
-                              <span className="text-amber-700">
+                              <span className="text-amber-700 z-10">
                                 {adminSelectedGame.name}
                               </span>
                             )}
                           </div>
                         )}
-                      </>
+                      </div>
                     ) : (
                       <div className="text-center text-amber-400 text-3xl flex justify-center items-center mx-2 p-2 min-w-[15dvh]">
                         {!gameData.isSearching ? (
