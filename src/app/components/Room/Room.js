@@ -1320,14 +1320,19 @@ export default function Room({
                         ) : (
                           <div
                             onClick={async () => {
-                              await cancelSearchGame({
-                                roomId,
-                                roomToken,
-                                gameData,
-                              });
-                              setAdminSelectedCategorie(null);
-                              setAdminSearchtCategorie(null);
-                              setAdminSelectedGame(null);
+                              if (!adminSearchtCategorie) {
+                                await cancelSearchGame({
+                                  roomId,
+                                  roomToken,
+                                  gameData,
+                                });
+                                setAdminSelectedCategorie(null);
+                                setAdminSearchtCategorie(null);
+                                setAdminSelectedGame(null);
+                              } else {
+                                setAdminSearchtCategorie(null);
+                                setAdminSelectedGame(null);
+                              }
                             }}
                             className="relative text-center text-3xl flex justify-center items-center outline outline-amber-700 bg-amber-100 p-2 mx-2 min-w-[15dvh]"
                           >
