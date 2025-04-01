@@ -1210,7 +1210,7 @@ export default function Room({
               </div>
             </div>
 
-            {isAdmin &&
+            {(isAdmin || searchIsAdmin) &&
               ((!gameData.isSearching && gameName !== "grouping") ||
                 (adminSelectedCategorie && !adminSearchtCategorie) ||
                 (adminSearchtCategorie && adminSelectedGame)) && (
