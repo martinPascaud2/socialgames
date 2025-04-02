@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 
 import { categories, subCategories } from "@/assets/globals";
 
@@ -17,6 +17,19 @@ export default function GameChooser({
   const memoHeight = useMemo(() => {
     return initialHeight;
   }, []);
+
+  // const [isLoaded, setIsLoaded] = useState(false);
+  // const [loadedCount, setLoadedCount] = useState(0);
+
+  // useEffect(() => {
+  //   if (loadedCount === currCat.length) {
+  //     setIsLoaded(true);
+  //   }
+  // }, [loadedCount, currCat.length]);
+
+  // const handleImageLoad = () => {
+  //   setLoadedCount((prev) => prev + 1);
+  // };
 
   if (!adminSearchtCategorie)
     return (
@@ -69,6 +82,8 @@ export default function GameChooser({
                   style={{ objectFit: "contain" }}
                   width={500}
                   height={500}
+                  // onLoadingComplete={handleImageLoad}
+                  priority
                 />
               </div>
             );
