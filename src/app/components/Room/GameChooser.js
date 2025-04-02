@@ -18,18 +18,18 @@ export default function GameChooser({
     return initialHeight;
   }, []);
 
-  // const [isLoaded, setIsLoaded] = useState(false);
-  // const [loadedCount, setLoadedCount] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [loadedCount, setLoadedCount] = useState(0);
 
-  // useEffect(() => {
-  //   if (loadedCount === currCat.length) {
-  //     setIsLoaded(true);
-  //   }
-  // }, [loadedCount, currCat.length]);
+  useEffect(() => {
+    if (loadedCount === currCat.length) {
+      setIsLoaded(true);
+    }
+  }, [loadedCount, currCat.length]);
 
-  // const handleImageLoad = () => {
-  //   setLoadedCount((prev) => prev + 1);
-  // };
+  const handleImageLoad = () => {
+    setLoadedCount((prev) => prev + 1);
+  };
 
   if (!adminSearchtCategorie)
     return (
@@ -52,7 +52,9 @@ export default function GameChooser({
         `}</style>
 
         <div
-          className="overflow-hidden absolute h-full w-[80%] flex flex-col justify-around items-center p-2"
+          className={`${
+            !isLoaded && "hidden"
+          } overflow-hidden absolute h-full w-[80%] flex flex-col justify-around items-center p-2`}
           style={{ height: "calc(100% - 3rem)" }}
         >
           {currCat.map((categorie, index) => {
@@ -82,7 +84,7 @@ export default function GameChooser({
                   style={{ objectFit: "contain" }}
                   width={500}
                   height={500}
-                  // onLoadingComplete={handleImageLoad}
+                  onLoadingComplete={handleImageLoad}
                   priority
                 />
               </div>
