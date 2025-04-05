@@ -13,14 +13,16 @@ export default function MemoryOptions({
   isAdmin,
   options,
   setOptions,
+  searchMode,
   lastMode,
+  adminChangeSameGameNewMode,
   userId,
   setServerMessage,
   //for new games
   modeSelector = true,
 }) {
   const [mode, setMode] = useState(
-    (isAdmin && lastMode?.mode) || options?.mode || "Memory"
+    searchMode || (isAdmin && lastMode?.mode) || options?.mode || "Memory"
   );
   const [lastParams, setLastParams] = useState();
   const [modeList, setModeList] = useState([]);
@@ -89,6 +91,7 @@ export default function MemoryOptions({
               isAdmin={isAdmin}
               options={options}
               defaultValue={mode}
+              adminChangeSameGameNewMode={adminChangeSameGameNewMode}
               modeList={modeList}
               setMode={setMode}
               setOptions={setOptions}

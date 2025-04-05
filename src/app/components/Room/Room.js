@@ -173,6 +173,7 @@ export default function Room({
   const searchToken = searchParams.get("token");
   const searchChangeGame = Boolean(searchParams.get("changeGame"));
   const searchIsAdmin = Boolean(searchParams.get("isAdmin"));
+  const searchMode = searchParams.get("mode");
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [roomId, setRoomId] = useState(0);
@@ -191,6 +192,10 @@ export default function Room({
   const [adminSelectedCategorie, setAdminSelectedCategorie] = useState(null);
   const [adminSearchtCategorie, setAdminSearchtCategorie] = useState(null);
   const [adminSelectedGame, setAdminSelectedGame] = useState(null);
+  const [adminSearchtGame, setAdminSearchtGame] = useState(null);
+  const [adminSelectedMode, setAdminSelectedMode] = useState(null);
+  const [adminChangeSameGameNewMode, setAdminChangeSameGameNewMode] =
+    useState(null);
   const [isStarted, setIsStarted] = useState(false);
   const [isLaunching, setIsLaunching] = useState(false);
   const [isLaunched, setIsLaunched] = useState(false);
@@ -427,7 +432,7 @@ export default function Room({
       await changeOptions({ roomId, roomToken, options });
     };
     editOptions();
-  }, [options]);
+  }, [options, isAdmin, roomId, roomToken]);
   // ------------------------------
 
   // admin launch_room
@@ -910,6 +915,21 @@ export default function Room({
 
   // admin change game
   const changeGame = useCallback(async () => {
+    if (!isAdmin) return;
+
+    if (adminSearchtGame.path === gameName) {
+      setAdminChangeSameGameNewMode(adminSelectedMode.label);
+      setTimeout(() => {
+        setAdminChangeSameGameNewMode(null);
+        setAdminSelectedCategorie(null);
+        setAdminSearchtCategorie(null);
+        setAdminSelectedGame(null);
+        setAdminSearchtGame(null);
+        setAdminSelectedMode(null);
+      }, 2000);
+      return;
+    }
+
     await deleteInvs();
 
     if (group) {
@@ -955,11 +975,12 @@ export default function Room({
     }
 
     router.push(
-      `/categories/${adminSearchtCategorie}/${adminSelectedGame.path}/?changeGame=true&isAdmin=true`
+      `/categories/${adminSearchtCategorie}/${adminSearchtGame.path}/?mode=${adminSelectedMode.path}&changeGame=true&isAdmin=true`
     );
   }, [
     adminSearchtCategorie,
-    adminSelectedGame,
+    adminSearchtGame,
+    adminSelectedMode,
     deleteInvs,
     geoLocation,
     group,
@@ -967,6 +988,7 @@ export default function Room({
     roomToken,
     router,
     isAdmin,
+    gameName,
   ]);
   // ------------------------------
 
@@ -1227,20 +1249,17 @@ export default function Room({
                         !adminSearchtCategorie
                       ) {
                         setAdminSearchtCategorie(adminSelectedCategorie);
-                      } else if (adminSelectedGame) {
-                        if (adminSelectedGame.path === gameName) {
-                          await cancelSearchGame({
+                      } else if (adminSelectedGame && !adminSearchtGame) {
+                        setAdminSearchtGame(adminSelectedGame);
+                      } else {
+                        localStorage.setItem("localWidth", window.innerWidth);
+                        adminSearchtGame.path === gameName &&
+                          (await cancelSearchGame({
                             roomId,
                             roomToken,
                             gameData,
-                          });
-                          setAdminSelectedCategorie(null);
-                          setAdminSearchtCategorie(null);
-                          setAdminSelectedGame(null);
-                        } else {
-                          localStorage.setItem("localWidth", window.innerWidth);
-                          await changeGame();
-                        }
+                          }));
+                        await changeGame();
                       }
                     }}
                   >
@@ -1329,9 +1348,12 @@ export default function Room({
                                 setAdminSelectedCategorie(null);
                                 setAdminSearchtCategorie(null);
                                 setAdminSelectedGame(null);
-                              } else {
+                              } else if (!adminSearchtGame) {
                                 setAdminSearchtCategorie(null);
                                 setAdminSelectedGame(null);
+                              } else {
+                                setAdminSearchtGame(null);
+                                setAdminSelectedMode(null);
                               }
                             }}
                             className="relative text-center text-3xl flex justify-center items-center outline outline-amber-700 bg-amber-100 p-2 mx-2 min-w-[15dvh]"
@@ -1976,6 +1998,10 @@ export default function Room({
                       setAdminSearchtCategorie={setAdminSearchtCategorie}
                       adminSelectedGame={adminSelectedGame}
                       setAdminSelectedGame={setAdminSelectedGame}
+                      adminSearchtGame={adminSearchtGame}
+                      setAdminSearchtGame={setAdminSearchtGame}
+                      adminSelectedMode={adminSelectedMode}
+                      setAdminSelectedMode={setAdminSelectedMode}
                       initialHeight={showConfig ? "3rem" : "100%"}
                     />
                   )}
@@ -2021,6 +2047,7 @@ export default function Room({
                               isAdmin={isAdmin}
                               options={options}
                               setOptions={setOptions}
+                              searchMode={searchMode}
                               lastMode={group?.lastMode}
                               serverMessage={serverMessage}
                               setServerMessage={setServerMessage}
@@ -2028,6 +2055,9 @@ export default function Room({
                                 gamerList.length +
                                 guestList.length +
                                 multiGuestList.length
+                              }
+                              adminChangeSameGameNewMode={
+                                adminChangeSameGameNewMode
                               }
                             />
                           )}

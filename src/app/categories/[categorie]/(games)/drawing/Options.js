@@ -13,11 +13,13 @@ export default function DrawingOptions({
   userId,
   isAdmin,
   options,
+  searchMode,
   lastMode,
+  adminChangeSameGameNewMode,
   setOptions,
 }) {
   const [mode, setMode] = useState(
-    (isAdmin && lastMode?.mode) || options.mode || "Pictionary"
+    searchMode || (isAdmin && lastMode?.mode) || options.mode || "Pictionary"
   );
   const [lastParams, setLastParams] = useState();
   const [modeList, setModeList] = useState([]);
@@ -50,6 +52,7 @@ export default function DrawingOptions({
         isAdmin={isAdmin}
         options={options}
         defaultValue={mode}
+        adminChangeSameGameNewMode={adminChangeSameGameNewMode}
         modeList={modeList}
         setMode={setMode}
         setOptions={setOptions}

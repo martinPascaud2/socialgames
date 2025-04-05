@@ -139,7 +139,8 @@ export const subCategories = {
   ],
 };
 
-// to be done : remove isGuestsAllowed, limits in modes
+// to be done : limits in modes
+// important: modes.path must be === mode.mode(modeList) in game_Options
 export const gamesRefs = {
   grouping: { name: "un nouveau groupe", categorie: "grouping" },
   // actionouverite: {
@@ -151,62 +152,68 @@ export const gamesRefs = {
   undercover: {
     name: "Undercover",
     categorie: "categorie5",
+    modes: [{ label: "Undercover (classique)", path: "Undercover" }],
     limits: { min: 3, max: 15, opti: 8 },
-    isGuestsAllowed: true,
   },
   dobble: {
     name: "Identiques",
     categorie: "categorie1",
+    modes: [{ label: "Dobble (classique)", path: "Dobble" }],
     limits: { min: 2, max: 15, opti: 4 },
-    isGuestsAllowed: false,
   },
   memory: {
     name: "Mémoire",
     categorie: "categorie6",
+    modes: [{ label: "Memory (classique)", path: "Memory" }],
     limits: { min: 2, max: 2, opti: 2 },
-    isGuestsAllowed: true,
   },
   ptitbac: {
     name: "Quel mot ?",
     categorie: "categorie3",
+    modes: [{ label: "P'tit bac (classique)", path: "P%27tit%20bac" }],
     limits: { min: 2, max: 15, opti: 7 },
-    isGuestsAllowed: false,
   },
   drawing: {
     name: "Dessin",
     categorie: "categorie3",
+    modes: [
+      { label: "Pictionary", path: "Pictionary" },
+      { label: "Esquissé", path: "Esquiss%C3%A9" },
+    ],
     limits: { min: 4, max: 10, opti: 7 },
-    isGuestsAllowed: false,
   },
   uno: {
     name: "Classico",
     categorie: "categorie4",
+    modes: [{ label: "Uno (classique)", path: "Uno" }],
     limits: { min: 2, max: 10, opti: 6 },
-    isGuestsAllowed: false,
   },
   triaction: {
     name: "Triaction",
     categorie: "categorie5",
+    modes: [
+      { label: "Triaction (random)", path: "Triaction%20(random)" },
+      { label: "Triaction (peek)", path: "Triaction%20(peek)" },
+    ],
     limits: { min: 3, max: 8, opti: 5 },
-    isGuestsAllowed: false,
   },
   ranking: {
     name: "Classement",
     categorie: "categorie5",
+    modes: [{ label: "Podium", path: "Podium" }],
     limits: { min: 2, max: 10, opti: 6 },
-    isGuestsAllowed: false,
   },
   sort: {
     name: "Placement",
     categorie: "categorie2",
+    modes: [{ label: "Placement (classique)", path: "Sort" }],
     limits: { min: 2, max: 8, opti: 5 },
-    isGuestsAllowed: false,
   },
   socialknowledge: {
     name: "Mentalisme",
     categorie: "categorie5",
+    modes: [{ label: "Tableau", path: "Tableau" }],
     limits: { min: 2, max: 10, opti: 6 },
-    isGuestsAllowed: false,
   },
 };
 

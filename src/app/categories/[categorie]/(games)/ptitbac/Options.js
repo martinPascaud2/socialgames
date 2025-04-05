@@ -16,11 +16,13 @@ export default function PtitbacOptions({
   isAdmin,
   options,
   setOptions,
+  searchMode,
   lastMode,
+  adminChangeSameGameNewMode,
   setServerMessage,
 }) {
   const [mode, setMode] = useState(
-    (isAdmin && lastMode?.mode) || options.mode || "P'tit bac"
+    searchMode || (isAdmin && lastMode?.mode) || options.mode || "P'tit bac"
   );
   const [lastParams, setLastParams] = useState();
   const [modeList, setModeList] = useState([]);
@@ -56,6 +58,7 @@ export default function PtitbacOptions({
         isAdmin={isAdmin}
         options={options}
         defaultValue={mode}
+        adminChangeSameGameNewMode={adminChangeSameGameNewMode}
         modeList={modeList}
         setMode={setMode}
         setOptions={setOptions}

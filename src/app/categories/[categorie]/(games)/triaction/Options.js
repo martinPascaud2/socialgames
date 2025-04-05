@@ -11,10 +11,15 @@ export default function PtitbacOptions({
   isAdmin,
   options,
   setOptions,
+  searchMode,
+  adminChangeSameGameNewMode,
   lastMode,
 }) {
   const [mode, setMode] = useState(
-    (isAdmin && lastMode?.mode) || options.mode || "Triaction (random)"
+    searchMode ||
+      (isAdmin && lastMode?.mode) ||
+      options.mode ||
+      "Triaction (random)"
   );
   const [modeList, setModeList] = useState([]);
 
@@ -38,6 +43,7 @@ export default function PtitbacOptions({
         isAdmin={isAdmin}
         options={options}
         defaultValue={mode}
+        adminChangeSameGameNewMode={adminChangeSameGameNewMode}
         modeList={modeList}
         setMode={setMode}
         setOptions={setOptions}

@@ -8,6 +8,7 @@ export default function ModeSelector({
   isAdmin,
   options,
   defaultValue,
+  adminChangeSameGameNewMode,
   modeList,
   setMode,
   setOptions,
@@ -19,6 +20,17 @@ export default function ModeSelector({
     setValue(defaultValue);
   }, [defaultValue]);
 
+  useEffect(() => {
+    if (!adminChangeSameGameNewMode || !isAdmin) return;
+
+    setValue(adminChangeSameGameNewMode);
+    setMode(adminChangeSameGameNewMode);
+    setOptions((prevOptions) => {
+      const newOptions = { ...options, mode: adminChangeSameGameNewMode };
+      return compareState(prevOptions, newOptions);
+    });
+  }, [adminChangeSameGameNewMode, isAdmin, options, setOptions, setMode]);
+
   const Select = useCallback(() => {
     if (!value) return;
 
@@ -26,7 +38,7 @@ export default function ModeSelector({
       <div className="flex justify-center">
         {isAdmin ? (
           <select
-            defaultValue={value}
+            value={value}
             onChange={(e) => (
               setMode(e.target.value),
               setOptions((prevOptions) => {

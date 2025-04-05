@@ -15,13 +15,15 @@ export default function SocialKnowledgeOptions({
   isAdmin,
   options,
   setOptions,
+  searchMode,
   lastMode,
+  adminChangeSameGameNewMode,
   serverMessage,
   setServerMessage,
   gamersNumber,
 }) {
   const [mode, setMode] = useState(
-    (isAdmin && lastMode?.mode) || options.mode || "Tableau"
+    searchMode || (isAdmin && lastMode?.mode) || options.mode || "Tableau"
   );
   const [modeList, setModeList] = useState([]);
   const [lastParams, setLastParams] = useState();
@@ -57,6 +59,7 @@ export default function SocialKnowledgeOptions({
         isAdmin={isAdmin}
         options={options}
         defaultValue={mode}
+        adminChangeSameGameNewMode={adminChangeSameGameNewMode}
         modeList={modeList}
         setMode={setMode}
         setOptions={setOptions}

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useMemo, useState, useEffect } from "react";
 
-import { categories, subCategories } from "@/assets/globals";
+import { categories, subCategories, gamesRefs } from "@/assets/globals";
 
 export default function GameChooser({
   adminSelectedCategorie,
@@ -11,6 +11,9 @@ export default function GameChooser({
   adminSearchtCategorie,
   adminSelectedGame,
   setAdminSelectedGame,
+  adminSearchtGame,
+  adminSelectedMode,
+  setAdminSelectedMode,
   initialHeight,
 }) {
   const currCat = categories.filter((categorie) => categorie.name !== "APPLI");
@@ -93,7 +96,7 @@ export default function GameChooser({
         </div>
       </>
     );
-  else
+  else if (!adminSearchtGame)
     return (
       <div className="overflow-hidden relative h-full w-[80%] flex flex-col justify-around items-center p-2">
         {subCategories[adminSearchtCategorie].map((subCat, i) => (
@@ -110,4 +113,22 @@ export default function GameChooser({
         ))}
       </div>
     );
+  else {
+    return (
+      <div className="overflow-hidden relative h-full w-[80%] flex flex-col justify-around items-center p-2">
+        {gamesRefs[adminSearchtGame.path].modes.map((ref, i) => (
+          <div
+            key={i}
+            onClick={() => setAdminSelectedMode(ref)}
+            className={`p-4 text-2xl ${
+              adminSelectedMode?.path === ref.path &&
+              "outline outline-2 outline-dotted font-semibold"
+            }`}
+          >
+            {ref.label}
+          </div>
+        ))}
+      </div>
+    );
+  }
 }

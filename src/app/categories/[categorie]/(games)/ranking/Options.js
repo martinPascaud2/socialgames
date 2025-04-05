@@ -16,11 +16,13 @@ export default function RankingOptions({
   userId,
   isAdmin,
   options,
+  searchMode,
   lastMode,
+  adminChangeSameGameNewMode,
   setOptions,
 }) {
   const [mode, setMode] = useState(
-    (isAdmin && lastMode?.mode) || options.mode || "Podium"
+    searchMode || (isAdmin && lastMode?.mode) || options.mode || "Podium"
   );
   const [lastParams, setLastParams] = useState();
   const [modeList, setModeList] = useState([]);
@@ -51,6 +53,7 @@ export default function RankingOptions({
         isAdmin={isAdmin}
         options={options}
         defaultValue={mode}
+        adminChangeSameGameNewMode={adminChangeSameGameNewMode}
         modeList={modeList}
         setMode={setMode}
         setOptions={setOptions}
