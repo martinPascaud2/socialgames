@@ -103,7 +103,7 @@ export default function GameChooser({
           <div
             key={i}
             onClick={() => setAdminSelectedGame(subCat)}
-            className={`p-4 text-2xl ${
+            className={`p-4 text-2xl whitespace-nowrap overflow-hidden text-ellipsis ${
               adminSelectedGame?.name === subCat?.name &&
               "outline outline-2 font-semibold"
             }`}
@@ -120,7 +120,7 @@ export default function GameChooser({
           <div
             key={i}
             onClick={() => setAdminSelectedMode(ref)}
-            className={`p-4 text-2xl ${
+            className={`p-4 text-2xl whitespace-nowrap overflow-hidden text-ellipsis ${
               adminSelectedMode?.path === ref.path &&
               "outline outline-2 outline-dotted font-semibold"
             }`}
