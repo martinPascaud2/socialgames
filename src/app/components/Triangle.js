@@ -25,6 +25,7 @@ export function CornerTriangle({
   direction,
   color = "#00000",
   localWidth,
+  backChangeGame,
 }) {
   const viewportWidth =
     typeof window !== "undefined"
@@ -57,7 +58,12 @@ export function CornerTriangle({
   return (
     <div className="relative w-full h-full">
       <svg width={dimension} height={dimension}>
-        <polygon points={points[direction.y].join(" ")} fill={color} />
+        <polygon
+          onClick={async () => await backChangeGame()}
+          points={points[direction.y].join(" ")}
+          fill={color}
+          style={{ pointerEvents: "auto" }}
+        />
       </svg>
 
       <div

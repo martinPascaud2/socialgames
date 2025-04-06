@@ -61,7 +61,6 @@ export default function PtitbacThemeOption({
       else {
         defaultThemes.forEach((def) => {
           const theme = lastThemes.find((last) => last.theme === def.theme);
-          console.log("theme", theme);
           if (theme) selectedDefaults.push({ ...theme });
           else unselectedDefaults.push({ ...def, selected: false });
         });

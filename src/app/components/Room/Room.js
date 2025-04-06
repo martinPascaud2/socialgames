@@ -990,6 +990,34 @@ export default function Room({
     isAdmin,
     gameName,
   ]);
+
+  const backChangeGame = useCallback(async () => {
+    if (!isAdmin && !searchIsAdmin) return;
+    if (!adminSearchtCategorie) {
+      await cancelSearchGame({
+        roomId,
+        roomToken,
+        gameData,
+      });
+      setAdminSelectedCategorie(null);
+      setAdminSearchtCategorie(null);
+      setAdminSelectedGame(null);
+    } else if (!adminSearchtGame) {
+      setAdminSearchtCategorie(null);
+      setAdminSelectedGame(null);
+    } else {
+      setAdminSearchtGame(null);
+      setAdminSelectedMode(null);
+    }
+  }, [
+    adminSearchtCategorie,
+    adminSearchtGame,
+    gameData,
+    isAdmin,
+    roomId,
+    roomToken,
+    searchIsAdmin,
+  ]);
   // ------------------------------
 
   // not_admins redirections
@@ -1164,56 +1192,66 @@ export default function Room({
           <UserContext.Provider value={{ userParams }}>
             <div className={`relative h-full w-full overflow-hidden`}>
               <div
+                onClick={async () => await backChangeGame()}
                 className="absolute top-0 w-full bg-black z-50"
                 style={{ height: `${barsSizes.top / 4}rem` }}
               />
               <div
+                onClick={async () => await backChangeGame()}
                 className="absolute bottom-0 w-full bg-black z-50"
                 style={{ height: `${barsSizes.bottom / 4}rem` }}
               />
 
               <div
-                className="absolute left-0 translate-x-[-50%] translate-y-[-1rem] z-10"
+                className="absolute left-0 translate-x-[-50%] translate-y-[-1rem] z-30"
                 style={{
                   top: `${barsSizes.top / 4}rem`,
+                  pointerEvents: "none",
                 }}
               >
                 <CornerTriangle
                   direction={{ y: "bottom", x: "left" }}
                   localWidth={localWidth}
+                  backChangeGame={backChangeGame}
                 />
               </div>
               <div
-                className="absolute right-0 translate-x-[50%] translate-y-[-1rem] z-10"
+                className="absolute right-0 translate-x-[50%] translate-y-[-1rem] z-30"
                 style={{
                   top: `${barsSizes.top / 4}rem`,
+                  pointerEvents: "none",
                 }}
               >
                 <CornerTriangle
                   direction={{ y: "bottom", x: "right" }}
                   localWidth={localWidth}
+                  backChangeGame={backChangeGame}
                 />
               </div>
               <div
-                className="absolute left-0 translate-x-[-50%] translate-y-[1rem] z-10"
+                className="absolute left-0 translate-x-[-50%] translate-y-[1rem] z-30"
                 style={{
                   bottom: `${barsSizes.bottom / 4}rem`,
+                  pointerEvents: "none",
                 }}
               >
                 <CornerTriangle
                   direction={{ y: "top", x: "left" }}
                   localWidth={localWidth}
+                  backChangeGame={backChangeGame}
                 />
               </div>
               <div
-                className="absolute right-0 translate-x-[50%] translate-y-[1rem] z-10"
+                className="absolute right-0 translate-x-[50%] translate-y-[1rem] z-30"
                 style={{
                   bottom: `${barsSizes.bottom / 4}rem`,
+                  pointerEvents: "none",
                 }}
               >
                 <CornerTriangle
                   direction={{ y: "top", x: "right" }}
                   localWidth={localWidth}
+                  backChangeGame={backChangeGame}
                 />
               </div>
 
@@ -1339,22 +1377,7 @@ export default function Room({
                         ) : (
                           <div
                             onClick={async () => {
-                              if (!adminSearchtCategorie) {
-                                await cancelSearchGame({
-                                  roomId,
-                                  roomToken,
-                                  gameData,
-                                });
-                                setAdminSelectedCategorie(null);
-                                setAdminSearchtCategorie(null);
-                                setAdminSelectedGame(null);
-                              } else if (!adminSearchtGame) {
-                                setAdminSearchtCategorie(null);
-                                setAdminSelectedGame(null);
-                              } else {
-                                setAdminSearchtGame(null);
-                                setAdminSelectedMode(null);
-                              }
+                              await backChangeGame();
                             }}
                             className="relative text-center text-3xl flex justify-center items-center outline outline-amber-700 bg-amber-100 p-2 mx-2 min-w-[15dvh]"
                           >
