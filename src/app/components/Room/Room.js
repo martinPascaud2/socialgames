@@ -1388,7 +1388,7 @@ export default function Room({
                         style={{
                           color: "#fef3c7", // amber-100
                           WebkitTextStroke: "2px #b45309", // amber-700
-                          textShadow: "2px 2px 4px rgba(0, 0, 0, 0.4)",
+                          textShadow: "2px 2px 4px rgba(74, 4, 78, 0.4)",
                         }}
                       >
                         ?
