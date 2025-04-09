@@ -57,7 +57,7 @@ export default function GameChooser({
         <div
           className={`${
             !isLoaded && "hidden"
-          } overflow-hidden absolute h-full w-[80%] flex flex-col justify-around items-center p-2`}
+          } overflow-hidden absolute top-12 h-full w-[80%] flex flex-col justify-around items-center p-2`}
           style={{ height: "calc(100% - 3rem)" }}
         >
           {currCat.map((categorie, index) => {

@@ -227,6 +227,10 @@ export const modesRules = {
     name: "Identiques",
     limits: { min: 2, max: 15, opti: 4 },
   },
+  Dobble: {
+    name: "Identiques",
+    limits: { min: 2, max: 15, opti: 4 },
+  },
 
   Pictionary: {
     name: "Pictionary",
@@ -269,13 +273,25 @@ export const modesRules = {
     name: "Undercover",
     limits: { min: 3, max: 15, opti: 8 },
   },
+  Undercover: {
+    name: "Undercover",
+    limits: { min: 3, max: 15, opti: 8 },
+  },
 
   uno: {
     name: "Classico",
     limits: { min: 2, max: 10, opti: 6 },
   },
+  Uno: {
+    name: "Classico",
+    limits: { min: 2, max: 10, opti: 6 },
+  },
 
   sort: {
+    name: "Placement",
+    limits: { min: 2, max: 8, opti: 5 },
+  },
+  Sort: {
     name: "Placement",
     limits: { min: 2, max: 8, opti: 5 },
   },

@@ -22,7 +22,7 @@ import getErrorInformations from "@/utils/getErrorInformations";
 import { getRoomFriendList } from "@/utils/getFriendList";
 import { saveLastParams } from "@/utils/getLastParams";
 import cancelBack from "@/utils/cancelBack";
-import { gamesRefs, modesRules, categoriesIcons } from "@/assets/globals";
+import { gamesRefs, categoriesIcons } from "@/assets/globals";
 
 // import dynamic from "next/dynamic";
 // const CornerTriangle = dynamic(
@@ -33,6 +33,7 @@ import { gamesRefs, modesRules, categoriesIcons } from "@/assets/globals";
 import { CornerTriangle } from "../Triangle";
 import { LobbyDeleteGroup } from "@/components/DeleteGroup";
 import ChooseAnotherGame from "./ChooseAnotherGame";
+import Limits from "./Limits";
 import GameChooser from "./GameChooser";
 import NextStep from "../NextStep";
 import AnimatedDots from "../AnimatedDots";
@@ -44,10 +45,7 @@ import {
   LockClosedIcon,
   LockOpenIcon,
 } from "@heroicons/react/24/outline";
-import { FaLongArrowAltLeft, FaLongArrowAltRight } from "react-icons/fa";
-import { FaInfo } from "react-icons/fa6";
 import { ImExit } from "react-icons/im";
-import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { FaUserFriends } from "react-icons/fa";
 import { IoPersonAddSharp } from "react-icons/io5";
@@ -918,7 +916,7 @@ export default function Room({
     if (!isAdmin) return;
 
     if (adminSearchtGame.path === gameName) {
-      setAdminChangeSameGameNewMode(adminSelectedMode.label);
+      setAdminChangeSameGameNewMode(decodeURIComponent(adminSelectedMode.path));
       setTimeout(() => {
         setAdminChangeSameGameNewMode(null);
         setAdminSelectedCategorie(null);
@@ -1322,129 +1320,149 @@ export default function Room({
                     : "opacity-0 animate-[fadeOut_1.5s_ease-in-out]"
                 } relative h-full w-full`}
               >
-                <div className="absolute left-1/2 translate-x-[-50%] h-[10dvh] w-full">
-                  <div className="w-full flex justify-center translate-y-[1rem]">
-                    {categorie !== "grouping" &&
-                      !gameData.isSearching &&
-                      !!Object.keys(options).length && (
-                        <div className="flex items-center">
-                          <div>
-                            {options?.mode
-                              ? modesRules[options?.mode].limits.min
-                              : gamesRefs[gameName].limits.min}
-                            &nbsp;
-                          </div>
-                          <FaLongArrowAltRight className="mr-1 w-6 h-6" />
-                          <div className="text-2xl text-amber-400">
-                            {options?.mode
-                              ? modesRules[options?.mode].limits.opti
-                              : gamesRefs[gameName].limits.opti}
-                          </div>
-                          <FaLongArrowAltLeft className="ml-1 w-6 h-6" />
-                          <div>
-                            &nbsp;
-                            {options?.mode
-                              ? modesRules[options?.mode].limits.max
-                              : gamesRefs[gameName].limits.max}
-                          </div>
-                        </div>
-                      )}
-                  </div>
-                  <div className="absolute top-[7dvh] w-full flex justify-center items-center">
-                    <div className="h-[4dvh] w-[4dvh]" />
+                <div className="absolute top-[1.5dvh] w-full h-[4.5dvh] flex justify-center items-center">
+                  {categorie !== "grouping" &&
+                    categoriesIcons &&
+                    (!gameData.isSearching || adminSelectedCategorie) && (
+                      <Image
+                        src={
+                          !adminSelectedCategorie
+                            ? categoriesIcons[categorie]
+                            : categoriesIcons[adminSelectedCategorie]
+                        }
+                        alt={`${categorie} image`}
+                        className="max-h-[4.5dvh] max-w-[4.5dvh] aspect-square"
+                        style={{
+                          objectFit: "contain",
+                          filter:
+                            "invert(9%) sepia(73%) saturate(3540%) hue-rotate(267deg) brightness(94%) contrast(110%)", // purple-950
+                        }}
+                        width={500}
+                        height={500}
+                        priority
+                      />
+                    )}
+                </div>
 
-                    {isAdmin || searchIsAdmin ? (
-                      <div className="relative">
-                        {!gameData.isSearching ? (
-                          <div className="relative text-center text-amber-700 text-3xl flex justify-center items-center outline outline-amber-700 bg-amber-100 p-2 mx-2 min-w-[15dvh]">
-                            <ChooseAnotherGame
-                              gameName={
-                                gamesRefs[gameName].categorie === "grouping"
-                                  ? "+"
-                                  : gamesRefs[gameName].name
-                              }
-                              categorieSrc={
-                                categoriesIcons[gamesRefs[gameName].categorie]
-                              }
-                              setShowPlayers={setShowPlayers}
-                              setShowConfig={setShowConfig}
-                              gameData={gameData}
-                              roomId={roomId}
-                              roomToken={roomToken}
-                              deleteInvs={deleteInvs}
-                            />
-                          </div>
-                        ) : (
-                          <div
-                            onClick={async () => {
-                              await backChangeGame();
-                            }}
-                            className="relative text-center text-3xl flex justify-center items-center outline outline-amber-700 bg-amber-100 p-2 mx-2 min-w-[15dvh]"
-                          >
-                            <div>
-                              {categorie !== "grouping" &&
-                                categoriesIcons &&
-                                (!gameData.isSearching ||
-                                  adminSelectedCategorie) && (
-                                  <Image
-                                    src={
-                                      !adminSelectedCategorie
-                                        ? categoriesIcons[categorie]
-                                        : categoriesIcons[
-                                            adminSelectedCategorie
-                                          ]
-                                    }
-                                    alt={`${categorie} image`}
-                                    className={`absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] max-h-[4dvh] max-w-[4dvh] aspect-square opacity-50`}
-                                    style={{
-                                      objectFit: "contain",
-                                      pointerEvents: "none",
-                                      filter:
-                                        "invert(31%) sepia(61%) saturate(1242%) hue-rotate(357deg) brightness(103%) contrast(96%)", // amber-700
-                                      zIndex: 0,
-                                    }}
-                                    width={500}
-                                    height={500}
-                                    priority
-                                  />
-                                )}
-                            </div>
-                            {!adminSelectedGame ? (
-                              <span className="text-amber-100">TEXTE</span>
-                            ) : (
-                              <span className="text-amber-700 z-10">
-                                {adminSelectedGame.name}
-                              </span>
-                            )}
-                          </div>
-                        )}
+                <div className="absolute left-1/2 translate-x-[-50%] h-[10dvh] w-full">
+                  <div className="absolute top-[5dvh] w-full flex justify-center items-center">
+                    {(isAdmin || searchIsAdmin) && !gameData.isSearching ? (
+                      <div className="h-[4dvh] w-[4dvh]">
+                        <ChooseAnotherGame
+                          setShowPlayers={setShowPlayers}
+                          setShowConfig={setShowConfig}
+                          gameData={gameData}
+                          roomId={roomId}
+                          roomToken={roomToken}
+                          deleteInvs={deleteInvs}
+                        />
                       </div>
                     ) : (
-                      <div className="text-center text-amber-400 text-3xl flex justify-center items-center mx-2 p-2 min-w-[15dvh]">
-                        {!gameData.isSearching ? (
-                          gamesRefs[gameName].categorie === "grouping" ? (
-                            <span>Lobby</span>
-                          ) : (
-                            gamesRefs[gameName].name
-                          )
-                        ) : (
-                          <div className="mb-[1vh]">
-                            {/* text-amber-400 */}
-                            <AnimatedDots color="#fbbf24" text="5xl" />
-                          </div>
-                        )}
-                      </div>
+                      <div className="h-[4dvh] w-[4dvh]" />
                     )}
-                    <div className="rounded-full h-[4dvh] w-[4dvh] border border-amber-700 bg-amber-100 flex justify-center items-center">
-                      <FaInfo className="h-[2.5dvh] w-[2.5dvh] text-amber-700" />
+
+                    <div className="text-center text-purple-950 text-4xl font-medium flex justify-center items-center mx-2 p-2 min-w-[50vw]">
+                      {!gameData.isSearching ? (
+                        gamesRefs[gameName].categorie === "grouping" ? (
+                          <span>Lobby</span>
+                        ) : (
+                          gamesRefs[gameName].name
+                        )
+                      ) : (
+                        <>
+                          {adminSelectedGame ? (
+                            <div>{adminSelectedGame.name}</div>
+                          ) : (
+                            <div>
+                              {/* text-amber-500 */}
+                              <AnimatedDots color="#f59e0b" text="5xl" />
+                            </div>
+                          )}
+                        </>
+                      )}
+                    </div>
+
+                    <div className="h-[4dvh] w-[4dvh] flex justify-start items-center text-amber-700">
+                      <p
+                        className="text-4xl"
+                        style={{
+                          color: "#fef3c7", // amber-100
+                          WebkitTextStroke: "2px #b45309", // amber-700
+                          textShadow: "2px 2px 4px rgba(0, 0, 0, 0.4)",
+                        }}
+                      >
+                        ?
+                      </p>
                     </div>
                   </div>
                 </div>
+
+                <Limits
+                  searchMode={searchMode}
+                  categorie={categorie}
+                  gameName={gameName}
+                  gameData={gameData}
+                  options={options}
+                  adminSelectedMode={adminSelectedMode}
+                />
 
                 <div
                   className="le_test absolute top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%] w-full flex flex-col items-center gap-2"
                   style={{ height: "calc(100% - 30vh)" }}
                 >
+                  {gameName !== "grouping" && (
+                    <div
+                      onClick={() => {
+                        if (!showConfig && !gameData.isSearching) {
+                          setShowConfig(true);
+                          setShowPlayers(false);
+                        }
+                      }}
+                      className={`overflow-hidden relative border w-[80%] transition-[height] duration-1000 ease-in-out ${
+                        !showConfig
+                          ? `h-12 border border-2 rounded-md border-amber-700 bg-amber-100 text-amber-700 p-2`
+                          : `h-full border border-2 rounded-md border-sky-700 bg-sky-100 text-sky-700 p-2`
+                      }`}
+                    >
+                      {!showConfig &&
+                        !gameData.isSearching &&
+                        options?.mode && (
+                          <div className="w-full">
+                            <div className="text-xl absolute top-1.5 left-[50%] translate-x-[-50%] w-full text-center">
+                              {options?.mode}
+                            </div>
+                          </div>
+                        )}
+
+                      <div className={`${!showConfig && "hidden"}`}>
+                        {!isJoining &&
+                          Options &&
+                          options &&
+                          setOptions &&
+                          setServerMessage && (
+                            <Options
+                              userId={user.id}
+                              isAdmin={isAdmin}
+                              options={options}
+                              setOptions={setOptions}
+                              searchMode={searchMode}
+                              lastMode={group?.lastMode}
+                              serverMessage={serverMessage}
+                              setServerMessage={setServerMessage}
+                              gamersNumber={
+                                gamerList.length +
+                                guestList.length +
+                                multiGuestList.length
+                              }
+                              adminChangeSameGameNewMode={
+                                adminChangeSameGameNewMode
+                              }
+                            />
+                          )}
+                      </div>
+                    </div>
+                  )}
+
                   {!gameData.isSearching || !isAdmin ? (
                     <div
                       onClick={() => {
@@ -1504,21 +1522,10 @@ export default function Room({
                                 </div>
                               );
                             })()}
-                            {gameName !== "grouping" && (
-                              <div className="absolute right-1 top-1">
-                                <ChevronRightIcon className="h-8 w-8" />
-                              </div>
-                            )}
                           </div>
                         )}
                         {showPlayers && (
                           <div>
-                            {gameName !== "grouping" && (
-                              <div className="absolute right-2 top-2">
-                                <ChevronDownIcon className="h-8 w-8" />
-                              </div>
-                            )}
-
                             <div className="absolute top-2 left-2 flex flex-col gap-2">
                               <div
                                 className={`p-1 ${
@@ -2028,65 +2035,6 @@ export default function Room({
                       initialHeight={showConfig ? "3rem" : "100%"}
                     />
                   )}
-
-                  {gameName !== "grouping" && (
-                    <div
-                      onClick={() => {
-                        if (!showConfig && !gameData.isSearching) {
-                          setShowConfig(true);
-                          setShowPlayers(false);
-                        }
-                      }}
-                      className={`overflow-hidden relative border w-[80%] transition-[height] duration-1000 ease-in-out ${
-                        !showConfig
-                          ? `h-12 border border-2 rounded-md border-amber-700 bg-amber-100 text-amber-700 p-2`
-                          : `h-full border border-2 rounded-md border-sky-700 bg-sky-100 text-sky-700 p-2`
-                      }`}
-                    >
-                      {!showConfig &&
-                        !gameData.isSearching &&
-                        options?.mode && (
-                          <div className="w-full">
-                            <div className="absolute right-1 top-1">
-                              <ChevronRightIcon className="h-8 w-8" />
-                            </div>
-                            <div className="text-xl absolute top-1.5 left-[50%] translate-x-[-50%] w-full text-center">
-                              {options?.mode}
-                            </div>
-                          </div>
-                        )}
-
-                      <div className={`${!showConfig && "hidden"}`}>
-                        <div className="absolute right-2 top-2">
-                          <ChevronDownIcon className="h-8 w-8" />
-                        </div>
-                        {!isJoining &&
-                          Options &&
-                          options &&
-                          setOptions &&
-                          setServerMessage && (
-                            <Options
-                              userId={user.id}
-                              isAdmin={isAdmin}
-                              options={options}
-                              setOptions={setOptions}
-                              searchMode={searchMode}
-                              lastMode={group?.lastMode}
-                              serverMessage={serverMessage}
-                              setServerMessage={setServerMessage}
-                              gamersNumber={
-                                gamerList.length +
-                                guestList.length +
-                                multiGuestList.length
-                              }
-                              adminChangeSameGameNewMode={
-                                adminChangeSameGameNewMode
-                              }
-                            />
-                          )}
-                      </div>
-                    </div>
-                  )}
                 </div>
               </div>
             </div>
@@ -2109,35 +2057,6 @@ export default function Room({
               marginTop: `${barsSizes.top / 4}rem`,
             }}
           >
-            {/* <div className="absolute h-full w-full bg-black">
-              <div className="relative h-full w-full animate-[fadeIn_1.5s_ease-in-out] bg-black">
-                <div className="w-full h-full bg-gradient-to-r from-transparent via-gray-200 to-transparent opacity-60 blur-[200px] animate-blurMovement" />
-                <style jsx>
-                  {`
-                    @keyframes blurMovement {
-                      0% {
-                        background-position: 90% 0;
-                      }
-                      50% {
-                        background-position: 20% 0;
-                      }
-                      100% {
-                        background-position: 90% 0;
-                      }
-                    }
-
-                    .animate-blurMovement {
-                      animation: blurMovement 15s infinite linear;
-                      background-size: 170% 100%;
-                    }
-                  `}
-                </style>
-
-                <div className="absolute top-0 w-full h-20 bg-gradient-to-b from-black via-transparent to-transparent opacity-100" />
-                <div className="absolute bottom-0 w-full h-20 bg-gradient-to-t from-black via-transparent to-transparent opacity-100" />
-              </div>
-            </div> */}
-
             <div className="w-full h-full">
               <Game
                 roomId={roomId}
