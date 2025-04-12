@@ -30,9 +30,7 @@ export default async function ToolsPage() {
         <div
           className={`overflow-y-auto z-[60] w-full`}
           style={{
-            height: `calc(100vh - ${barsSizes.top / 4}rem - ${
-              barsSizes.bottom / 4
-            }rem)`,
+            height: "100vh",
             marginTop: `${barsSizes.top / 4}rem`,
             marginBottom: `${barsSizes.bottom / 4}rem`,
           }}
