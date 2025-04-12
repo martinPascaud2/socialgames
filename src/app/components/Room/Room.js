@@ -241,9 +241,10 @@ export default function Room({
     document.documentElement.style.setProperty("--dynamic-width", dynamicWidth);
   }, [barsSizes]);
 
-  const localWidth = JSON.parse(localStorage.getItem("localWidth"));
+  const localWidth = localStorage
+    ? JSON.parse(localStorage.getItem("localWidth"))
+    : null;
   const isJoining = (!isChosen && !group) || isPrivate === undefined;
-  console.log("isJoining", isJoining);
 
   // admin room_creation
   const createRoom = useCallback(
@@ -1397,14 +1398,16 @@ export default function Room({
                   </div>
                 </div>
 
-                <Limits
-                  searchMode={searchMode}
-                  categorie={categorie}
-                  gameName={gameName}
-                  gameData={gameData}
-                  options={options}
-                  adminSelectedMode={adminSelectedMode}
-                />
+                {gameName !== "grouping" && (
+                  <Limits
+                    searchMode={searchMode}
+                    categorie={categorie}
+                    gameName={gameName}
+                    gameData={gameData}
+                    options={options}
+                    adminSelectedMode={adminSelectedMode}
+                  />
+                )}
 
                 <div
                   className="le_test absolute top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%] w-full flex flex-col items-center gap-2"
