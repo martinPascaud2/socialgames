@@ -1,3 +1,10 @@
+import ExternalBars from "@/components/ExternalBars";
+
 export default function ToolsLayout({ children }) {
-  return <div>{children}</div>;
+  return (
+    <>
+      {ExternalBars()}
+      <div>{children}</div>
+    </>
+  );
 }

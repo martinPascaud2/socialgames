@@ -13,7 +13,7 @@ export default async function ToolsPage() {
 
   return (
     <>
-      <div
+      {/* <div
         className={`fixed h-[${barsSizes.top / 4}rem] w-full z-[70] bg-black`}
         style={{
           height: `${barsSizes.top / 4}rem`,
@@ -24,7 +24,7 @@ export default async function ToolsPage() {
           barsSizes.bottom / 4
         }rem] w-full z-[70] bg-black bottom-0`}
         style={{ height: `${barsSizes.bottom / 4}rem` }}
-      />
+      /> */}
 
       <div className="absolute h-full w-full z-0">
         <div
