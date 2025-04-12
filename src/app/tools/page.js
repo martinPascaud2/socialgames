@@ -31,8 +31,8 @@ export default async function ToolsPage() {
           className={`overflow-y-auto z-[60] w-full`}
           style={{
             height: "100vh",
-            marginTop: `${barsSizes.top / 4}rem`,
-            marginBottom: `${barsSizes.bottom / 4}rem`,
+            paddingTop: `${barsSizes.top / 4}rem`,
+            paddingBottom: `${barsSizes.bottom / 4}rem`,
           }}
         >
           <Tools user={user} />
