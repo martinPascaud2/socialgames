@@ -10,11 +10,11 @@ export default async function ExternalBars() {
   const ExternalBars = (
     <>
       <div
-        className={`fixed w-full top-0 z-20 bg-black`}
+        className={`absolute w-full top-0 z-20 bg-black`}
         style={{ height: `${topBarSize / 4}rem` }}
       />
       <div
-        className={`fixed w-full bottom-0 z-20 bg-black`}
+        className={`absolute w-full bottom-0 z-20 bg-black`}
         style={{ height: `${bottomBarSize / 4}rem` }}
       />
     </>
