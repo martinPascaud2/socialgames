@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 
 import { FaCheck } from "react-icons/fa";
@@ -19,6 +19,8 @@ export default function Keyboard({
   bottomBarSize,
 }) {
   const keyboardRef = useRef();
+  const displayedKeyboardRef = useRef(null);
+  const [displayedKeyboardHeight, setDisplayedKeyboardHeight] = useState(0);
 
   const handleKeyClick = async (key) => {
     if (key === "Space") {
@@ -46,6 +48,13 @@ export default function Keyboard({
     };
   }, [onClose]);
 
+  useEffect(() => {
+    if (displayedKeyboardRef.current) {
+      const rect = displayedKeyboardRef.current.getBoundingClientRect();
+      setDisplayedKeyboardHeight(rect.height);
+    }
+  }, []);
+
   return ReactDOM.createPortal(
     <div
       className="absolute w-screen h-screen"
@@ -64,7 +73,7 @@ export default function Keyboard({
             bottom: `${bottomBarSize / 4}rem`,
           }}
         >
-          <div className="space-y-2 w-full">
+          <div ref={displayedKeyboardRef} className="space-y-2 w-full">
             {frenchLayout.map((row, i) => (
               <div key={i} className="flex justify-between space-x-1">
                 {row.map((key) => {
@@ -106,11 +115,13 @@ export default function Keyboard({
       <div
         className={`fixed bottom-0 w-full bg-black`}
         style={{
-          height: `${bottomBarSize / 4 || 2}rem`,
+          height: `calc(${
+            bottomBarSize / 4 || 2
+          }rem + ${displayedKeyboardHeight}px`,
           pointerEvents: "auto",
-          zIndex: 100,
+          zIndex: 80,
         }}
-      ></div>
+      />
     </div>,
     document.body
   );

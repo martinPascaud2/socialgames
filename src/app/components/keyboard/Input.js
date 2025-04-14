@@ -13,7 +13,8 @@ export default function Input({ input, openKeyboard, active, placeholder }) {
       <span
         className="z-10 p-1 text-amber-700 rounded-full"
         style={{
-          backgroundColor: !active ? "white" : "#fef3c7", // amber-100
+          backgroundColor: !active ? "#f3f4f6" : "#fef3c7", // gray-100 amber-100
+          color: !active ? "#374151" : "#b45309", // gray-700 amber-700
         }}
       >
         {input}
