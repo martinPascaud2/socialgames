@@ -40,8 +40,10 @@ export default function Keyboard({
         onClose();
       }
     };
+
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("touchstart", handleClickOutside);
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("touchstart", handleClickOutside);
@@ -59,7 +61,6 @@ export default function Keyboard({
     <div
       className="absolute w-screen h-screen"
       style={{
-        pointerEvents: "none",
         bottom: 0,
       }}
       ref={keyboardRef}
@@ -69,7 +70,6 @@ export default function Keyboard({
           className="absolute bg-gray-900 p-2 w-full"
           style={{
             zIndex: 90,
-            pointerEvents: "auto",
             bottom: `${bottomBarSize / 4}rem`,
           }}
         >
@@ -94,10 +94,14 @@ export default function Keyboard({
                   return (
                     <button
                       key={key}
-                      onClick={() => handleKeyClick(key)}
+                      onPointerDown={async (e) => {
+                        e.stopPropagation();
+                        await handleKeyClick(key);
+                      }}
                       className={`bg-gray-700 text-white font-semibold py-1 px-2 rounded-xl transition relative ${
                         key === "Space" ? "flex-[5]" : "flex-1"
                       }`}
+                      style={{ touchAction: "manipulation" }}
                     >
                       <div className="opacity-0">X</div>
                       <div className="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]">
@@ -118,7 +122,6 @@ export default function Keyboard({
           height: `calc(${
             bottomBarSize / 4 || 2
           }rem + ${displayedKeyboardHeight}px`,
-          pointerEvents: "auto",
           zIndex: 80,
         }}
       />
