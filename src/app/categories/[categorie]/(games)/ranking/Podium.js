@@ -4,6 +4,8 @@ import { useFormState } from "react-dom";
 import { useRef, useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 
+import capitalizeFirstLetter from "@/utils/capitalizeFirstLetter";
+
 import usePreventScroll from "@/utils/usePreventScroll";
 import {
   toggleTarget,
@@ -20,6 +22,8 @@ import {
 import ToggleCheckbox from "@/components/ToggleCheckbox";
 import AnimatedDots from "@/components/AnimatedDots";
 import { StaticNextStep } from "@/components/NextStep";
+import Keyboard from "@/components/keyboard/Keyboard";
+import Input from "@/components/keyboard/Input";
 
 import { IoPeople } from "react-icons/io5";
 import { BsThreeDots } from "react-icons/bs";
@@ -37,32 +41,18 @@ import { HTML5toTouch } from "@/components/DND/HTML5toTouch";
 import { usePreview } from "react-dnd-preview";
 const ItemType = "Item";
 
-const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
+const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin, user }) => {
+  const { params: userParams } = user;
+  const bottomBarSize = userParams?.bottomBarSize || 8;
+
+  const [input, setInput] = useState("");
+  const [showedKeyboard, setShowedKeyboard] = useState(true);
+
   const { options, theme, objects } = gameData;
   const { target } = options;
   const [checked, setChecked] = useState(target === "players");
 
-  const addThemeWith = addTheme.bind(null, {
-    gameData,
-    roomId,
-    roomToken,
-  });
-  const [themeState, formThemeAction] = useFormState(addThemeWith, {});
-  const [themeInputValue, setThemeInputValue] = useState("");
-  const [objectInputValue, setObjectInputValue] = useState("");
-
   const objectNumber = objects ? Object.keys(objects).length + 1 : 1;
-  const addObjectWith = addObject.bind(null, {
-    objectNumber,
-    gameData,
-    roomId,
-    roomToken,
-  });
-  const [objectState, formObjectAction] = useFormState(addObjectWith, {});
-
-  const refForm = useRef();
-  const objectInputRef = useRef();
-  const themeInputRef = useRef();
 
   const handleToggle = useCallback(async () => {
     await toggleTarget({ gameData, roomId, roomToken });
@@ -70,11 +60,6 @@ const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
   useEffect(() => {
     setChecked(target === "players");
   }, [target]);
-
-  useEffect(() => {
-    objectInputRef?.current?.focus();
-    themeInputRef?.current?.focus();
-  }, [themeInputRef, objectInputRef]);
 
   return (
     <div className="h-full w-full flex flex-col justify-center items-center relative">
@@ -100,30 +85,35 @@ const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
                 </div>
               </div>
 
-              <form
-                action={async (formData) => {
-                  if (themeInputValue.length < 4) return;
-                  else if (themeInputValue.length > 15) return;
-                  await formThemeAction(formData);
-                }}
-                className="flex flex-col items-center"
-              >
-                <label>Critère</label>
-                <input
-                  ref={themeInputRef}
-                  type="text"
-                  name="theme"
-                  autoFocus
-                  onChange={(e) => setThemeInputValue(e.target.value)}
-                  className="border focus:outline-none focus:border-2"
+              <div className="flex justify-center items-center h-8 w-48">
+                <Input
+                  input={input}
+                  openKeyboard={() => setShowedKeyboard(true)}
+                  active={showedKeyboard}
+                  placeholder="Critère"
                 />
-                {/* <button
-                  type="submit"
-                  className="border border-amber-700 bg-amber-100 text-amber-700 mt-2 p-1"
-                >
-                  Envoyer
-                </button> */}
-              </form>
+              </div>
+              {showedKeyboard && (
+                <Keyboard
+                  input={input}
+                  setInput={(func) => {
+                    setInput((prev) => capitalizeFirstLetter(func(prev)));
+                  }}
+                  onClose={() => setShowedKeyboard(false)}
+                  onValidate={async () => {
+                    if (input.length < 4) return;
+                    else if (input.length > 15) return;
+                    await addTheme({
+                      gameData,
+                      roomId,
+                      roomToken,
+                      theme: input,
+                    });
+                    setInput("");
+                  }}
+                  bottomBarSize={bottomBarSize}
+                />
+              )}
             </>
           )}
 
@@ -140,38 +130,40 @@ const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
                   <div className="text-lg">Suite</div>
                 </StaticNextStep>
               </div>
-              <form
-                ref={refForm}
-                action={async (formData) => {
-                  if (objectInputValue.length < 4) {
-                    // setMessage("Réponse trop courte");
-                    return;
-                  } else if (objectInputValue.length > 15) {
-                    // setMessage("Réponse trop longue");
-                    return;
-                  }
-                  await formObjectAction(formData);
-                  setObjectInputValue("");
-                  refForm.current?.reset();
-                }}
-                className="flex flex-col items-center"
-              >
-                <label>Objet {objectNumber}</label>
-                <input
-                  ref={objectInputRef}
-                  type="text"
-                  name="object"
-                  autoFocus
-                  onChange={(e) => setObjectInputValue(e.target.value)}
-                  className="border focus:outline-none focus:border-2"
+
+              <div className="flex justify-center items-center h-8 w-48">
+                <Input
+                  input={input}
+                  openKeyboard={() => setShowedKeyboard(true)}
+                  active={showedKeyboard}
+                  placeholder={`Objet ${objectNumber}`}
                 />
-                {/* <button
-                  type="submit"
-                  className="border border-amber-700 bg-amber-100 text-amber-700 mt-2 p-1"
-                >
-                  Envoyer
-                </button> */}
-              </form>
+              </div>
+              {showedKeyboard && (
+                <Keyboard
+                  input={input}
+                  setInput={(func) => {
+                    setInput((prev) => capitalizeFirstLetter(func(prev)));
+                  }}
+                  onClose={() => setShowedKeyboard(false)}
+                  onValidate={async () => {
+                    if (input.length < 4) {
+                      return;
+                    } else if (input.length > 15) {
+                      return;
+                    }
+                    await addObject({
+                      objectNumber,
+                      gameData,
+                      roomId,
+                      roomToken,
+                      object: input,
+                    });
+                    setInput("");
+                  }}
+                  bottomBarSize={bottomBarSize}
+                />
+              )}
             </div>
           )}
         </>
@@ -857,6 +849,7 @@ export default function Podium({ roomId, roomToken, user, gameData }) {
           roomId={roomId}
           roomToken={roomToken}
           isAdmin={isAdmin}
+          user={user}
         />
       )}
 

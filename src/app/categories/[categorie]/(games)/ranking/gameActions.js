@@ -73,14 +73,10 @@ export async function toggleTarget({ gameData, roomId, roomToken }) {
   await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
-export async function addTheme(
-  { gameData, roomId, roomToken },
-  prevState,
-  formData
-) {
-  const theme = capitalizeFirstLetter(formData.get("theme"));
-
+export async function addTheme({ gameData, roomId, roomToken, theme }) {
+  const capTheme = capitalizeFirstLetter(theme);
   const { target } = gameData.options;
+
   let newPhase;
   if (target === "players") newPhase = "turn";
   else newPhase = "preparing";
@@ -112,22 +108,25 @@ export async function addTheme(
 
   const newData = {
     ...gameData,
-    theme,
+    theme: capTheme,
     phase: newPhase,
   };
   await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
-export async function addObject(
-  { objectNumber, gameData, roomId, roomToken },
-  prevState,
-  formData
-) {
-  const object = capitalizeFirstLetter(formData.get("object"));
+export async function addObject({
+  objectNumber,
+  gameData,
+  roomId,
+  roomToken,
+  object,
+}) {
+  const capObject = capitalizeFirstLetter(object);
   const { objects } = gameData;
+
   const newObjects = {
     ...objects,
-    [objectNumber]: object,
+    [objectNumber]: capObject,
   };
 
   const newPhase = objectNumber === 8 ? "preturn" : "preparing";
