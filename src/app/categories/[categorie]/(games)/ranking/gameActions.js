@@ -152,14 +152,14 @@ export async function adminEditing({ type, objectKey, roomId, roomToken }) {
   await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
-export async function editValues(
-  { gameData, roomId, roomToken },
-  prevState,
-  formData
-) {
-  const type = formData.get("type");
-  const newValue = capitalizeFirstLetter(formData.get("newValue"));
-
+export async function editValues({
+  gameData,
+  roomId,
+  roomToken,
+  type,
+  newValue,
+  objectKey,
+}) {
   const newAdminEdition = { type: "", objectKey: {} };
 
   if (type === "theme") {
@@ -172,7 +172,6 @@ export async function editValues(
   }
 
   if (type === "objects") {
-    const objectKey = formData.get("objectKey");
     const { objects } = gameData;
     const newObjects = { ...objects, [objectKey]: newValue };
     const newData = {

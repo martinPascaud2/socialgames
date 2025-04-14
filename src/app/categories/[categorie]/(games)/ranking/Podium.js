@@ -204,22 +204,19 @@ const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin, user }) => {
   );
 };
 
-const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
+const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin, user }) => {
+  const { params: userParams } = user;
+  const bottomBarSize = userParams?.bottomBarSize || 8;
+
+  const [input, setInput] = useState("");
+  const [showedKeyboard, setShowedKeyboard] = useState(false);
+
   const { theme, objects, adminEdition } = gameData;
   const [isChanging, setIsChanging] = useState(false);
   const [isEditing, setIsEditing] = useState(null);
 
-  const valueInputRef = useRef();
   const [type, setType] = useState("");
   const [objectKey, setObjectKey] = useState("");
-  const [newValue, setNewValue] = useState("");
-
-  const editValuesWith = editValues.bind(null, {
-    gameData,
-    roomId,
-    roomToken,
-  });
-  const [valuesState, formValuesAction] = useFormState(editValuesWith, {});
 
   return (
     <div className="h-full w-full flex flex-col justify-center items-center relative">
@@ -231,15 +228,15 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
                 onClick={() => {
                   if (!isChanging || !isAdmin) return;
                   setType("theme");
-                  setNewValue(theme);
                   setIsEditing("theme");
+                  setInput(theme);
+                  setShowedKeyboard(true);
                   adminEditing({
                     type: "theme",
                     objectKey: null,
                     roomId,
                     roomToken,
                   });
-                  valueInputRef?.current?.focus();
                 }}
                 className={`font-bold text-3xl border ${
                   !isChanging
@@ -297,15 +294,15 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
                     if (!isChanging || !isAdmin) return;
                     setType("objects");
                     setObjectKey(key);
-                    setNewValue(value);
+                    setInput(value);
                     setIsEditing(key);
+                    setShowedKeyboard(true);
                     adminEditing({
                       type: "objects",
                       objectKey: key,
                       roomId,
                       roomToken,
                     });
-                    valueInputRef?.current?.focus();
                   }}
                   className={`flex items-center py-0.5 border pr-2 mr-3 ${
                     !isChanging
@@ -378,23 +375,22 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
             />
           </div>
 
-          <form
-            action={async (formData) => {
-              await formValuesAction(formData);
-              setIsChanging(false);
-              setIsEditing(null);
-              valueInputRef?.current?.blur();
-            }}
-          >
-            <input type="hidden" name="type" value={type} />
-            <input type="hidden" name="objectKey" value={objectKey} />
-            <input
-              ref={valueInputRef}
-              type="text"
-              name="newValue"
-              value={newValue}
-              onChange={(e) => setNewValue(e.target.value)}
-              onBlur={() => {
+          <div className="absolute top-24 flex justify-center items-start h-8 w-48">
+            <Input
+              input={input}
+              openKeyboard={() => setShowedKeyboard(true)}
+              active={showedKeyboard}
+              placeholder=""
+              deactivated={isEditing === null}
+            />
+          </div>
+          {showedKeyboard && (
+            <Keyboard
+              input={input}
+              setInput={(func) => {
+                setInput((prev) => capitalizeFirstLetter(func(prev)));
+              }}
+              onClose={() => {
                 adminEditing({
                   type: "",
                   objectKey: {},
@@ -403,14 +399,32 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
                 });
                 setIsChanging(false);
                 setIsEditing(null);
+                setShowedKeyboard(false);
+                setInput("");
               }}
-              className={`absolute top-20 left-1/2 translate-x-[-50%] focus:outline-none focus:border-2 border border-amber-700 rounded ${
-                !isEditing
-                  ? "bg-gray-100 text-gray-100 border-gray-100"
-                  : "border-amber-700 bg-amber-100 text-amber-700 p-1 text-xl text-center"
-              }`}
+              onValidate={async () => {
+                if (input.length < 4) {
+                  return;
+                } else if (input.length > 15) {
+                  return;
+                }
+                await editValues({
+                  gameData,
+                  roomId,
+                  roomToken,
+                  type,
+                  newValue: input,
+                  objectKey,
+                });
+
+                setInput("");
+                setIsChanging(false);
+                setIsEditing(null);
+                setShowedKeyboard(false);
+              }}
+              bottomBarSize={bottomBarSize}
             />
-          </form>
+          )}
         </>
       )}
 
@@ -859,6 +873,7 @@ export default function Podium({ roomId, roomToken, user, gameData }) {
           roomId={roomId}
           roomToken={roomToken}
           isAdmin={isAdmin}
+          user={user}
         />
       )}
 
