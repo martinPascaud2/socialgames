@@ -24,6 +24,7 @@ import AnimatedDots from "@/components/AnimatedDots";
 import { StaticNextStep } from "@/components/NextStep";
 import Keyboard from "@/components/keyboard/Keyboard";
 import Input from "@/components/keyboard/Input";
+import ControlButton from "@/components/ControlButton";
 
 import { IoPeople } from "react-icons/io5";
 import { BsThreeDots } from "react-icons/bs";
@@ -45,6 +46,9 @@ const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin, user }) => {
   const { params: userParams } = user;
   const bottomBarSize = userParams?.bottomBarSize || 8;
 
+  const [showedControls, setShowedControls] = useState(false);
+  const [showedToggle, setShowedToggle] = useState(false);
+  const [showedInfo, setShowedInfo] = useState(false);
   const [input, setInput] = useState("");
   const [showedKeyboard, setShowedKeyboard] = useState(true);
 
@@ -66,23 +70,72 @@ const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin, user }) => {
       {isAdmin ? (
         <>
           {!theme && (
+            <div
+              className={`w-full h-full flex justify-center absolute top-[5%]`}
+            >
+              {!showedControls ? (
+                <StaticNextStep onLongPress={() => setShowedControls(true)}>
+                  <div className="text-sm">{"Contrôles"}</div>
+                </StaticNextStep>
+              ) : (
+                <div className="w-full flex justify-around">
+                  <ControlButton
+                    layout="?"
+                    onClick={() => {
+                      setShowedInfo(true);
+                      setShowedToggle(false);
+                    }}
+                  />
+                  <ControlButton
+                    layout="!"
+                    onClick={() => {
+                      setShowedInfo(false);
+                      setShowedToggle(true);
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
+          {!theme && (
             <>
-              <div className="absolute top-[5%] flex">
-                <div className="mr-2 text-sky-700">
-                  <IoPeople className="h-8 w-8" />
-                </div>
-                <ToggleCheckbox
-                  checked={checked}
-                  onChange={handleToggle}
-                  colors={{
-                    bg: { yes: "#fef3c7", no: "#e0f2fe" },
-                    border: { yes: "#b45309", no: "#0369a1" },
-                  }}
-                  size={70}
-                />
-                <div className="ml-2 text-sky-700">
-                  <BsThreeDots className="h-8 w-8" />
-                </div>
+              <div className="absolute top-[12%] flex w-full justify-center items-center h-20">
+                {showedToggle && (
+                  <>
+                    <div className="mr-2 text-sky-700">
+                      <IoPeople className="h-8 w-8" />
+                    </div>
+                    <ToggleCheckbox
+                      checked={checked}
+                      onChange={handleToggle}
+                      colors={{
+                        bg: { yes: "#fef3c7", no: "#e0f2fe" },
+                        border: { yes: "#b45309", no: "#0369a1" },
+                      }}
+                      size={70}
+                    />
+                    <div className="ml-2 text-sky-700">
+                      <BsThreeDots className="h-8 w-8" />
+                    </div>
+                  </>
+                )}
+                {showedInfo && (
+                  <div className="w-fit border rounded-md border-sky-700 bg-sky-100 text-sky-700 p-2 flex flex-col">
+                    <div className="text-sky-700 text-sm w-full flex items-center">
+                      <IoPeople className="h-8 w-8" />
+                      <span>
+                        &nbsp;Classez les autres joueurs en fonction du critère
+                      </span>
+                    </div>
+                    <div className="text-sky-700 text-sm w-full flex items-center">
+                      <BsThreeDots className="h-8 w-8" />
+                      <span>
+                        &nbsp;Classez les objets en fonction du critère
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {ReactDOM.createPortal(

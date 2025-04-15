@@ -1,5 +1,7 @@
 "use client";
 
+import { useRef } from "react";
+
 import { useUserContext } from "./Room/Room";
 
 export default function NextStep({ onClick, children }) {
@@ -37,14 +39,29 @@ export function FixedNextStep({ onClick, children }) {
   );
 }
 
-export function StaticNextStep({ onClick, children }) {
+export function StaticNextStep({ onClick, onLongPress, children }) {
   const contextValue = useUserContext();
   const userParams = contextValue.userParams;
 
+  const timeoutRef = useRef(null);
+
+  const startPress = () => {
+    timeoutRef.current = setTimeout(() => {
+      onLongPress && onLongPress();
+    }, 600);
+  };
+
+  const cancelPress = () => {
+    clearTimeout(timeoutRef.current);
+  };
+
   return (
-    <div className="z-30">
+    <div className="z-30 h-fit aspect-square">
       <button
         onClick={onClick}
+        onTouchStart={startPress}
+        onTouchEnd={cancelPress}
+        onTouchCancel={cancelPress}
         className="border border-red-800 bg-red-600 rotate-45 aspect-square"
       >
         <div className="rotate-[-45deg]">{children}</div>
