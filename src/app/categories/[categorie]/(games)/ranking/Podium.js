@@ -1,7 +1,7 @@
 "use client";
 
-import { useFormState } from "react-dom";
-import { useRef, useEffect, useState, useCallback } from "react";
+import ReactDOM, { useFormState } from "react-dom";
+import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 
 import capitalizeFirstLetter from "@/utils/capitalizeFirstLetter";
@@ -85,14 +85,32 @@ const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin, user }) => {
                 </div>
               </div>
 
-              <div className="flex justify-center items-center h-8 w-48">
-                <Input
-                  input={input}
-                  openKeyboard={() => setShowedKeyboard(true)}
-                  active={showedKeyboard}
-                  placeholder="Critère"
-                />
-              </div>
+              {ReactDOM.createPortal(
+                <div
+                  className="w-[100vw] fixed top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] flex items-center justify-center"
+                  style={{
+                    height: `${window.screen.height}px`,
+                    zIndex: 100,
+                    pointerEvents: "none",
+                  }}
+                >
+                  <div
+                    className="flex justify-center items-center h-8 w-48"
+                    style={{
+                      pointerEvents: "auto",
+                    }}
+                  >
+                    <Input
+                      input={input}
+                      openKeyboard={() => setShowedKeyboard(true)}
+                      active={showedKeyboard}
+                      placeholder="Critère"
+                    />
+                  </div>
+                </div>,
+                document.body
+              )}
+
               {showedKeyboard && (
                 <Keyboard
                   input={input}
@@ -120,7 +138,7 @@ const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin, user }) => {
           {theme && (
             <div className="relative">
               <div
-                className={`w-full flex justify-center absolute bottom-full mb-8 ${
+                className={`w-full flex justify-center absolute bottom-full mb-20 ${
                   objectNumber < 4 && "hidden"
                 }`}
               >
@@ -131,14 +149,32 @@ const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin, user }) => {
                 </StaticNextStep>
               </div>
 
-              <div className="flex justify-center items-center h-8 w-48">
-                <Input
-                  input={input}
-                  openKeyboard={() => setShowedKeyboard(true)}
-                  active={showedKeyboard}
-                  placeholder={`Objet ${objectNumber}`}
-                />
-              </div>
+              {ReactDOM.createPortal(
+                <div
+                  className="w-[100vw] fixed top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] flex items-center justify-center"
+                  style={{
+                    height: `${window.screen.height}px`,
+                    zIndex: 100,
+                    pointerEvents: "none",
+                  }}
+                >
+                  <div
+                    className="flex justify-center items-center h-8 w-48"
+                    style={{
+                      pointerEvents: "auto",
+                    }}
+                  >
+                    <Input
+                      input={input}
+                      openKeyboard={() => setShowedKeyboard(true)}
+                      active={showedKeyboard}
+                      placeholder={`Objet ${objectNumber}`}
+                    />
+                  </div>
+                </div>,
+                document.body
+              )}
+
               {showedKeyboard && (
                 <Keyboard
                   input={input}
