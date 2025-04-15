@@ -2265,7 +2265,7 @@ const Params = ({
                   }));
                   setEditedBarsValues(true);
                 }}
-                className="absolute left-0 top-0 w-1/2 bg-white h-full z-30 opacity-0"
+                className="absolute left-0 top-0 w-1/3 bg-white h-full z-30 opacity-0"
               />
               {barParam.label} : {barValues && barValues[barParam.param]}
               <div
@@ -2282,7 +2282,7 @@ const Params = ({
                   }));
                   setEditedBarsValues(true);
                 }}
-                className="absolute right-0 top-0 w-1/2 bg-white h-full z-30 opacity-0"
+                className="absolute right-0 top-0 w-1/3 bg-white h-full z-30 opacity-0"
               />
             </div>
           </div>
