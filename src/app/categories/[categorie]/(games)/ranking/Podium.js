@@ -770,10 +770,8 @@ const ResultPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
             display: "inline-block",
             clipPath: isRevelated ? "inset(0 0 0 0)" : "inset(0 100% 0 0)",
             opacity: isRevelated ? 1 : 0,
-            transition: "clip-path 3s ease-out, opacity 3s ease-out",
-            animation: isRevelated
-              ? "slideIn 3s ease-out forwards, opac 3s ease-out forwards"
-              : "",
+            transition: "opacity 3s ease-in",
+            animation: isRevelated ? "opac 3s ease-in forwards" : "",
 
             color: intTextColor,
             textShadow: `1px 0px 1px ${extTextcolor}, -1px 0px 1px ${extTextcolor}, 0px 1px 1px ${extTextcolor}, 0px -1px 1px ${extTextcolor}`,
@@ -781,16 +779,8 @@ const ResultPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
         >
           {name}
         </div>
-        <style jsx>{`
-          @keyframes slideIn {
-            0% {
-              clip-path: inset(0 100% 0 0);
-            }
-            100% {
-              clip-path: inset(0 0 0 0);
-            }
-          }
 
+        <style jsx>{`
           @keyframes opac {
             0% {
               opacity: 0;
