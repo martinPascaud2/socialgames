@@ -2189,6 +2189,7 @@ const Params = ({
   setBarValues,
 }) => {
   const possibleBarValues = [4, 6, 8, 12, 14, 16, 18, 20];
+  const [editedBarsValues, setEditedBarsValues] = useState(false);
 
   useEffect(() => {
     if (!user || barValues) return;
@@ -2224,14 +2225,19 @@ const Params = ({
 
   return (
     <div className="h-full aspect-square flex flex-col items-center justify-start relative translate-x-[0.12vw] translate-y-[0.1vw] z-30 py-1.5">
-      <BarParam
-        style={{ top: 0, height: `${barValues.topBarSize / 4}rem` }}
-        borderPosition="bottom"
-      />
-      <BarParam
-        style={{ bottom: 0, height: `${barValues.bottomBarSize / 4}rem` }}
-        borderPosition="top"
-      />
+      {editedBarsValues && (
+        <>
+          <BarParam
+            style={{ top: 0, height: `${barValues.topBarSize / 4}rem` }}
+            borderPosition="bottom"
+          />
+          <BarParam
+            style={{ bottom: 0, height: `${barValues.bottomBarSize / 4}rem` }}
+            borderPosition="top"
+          />
+        </>
+      )}
+
       <div className="w-[95%] h-full flex flex-col items-center px-0.5">
         {[
           { param: "topBarSize", label: "Barre supérieure" },
@@ -2257,6 +2263,7 @@ const Params = ({
                     ...prevValues,
                     [barParam.param]: possibleBarValues[newIndex],
                   }));
+                  setEditedBarsValues(true);
                 }}
                 className="absolute left-0 top-0 w-1/2 bg-white h-full z-30 opacity-0"
               />
@@ -2273,6 +2280,7 @@ const Params = ({
                     ...prevValues,
                     [barParam.param]: possibleBarValues[newIndex],
                   }));
+                  setEditedBarsValues(true);
                 }}
                 className="absolute right-0 top-0 w-1/2 bg-white h-full z-30 opacity-0"
               />
