@@ -1321,7 +1321,7 @@ export default function Room({
                     : "opacity-0 animate-[fadeOut_1.5s_ease-in-out]"
                 } relative h-full w-full`}
               >
-                <div className="absolute top-[1.5dvh] w-full h-[4.5dvh] flex justify-center items-center">
+                <div className="absolute top-[2dvh] w-full h-[4.5dvh] flex justify-center items-center">
                   {categorie !== "grouping" &&
                     categoriesIcons &&
                     (!gameData.isSearching || adminSelectedCategorie) && (
@@ -1346,7 +1346,7 @@ export default function Room({
                 </div>
 
                 <div className="absolute left-1/2 translate-x-[-50%] h-[10dvh] w-full">
-                  <div className="absolute top-[5dvh] w-full flex justify-center items-center">
+                  <div className="absolute top-[6dvh] w-full flex justify-center items-center">
                     {(isAdmin || searchIsAdmin) && !gameData.isSearching ? (
                       <div className="h-[4dvh] w-[4dvh]">
                         <ChooseAnotherGame
@@ -1398,7 +1398,7 @@ export default function Room({
                   </div>
                 </div>
 
-                {gameName !== "grouping" && (
+                {/* {gameName !== "grouping" && (
                   <Limits
                     searchMode={searchMode}
                     categorie={categorie}
@@ -1407,7 +1407,7 @@ export default function Room({
                     options={options}
                     adminSelectedMode={adminSelectedMode}
                   />
-                )}
+                )} */}
 
                 <div
                   className="le_test absolute top-1/2 translate-y-[-50%] left-1/2 translate-x-[-50%] w-full flex flex-col items-center gap-2"
@@ -1528,7 +1528,7 @@ export default function Room({
                           </div>
                         )}
                         {showPlayers && (
-                          <div>
+                          <div className="relative h-full w-full">
                             <div className="absolute top-2 left-2 flex flex-col gap-2">
                               <div
                                 className={`p-1 ${
@@ -1689,24 +1689,21 @@ export default function Room({
                                       gamesRefs[gameName].limits?.max;
 
                                   return (
-                                    <div className="flex justify-center items-center h-8">
-                                      <div className="relative">
-                                        Liste des joueurs&nbsp;:&nbsp;
-                                        <div className="absolute left-full top-1/2 translate-y-[-50%] w-full flex items-baseline">
-                                          <div
-                                            className={`font-semibold ${
-                                              badGamersNumber && "text-red-800"
-                                            }`}
-                                          >
-                                            {gamersNumber}&nbsp;
-                                          </div>
-                                          {gamesRefs[gameName].limits && (
-                                            <div>
-                                              {`/\u0020${gamesRefs[gameName].limits.max}`}
-                                            </div>
-                                          )}
-                                        </div>
+                                    <div className="flex justify-center items-center h-8 w-full items-baseline ml-4">
+                                      <div
+                                        className={`font-semibold text-xl ${
+                                          badGamersNumber
+                                            ? "text-red-800"
+                                            : "text-green-600"
+                                        }`}
+                                      >
+                                        {gamersNumber}&nbsp;
                                       </div>
+                                      {gamesRefs[gameName].limits && (
+                                        <div>
+                                          {`/\u0020${gamesRefs[gameName].limits.max}`}
+                                        </div>
+                                      )}
                                     </div>
                                   );
                                 })()}
@@ -1950,55 +1947,57 @@ export default function Room({
                             )}
 
                             {showInvitations && (
-                              <div className="flex flex-col gap-1 items-center">
-                                <div className="relative h-8 flex items-center">
-                                  <h1>Invite tes amis !</h1>
+                              <>
+                                <div className="flex justify-center items-center h-8 w-full items-baseline ml-4">
+                                  Invite tes amis !
                                 </div>
-                                <div>
-                                  {friendsList &&
-                                    friendsList.map(
-                                      ({ friend, customName }) => {
-                                        if (
-                                          gamerList.some(
-                                            (gamer) => gamer === friend.name
+                                <div className="flex flex-col gap-1 items-center">
+                                  <div>
+                                    {friendsList &&
+                                      friendsList.map(
+                                        ({ friend, customName }) => {
+                                          if (
+                                            gamerList.some(
+                                              (gamer) => gamer === friend.name
+                                            )
                                           )
-                                        )
-                                          return;
-                                        const invited = invitedList.some(
-                                          (inv) => inv === friend.name
-                                        );
-                                        return (
-                                          <button
-                                            key={friend.id}
-                                            onClick={async () => {
-                                              await inviteFriend({
-                                                userName: user.name,
-                                                friendMail: friend.email,
-                                                categorie,
-                                                gameName,
-                                                mode: options?.mode,
-                                                roomToken,
-                                              });
-                                              setInvitedList((prevInv) => [
-                                                ...new Set([
-                                                  ...prevInv,
-                                                  friend.name,
-                                                ]),
-                                              ]);
-                                            }}
-                                            className={`${
-                                              !invited
-                                                ? "border border-amber-700 bg-amber-100 text-amber-700 p-1 m-0.5"
-                                                : "border border-sky-100 text-sky-700 pulse-soft p-1 m-0.5"
-                                            }`}
-                                          >
-                                            {customName}
-                                          </button>
-                                        );
-                                      }
-                                    )}
+                                            return;
+                                          const invited = invitedList.some(
+                                            (inv) => inv === friend.name
+                                          );
+                                          return (
+                                            <button
+                                              key={friend.id}
+                                              onClick={async () => {
+                                                await inviteFriend({
+                                                  userName: user.name,
+                                                  friendMail: friend.email,
+                                                  categorie,
+                                                  gameName,
+                                                  mode: options?.mode,
+                                                  roomToken,
+                                                });
+                                                setInvitedList((prevInv) => [
+                                                  ...new Set([
+                                                    ...prevInv,
+                                                    friend.name,
+                                                  ]),
+                                                ]);
+                                              }}
+                                              className={`${
+                                                !invited
+                                                  ? "border border-amber-700 bg-amber-100 text-amber-700 p-1 m-0.5"
+                                                  : "border border-sky-100 text-sky-700 pulse-soft p-1 m-0.5"
+                                              }`}
+                                            >
+                                              {customName}
+                                            </button>
+                                          );
+                                        }
+                                      )}
+                                  </div>
                                 </div>
-                              </div>
+                              </>
                             )}
 
                             {/* {showRoomRefs && geoLocation && ( */}
