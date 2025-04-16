@@ -47,7 +47,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { ImExit } from "react-icons/im";
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { FaUserFriends } from "react-icons/fa";
+import { IoIosPeople } from "react-icons/io";
 import { IoPersonAddSharp } from "react-icons/io5";
 import { IoMdArrowDropright } from "react-icons/io";
 import { LiaQrcodeSolid } from "react-icons/lia";
@@ -1592,7 +1592,7 @@ export default function Room({
                                         : "border border-amber-700 bg-amber-100 text-amber-700 relative p-1"
                                     }`}
                                   >
-                                    <FaUserFriends className="w-8 h-8" />
+                                    <IoIosPeople className="w-8 h-8" />
                                     {showGamerList && (
                                       <div className="absolute left-full top-1/2 translate-y-[-50%]">
                                         <IoMdArrowDropright className="h-8 w-8 pr-2" />
