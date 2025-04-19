@@ -82,6 +82,7 @@ const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin, user }) => {
                   onClick={() => {
                     setShowedToggle(false);
                     setShowedInfo(false);
+                    setShowedControls(false);
                   }}
                   className="w-full flex justify-around"
                 >
