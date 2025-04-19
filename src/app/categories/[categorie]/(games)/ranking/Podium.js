@@ -78,17 +78,25 @@ const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin, user }) => {
                   <div className="text-sm">{"Contrôles"}</div>
                 </StaticNextStep>
               ) : (
-                <div className="w-full flex justify-around">
+                <div
+                  onClick={() => {
+                    setShowedToggle(false);
+                    setShowedInfo(false);
+                  }}
+                  className="w-full flex justify-around"
+                >
                   <ControlButton
                     layout="?"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setShowedInfo(true);
                       setShowedToggle(false);
                     }}
                   />
                   <ControlButton
                     layout="!"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setShowedInfo(false);
                       setShowedToggle(true);
                     }}
