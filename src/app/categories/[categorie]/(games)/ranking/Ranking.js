@@ -19,6 +19,7 @@ export default function Ranking({
   const mode = gameData.options?.mode;
   const isAdmin = gameData.admin === user.name;
   const [isEnded, setIsEnded] = useState(false);
+  const [showNext, setShowNext] = useState(false);
 
   useEffect(() => {
     setIsEnded(gameData.ended);
@@ -49,6 +50,7 @@ export default function Ranking({
           roomToken={roomToken}
           user={user}
           gameData={gameData}
+          setShowNext={setShowNext}
         />
       )}
 
@@ -61,6 +63,7 @@ export default function Ranking({
         reset={() => goNewPodium({ gameData, roomId, roomToken })}
         storedLocation={storedLocation}
         user={user}
+        showed={showNext}
       />
 
       <Disconnected

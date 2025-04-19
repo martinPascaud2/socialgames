@@ -42,7 +42,14 @@ import { HTML5toTouch } from "@/components/DND/HTML5toTouch";
 import { usePreview } from "react-dnd-preview";
 const ItemType = "Item";
 
-const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin, user }) => {
+const PreparingPhase = ({
+  gameData,
+  roomId,
+  roomToken,
+  isAdmin,
+  user,
+  setShowNext,
+}) => {
   const { params: userParams } = user;
   const bottomBarSize = userParams?.bottomBarSize || 8;
 
@@ -64,6 +71,11 @@ const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin, user }) => {
   useEffect(() => {
     setChecked(target === "players");
   }, [target]);
+
+  useEffect(() => {
+    if (showedControls) setShowNext(true);
+    else setShowNext(false);
+  }, [showedControls, setShowNext]);
 
   return (
     <div className="h-full w-full flex flex-col justify-center items-center relative">
@@ -181,6 +193,7 @@ const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin, user }) => {
                   }}
                   onClose={() => setShowedKeyboard(false)}
                   onValidate={async () => {
+                    setShowNext(true);
                     if (input.length < 4) return;
                     else if (input.length > 15) return;
                     await addTheme({
@@ -245,6 +258,7 @@ const PreparingPhase = ({ gameData, roomId, roomToken, isAdmin, user }) => {
                   }}
                   onClose={() => setShowedKeyboard(false)}
                   onValidate={async () => {
+                    setShowNext(true);
                     if (input.length < 4) {
                       return;
                     } else if (input.length > 15) {
@@ -938,7 +952,13 @@ const ResultPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
   );
 };
 
-export default function Podium({ roomId, roomToken, user, gameData }) {
+export default function Podium({
+  roomId,
+  roomToken,
+  user,
+  gameData,
+  setShowNext,
+}) {
   usePreventScroll();
   const isAdmin = gameData.admin === user.name;
   const { phase } = gameData;
@@ -952,6 +972,7 @@ export default function Podium({ roomId, roomToken, user, gameData }) {
           roomToken={roomToken}
           isAdmin={isAdmin}
           user={user}
+          setShowNext={setShowNext}
         />
       )}
 
