@@ -121,7 +121,12 @@ const PreparingPhase = ({
 
           {!theme && (
             <>
-              <div className="absolute top-[12%] flex w-full justify-center items-center h-20">
+              <div
+                onClick={() => {
+                  if (!showedToggle && !showedInfo) setShowedControls(false);
+                }}
+                className="absolute top-[12%] flex w-full justify-center items-center h-20"
+              >
                 {showedToggle && (
                   <>
                     <div className="mr-2 text-sky-700">
