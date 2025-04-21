@@ -2207,7 +2207,7 @@ const Params = ({
       bottomBarSize: userParams.bottomBarSize,
       topBarSize: userParams.topBarSize,
     });
-    setKeyboard({ language: userParams.keyboard.language || "AZERTY" });
+    setKeyboard({ language: userParams.keyboard?.language || "AZERTY" });
   }, [user, barValues]);
 
   useEffect(() => {
