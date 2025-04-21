@@ -2051,7 +2051,7 @@ export default function Room({
           <ThreeSmoke />
 
           <div
-            className={`overflow-y-auto z-[60] w-full relative`}
+            className={`z-[60] w-full relative`}
             style={{
               height: `calc(100dvh - ${barsSizes.top / 4}rem - ${
                 barsSizes.bottom / 4

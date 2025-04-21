@@ -23,12 +23,14 @@ export default function NextEndingPossibilities({
   return (
     <div
       className={`absolute bottom-0 w-full ${!showed ? "hidden" : ""}`}
-      style={{ height: `${userParams?.bottomBarSize / 4 || 2}rem` }}
+      style={{
+        height: `${userParams?.bottomBarSize / 4 || 2}rem`,
+      }}
     >
-      <div className="w-full flex justify-around">
+      <div className="w-full flex justify-around h-full">
         {isAdmin ? (
           !isEnded ? (
-            <div style={{ bottom: `${userParams?.bottomBarSize / 4 || 2}rem` }}>
+            <div className="absolute top-full">
               <FinishGame gameData={gameData} roomToken={roomToken} />
             </div>
           ) : (
