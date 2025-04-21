@@ -705,6 +705,7 @@ import { FaRegTrashAlt } from "react-icons/fa";
 import { FaCheck } from "react-icons/fa6";
 import { FaRegCircle } from "react-icons/fa6";
 import { MdOutlineSquare } from "react-icons/md";
+import { FaKeyboard } from "react-icons/fa6";
 
 import ReactDOM from "react-dom";
 
@@ -2187,14 +2188,18 @@ const Params = ({
   user,
   barValues,
   setBarValues,
+  keyboard,
+  setKeyboard,
 }) => {
   const possibleBarValues = [4, 6, 8, 12, 14, 16, 18, 20];
   const [editedBarsValues, setEditedBarsValues] = useState(false);
+  const possibleKeyboardLanguages = ["AZERTY", "QWERTY"];
 
   useEffect(() => {
     if (!user || barValues) return;
     if (!user?.params) {
       setBarValues({ bottomBarSize: 8, topBarSize: 8 });
+      setKeyboard({ language: "AZERTY" });
       return;
     }
     const userParams = user.params || {};
@@ -2202,6 +2207,7 @@ const Params = ({
       bottomBarSize: userParams.bottomBarSize,
       topBarSize: userParams.topBarSize,
     });
+    setKeyboard({ language: userParams.keyboard.language || "AZERTY" });
   }, [user, barValues]);
 
   useEffect(() => {
@@ -2217,9 +2223,14 @@ const Params = ({
         param: "bottomBarSize",
         value: barValues.bottomBarSize,
       });
+      await updateParams({
+        userId: user.id,
+        param: "keyboard",
+        value: keyboard,
+      });
     };
     update();
-  }, [barValues, user, updateParams]);
+  }, [barValues, user, updateParams, keyboard]);
 
   if (!barValues) return null;
 
@@ -2287,6 +2298,46 @@ const Params = ({
             </div>
           </div>
         ))}
+        <div
+          onClick={(event) => event.stopPropagation()}
+          className="relative border border-purple-200 bg-purple-400 p-1 mb-2 w-full text-center flex items-center text-purple-900 h-8"
+        >
+          <div className="text-center w-full relative flex items-center justify-around">
+            <div
+              onClick={() => {
+                const index = possibleKeyboardLanguages?.indexOf(
+                  (keyboard && keyboard.language) ||
+                    possibleKeyboardLanguages[0]
+                );
+                const newIndex =
+                  index === 0
+                    ? possibleKeyboardLanguages.length - 1
+                    : index - 1;
+                setKeyboard((prevKeyboard) => ({
+                  ...prevKeyboard,
+                  language: possibleKeyboardLanguages[newIndex],
+                }));
+              }}
+              className="absolute left-0 top-0 w-2/5 bg-white h-full z-30 opacity-0"
+            />
+            <FaKeyboard className="h-8 w-8" /> {`${keyboard.language}`}
+            <div
+              onClick={() => {
+                const index = possibleKeyboardLanguages?.indexOf(
+                  (keyboard && keyboard.language) ||
+                    possibleKeyboardLanguages[0]
+                );
+                const newIndex =
+                  index + 1 >= possibleKeyboardLanguages.length ? 0 : index + 1;
+                setKeyboard((prevKeyboard) => ({
+                  ...prevKeyboard,
+                  language: possibleKeyboardLanguages[newIndex],
+                }));
+              }}
+              className="absolute right-0 top-0 w-2/5 bg-white h-full z-30 opacity-0"
+            />
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -2561,6 +2612,7 @@ export default function Categories({
   const [scanning, setScanning] = useState(false);
 
   const [barValues, setBarValues] = useState();
+  const [keyboard, setKeyboard] = useState();
   const [octagonPosition, setOctagonPosition] = useState();
 
   const [serverMessage, setServerMessage] = useState();
@@ -2847,6 +2899,8 @@ export default function Categories({
                         user={user}
                         barValues={barValues}
                         setBarValues={setBarValues}
+                        keyboard={keyboard}
+                        setKeyboard={setKeyboard}
                       />
                     </div>
                   </CentralZone>

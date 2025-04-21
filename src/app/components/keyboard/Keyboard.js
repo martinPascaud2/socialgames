@@ -15,6 +15,13 @@ const frenchLayout = [
   ["Delete", "Enter", "Space"],
 ];
 
+const englishLayout = [
+  ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+  ["A", "S", "D", "F", "G", "H", "J", "K", "L", "M"],
+  ["Z", "X", "C", "Empty", "Empty", "Empty", "Empty", "V", "B", "N"],
+  ["Delete", "Enter", "Space"],
+];
+
 export default function Keyboard({
   setInput,
   onClose,
@@ -22,7 +29,18 @@ export default function Keyboard({
   bottomBarSize,
 }) {
   const contextValue = useUserContext();
-  console.log("contextValue", contextValue);
+  const { userParams } = contextValue;
+  const { keyboard } = userParams;
+  const { language } = keyboard;
+  let layoutLanguage;
+  switch (language) {
+    case "QWERTY":
+      layoutLanguage = englishLayout;
+      break;
+    default:
+      layoutLanguage = frenchLayout;
+  }
+
   const keyboardRef = useRef();
 
   const handleKeyClick = async (key) => {
@@ -72,7 +90,7 @@ export default function Keyboard({
           }}
         >
           <div className="space-y-1 w-full">
-            {frenchLayout.map((row, i) => {
+            {layoutLanguage.map((row, i) => {
               if (i !== 3) {
                 return (
                   <div key={i} className="flex w-full space-x-1">
