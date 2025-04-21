@@ -3,6 +3,8 @@
 import { useRef, useEffect } from "react";
 import ReactDOM from "react-dom";
 
+import { useUserContext } from "../Room/Room";
+
 import { FaCheck } from "react-icons/fa";
 import { FiDelete } from "react-icons/fi";
 
@@ -19,6 +21,8 @@ export default function Keyboard({
   onValidate,
   bottomBarSize,
 }) {
+  const contextValue = useUserContext();
+  console.log("contextValue", contextValue);
   const keyboardRef = useRef();
 
   const handleKeyClick = async (key) => {
@@ -72,12 +76,12 @@ export default function Keyboard({
               if (i !== 3) {
                 return (
                   <div key={i} className="flex w-full space-x-1">
-                    {row.map((key) => {
+                    {row.map((key, j) => {
                       const isEmpty = key.startsWith("Empty");
 
                       return (
                         <div
-                          key={key}
+                          key={j}
                           onPointerDown={async (e) => {
                             e.stopPropagation();
                             await handleKeyClick(key);
@@ -111,10 +115,10 @@ export default function Keyboard({
                         case "Space":
                           layout = (
                             <div
+                              key={key}
                               className={`w-[${width}] h-8 flex justify-center items-center`}
                             >
                               <div
-                                key={key}
                                 className={`bg-gray-100 border border-gray-700 text-gray-700 font-semibold py-1 px-2 rounded-xl transition relative w-2/3 h-full flex justify-center items-center`}
                                 onPointerDown={async (e) => {
                                   e.stopPropagation();
@@ -127,6 +131,7 @@ export default function Keyboard({
                         case "Enter":
                           layout = (
                             <div
+                              key={key}
                               className={`w-[${width}] h-6 relative flex justify-center items-center translate-y-[-50%]`}
                             >
                               <div
@@ -165,10 +170,10 @@ export default function Keyboard({
                         case "Delete":
                           layout = (
                             <div
+                              key={key}
                               className={`w-[${width}] h-8 flex justify-center items-center`}
                             >
                               <div
-                                key={key}
                                 className={`bg-gray-100 border border-gray-700 text-gray-700 font-semibold py-1 px-2 rounded-xl transition relative w-2/3 h-full flex justify-center items-center`}
                                 onPointerDown={async (e) => {
                                   e.stopPropagation();
@@ -184,7 +189,7 @@ export default function Keyboard({
                           break;
                       }
 
-                      return <>{layout}</>;
+                      return layout;
                     })}
                   </div>
                 );
