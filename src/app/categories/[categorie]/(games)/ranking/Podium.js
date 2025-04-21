@@ -198,8 +198,6 @@ const PreparingPhase = ({
                   }}
                   onClose={() => setShowedKeyboard(false)}
                   onValidate={async () => {
-                    setShowNext(true);
-                    setShowedControls(true);
                     if (input.length < 4) return;
                     else if (input.length > 15) return;
                     await addTheme({
@@ -209,6 +207,8 @@ const PreparingPhase = ({
                       theme: input,
                     });
                     setInput("");
+                    setShowNext(true);
+                    setShowedControls(true);
                   }}
                   bottomBarSize={bottomBarSize}
                 />

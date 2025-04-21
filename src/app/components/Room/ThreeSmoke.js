@@ -19,7 +19,10 @@ export default function ThreeSmoke() {
 
       renderer = new Three.WebGLRenderer({ alpha: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
-      mountRef.current.appendChild(renderer.domElement);
+      if (mountRef.current) {
+        mountRef.current.innerHTML = ""; // clear any previous canvas
+        mountRef.current.appendChild(renderer.domElement);
+      }
 
       scene = new Three.Scene();
 
