@@ -2302,7 +2302,7 @@ const Params = ({
           onClick={(event) => event.stopPropagation()}
           className="relative border border-purple-200 bg-purple-400 p-1 mb-2 w-full text-center flex items-center text-purple-900 h-8"
         >
-          <div className="text-center w-full relative flex items-center justify-around">
+          <div className="text-center w-full relative flex items-center justify-end pr-6">
             <div
               onClick={() => {
                 const index = possibleKeyboardLanguages?.indexOf(
@@ -2320,7 +2320,10 @@ const Params = ({
               }}
               className="absolute left-0 top-0 w-2/5 bg-white h-full z-30 opacity-0"
             />
-            <FaKeyboard className="h-8 w-8" /> {`${keyboard.language}`}
+
+            <FaKeyboard className="z-0 absolute left-[10%] h-8 w-8" />
+            <div className="z-0">{`${keyboard.language}`}</div>
+
             <div
               onClick={() => {
                 const index = possibleKeyboardLanguages?.indexOf(
