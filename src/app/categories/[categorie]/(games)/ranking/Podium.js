@@ -87,6 +87,7 @@ const PreparingPhase = ({
         <>
           {!theme && (
             <div
+              onClick={() => setShowedKeyboard(true)}
               className={`w-full h-full flex justify-center absolute top-[5%]`}
             >
               {!showedControls ? (
