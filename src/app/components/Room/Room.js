@@ -2047,9 +2047,8 @@ export default function Room({
   } else {
     return (
       <div className="absolute h-screen w-full z-50 bg-black">
+        <ThreeSmoke />
         <UserContext.Provider value={{ userParams }}>
-          <ThreeSmoke />
-
           <div
             className={`z-[60] w-full relative`}
             style={{

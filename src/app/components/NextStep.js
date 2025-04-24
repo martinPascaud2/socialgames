@@ -11,7 +11,9 @@ export default function NextStep({ onClick, children }) {
   return (
     <div
       className={`absolute z-30 bottom-0 left-1/2 translate-x-[-50%] translate-y-[-30%] mb-4`}
-      style={{ bottom: `${userParams?.bottomBarSize / 4 || 2}rem` }}
+      style={{
+        bottom: `${userParams?.bottomBarSize / 4 || 2}rem`,
+      }}
     >
       <button
         onClick={onClick}

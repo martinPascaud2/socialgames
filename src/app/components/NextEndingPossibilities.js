@@ -25,16 +25,26 @@ export default function NextEndingPossibilities({
       className={`absolute bottom-0 w-full ${!showed ? "hidden" : ""}`}
       style={{
         height: `${userParams?.bottomBarSize / 4 || 2}rem`,
+        pointerEvents: "none",
       }}
     >
       <div className="w-full flex justify-around h-full">
         {isAdmin ? (
           !isEnded ? (
-            <div className="absolute top-full">
+            <div
+              className="absolute top-full"
+              style={{
+                pointerEvents: "auto",
+              }}
+            >
               <FinishGame gameData={gameData} roomToken={roomToken} />
             </div>
           ) : (
-            <>
+            <div
+              style={{
+                pointerEvents: "auto",
+              }}
+            >
               <NextStep onClick={() => reset({ roomId, roomToken, gameData })}>
                 Encore
               </NextStep>
@@ -47,7 +57,7 @@ export default function NextEndingPossibilities({
                   storedLocation={storedLocation}
                 />
               </div>
-            </>
+            </div>
           )
         ) : isEnded ? (
           <EndGame gameData={gameData} user={user} />

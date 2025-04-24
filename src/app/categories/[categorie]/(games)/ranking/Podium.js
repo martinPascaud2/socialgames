@@ -77,6 +77,10 @@ const PreparingPhase = ({
     else setShowNext(false);
   }, [showedControls, setShowNext]);
 
+  useEffect(() => {
+    if (gameData.ended) setShowedKeyboard(false);
+  }, [gameData.ended]);
+
   return (
     <div className="h-full w-full flex flex-col justify-center items-center relative">
       {isAdmin ? (
@@ -86,7 +90,12 @@ const PreparingPhase = ({
               className={`w-full h-full flex justify-center absolute top-[5%]`}
             >
               {!showedControls ? (
-                <StaticNextStep onLongPress={() => setShowedControls(true)}>
+                <StaticNextStep
+                  onLongPress={() => {
+                    setShowedControls(true);
+                    setShowedKeyboard(false);
+                  }}
+                >
                   <div className="text-sm">{"Contrôles"}</div>
                 </StaticNextStep>
               ) : (
@@ -181,7 +190,12 @@ const PreparingPhase = ({
                   >
                     <Input
                       input={input}
-                      openKeyboard={() => setShowedKeyboard(true)}
+                      openKeyboard={() => {
+                        setShowedKeyboard(true);
+                        setShowedInfo(false);
+                        setShowedToggle(false);
+                        setShowedControls(false);
+                      }}
                       active={showedKeyboard}
                       placeholder="Critère"
                     />
@@ -196,7 +210,7 @@ const PreparingPhase = ({
                   setInput={(func) => {
                     setInput((prev) => capitalizeFirstLetter(func(prev)));
                   }}
-                  onClose={() => setShowedKeyboard(false)}
+                  onClose={() => {}}
                   onValidate={async () => {
                     if (input.length < 4) return;
                     else if (input.length > 15) return;
@@ -247,7 +261,12 @@ const PreparingPhase = ({
                   >
                     <Input
                       input={input}
-                      openKeyboard={() => setShowedKeyboard(true)}
+                      openKeyboard={() => {
+                        setShowedKeyboard(true);
+                        setShowedInfo(false);
+                        setShowedToggle(false);
+                        setShowedControls(false);
+                      }}
                       active={showedKeyboard}
                       placeholder={`Objet ${objectNumber}`}
                     />
@@ -262,7 +281,7 @@ const PreparingPhase = ({
                   setInput={(func) => {
                     setInput((prev) => capitalizeFirstLetter(func(prev)));
                   }}
-                  onClose={() => setShowedKeyboard(false)}
+                  onClose={() => {}}
                   onValidate={async () => {
                     setShowNext(true);
                     if (input.length < 4) {
@@ -547,7 +566,7 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin, user }) => {
       )}
 
       {isAdmin && (
-        <div className="absolute bottom-10">
+        <div className="mt-8">
           <StaticNextStep
             onClick={() => goTurnPhase({ gameData, roomId, roomToken })}
           >
@@ -968,6 +987,10 @@ export default function Podium({
   usePreventScroll();
   const isAdmin = gameData.admin === user.name;
   const { phase } = gameData;
+
+  useEffect(() => {
+    if (phase !== "preparing") setShowNext(true);
+  }, [phase]);
 
   return (
     <div className="relative h-full w-full animate-[fadeIn_1.5s_ease-in-out]">
