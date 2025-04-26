@@ -137,7 +137,7 @@ const PreparingPhase = ({
                 }}
                 className="absolute top-[12%] flex w-full justify-center items-center h-20"
               >
-                {/* {showedToggle && (
+                {showedToggle && (
                   <>
                     <div className="mr-2 text-sky-700">
                       <IoPeople className="h-8 w-8" />
@@ -171,7 +171,7 @@ const PreparingPhase = ({
                       </span>
                     </div>
                   </div>
-                )} */}
+                )}
               </div>
 
               {ReactDOM.createPortal(
