@@ -86,51 +86,50 @@ const PreparingPhase = ({
       {isAdmin ? (
         <>
           {!theme && (
-            <div>coucou</div>
-            // <div
-            //   onClick={() => setShowedKeyboard(true)}
-            //   className={`w-full h-full flex justify-center absolute top-[5%]`}
-            // >
-            //   {!showedControls ? (
-            //     <StaticNextStep
-            //       onLongPress={() => {
-            //         setShowedControls(true);
-            //         setShowedKeyboard(false);
-            //       }}
-            //     >
-            //       <div className="text-sm">{"Contrôles"}</div>
-            //     </StaticNextStep>
-            //   ) : (
-            //     <div
-            //       onClick={() => {
-            //         setShowedToggle(false);
-            //         setShowedInfo(false);
-            //         setShowedControls(false);
-            //       }}
-            //       className="w-full flex justify-around"
-            //     >
-            //       <ControlButton
-            //         layout="?"
-            //         onClick={(e) => {
-            //           e.stopPropagation();
-            //           setShowedInfo(true);
-            //           setShowedToggle(false);
-            //         }}
-            //       />
-            //       <ControlButton
-            //         layout="!"
-            //         onClick={(e) => {
-            //           e.stopPropagation();
-            //           setShowedInfo(false);
-            //           setShowedToggle(true);
-            //         }}
-            //       />
-            //     </div>
-            //   )}
-            // </div>
+            <div
+              onClick={() => setShowedKeyboard(true)}
+              className={`w-full h-full flex justify-center absolute top-[5%]`}
+            >
+              {!showedControls ? (
+                <StaticNextStep
+                  onLongPress={() => {
+                    setShowedControls(true);
+                    setShowedKeyboard(false);
+                  }}
+                >
+                  <div className="text-sm">{"Contrôles"}</div>
+                </StaticNextStep>
+              ) : (
+                <div
+                  onClick={() => {
+                    setShowedToggle(false);
+                    setShowedInfo(false);
+                    setShowedControls(false);
+                  }}
+                  className="w-full flex justify-around"
+                >
+                  <ControlButton
+                    layout="?"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowedInfo(true);
+                      setShowedToggle(false);
+                    }}
+                  />
+                  <ControlButton
+                    layout="!"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowedInfo(false);
+                      setShowedToggle(true);
+                    }}
+                  />
+                </div>
+              )}
+            </div>
           )}
 
-          {!theme && (
+          {/* {!theme && (
             <>
               <div
                 onClick={() => {
@@ -304,7 +303,7 @@ const PreparingPhase = ({
                 />
               )}
             </div>
-          )}
+          )} */}
         </>
       ) : (
         <div className="h-32 w-full relative pl-28">
