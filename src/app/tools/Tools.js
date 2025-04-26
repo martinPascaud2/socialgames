@@ -1,12 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
+
 import ReactDOM from "react-dom";
 import Link from "next/link";
 
 import { audios } from "./audios";
 
 console.log("audios", audios);
+
+import LoadingRoomOctagon from "@/components/Room/LoadingRoomOctagon";
+import ThreeSmoke from "@/components/Room/ThreeSmoke";
 
 import { FaCheck } from "react-icons/fa";
 import { FiDelete } from "react-icons/fi";
@@ -156,9 +161,23 @@ const Keyboard = ({ setInput, onClose, onValidate, bottomBarSize }) => {
 
 export default function Tools({ user }) {
   const { params: userParams } = user;
-  const bottomBarSize = userParams?.bottomBarSize || 8;
+  const barsSizes = useMemo(
+    () => ({
+      bottom: userParams?.bottomBarSize || 8,
+      top: userParams?.topBarSize || 8,
+    }),
+    [userParams?.bottomBarSize, userParams?.topBarSize]
+  );
+  const searchParams = useSearchParams();
+  const searchTool = searchParams.get("tool");
 
-  const [selectedTool, setSelectedTool] = useState();
+  const [hasLoadingOctagonAnimated, setHasLoadingOctagonAnimated] =
+    useState(false);
+  useEffect(() => {
+    setTimeout(() => setHasLoadingOctagonAnimated(true), 2900);
+  }, []);
+
+  const [selectedTool, setSelectedTool] = useState(searchTool);
 
   const [input, setInput] = useState("");
 
@@ -170,8 +189,29 @@ export default function Tools({ user }) {
     }`;
   };
 
+  if (!hasLoadingOctagonAnimated)
+    return (
+      <div
+        className="h-screen w-full px-2 overflow-x-hidden bg-black"
+        style={{
+          paddingTop: `${barsSizes.top / 4}rem`,
+          paddingBottom: `${barsSizes.bottom / 4}rem`,
+        }}
+      >
+        <LoadingRoomOctagon isJoinStarted />
+      </div>
+    );
+
   return (
-    <div className="w-full h-full relative">
+    <div
+      className="w-full h-full relative"
+      style={{
+        paddingTop: `${barsSizes.top / 4}rem`,
+        paddingBottom: `${barsSizes.bottom / 4}rem`,
+      }}
+    >
+      <ThreeSmoke />
+
       <div className="absolute z-20">
         <Link
           href={"/categories/?prelobby=true"}
@@ -210,7 +250,7 @@ export default function Tools({ user }) {
               console.log("validé");
               setSelectedTool();
             }}
-            bottomBarSize={bottomBarSize}
+            bottomBarSize={barsSizes.bottom}
           />
         </>
       )}

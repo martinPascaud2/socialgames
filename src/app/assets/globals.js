@@ -305,3 +305,8 @@ export const modesRules = {
     limits: { min: 2, max: 10, opti: 6 },
   },
 };
+
+export const toolsList = [
+  { tool: "buzzer", layout: "Buzzer" },
+  { tool: "osef", layout: "Rien" },
+];

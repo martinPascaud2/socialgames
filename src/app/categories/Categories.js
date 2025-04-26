@@ -12,6 +12,7 @@ import useWake from "@/utils/useWake";
 import { useDeviceDetector } from "@/utils/useGetBarsSizes";
 import getLocation from "@/utils/getLocation";
 import getErrorInformations from "@/utils/getErrorInformations";
+import { toolsList } from "@/assets/globals";
 
 var pusher = new Pusher("61853af9f30abf9d5b3d", {
   cluster: "eu",
@@ -1704,16 +1705,19 @@ const MainButtons = ({ setToggledSettings, setToggledPrelobby }) => {
   );
 };
 
-const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
+const PostButtons = ({
+  resetPermissions,
+  updateLastCP,
+  user,
+  setPostToggled,
+}) => {
   const [isToolsPressed, setIsToolsPressed] = useState(false);
   const [isPostgamesPressed, setIsPostgamesPressed] = useState(false);
 
   const handleToolsPressed = useCallback(
     async (event) => {
       event.stopPropagation();
-      resetPermissions();
-      await updateLastCP({ userId: user.id, out: true });
-      window.location.href = "/tools/";
+      setPostToggled("tools");
     },
     [resetPermissions, updateLastCP]
   );
@@ -1721,9 +1725,7 @@ const PostButtons = ({ resetPermissions, updateLastCP, user }) => {
   const handlePostgamesPressed = useCallback(
     async (event) => {
       event.stopPropagation();
-      resetPermissions();
-      await updateLastCP({ userId: user.id, out: true });
-      window.location.href = "/post-game/";
+      setPostToggled("postGame");
     },
     [resetPermissions, updateLastCP]
   );
@@ -2063,7 +2065,10 @@ export function OctagonBackground({ handleBgClick }) {
         />
       </>
 
-      <div className="absolute top-1/2 translate-y-[-50%] bg-transparent w-[90vw] h-[90vw] z-10 flex items-center">
+      <div
+        className="absolute top-1/2 translate-y-[-50%] bg-transparent w-[90vw] h-[90vw] z-10 flex items-center"
+        style={{ pointerEvents: "none" }}
+      >
         <div className="relative w-full h-full">
           <div
             className="absolute top-1/2 translate-y-[-50%] w-full bg-transparent z-0 h-[37vw]"
@@ -2608,6 +2613,7 @@ export default function Categories({
   const [toggledPrelobby, setToggledPrelobby] = useState(
     searchParams.get("prelobby") === "true"
   );
+  const [postToggled, setPostToggled] = useState(null);
 
   const [location, setLocation] = useState(null);
   const [scanLocked, setScanLocked] = useState(false);
@@ -2768,15 +2774,19 @@ export default function Categories({
     (event) => {
       event.stopPropagation();
       resetPermissions();
-      setToggledPrelobby(false);
       if (setting !== "") {
         setSetting("");
       } else {
         setToggledSettings(false);
       }
+      if (postToggled !== null) {
+        setPostToggled(null);
+      } else {
+        setToggledPrelobby(false);
+      }
       setServerMessage("");
     },
-    [resetPermissions, setting]
+    [resetPermissions, setting, postToggled]
   );
 
   // check
@@ -2957,12 +2967,13 @@ export default function Categories({
               </>
             )}
 
-            {toggledPrelobby && !toggledSettings && (
+            {toggledPrelobby && !toggledSettings && !postToggled && (
               <>
                 <PostButtons
                   resetPermissions={resetPermissions}
                   updateLastCP={updateLastCP}
                   user={user}
+                  setPostToggled={setPostToggled}
                 />
                 <CentralZone>
                   <div className="flex w-full h-full justify-center items-center py-5">
@@ -3006,6 +3017,49 @@ export default function Categories({
                   </div>
                 </CentralZone>
               </>
+            )}
+
+            {postToggled && (
+              <CentralZone>
+                <div className="flex w-full h-full justify-center items-center py-5">
+                  <div
+                    className="h-full aspect-square translate-x-[0.12vw] translate-y-[0.1vw] flex flex-col justify-start items-center bg-purple-600 p-2"
+                    style={{
+                      boxShadow:
+                        "inset 0vw 3vw 1vw -2vw #7e22ce, inset 0vw -3vw 1vw -2vw #7e22ce, inset 3vw 0vw 1vw -2vw #7e22ce, inset -3vw 0vw 1vw -2vw #7e22ce",
+                    }}
+                  >
+                    {postToggled === "tools" && (
+                      <>
+                        {toolsList.map((tool, i) => (
+                          <div
+                            key={i}
+                            onClick={(event) => event.stopPropagation()}
+                            className="relative border border-purple-200 bg-purple-400 p-1 mb-2 w-full text-center text-purple-900 h-8"
+                          >
+                            <div
+                              onClick={async () => {
+                                setIsGoingGame(true);
+                                resetPermissions();
+                                await updateLastCP({
+                                  userId: user.id,
+                                  out: true,
+                                });
+                                router.push(`/tools/?tool=${tool.tool}`);
+                              }}
+                              className="text-center w-full relative"
+                            >
+                              {tool.layout}
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    )}
+
+                    {postToggled === "postGame" && <div>postGame</div>}
+                  </div>
+                </div>
+              </CentralZone>
             )}
 
             <div className="absolute top-full z-20 w-full mt-4 text-center text-purple-100">
