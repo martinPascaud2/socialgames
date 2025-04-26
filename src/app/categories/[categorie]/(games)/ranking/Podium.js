@@ -81,6 +81,8 @@ const PreparingPhase = ({
     if (gameData.ended) setShowedKeyboard(false);
   }, [gameData.ended]);
 
+  return <div>coucou</div>;
+
   return (
     <div className="h-full w-full flex flex-col justify-center items-center relative">
       {isAdmin ? (
@@ -995,8 +997,7 @@ export default function Podium({
 
   return (
     <div className="relative h-full w-full animate-[fadeIn_1.5s_ease-in-out]">
-      <div>coucou</div>
-      {/* {phase === "preparing" && (
+      {phase === "preparing" && (
         <PreparingPhase
           gameData={gameData}
           roomId={roomId}
@@ -1033,7 +1034,7 @@ export default function Podium({
           roomToken={roomToken}
           isAdmin={isAdmin}
         />
-      )} */}
+      )}
     </div>
   );
 }
