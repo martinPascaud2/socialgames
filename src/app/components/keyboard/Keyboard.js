@@ -29,8 +29,8 @@ export default function Keyboard({
   onValidate,
   bottomBarSize,
 }) {
-  // const contextValue = useUserContext();
-  // const { userParams } = contextValue;
+  const contextValue = useUserContext();
+  const { userParams } = contextValue;
   // const { keyboard } = userParams;
   // const { language } = keyboard;
   // let layoutLanguage;
