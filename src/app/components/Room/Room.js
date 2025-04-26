@@ -2049,7 +2049,7 @@ export default function Room({
       // <div className="absolute h-screen w-full z-50 bg-black">
       <div className="relative h-screen w-full z-50 bg-black">
         <ThreeSmoke />
-        <UserContext.Provider value={{ userParams }}>
+        {/* <UserContext.Provider value={{ userParams }}>
           <div
             className={`z-[60] w-full relative`}
             style={{
@@ -2075,7 +2075,7 @@ export default function Room({
               />
             </div>
           </div>
-        </UserContext.Provider>
+        </UserContext.Provider> */}
       </div>
     );
   }
