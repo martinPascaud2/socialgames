@@ -29,18 +29,18 @@ export default function Keyboard({
   onValidate,
   bottomBarSize,
 }) {
-  const contextValue = useUserContext();
-  const { userParams } = contextValue;
-  const { keyboard } = userParams;
-  const { language } = keyboard;
-  let layoutLanguage;
-  switch (language) {
-    case "QWERTY":
-      layoutLanguage = englishLayout;
-      break;
-    default:
-      layoutLanguage = frenchLayout;
-  }
+  // const contextValue = useUserContext();
+  // const { userParams } = contextValue;
+  // const { keyboard } = userParams;
+  // const { language } = keyboard;
+  // let layoutLanguage;
+  // switch (language) {
+  //   case "QWERTY":
+  //     layoutLanguage = englishLayout;
+  //     break;
+  //   default:
+  //     layoutLanguage = frenchLayout;
+  // }
 
   const [mounted, setMounted] = useState(false);
   const keyboardRef = useRef();
