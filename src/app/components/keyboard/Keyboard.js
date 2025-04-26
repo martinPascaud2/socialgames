@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 // import ReactDOM from "react-dom";
 import { createPortal } from "react-dom";
 
@@ -42,6 +42,7 @@ export default function Keyboard({
       layoutLanguage = frenchLayout;
   }
 
+  const [mounted, setMounted] = useState(false);
   const keyboardRef = useRef();
 
   const handleKeyClick = async (key) => {
@@ -59,6 +60,7 @@ export default function Keyboard({
   };
 
   useEffect(() => {
+    setMounted(true);
     const handleClickOutside = (event) => {
       if (keyboardRef.current && !keyboardRef.current.contains(event.target)) {
         onClose();
@@ -73,6 +75,8 @@ export default function Keyboard({
       document.removeEventListener("touchstart", handleClickOutside);
     };
   }, [onClose]);
+
+  if (!mounted) return null;
 
   // return ReactDOM.createPortal(
   return createPortal(
