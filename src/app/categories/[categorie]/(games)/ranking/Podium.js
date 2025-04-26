@@ -231,7 +231,7 @@ const PreparingPhase = ({
             </>
           )}
 
-          {/* {theme && (
+          {theme && (
             <div className="relative">
               <div
                 className={`w-full flex justify-center absolute bottom-full mb-20 ${
@@ -303,11 +303,11 @@ const PreparingPhase = ({
                 />
               )}
             </div>
-          )} */}
+          )}
         </>
       ) : (
         <div className="h-32 w-full relative pl-28">
-          {/* <div className="relative h-full w-full">
+          <div className="relative h-full w-full">
             <div className="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]">
               <SlBubble className="w-16 h-16" />
             </div>
@@ -335,7 +335,7 @@ const PreparingPhase = ({
             >
               {gameData.admin}
             </div>
-          </div> */}
+          </div>
         </div>
       )}
     </div>
