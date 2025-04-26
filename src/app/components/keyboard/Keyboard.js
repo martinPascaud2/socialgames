@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
-// import ReactDOM from "react-dom";
 import { createPortal } from "react-dom";
 
 import { useUserContext } from "../Room/Room";
@@ -31,8 +30,6 @@ export default function Keyboard({
 }) {
   const contextValue = useUserContext();
   const { userParams } = contextValue;
-  // const { keyboard } = userParams;
-  // const { language } = keyboard;
   const keyboard = userParams?.keyboard;
   const language = keyboard?.language || "AZERTY";
   let layoutLanguage;
@@ -80,7 +77,6 @@ export default function Keyboard({
 
   if (!mounted) return null;
 
-  // return ReactDOM.createPortal(
   return createPortal(
     <div
       className="absolute w-screen h-screen"
