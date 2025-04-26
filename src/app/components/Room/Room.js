@@ -2050,7 +2050,7 @@ export default function Room({
       <div className="relative h-screen w-full z-50 bg-black">
         <ThreeSmoke />
         <UserContext.Provider value={{ userParams }}>
-          {/* <div
+          <div
             className={`z-[60] w-full relative`}
             style={{
               height: `calc(100dvh - ${barsSizes.top / 4}rem - ${
@@ -2059,7 +2059,7 @@ export default function Room({
               // marginTop: `${barsSizes.top / 4}rem`,
             }}
           >
-            <div className="w-full h-full">
+            {/* <div className="w-full h-full">
               <Game
                 roomId={roomId}
                 roomToken={roomToken}
@@ -2073,8 +2073,8 @@ export default function Room({
                 gameData={gameData}
                 storedLocation={geoLocation} //searching game only
               />
-            </div>
-          </div> */}
+            </div> */}
+          </div>
         </UserContext.Provider>
       </div>
     );
