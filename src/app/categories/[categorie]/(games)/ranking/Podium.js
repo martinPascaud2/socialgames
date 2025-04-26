@@ -205,7 +205,7 @@ const PreparingPhase = ({
                 document.body
               )}
 
-              {/* {showedKeyboard && (
+              {showedKeyboard && (
                 <Keyboard
                   input={input}
                   setInput={(func) => {
@@ -227,7 +227,7 @@ const PreparingPhase = ({
                   }}
                   bottomBarSize={bottomBarSize}
                 />
-              )} */}
+              )}
             </>
           )}
 

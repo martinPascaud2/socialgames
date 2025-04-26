@@ -1,7 +1,8 @@
 "use client";
 
 import { useRef, useEffect } from "react";
-import ReactDOM from "react-dom";
+// import ReactDOM from "react-dom";
+import { createPortal } from "react-dom";
 
 import { useUserContext } from "../Room/Room";
 
@@ -73,7 +74,8 @@ export default function Keyboard({
     };
   }, [onClose]);
 
-  return ReactDOM.createPortal(
+  // return ReactDOM.createPortal(
+  return createPortal(
     <div
       className="absolute w-screen h-screen"
       style={{
