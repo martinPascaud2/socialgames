@@ -993,6 +993,8 @@ export default function Podium({
     if (phase !== "preparing") setShowNext(true);
   }, [phase]);
 
+  return <div>coucou</div>;
+
   return (
     <div className="relative h-full w-full animate-[fadeIn_1.5s_ease-in-out]">
       {phase === "preparing" && (
