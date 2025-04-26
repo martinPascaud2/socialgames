@@ -2059,8 +2059,8 @@ export default function Room({
               // marginTop: `${barsSizes.top / 4}rem`,
             }}
           >
-            {/* <div className="w-full h-full">
-              <Game
+            <div className="w-full h-full">
+              {/* <Game
                 roomId={roomId}
                 roomToken={roomToken}
                 user={{
@@ -2072,8 +2072,8 @@ export default function Room({
                 onlineGamers={onlineGamers}
                 gameData={gameData}
                 storedLocation={geoLocation} //searching game only
-              />
-            </div> */}
+              /> */}
+            </div>
           </div>
         </UserContext.Provider>
       </div>
