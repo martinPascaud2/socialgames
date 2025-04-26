@@ -2046,7 +2046,8 @@ export default function Room({
     );
   } else {
     return (
-      <div className="absolute h-screen w-full z-50 bg-black">
+      // <div className="absolute h-screen w-full z-50 bg-black">
+      <div className="relative h-screen w-full z-50 bg-black">
         <ThreeSmoke />
         <UserContext.Provider value={{ userParams }}>
           <div
@@ -2055,7 +2056,7 @@ export default function Room({
               height: `calc(100dvh - ${barsSizes.top / 4}rem - ${
                 barsSizes.bottom / 4
               }rem)`,
-              marginTop: `${barsSizes.top / 4}rem`,
+              // marginTop: `${barsSizes.top / 4}rem`,
             }}
           >
             <div className="w-full h-full">
