@@ -2060,7 +2060,7 @@ export default function Room({
             }}
           >
             <div className="w-full h-full">
-              {/* <Game
+              <Game
                 roomId={roomId}
                 roomToken={roomToken}
                 user={{
@@ -2072,7 +2072,7 @@ export default function Room({
                 onlineGamers={onlineGamers}
                 gameData={gameData}
                 storedLocation={geoLocation} //searching game only
-              /> */}
+              />
             </div>
           </div>
         </UserContext.Provider>
