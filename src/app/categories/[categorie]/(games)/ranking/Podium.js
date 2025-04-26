@@ -129,7 +129,7 @@ const PreparingPhase = ({
             </div>
           )}
 
-          {/* {!theme && (
+          {!theme && (
             <>
               <div
                 onClick={() => {
@@ -174,7 +174,7 @@ const PreparingPhase = ({
                 )}
               </div>
 
-              {ReactDOM.createPortal(
+              {/* {ReactDOM.createPortal(
                 <div
                   className="w-[100vw] fixed top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] flex items-center justify-center"
                   style={{
@@ -203,7 +203,7 @@ const PreparingPhase = ({
                   </div>
                 </div>,
                 document.body
-              )}
+              )} */}
 
               {showedKeyboard && (
                 <Keyboard
@@ -245,7 +245,7 @@ const PreparingPhase = ({
                 </StaticNextStep>
               </div>
 
-              {ReactDOM.createPortal(
+              {/* {ReactDOM.createPortal(
                 <div
                   className="w-[100vw] fixed top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] flex items-center justify-center"
                   style={{
@@ -274,7 +274,7 @@ const PreparingPhase = ({
                   </div>
                 </div>,
                 document.body
-              )}
+              )} */}
 
               {showedKeyboard && (
                 <Keyboard
@@ -303,7 +303,7 @@ const PreparingPhase = ({
                 />
               )}
             </div>
-          )} */}
+          )}
         </>
       ) : (
         <div className="h-32 w-full relative pl-28">
