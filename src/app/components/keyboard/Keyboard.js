@@ -31,8 +31,8 @@ export default function Keyboard({
 }) {
   const contextValue = useUserContext();
   const { userParams } = contextValue;
-  // const { keyboard } = userParams;
-  // const { language } = keyboard;
+  const { keyboard } = userParams;
+  const { language } = keyboard;
   // let layoutLanguage;
   // switch (language) {
   //   case "QWERTY":
