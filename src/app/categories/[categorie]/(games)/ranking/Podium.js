@@ -137,7 +137,7 @@ const PreparingPhase = ({
                 }}
                 className="absolute top-[12%] flex w-full justify-center items-center h-20"
               >
-                {showedToggle && (
+                {/* {showedToggle && (
                   <>
                     <div className="mr-2 text-sky-700">
                       <IoPeople className="h-8 w-8" />
@@ -171,10 +171,10 @@ const PreparingPhase = ({
                       </span>
                     </div>
                   </div>
-                )}
+                )} */}
               </div>
 
-              {/* {ReactDOM.createPortal(
+              {ReactDOM.createPortal(
                 <div
                   className="w-[100vw] fixed top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] flex items-center justify-center"
                   style={{
@@ -203,9 +203,9 @@ const PreparingPhase = ({
                   </div>
                 </div>,
                 document.body
-              )} */}
+              )}
 
-              {showedKeyboard && (
+              {/* {showedKeyboard && (
                 <Keyboard
                   input={input}
                   setInput={(func) => {
@@ -227,11 +227,11 @@ const PreparingPhase = ({
                   }}
                   bottomBarSize={bottomBarSize}
                 />
-              )}
+              )} */}
             </>
           )}
 
-          {theme && (
+          {/* {theme && (
             <div className="relative">
               <div
                 className={`w-full flex justify-center absolute bottom-full mb-20 ${
@@ -245,7 +245,7 @@ const PreparingPhase = ({
                 </StaticNextStep>
               </div>
 
-              {/* {ReactDOM.createPortal(
+              {ReactDOM.createPortal(
                 <div
                   className="w-[100vw] fixed top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] flex items-center justify-center"
                   style={{
@@ -274,7 +274,7 @@ const PreparingPhase = ({
                   </div>
                 </div>,
                 document.body
-              )} */}
+              )}
 
               {showedKeyboard && (
                 <Keyboard
@@ -303,11 +303,11 @@ const PreparingPhase = ({
                 />
               )}
             </div>
-          )}
+          )} */}
         </>
       ) : (
         <div className="h-32 w-full relative pl-28">
-          <div className="relative h-full w-full">
+          {/* <div className="relative h-full w-full">
             <div className="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]">
               <SlBubble className="w-16 h-16" />
             </div>
@@ -335,7 +335,7 @@ const PreparingPhase = ({
             >
               {gameData.admin}
             </div>
-          </div>
+          </div> */}
         </div>
       )}
     </div>
