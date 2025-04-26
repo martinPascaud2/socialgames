@@ -42,8 +42,8 @@ export function FixedNextStep({ onClick, children }) {
 }
 
 export function StaticNextStep({ onClick, onLongPress, children }) {
-  const contextValue = useUserContext();
-  const userParams = contextValue.userParams;
+  // const contextValue = useUserContext();
+  // const userParams = contextValue.userParams;
 
   const timeoutRef = useRef(null);
 
@@ -58,7 +58,7 @@ export function StaticNextStep({ onClick, onLongPress, children }) {
   };
 
   return (
-    <div className="z-30 h-fit aspect-square">
+    <div className="z-30 h-fit aspect-square" style={{ pointerEvents: "auto" }}>
       <button
         onClick={onClick}
         onTouchStart={startPress}

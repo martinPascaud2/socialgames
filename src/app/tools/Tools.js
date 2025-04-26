@@ -2,8 +2,6 @@
 
 import { useEffect, useRef, useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
-
-import ReactDOM from "react-dom";
 import Link from "next/link";
 
 import { audios } from "./audios";
@@ -12,9 +10,8 @@ console.log("audios", audios);
 
 import LoadingRoomOctagon from "@/components/Room/LoadingRoomOctagon";
 import ThreeSmoke from "@/components/Room/ThreeSmoke";
-
-import { FaCheck } from "react-icons/fa";
-import { FiDelete } from "react-icons/fi";
+import { StaticNextStep } from "@/components/NextStep";
+import ControlButton from "@/components/ControlButton";
 
 const Buzzer = () => {
   const audio = useRef();
@@ -63,102 +60,6 @@ const Buzzer = () => {
   );
 };
 
-const frenchLayout = [
-  ["A", "Z", "E", "R", "T", "Y", "U", "I", "O", "P", "Delete"],
-  ["Q", "S", "D", "F", "G", "H", "J", "K", "L", "M", "Enter"],
-  ["W", "X", "C", "Space", "V", "B", "N"],
-];
-
-const Keyboard = ({ setInput, onClose, onValidate, bottomBarSize }) => {
-  const keyboardRef = useRef();
-
-  const handleKeyClick = async (key) => {
-    if (key === "Space") {
-      setInput((prev) => prev + " ");
-    } else if (key === "Delete") {
-      setInput((prev) => prev.slice(0, -1));
-    } else if (key === "Enter") {
-      await onValidate();
-    } else {
-      setInput((prev) => prev + key);
-    }
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (keyboardRef.current && !keyboardRef.current.contains(event.target)) {
-        onClose();
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("touchstart", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside);
-    };
-  }, [onClose]);
-
-  return ReactDOM.createPortal(
-    <div
-      className="absolute w-screen h-screen"
-      style={{
-        pointerEvents: "none",
-        bottom: 0,
-      }}
-      ref={keyboardRef}
-    >
-      <div className="relative w-full h-full">
-        <div
-          className="absolute bg-gray-900 p-2 w-full"
-          style={{
-            zIndex: 100,
-            pointerEvents: "auto",
-            bottom: `${bottomBarSize / 4}rem`,
-          }}
-        >
-          <div className="space-y-2 w-full">
-            {frenchLayout.map((row, i) => (
-              <div key={i} className="flex justify-between space-x-1">
-                {row.map((key) => {
-                  let layout;
-                  switch (key) {
-                    case "Space":
-                      layout = " ";
-                      break;
-                    case "Enter":
-                      layout = <FaCheck />;
-                      break;
-                    case "Delete":
-                      layout = <FiDelete />;
-                      break;
-                    default:
-                      layout = key;
-                  }
-                  return (
-                    <button
-                      key={key}
-                      onClick={() => handleKeyClick(key)}
-                      className={`bg-gray-700 text-white font-semibold py-1 px-2 rounded-xl transition relative ${
-                        key === "Space" ? "flex-[5]" : "flex-1"
-                      }`}
-                    >
-                      <div className="opacity-0">X</div>
-                      <div className="absolute top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%]">
-                        {layout}
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>,
-    document.body
-  );
-};
-
 export default function Tools({ user }) {
   const { params: userParams } = user;
   const barsSizes = useMemo(
@@ -168,6 +69,9 @@ export default function Tools({ user }) {
     }),
     [userParams?.bottomBarSize, userParams?.topBarSize]
   );
+  const calculatedHeight = `calc(100dvh - ${barsSizes.top / 4}rem - ${
+    barsSizes.bottom / 4
+  }rem)`;
   const searchParams = useSearchParams();
   const searchTool = searchParams.get("tool");
 
@@ -178,8 +82,9 @@ export default function Tools({ user }) {
   }, []);
 
   const [selectedTool, setSelectedTool] = useState(searchTool);
-
-  const [input, setInput] = useState("");
+  const [showedControls, setShowedControls] = useState(false);
+  const [showedToolsList, setShowedToolsList] = useState(false);
+  const [showedInfo, setShowedInfo] = useState(false);
 
   const selectionClass = (tool) => {
     return `${
@@ -204,6 +109,11 @@ export default function Tools({ user }) {
 
   return (
     <div
+      onClick={() => {
+        setShowedToolsList(false);
+        setShowedInfo(false);
+        setShowedControls(false);
+      }}
       className="w-full h-full relative"
       style={{
         paddingTop: `${barsSizes.top / 4}rem`,
@@ -212,47 +122,110 @@ export default function Tools({ user }) {
     >
       <ThreeSmoke />
 
-      <div className="absolute z-20">
-        <Link
-          href={"/categories/?prelobby=true"}
-          className="border border-blue-300 bg-blue-100 p-1"
-        >
-          Retour
-        </Link>
-      </div>
-      <div className="absolute flex items-center justify-around w-full mt-2 z-10">
-        <div
-          onClick={() => setSelectedTool("buzzer")}
-          className={selectionClass("buzzer")}
-        >
-          Buzzer
-        </div>
-        <div
-          onClick={() => setSelectedTool("keyboard")}
-          className={selectionClass("keyboard")}
-        >
-          Clavier
-        </div>
-      </div>
-
-      {selectedTool === "buzzer" && <Buzzer />}
-
-      {selectedTool === "keyboard" && (
-        <>
-          <div className="flex justify-center items-center w-full h-full">
-            {input}
-          </div>
-          <Keyboard
-            input={input}
-            setInput={setInput}
-            onClose={() => setSelectedTool()}
-            onValidate={() => {
-              console.log("validé");
-              setSelectedTool();
+      <div
+        className="w-full flex justify-center absolute"
+        style={{
+          height: `${calculatedHeight}`,
+        }}
+      >
+        {!showedControls ? (
+          <StaticNextStep
+            onLongPress={() => {
+              setShowedControls(true);
             }}
-            bottomBarSize={barsSizes.bottom}
-          />
-        </>
+          >
+            <div className="text-sm">{"Outils"}</div>
+          </StaticNextStep>
+        ) : (
+          <>
+            <div
+              className="w-full absolute flex justify-around"
+              style={{
+                pointerEvents: "none",
+                height: `${calculatedHeight}`,
+              }}
+            >
+              <ControlButton
+                layout="?"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowedInfo(true);
+                  setShowedToolsList(false);
+                }}
+              />
+              <ControlButton
+                layout="!"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowedInfo(false);
+                  setShowedToolsList(true);
+                }}
+              />
+            </div>
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="absolute bottom-20"
+              style={{
+                zIndex: 20,
+                pointerEvents: "auto",
+                bottom: 0,
+              }}
+            >
+              <Link
+                href={"/categories/?prelobby=true"}
+                className="border border-blue-300 bg-blue-100 p-1"
+              >
+                Retour
+              </Link>
+            </div>
+          </>
+        )}
+      </div>
+
+      {showedToolsList && (
+        <div className="relative flex flex-col items-center justify-center gap-4 w-full h-full z-10">
+          <div
+            onClick={() => {
+              setSelectedTool("buzzer");
+              setShowedControls(false);
+              setShowedToolsList(false);
+            }}
+            className={selectionClass("buzzer")}
+          >
+            Buzzer
+          </div>
+          <div
+            onClick={() => {
+              setSelectedTool("osef");
+              setShowedControls(false);
+              setShowedToolsList(false);
+            }}
+            className={selectionClass("osef")}
+          >
+            Rien
+          </div>
+        </div>
+      )}
+
+      {showedInfo && (
+        <div className="w-full h-full flex items-center justify-center">
+          <div className="w-[90%] border rounded-md border-sky-700 bg-sky-100 text-sky-700 p-2 flex flex-col">
+            <div className="text-sky-700 text-sm w-full flex items-center justify-center">
+              Buzzer : c'est un buzzer
+            </div>
+            <div className="text-sky-700 text-sm w-full flex items-center justify-center">
+              Rien : nada
+            </div>
+          </div>
+        </div>
+      )}
+
+      {selectedTool === "buzzer" && !showedToolsList && !showedInfo && (
+        <Buzzer />
+      )}
+
+      {selectedTool === "osef" && !showedToolsList && !showedInfo && (
+        <div></div>
       )}
     </div>
   );

@@ -3,6 +3,7 @@ export default function ControlButton({ layout, onClick }) {
     <div
       onClick={onClick}
       className="h-[4dvh] w-[4dvh] flex justify-center items-center text-amber-700"
+      style={{ pointerEvents: "auto", zIndex: 20 }}
     >
       <p
         className="text-4xl"

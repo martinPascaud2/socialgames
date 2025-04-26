@@ -7,14 +7,7 @@ export default async function ToolsPage() {
 
   return (
     <div className="absolute h-full w-full z-0">
-      <div
-        className={`overflow-y-auto z-[60] w-full`}
-        style={{
-          height: "100vh",
-        }}
-      >
-        <Tools user={user} />
-      </div>
+      <Tools user={user} />
     </div>
   );
 }
