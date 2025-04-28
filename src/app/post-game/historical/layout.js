@@ -1,3 +1,3 @@
 export default function HistoricalLayout({ children }) {
-  return <div>{children}</div>;
+  return <div className="w-full h-full bg-white">{children}</div>;
 }

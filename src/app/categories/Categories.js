@@ -12,7 +12,7 @@ import useWake from "@/utils/useWake";
 import { useDeviceDetector } from "@/utils/useGetBarsSizes";
 import getLocation from "@/utils/getLocation";
 import getErrorInformations from "@/utils/getErrorInformations";
-import { toolsList } from "@/assets/globals";
+import { toolsList, postGamesList } from "@/assets/globals";
 
 var pusher = new Pusher("61853af9f30abf9d5b3d", {
   cluster: "eu",
@@ -3056,7 +3056,32 @@ export default function Categories({
                       </>
                     )}
 
-                    {postToggled === "postGame" && <div>postGame</div>}
+                    {postToggled === "postGame" && (
+                      <>
+                        {postGamesList.map((pg, i) => (
+                          <div
+                            key={i}
+                            onClick={(event) => event.stopPropagation()}
+                            className="relative border border-purple-200 bg-purple-400 p-1 mb-2 w-full text-center text-purple-900 h-8"
+                          >
+                            <div
+                              onClick={async () => {
+                                setIsGoingGame(true);
+                                resetPermissions();
+                                await updateLastCP({
+                                  userId: user.id,
+                                  out: true,
+                                });
+                                router.push(`/post-game/?game=${pg.game}`);
+                              }}
+                              className="text-center w-full relative"
+                            >
+                              {pg.layout}
+                            </div>
+                          </div>
+                        ))}
+                      </>
+                    )}
                   </div>
                 </div>
               </CentralZone>

@@ -1,3 +1,3 @@
 export default function PostGameLayout({ children }) {
-  return <div>{children}</div>;
+  return <div className="h-full w-full bg-black">{children}</div>;
 }

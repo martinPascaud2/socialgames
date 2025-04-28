@@ -2,6 +2,8 @@ import getUser from "@/utils/getUser";
 
 import PostGame from "./PostGame";
 
+import { postGamesList } from "@/assets/globals";
+
 export default async function PostGamePage() {
   const user = await getUser();
 
@@ -29,15 +31,18 @@ export default async function PostGamePage() {
     })
   )?.postGames;
 
-  const postGameArray = postGames.map((postGame) => postGame.postGame);
-
-  const triaction_PG = postGameArray.filter(
-    (postGame) => postGame.gameName === "triaction"
-  );
+  const postGamesSortedObject = {};
+  postGamesList.forEach((pg) => {
+    postGamesSortedObject[pg.game] = [];
+  });
+  postGames.forEach((pg) => {
+    const { postGame } = pg;
+    postGamesSortedObject[postGame.gameName].push(postGame);
+  });
 
   return (
-    <>
-      <PostGame user={user} triaction_PG={triaction_PG} />
-    </>
+    <div className="absolute h-full w-full z-0">
+      <PostGame user={user} postGames={postGamesSortedObject} />
+    </div>
   );
 }

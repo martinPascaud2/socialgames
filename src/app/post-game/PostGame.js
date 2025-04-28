@@ -1,14 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+
+import { postGamesList } from "@/assets/globals";
 
 import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 
 import formatDate from "@/utils/formatDate";
 
+import ThreeSmoke from "@/components/Room/ThreeSmoke";
+import { StaticNextStep } from "@/components/NextStep";
+import ControlButton from "@/components/ControlButton";
 import WrittenCard from "@/categories/[categorie]/(games)/triaction/WrittenCard";
 import CountDown from "@/components/CountDown";
+import LoadingRoomOctagon from "@/components/Room/LoadingRoomOctagon";
 
 const TriactionPG = ({ postGame, userName }) => {
   const date = formatDate(postGame.createdAt);
@@ -58,7 +65,7 @@ const TriactionPG = ({ postGame, userName }) => {
           };
 
           return (
-            <div key={i} className="flex flex-col items-center w-full">
+            <div key={i} className="flex flex-col items-center w-full z-0">
               <button
                 onClick={() =>
                   setTriggeredGamers((prevTriggered) => {
@@ -112,74 +119,207 @@ const TriactionPG = ({ postGame, userName }) => {
   );
 };
 
-export default function PostGame({ user, triaction_PG }) {
-  const userParams = user.params;
-  const barsSizes = {
-    bottom: userParams?.bottomBarSize || 8,
-    top: userParams?.topBarSize || 8,
+export default function PostGame({ user, postGames }) {
+  const { params: userParams } = user;
+  const barsSizes = useMemo(
+    () => ({
+      bottom: userParams?.bottomBarSize || 8,
+      top: userParams?.topBarSize || 8,
+    }),
+    [userParams?.bottomBarSize, userParams?.topBarSize]
+  );
+  const calculatedHeight = `calc(100dvh - ${barsSizes.top / 4}rem - ${
+    barsSizes.bottom / 4
+  }rem)`;
+  const searchParams = useSearchParams();
+  const searchGame = searchParams.get("game") || postGamesList[0].game;
+
+  const [hasLoadingOctagonAnimated, setHasLoadingOctagonAnimated] =
+    useState(false);
+  useEffect(() => {
+    setTimeout(() => setHasLoadingOctagonAnimated(true), 2900);
+  }, []);
+
+  const [selectedGame, setSelectedGame] = useState(searchGame);
+  const [showedControls, setShowedControls] = useState(false);
+  const [showedGameList, setShowedGameList] = useState(false);
+  const [showedInfo, setShowedInfo] = useState(false);
+
+  const selectionClass = (game) => {
+    return `${
+      game === selectedGame
+        ? "border border-green-400 bg-green-100 text-green-400 p-2 h-16 w-28 text-center flex items-center justify-center"
+        : "border border-blue-400 bg-blue-100 text-blue-400 p-2 h-12 w-24 text-center flex items-center justify-center"
+    }`;
   };
 
-  return (
-    <>
+  if (!hasLoadingOctagonAnimated)
+    return (
       <div
-        className={`fixed h-[${barsSizes.top / 4}rem] w-full z-[70] bg-black`}
+        className="h-screen w-full px-2 overflow-x-hidden bg-black"
         style={{
-          height: `${barsSizes.top / 4}rem`,
+          paddingTop: `${barsSizes.top / 4}rem`,
+          paddingBottom: `${barsSizes.bottom / 4}rem`,
         }}
-      />
-      <div
-        className={`fixed h-[${
-          barsSizes.bottom / 4
-        }rem] w-full z-[70] bg-black bottom-0`}
-        style={{ height: `${barsSizes.bottom / 4}rem` }}
-      />
-      <div className="absolute h-full w-full z-0 flex flex-col items-center justify-start">
-        <div
-          className={`overflow-y-auto z-[60] w-full`}
-          style={{
-            height: `calc(100dvh - ${barsSizes.top / 4}rem)`,
-            marginTop: `${barsSizes.top / 4}rem`,
-            marginBottom: `${barsSizes.bottom / 4}rem`,
-          }}
-        >
-          <div className="fixed w-full z-10">
-            <div className="w-full h-10 bg-white text-center mb-2 fixed p-2 flex justify-center relative">
-              <div className="absolute left-2">
-                <Link
-                  href={"/categories/?prelobby=true"}
-                  className="border border-blue-300 bg-blue-100 p-1"
-                >
-                  Retour
-                </Link>
-              </div>
-              <div className="w-full">Enregistrements</div>
-              <div className="absolute right-2">
-                <Link
-                  href={"/post-game/historical/"}
-                  className="border border-blue-300 bg-blue-100 p-1"
-                >
-                  Historique
-                </Link>
-              </div>
-            </div>
-          </div>
+      >
+        <LoadingRoomOctagon isJoinStarted />
+      </div>
+    );
 
-          <div className="z-0 flex flex-col items-center w-full mt-10">
-            <div>Triaction</div>
-            <div className="flex flex-col items-center w-full">
-              {triaction_PG.map((postGame, i) => {
-                return (
-                  <TriactionPG
-                    key={i}
-                    postGame={postGame}
-                    userName={user.name}
-                  />
-                );
-              })}
+  return (
+    <div
+      onClick={() => {
+        setShowedGameList(false);
+        setShowedInfo(false);
+        setShowedControls(false);
+      }}
+      className="w-full h-full relative"
+      style={{
+        paddingTop: `${barsSizes.top / 4}rem`,
+        paddingBottom: `${barsSizes.bottom / 4}rem`,
+      }}
+    >
+      <ThreeSmoke />
+
+      <div
+        className="w-full flex justify-center absolute"
+        style={{
+          height: `${calculatedHeight}`,
+        }}
+      >
+        {!showedControls ? (
+          <StaticNextStep
+            onLongPress={() => {
+              setShowedControls(true);
+            }}
+          >
+            <div className="text-sm">{"Outils"}</div>
+          </StaticNextStep>
+        ) : (
+          <>
+            <div
+              className="w-full absolute flex justify-around"
+              style={{
+                pointerEvents: "none",
+                height: `${calculatedHeight}`,
+              }}
+            >
+              <ControlButton
+                layout="?"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowedInfo(true);
+                  setShowedGameList(false);
+                }}
+              />
+              <ControlButton
+                layout="!"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowedInfo(false);
+                  setShowedGameList(true);
+                }}
+              />
+            </div>
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="absolute bottom-20"
+              style={{
+                zIndex: 20,
+                pointerEvents: "auto",
+                bottom: 0,
+              }}
+            >
+              <Link
+                href={"/categories/?prelobby=true"}
+                className="border border-blue-300 bg-blue-100 p-1"
+              >
+                Retour
+              </Link>
+            </div>
+
+            <div onClick={(e) => e.stopPropagation()}>
+              <Link
+                href={"/post-game/historical/"}
+                className="border border-blue-300 bg-blue-100 p-1 mr-1 absolute right-0"
+                style={{
+                  bottom: `${barsSizes.bottom / 4}rem`,
+                }}
+              >
+                Historique
+              </Link>
+            </div>
+          </>
+        )}
+      </div>
+
+      {showedInfo && (
+        <div className="w-full h-full flex items-center justify-center">
+          <div className="w-[90%] border rounded-md border-sky-700 bg-sky-100 text-sky-700 p-2 flex flex-col">
+            <div className="text-sky-700 text-sm w-full flex items-center justify-center">
+              Tu es sur la page des parties en cours
+            </div>
+            <div className="text-sky-700 text-sm w-full flex items-center justify-center">
+              Ces parties ont moins de 10 jours
+            </div>
+            <div className="text-sky-700 text-sm w-full flex items-center justify-center">
+              Pour les parties plus anciennes, consulte l'historique
             </div>
           </div>
         </div>
+      )}
+
+      {showedGameList && (
+        <div className="relative flex flex-col items-center justify-center gap-4 w-full h-full z-10">
+          {postGamesList.map((postGame, i) => (
+            <div
+              key={i}
+              onClick={() => {
+                setSelectedGame(postGame.game);
+                setShowedControls(false);
+                setShowedGameList(false);
+              }}
+              className={selectionClass(postGame.game)}
+            >
+              {postGame.layout}
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div
+        style={{
+          height: `calc(100dvh - ${barsSizes.top / 4}rem - ${
+            barsSizes.bottom / 4
+          }rem)`,
+          margin: "4rem 0",
+        }}
+      >
+        <div className="z-0 flex flex-col items-center w-full">
+          <div>
+            {postGamesList.filter((pg) => pg.game === selectedGame)[0].layout}
+          </div>
+          <div className="flex flex-col items-center w-full">
+            {postGames[selectedGame].map((postGame, i) => {
+              let ret;
+              switch (postGame.gameName) {
+                case "triaction":
+                  ret = (
+                    <TriactionPG
+                      key={i}
+                      postGame={postGame}
+                      userName={user.name}
+                    />
+                  );
+                  break;
+                default:
+                  ret = null;
+              }
+              return ret;
+            })}
+          </div>
+        </div>
       </div>
-    </>
+    </div>
   );
 }

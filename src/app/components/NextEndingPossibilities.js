@@ -15,7 +15,7 @@ export default function NextEndingPossibilities({
   reset,
   storedLocation,
   user,
-  showed,
+  showed = true,
 }) {
   const contextValue = useUserContext();
   const userParams = contextValue.userParams;

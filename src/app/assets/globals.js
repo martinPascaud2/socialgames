@@ -310,3 +310,8 @@ export const toolsList = [
   { tool: "buzzer", layout: "Buzzer" },
   { tool: "osef", layout: "Rien" },
 ];
+
+export const postGamesList = [
+  { game: "triaction", layout: "Triaction" },
+  { game: "osef", layout: "Rien" },
+];
