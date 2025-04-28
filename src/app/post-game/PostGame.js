@@ -133,6 +133,7 @@ export default function PostGame({ user, postGames }) {
   }rem)`;
   const searchParams = useSearchParams();
   const searchGame = searchParams.get("game") || postGamesList[0].game;
+  const back = Boolean(searchParams.get("back"));
 
   const [hasLoadingOctagonAnimated, setHasLoadingOctagonAnimated] =
     useState(false);
@@ -153,7 +154,7 @@ export default function PostGame({ user, postGames }) {
     }`;
   };
 
-  if (!hasLoadingOctagonAnimated)
+  if (!hasLoadingOctagonAnimated && !back)
     return (
       <div
         className="h-screen w-full px-2 overflow-x-hidden bg-black"
@@ -237,20 +238,20 @@ export default function PostGame({ user, postGames }) {
                 Retour
               </Link>
             </div>
-
-            <div onClick={(e) => e.stopPropagation()}>
-              <Link
-                href={"/post-game/historical/"}
-                className="border border-blue-300 bg-blue-100 p-1 mr-1 absolute right-0"
-                style={{
-                  bottom: `${barsSizes.bottom / 4}rem`,
-                }}
-              >
-                Historique
-              </Link>
-            </div>
           </>
         )}
+        <div onClick={(e) => e.stopPropagation()}>
+          <Link
+            href={`/post-game/historical/?game=${selectedGame}`}
+            className="border border-blue-300 bg-blue-100 p-1 mr-1 absolute right-0"
+            style={{
+              bottom: `${barsSizes.bottom / 4}rem`,
+              zIndex: 20,
+            }}
+          >
+            Historique
+          </Link>
+        </div>
       </div>
 
       {showedInfo && (
@@ -299,6 +300,7 @@ export default function PostGame({ user, postGames }) {
           <div>
             {postGamesList.filter((pg) => pg.game === selectedGame)[0].layout}
           </div>
+
           <div className="flex flex-col items-center w-full">
             {postGames[selectedGame].map((postGame, i) => {
               let ret;
