@@ -2869,7 +2869,7 @@ export default function Categories({
     const preventBackSwipe = (e) => {
       if (e.touches && e.touches.length === 1) {
         const touch = e.touches[0];
-        if (touch.clientX < 20) {
+        if (touch.clientX < 30) {
           e.preventDefault();
         }
       }
