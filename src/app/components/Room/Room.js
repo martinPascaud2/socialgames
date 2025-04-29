@@ -1096,6 +1096,26 @@ export default function Room({
   }, [isStarted, isLaunching, isLaunched]);
   // ------------------------------
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const blockNavigation = () => {
+      window.history.pushState(null, "", window.location.href);
+    };
+
+    blockNavigation();
+
+    const handlePopState = (event) => {
+      blockNavigation();
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
+
   if (joinError) {
     return (
       <div className="h-screen w-screen flex justify-center items-center">

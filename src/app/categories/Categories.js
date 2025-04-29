@@ -2845,6 +2845,26 @@ export default function Categories({
     }
   }, [user, barValues]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const blockNavigation = () => {
+      window.history.pushState(null, "", window.location.href);
+    };
+
+    blockNavigation();
+
+    const handlePopState = (event) => {
+      blockNavigation();
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
+
   return (
     <div
       onClick={(event) => {
