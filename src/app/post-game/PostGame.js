@@ -264,7 +264,10 @@ export default function PostGame({ user, postGames }) {
               Ces parties ont moins de 10 jours
             </div>
             <div className="text-sky-700 text-sm w-full flex items-center justify-center">
-              Pour les parties plus anciennes, consulte l'historique
+              Pour les parties plus anciennes, consulte
+            </div>
+            <div className="text-sky-700 text-sm w-full flex items-center justify-center">
+              l'historique
             </div>
           </div>
         </div>
