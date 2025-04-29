@@ -238,20 +238,21 @@ export default function PostGame({ user, postGames }) {
                 Retour
               </Link>
             </div>
+
+            <div onClick={(e) => e.stopPropagation()}>
+              <Link
+                href={`/post-game/historical/?game=${selectedGame}`}
+                className="border border-blue-300 bg-blue-100 p-1 mr-1 absolute right-0"
+                style={{
+                  bottom: `${barsSizes.bottom / 4}rem`,
+                  zIndex: 20,
+                }}
+              >
+                Historique
+              </Link>
+            </div>
           </>
         )}
-        <div onClick={(e) => e.stopPropagation()}>
-          <Link
-            href={`/post-game/historical/?game=${selectedGame}`}
-            className="border border-blue-300 bg-blue-100 p-1 mr-1 absolute right-0"
-            style={{
-              bottom: `${barsSizes.bottom / 4}rem`,
-              zIndex: 20,
-            }}
-          >
-            Historique
-          </Link>
-        </div>
       </div>
 
       {showedInfo && (
