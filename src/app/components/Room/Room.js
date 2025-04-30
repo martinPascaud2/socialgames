@@ -14,6 +14,7 @@ import Image from "next/image";
 import Pusher from "pusher-js";
 import QRCode from "react-qr-code";
 import useWake from "@/utils/useWake";
+import usePreventBackSwipe from "@/utils/usePreventBackSwipe";
 
 import usePreventScroll from "@/utils/usePreventScroll";
 import genToken from "@/utils/genToken";
@@ -165,6 +166,7 @@ export default function Room({
 }) {
   usePreventScroll();
   const { isSupported, isVisible, released, request, release } = useWake();
+  usePreventBackSwipe();
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -1095,26 +1097,6 @@ export default function Room({
     }
   }, [isStarted, isLaunching, isLaunched]);
   // ------------------------------
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const blockNavigation = () => {
-      window.history.pushState(null, "", window.location.href);
-    };
-
-    blockNavigation();
-
-    const handlePopState = (event) => {
-      blockNavigation();
-    };
-
-    window.addEventListener("popstate", handlePopState);
-
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, []);
 
   if (joinError) {
     return (
