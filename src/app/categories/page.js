@@ -90,6 +90,9 @@ export default async function CategoriesPage() {
     "use server";
     const userId = user.id;
 
+    const isLobbyCode = friendCode.includes("invitation");
+    if (isLobbyCode) return { error: "lobby_code" };
+
     const codeParams = friendCode.split(";");
     const friendId = parseInt(codeParams[0].split("=")[1]);
     const friendMail = codeParams[1].split("=")[1];

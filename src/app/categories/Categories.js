@@ -2711,11 +2711,16 @@ export default function Categories({
       let userLocation;
       setScanLocked(true);
       // userLocation = await getLocation();
+
       const { error: addFriendError } = await addFriend({
         userLocation,
         friendCode: decodedText,
       });
       if (addFriendError) {
+        if (addFriendError === "lobby_code") {
+          router.push(decodedText);
+          return;
+        }
         setServerMessage(addFriendError);
         setSetting("");
       }
