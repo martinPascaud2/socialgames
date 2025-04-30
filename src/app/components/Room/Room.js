@@ -2058,7 +2058,8 @@ export default function Room({
               height: `calc(100dvh - ${barsSizes.top / 4}rem - ${
                 barsSizes.bottom / 4
               }rem)`,
-              // marginTop: `${barsSizes.top / 4}rem`,
+              paddingTop: `${barsSizes.top / 4}rem`,
+              paddingBottom: `${barsSizes.bottom / 4}rem`,
             }}
           >
             <div className="w-full h-full">
