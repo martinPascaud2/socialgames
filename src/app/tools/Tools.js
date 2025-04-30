@@ -4,6 +4,8 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
+import usePreventBackSwipe from "@/utils/usePreventBackSwipe";
+
 import { audios } from "./audios";
 
 console.log("audios", audios);
@@ -61,6 +63,7 @@ const Buzzer = () => {
 };
 
 export default function Tools({ user }) {
+  usePreventBackSwipe();
   const { params: userParams } = user;
   const barsSizes = useMemo(
     () => ({

@@ -9,6 +9,7 @@ import { postGamesList } from "@/assets/globals";
 import { ChevronRightIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 
 import formatDate from "@/utils/formatDate";
+import usePreventBackSwipe from "@/utils/usePreventBackSwipe";
 
 import ThreeSmoke from "@/components/Room/ThreeSmoke";
 import { StaticNextStep } from "@/components/NextStep";
@@ -120,6 +121,7 @@ const TriactionPG = ({ postGame, userName }) => {
 };
 
 export default function PostGame({ user, postGames }) {
+  usePreventBackSwipe();
   const { params: userParams } = user;
   const barsSizes = useMemo(
     () => ({

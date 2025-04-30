@@ -6,10 +6,12 @@ import { useSearchParams } from "next/navigation";
 import { postGamesList } from "@/assets/globals";
 
 import formatDate from "@/utils/formatDate";
+import usePreventBackSwipe from "@/utils/usePreventBackSwipe";
 
 import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 
 export default function Historical({ barsSizes, postGames }) {
+  usePreventBackSwipe();
   const searchParams = useSearchParams();
   const searchGame = searchParams.get("game") || postGamesList[0].game;
 
