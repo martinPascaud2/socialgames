@@ -67,7 +67,7 @@ export function CornerTriangle({
       </svg>
 
       <div
-        className={`absolute bg-transparent rotate-45`}
+        className={`fixed bg-transparent rotate-45`}
         style={{
           width: dimension,
           height: dimension,
