@@ -324,7 +324,7 @@ export default function Triaction({
 
   useEffect(() => {
     // if (phase !== "write") return;
-    if (phase !== "write" || !hasReload) return;
+    if (phase !== "write" || !hasReload || !Object.keys(actions).length) return;
     let ready = true;
     if (Object.keys(actions).length < 3) ready = false;
     Object.values(actions).forEach((action) => {
