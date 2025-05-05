@@ -70,11 +70,13 @@ export default function TriactionKeyboard({
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("touchstart", handleClickOutside);
+    // document.addEventListener("touchstart", handleClickOutside);
+    document.addEventListener("touchend", handleClickOutside);
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside);
+      //   document.removeEventListener("touchstart", handleClickOutside);
+      document.removeEventListener("touchend", handleClickOutside);
     };
   }, [onClose]);
 
