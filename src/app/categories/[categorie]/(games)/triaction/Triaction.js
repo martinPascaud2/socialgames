@@ -19,7 +19,7 @@ import {
 import { vampiro } from "@/assets/fonts";
 
 import Input from "@/components/keyboard/Input";
-import Keyboard from "@/components/keyboard/Keyboard";
+import TriactionKeyboard from "@/components/keyboard/TriactionKeyboard";
 import WrittenCard from "./WrittenCard";
 import NextEndingPossibilities from "@/components/NextEndingPossibilities";
 import Disconnected from "@/components/disconnection/Disconnected";
@@ -592,7 +592,7 @@ export default function Triaction({
                 </div>
               ))}
               {showedKeyboard && (
-                <Keyboard
+                <TriactionKeyboard
                   setInput={(func) => {
                     setActions((prevActions) => {
                       const newActions = {
@@ -609,6 +609,18 @@ export default function Triaction({
                     setActiveInput(null);
                   }}
                   onValidate={async () => {}}
+                  select={{
+                    onUp: () =>
+                      setActiveInput((prevActive) => {
+                        if (prevActive === 1) return 3;
+                        return prevActive - 1;
+                      }),
+                    onDown: () =>
+                      setActiveInput((prevActive) => {
+                        if (prevActive === 3) return 1;
+                        return prevActive + 1;
+                      }),
+                  }}
                 />
               )}
 
