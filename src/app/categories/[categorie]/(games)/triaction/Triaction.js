@@ -340,16 +340,16 @@ export default function Triaction({
     //     JSON.stringify({ actions, roomToken })
     //   );
     // }
-    const timeout = setTimeout(() => {
-      if (Object.keys(actions).length) {
-        localStorage.setItem(
-          "SGTriaction_writtenActions",
-          JSON.stringify({ actions, roomToken })
-        );
-      }
-    }, 500);
+    // const timeout = setTimeout(() => {
+    //   if (Object.keys(actions).length) {
+    //     localStorage.setItem(
+    //       "SGTriaction_writtenActions",
+    //       JSON.stringify({ actions, roomToken })
+    //     );
+    //   }
+    // }, 500);
 
-    return () => clearTimeout(timeout);
+    // return () => clearTimeout(timeout);
   }, [actions, roomToken]);
 
   const sendBack = async () => {
