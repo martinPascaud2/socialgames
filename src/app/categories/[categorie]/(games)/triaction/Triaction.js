@@ -599,14 +599,23 @@ export default function Triaction({
               {/* {showedKeyboard && ( */}
               <TriactionKeyboard
                 setInput={(func) => {
-                  setActions((prevActions) => {
-                    const newActions = {
-                      ...prevActions,
-                      [activeInput]: capitalizeFirstLetter(
-                        func(prevActions[activeInput])
-                      ),
+                  // setActions((prevActions) => {
+                  //   const newActions = {
+                  //     ...prevActions,
+                  //     [activeInput]: capitalizeFirstLetter(
+                  //       func(prevActions[activeInput])
+                  //     ),
+                  //   };
+                  //   return newActions;
+                  // });
+                  setActions((prev) => {
+                    if (activeInput == null) return prev;
+                    const prevValue = prev[activeInput] || "";
+                    const newValue = func(prevValue);
+                    return {
+                      ...prev,
+                      [activeInput]: capitalizeFirstLetter(newValue),
                     };
-                    return newActions;
                   });
                 }}
                 onClose={() => {
