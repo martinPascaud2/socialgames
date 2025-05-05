@@ -503,18 +503,33 @@ export default function Triaction({
     if (showChoose === "waiting" && chooseTimeout) clearTimeout(chooseTimeout);
   }, [showChoose, chooseTimeout]);
 
-  const handleSetInput = useCallback(
-    (func) => {
-      setActions((prevActions) => {
-        const newActions = {
-          ...prevActions,
-          [activeInput]: capitalizeFirstLetter(func(prevActions[activeInput])),
-        };
-        return newActions;
-      });
-    },
-    [setActions, activeInput]
-  );
+  // const handleSetInput = useCallback(
+  //   (func) => {
+  //     setActions((prevActions) => {
+  //       const newActions = {
+  //         ...prevActions,
+  //         [activeInput]: capitalizeFirstLetter(func(prevActions[activeInput])),
+  //       };
+  //       return newActions;
+  //     });
+  //   },
+  //   [setActions, activeInput]
+  // );
+  const activeInputRef = useRef(activeInput);
+  useEffect(() => {
+    activeInputRef.current = activeInput;
+  }, [activeInput]);
+
+  const handleSetInput = useCallback((func) => {
+    setActions((prevActions) => {
+      const currentInput = activeInputRef.current;
+      const newValue = func(prevActions[currentInput] || "");
+      return {
+        ...prevActions,
+        [currentInput]: capitalizeFirstLetter(newValue),
+      };
+    });
+  }, []);
 
   return (
     <div className="flex flex-col items-center justify-start h-full w-full relative overflow-y-auto animate-[fadeIn_1.5s_ease-in-out] relative">
