@@ -6,37 +6,59 @@ export default function Input({
   active,
   placeholder,
   deactivated,
+  outlineColor = { unactive: "#374151", active: "#b45309" }, // gray-700 amber-700
+  backgroundColor = {
+    deactivated: "#9ca3af",
+    unactive: "#f3f4f6",
+    active: "#fef3c7",
+  }, // gray-400 gray-100 // amber-100
+  placeholderColor = {
+    unactive: "#9ca3af",
+    active: "#38bdf8",
+  }, // gray-400 sky-400
+  inputColor = { unactive: "#374151", active: "#b45309" }, // gray-700 amber-700
+  font,
+  rounded = "",
+  minHeight = "2rem",
 }) {
-  let backgroundColor;
+  let bgColor;
   if (deactivated) {
-    backgroundColor = "#9ca3af"; // gray-400
+    bgColor = backgroundColor.deactivated;
   } else if (!active) {
-    backgroundColor = "#f3f4f6"; // gray-100
+    bgColor = backgroundColor.unactive;
   } else {
-    backgroundColor = "#fef3c7"; // amber-100
+    bgColor = backgroundColor.active;
   }
 
   return (
     <div
       onClick={() => !deactivated && openKeyboard()}
-      className={`w-full h-fit min-h-full outline rounded flex justify-center items-center relative`}
+      className={`w-full rounded${rounded} flex justify-center items-center relative ${font?.className}`}
       style={{
-        backgroundColor,
-        outlineColor: !active ? "#374151" : "#b45309", // gray-700 amber-700
+        backgroundColor: bgColor,
+        outlineStyle: outlineColor !== null ? "solid" : "",
+        outlineColor: outlineColor
+          ? !active
+            ? outlineColor.unactive
+            : outlineColor.active
+          : "", // gray-700 amber-700
+        minHeight,
       }}
     >
       <span
         className="z-10 p-1 text-amber-700 rounded-full"
         style={{
-          backgroundColor,
-          color: !active ? "#374151" : "#b45309", // gray-700 amber-700
+          backgroundColor: bgColor,
+          color: !active ? inputColor.unactive : inputColor.active, // gray-700 amber-700
         }}
       >
         {input}
       </span>
       <div
         className="absolute right-0 bottom-0 text-sm z-0 pr-1"
-        style={{ color: !active ? "#9ca3af" : "#38bdf8" }} // gray-400 sky-400
+        style={{
+          color: !active ? placeholderColor.unactive : placeholderColor.active,
+        }} // gray-400 sky-400
       >
         {placeholder}
       </div>

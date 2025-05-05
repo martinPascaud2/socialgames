@@ -47,12 +47,8 @@ const PreparingPhase = ({
   roomId,
   roomToken,
   isAdmin,
-  user,
   setShowNext,
 }) => {
-  const { params: userParams } = user;
-  const bottomBarSize = userParams?.bottomBarSize || 8;
-
   const [showedControls, setShowedControls] = useState(false);
   const [showedToggle, setShowedToggle] = useState(false);
   const [showedInfo, setShowedInfo] = useState(false);
@@ -225,7 +221,6 @@ const PreparingPhase = ({
                     setShowNext(true);
                     setShowedControls(true);
                   }}
-                  bottomBarSize={bottomBarSize}
                 />
               )}
             </>
@@ -299,7 +294,6 @@ const PreparingPhase = ({
                     });
                     setInput("");
                   }}
-                  bottomBarSize={bottomBarSize}
                 />
               )}
             </div>
@@ -342,10 +336,7 @@ const PreparingPhase = ({
   );
 };
 
-const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin, user }) => {
-  const { params: userParams } = user;
-  const bottomBarSize = userParams?.bottomBarSize || 8;
-
+const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
   const [input, setInput] = useState("");
   const [showedKeyboard, setShowedKeyboard] = useState(false);
 
@@ -560,7 +551,6 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin, user }) => {
                 setIsEditing(null);
                 setShowedKeyboard(false);
               }}
-              bottomBarSize={bottomBarSize}
             />
           )}
         </>
@@ -1001,7 +991,6 @@ export default function Podium({
           roomId={roomId}
           roomToken={roomToken}
           isAdmin={isAdmin}
-          user={user}
           setShowNext={setShowNext}
         />
       )}
@@ -1012,7 +1001,6 @@ export default function Podium({
           roomId={roomId}
           roomToken={roomToken}
           isAdmin={isAdmin}
-          user={user}
         />
       )}
 

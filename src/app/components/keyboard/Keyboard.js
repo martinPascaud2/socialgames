@@ -22,14 +22,10 @@ const englishLayout = [
   ["Delete", "Enter", "Space"],
 ];
 
-export default function Keyboard({
-  setInput,
-  onClose,
-  onValidate,
-  bottomBarSize,
-}) {
+export default function Keyboard({ setInput, onClose, onValidate }) {
   const contextValue = useUserContext();
   const { userParams } = contextValue;
+  const bottomBarSize = userParams?.bottomBarSize || 8;
   const keyboard = userParams?.keyboard;
   const language = keyboard?.language || "AZERTY";
   let layoutLanguage;
@@ -48,13 +44,13 @@ export default function Keyboard({
     if (key.startsWith("Empty")) {
       return;
     } else if (key === "Space") {
-      setInput((prev) => prev + " ");
+      setInput((prev) => (prev || "") + " ");
     } else if (key === "Delete") {
-      setInput((prev) => prev.slice(0, -1));
+      setInput((prev) => (prev || "").slice(0, -1));
     } else if (key === "Enter") {
       await onValidate();
     } else {
-      setInput((prev) => prev + key);
+      setInput((prev) => (prev || "") + key);
     }
   };
 

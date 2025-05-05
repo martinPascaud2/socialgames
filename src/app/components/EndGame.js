@@ -11,16 +11,7 @@ export default function EndGame({ gameData, user, isFirst = false }) {
   const router = useRouter();
 
   return (
-    <div
-      className={`flex items-center justify-center`}
-      style={{
-        marginTop: `${
-          user.params?.topBarSize && isFirst
-            ? `${user.params.topBarSize / 4}`
-            : 0.2
-        }rem`,
-      }}
-    >
+    <div className={`flex items-center justify-center`}>
       {isFirst && <div>Recherche de la prochaine partie...</div>}
 
       {!isFirst && !gameData?.nextGame && (

@@ -2053,11 +2053,8 @@ export default function Room({
         <ThreeSmoke />
         <UserContext.Provider value={{ userParams }}>
           <div
-            className={`z-[60] w-full relative`}
+            className={`z-[60] w-full h-full relative`}
             style={{
-              height: `calc(100dvh - ${barsSizes.top / 4}rem - ${
-                barsSizes.bottom / 4
-              }rem)`,
               paddingTop: `${barsSizes.top / 4}rem`,
               paddingBottom: `${barsSizes.bottom / 4}rem`,
             }}

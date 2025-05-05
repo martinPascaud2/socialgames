@@ -1,6 +1,6 @@
 "use client";
 
-import NextStep from "@/components/NextStep";
+import { StaticNextStep } from "@/components/NextStep";
 import FinishGame from "@/components/FinishGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import EndGame from "@/components/EndGame";
@@ -22,9 +22,9 @@ export default function NextEndingPossibilities({
 
   return (
     <div
-      className={`absolute bottom-0 w-full ${!showed ? "hidden" : ""}`}
+      className={`absolute w-full ${!showed ? "hidden" : ""}`}
       style={{
-        height: `${userParams?.bottomBarSize / 4 || 2}rem`,
+        bottom: `${userParams?.bottomBarSize / 4 || 2}rem`,
         pointerEvents: "none",
       }}
     >
@@ -45,9 +45,11 @@ export default function NextEndingPossibilities({
                 pointerEvents: "auto",
               }}
             >
-              <NextStep onClick={() => reset({ roomId, roomToken, gameData })}>
+              <StaticNextStep
+                onClick={() => reset({ roomId, roomToken, gameData })}
+              >
                 Encore
-              </NextStep>
+              </StaticNextStep>
 
               <div>
                 <ChooseOneMoreGame
@@ -60,7 +62,14 @@ export default function NextEndingPossibilities({
             </div>
           )
         ) : isEnded ? (
-          <EndGame gameData={gameData} user={user} />
+          <div
+            className="w-full h-full"
+            style={{
+              pointerEvents: "auto",
+            }}
+          >
+            <EndGame gameData={gameData} user={user} />
+          </div>
         ) : null}
       </div>
     </div>

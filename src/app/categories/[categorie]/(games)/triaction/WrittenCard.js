@@ -17,7 +17,7 @@ export default function WrittenCard({
   const router = useRouter();
 
   return (
-    <div className="w-[90%] rounded-md border border-lime-800 my-3 py-2 px-4 flex flex-col items-center shadow-lg shadow-lime-900 bg-lime-700">
+    <div className="w-[90%] rounded-md border border-lime-800 my-3 py-2 px-4 flex flex-col items-center shadow-lg shadow-slate-800 bg-lime-700">
       <label className="font-bold text-slate-100 tracking-wide">
         {data.label}
       </label>

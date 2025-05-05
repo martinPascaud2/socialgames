@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import "./ripple.css";
 
+import capitalizeFirstLetter from "@/utils/capitalizeFirstLetter";
+
 import { saveData } from "@/components/Room/actions";
 import { useLongPress, LongPressEventType } from "use-long-press";
 import {
@@ -16,6 +18,8 @@ import {
 
 import { vampiro } from "@/assets/fonts";
 
+import Input from "@/components/keyboard/Input";
+import Keyboard from "@/components/keyboard/Keyboard";
 import WrittenCard from "./WrittenCard";
 import NextEndingPossibilities from "@/components/NextEndingPossibilities";
 import Disconnected from "@/components/disconnection/Disconnected";
@@ -78,7 +82,7 @@ const RipplingButton = ({
   return (
     <button
       {...bind()}
-      className={`hold-button rounded-md border-0 w-full px-6 py-4 ${
+      className={`hold-button rounded-md border-0 w-full h-full px-6 py-4 ${
         !longPressed
           ? !isActive
             ? "bg-slate-400"
@@ -254,6 +258,8 @@ export default function Triaction({
   const isActive = gameData.activePlayer?.id === user.id;
   const [isValidated, setIsValidated] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [showedKeyboard, setShowedKeyboard] = useState(false);
+  const [activeInput, setActiveInput] = useState(null);
 
   const [aimed, setAimed] = useState();
   const place = gamers?.find((gamer) => gamer.name === user.name)?.place;
@@ -326,6 +332,12 @@ export default function Triaction({
       }
     });
     setReadyActions(ready);
+    if (Object.keys(actions).length) {
+      localStorage.setItem(
+        "SGTriaction_writtenActions",
+        JSON.stringify({ actions, roomToken })
+      );
+    }
   }, [actions]);
 
   const sendBack = async () => {
@@ -490,9 +502,9 @@ export default function Triaction({
   }, [showChoose, chooseTimeout]);
 
   return (
-    <div className="flex flex-col items-center justify-center h-full w-full relative overflow-y-auto animate-[fadeIn_1.5s_ease-in-out]">
+    <div className="flex flex-col items-center justify-start h-full w-full relative overflow-y-auto animate-[fadeIn_1.5s_ease-in-out] relative">
       {phase === "peek" && (
-        <>
+        <div className="h-full w-full flex flex-col items-center justify-center">
           <div className="mx-3 text-center">
             <div>Règle peek !</div>
             <div>Les joueurs choisissent leur cible</div>
@@ -526,19 +538,88 @@ export default function Triaction({
               );
             })}
           </div>
-        </>
+        </div>
       )}
 
       {phase === "write" && (
         <div className="w-[90%] m-2 flex flex-col items-center">
           {!waiting ? (
             <>
-              <RipplingButton
-                onLongPress={validate}
-                isValidated={isValidated}
-                setIsValidated={setIsValidated}
-                isActive={readyActions}
-              />
+              {[1, 2, 3].map((number) => (
+                <div
+                  key={number}
+                  className="w-full h-full rounded-md border border-lime-800 my-3 py-2 px-4 flex flex-col items-center shadow-lg shadow-gray-800 bg-lime-700"
+                >
+                  <label className="font-bold text-slate-100 tracking-wide">
+                    Action {number}
+                  </label>
+                  {!showConfirm ? (
+                    <div className="w-full h-full p-2">
+                      <Input
+                        input={actions[number]}
+                        openKeyboard={() => {
+                          setShowedKeyboard(true);
+                          setActiveInput(number);
+                        }}
+                        active={activeInput === number}
+                        placeholder={number}
+                        outlineColor={{
+                          unactive: "transparent",
+                          active: "#3f6212",
+                        }} // lime-800
+                        backgroundColor={{
+                          deactivated: "",
+                          unactive: "#ecfccb", // lime-100
+                          active: "#ecfccb", // lime-100
+                        }}
+                        placeholderColor={{
+                          unactive: "#9ca3af", // gray-400
+                          active: "#3f6212", // lime-800
+                        }}
+                        inputColor={{ unactive: "#9ca3af", active: "#3f6212" }} // gray-400 lime-800
+                        rounded="-none"
+                        font={vampiro}
+                        minHeight="3rem"
+                      />
+                    </div>
+                  ) : (
+                    <div
+                      className={`${vampiro.className} w-full p-2 m-2 text-center text-red-900 text-lg bg-lime-100 border-4 border-double border-lime-800`}
+                    >
+                      {actions[number]}
+                    </div>
+                  )}
+                </div>
+              ))}
+              {showedKeyboard && (
+                <Keyboard
+                  setInput={(func) => {
+                    setActions((prevActions) => {
+                      const newActions = {
+                        ...prevActions,
+                        [activeInput]: capitalizeFirstLetter(
+                          func(prevActions[activeInput])
+                        ),
+                      };
+                      return newActions;
+                    });
+                  }}
+                  onClose={() => {
+                    setShowedKeyboard(false);
+                    setActiveInput(null);
+                  }}
+                  onValidate={async () => {}}
+                />
+              )}
+
+              <div className="h-full w-full mt-4">
+                <RipplingButton
+                  onLongPress={validate}
+                  isValidated={isValidated}
+                  setIsValidated={setIsValidated}
+                  isActive={readyActions}
+                />
+              </div>
 
               {!showConfirm ? (
                 <div className="flex justify-center m-2 text-slate-900">
@@ -577,80 +658,23 @@ export default function Triaction({
                   </div>
                 </div>
               )}
-              {[1, 2, 3].map((number) => (
-                <div
-                  key={number}
-                  className="w-full rounded-md border border-lime-800 my-3 py-2 px-4 flex flex-col items-center shadow-lg shadow-lime-900 bg-lime-700"
-                >
-                  <label className="font-bold text-slate-100 tracking-wide">
-                    Action {number}
-                  </label>
-                  {!showConfirm ? (
-                    <textarea
-                      rows={2}
-                      value={actions[number]}
-                      onChange={(e) => {
-                        const newActions = {
-                          ...actions,
-                          [number]: e.target.value,
-                        };
-
-                        setActions(newActions);
-                        localStorage.setItem(
-                          "SGTriaction_writtenActions",
-                          JSON.stringify({ actions: newActions, roomToken })
-                        );
-                      }}
-                      className={`${vampiro.className} border border-lime-800 focus:outline-none focus:border-lime-800 focus:ring-1 focus:ring-inset focus:ring-lime-800 w-full p-2 m-2 text-center text-lg bg-slate-100 text-slate-900`}
-                    />
-                  ) : (
-                    <div
-                      className={`${vampiro.className} w-full p-2 m-2 text-center text-red-900 text-lg bg-lime-100 border-4 border-double border-lime-800`}
-                    >
-                      {actions[number]}
-                    </div>
-                  )}
-                </div>
-              ))}
             </>
           ) : (
-            <>
+            <div className="absolute w-full h-full flex flex-col justify-center items-center">
               <PendingGamerList gamers={gamers} senders={senders} />
 
               <div className="m-4">Les joueurs rédigent les actions</div>
-            </>
+            </div>
           )}
         </div>
       )}
 
       {phase === "exchange" && (
-        <>
+        <div className="w-full h-full flex flex-col justify-center items-center">
           {!isProposed ? (
             <>
               {!Object.keys(sentBack).length ? (
                 <div className="w-[90%] flex flex-col items-center">
-                  <RipplingButton
-                    onLongPress={sendBack}
-                    isValidated={isValidated}
-                    setIsValidated={setIsValidated}
-                    isActive={!!selected.id}
-                  />
-                  <div className="w-full flex text-center justify-center m-2">
-                    {!selected.id ? (
-                      <div>
-                        <span className="font-semibold">Sélectionne</span> une
-                        action à <span className="font-semibold">rendre</span> à
-                      </div>
-                    ) : (
-                      <div>
-                        <span className="font-semibold">Rendre</span> cette
-                        action à
-                      </div>
-                    )}
-                    <span className="font-semibold">
-                      &nbsp;{previous?.name}&nbsp;.
-                    </span>
-                  </div>
                   {actions &&
                     Object.entries(actions).map((action) => {
                       if (action[0] === "backed") return;
@@ -672,7 +696,13 @@ export default function Triaction({
                           }}
                           className={`${
                             selected?.id === action[0] && "bg-green-100"
-                          } w-full rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center`}
+                          } w-full rounded-md border my-2 p-2 flex flex-col items-center`}
+                          style={{
+                            borderColor:
+                              selected?.id === action[0]
+                                ? "#3f6212"
+                                : "#64748b",
+                          }} // lime-900 slate-500
                         >
                           <label>Action {action[0]}</label>
                           <div
@@ -683,31 +713,34 @@ export default function Triaction({
                         </div>
                       );
                     })}
-                </div>
-              ) : (
-                <div className="w-[90%] flex flex-col items-center">
-                  <RipplingButton
-                    onLongPress={propose}
-                    isValidated={isValidated}
-                    setIsValidated={setIsValidated}
-                    isActive={!!selected.id}
-                  />
-                  <div className="w-full flex text-center justify-center flex-wrap m-2">
+
+                  <div className="w-full h-full mt-4">
+                    <RipplingButton
+                      onLongPress={sendBack}
+                      isValidated={isValidated}
+                      setIsValidated={setIsValidated}
+                      isActive={!!selected.id}
+                    />
+                  </div>
+                  <div className="w-full flex text-center justify-center m-2">
                     {!selected.id ? (
                       <div>
                         <span className="font-semibold">Sélectionne</span> une
-                        action à <span className="font-semibold">proposer</span>{" "}
-                        à
+                        action à <span className="font-semibold">rendre</span> à
                       </div>
                     ) : (
                       <div>
-                        <span className="font-semibold">Proposer</span> à
+                        <span className="font-semibold">Rendre</span> cette
+                        action à
                       </div>
                     )}
                     <span className="font-semibold">
-                      &nbsp;{aimed?.name}&nbsp;.
+                      &nbsp;{previous?.name}&nbsp;.
                     </span>
                   </div>
+                </div>
+              ) : (
+                <div className="w-[90%] flex flex-col items-center">
                   {Object.entries(actions).map((action) => {
                     if (action[0] === "backed") return;
                     const isBacked = action[0] === sentBack.id;
@@ -730,9 +763,13 @@ export default function Triaction({
                         }}
                         className={`${
                           isBacked
-                            ? "bg-gray-300"
+                            ? "bg-slate-100"
                             : selected?.id === action[0] && "bg-green-100"
-                        } w-full rounded-md border border-slate-300 my-2 p-2 flex flex-col items-center`}
+                        } w-full rounded-md border my-2 p-2 flex flex-col items-center`}
+                        style={{
+                          borderColor:
+                            selected?.id === action[0] ? "#3f6212" : "#64748b", // lime-900 slate-500
+                        }}
                       >
                         <label>Action {action[0]}</label>
                         <div
@@ -743,6 +780,31 @@ export default function Triaction({
                       </div>
                     );
                   })}
+
+                  <div className="w-full h-full mt-4">
+                    <RipplingButton
+                      onLongPress={propose}
+                      isValidated={isValidated}
+                      setIsValidated={setIsValidated}
+                      isActive={!!selected.id}
+                    />
+                  </div>
+                  <div className="w-full flex text-center justify-center flex-wrap m-2">
+                    {!selected.id ? (
+                      <div>
+                        <span className="font-semibold">Sélectionne</span> une
+                        action à <span className="font-semibold">proposer</span>{" "}
+                        à
+                      </div>
+                    ) : (
+                      <div>
+                        <span className="font-semibold">Proposer</span> à
+                      </div>
+                    )}
+                    <span className="font-semibold">
+                      &nbsp;{aimed?.name}&nbsp;.
+                    </span>
+                  </div>
                 </div>
               )}
             </>
@@ -754,12 +816,12 @@ export default function Triaction({
               </div>
             </>
           )}
-        </>
+        </div>
       )}
 
       {phase === "choose" && (
         <div
-          className="w-full h-full flex flex-col justify-center items-center bg-gray-400"
+          className="w-full h-full flex flex-col justify-center items-center"
           onClick={() => {
             clearTimeout(chooseTimeout);
             let newChoose;
@@ -865,24 +927,26 @@ export default function Triaction({
           };
 
           return (
-            <>
+            <div className="w-full h-full flex flex-col items-center justify-center">
               <WrittenCard data={backed} />
               <WrittenCard data={kept} />
               <WrittenCard data={proposedBack} />
-            </>
+            </div>
           );
         })()}
 
-      <NextEndingPossibilities
-        isAdmin={isAdmin}
-        isEnded={isEnded}
-        gameData={gameData}
-        roomToken={roomToken}
-        roomId={roomId}
-        reset={() => console.log("to be done")}
-        storedLocation={storedLocation}
-        user={user}
-      />
+      {!showedKeyboard && (
+        <NextEndingPossibilities
+          isAdmin={isAdmin}
+          isEnded={isEnded}
+          gameData={gameData}
+          roomToken={roomToken}
+          roomId={roomId}
+          reset={() => console.log("to be done")}
+          storedLocation={storedLocation}
+          user={user}
+        />
+      )}
 
       <Disconnected
         roomId={roomId}
