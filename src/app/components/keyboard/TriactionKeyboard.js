@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { useUserContext } from "../Room/Room";
@@ -24,12 +24,8 @@ const englishLayout = [
 ];
 //   ["Delete", "Enter", "Space"],
 
-export default function TriactionKeyboard({
-  setInput,
-  onClose,
-  onValidate,
-  select,
-}) {
+// export default function TriactionKeyboard({
+function TriactionKeyboard({ setInput, onClose, onValidate, select }) {
   const contextValue = useUserContext();
   const { userParams } = contextValue;
   const bottomBarSize = userParams?.bottomBarSize || 8;
@@ -270,3 +266,5 @@ export default function TriactionKeyboard({
     document.body
   );
 }
+
+export default React.memo(TriactionKeyboard);
