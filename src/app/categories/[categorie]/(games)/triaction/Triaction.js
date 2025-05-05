@@ -341,16 +341,16 @@ export default function Triaction({
     //     JSON.stringify({ actions, roomToken })
     //   );
     // }
-    const timeout = setTimeout(() => {
-      if (Object.keys(actions).length) {
-        localStorage.setItem(
-          "SGTriaction_writtenActions",
-          JSON.stringify({ actions, roomToken })
-        );
-      }
-    }, 500);
+    // const timeout = setTimeout(() => {
+    //   if (Object.keys(actions).length) {
+    //     localStorage.setItem(
+    //       "SGTriaction_writtenActions",
+    //       JSON.stringify({ actions, roomToken })
+    //     );
+    //   }
+    // }, 500);
 
-    return () => clearTimeout(timeout);
+    // return () => clearTimeout(timeout);
     // }, [actions, roomToken, phase]);
   }, [actions, roomToken, phase, hasReload]);
   // }, [actions]);
@@ -449,25 +449,21 @@ export default function Triaction({
     const reload = async () => {
       if (hasReload || !gameData) return;
       setWaiting(senders?.some((sender) => sender.name === user.name));
-      const storedWrittenActions = JSON.parse(
-        localStorage.getItem("SGTriaction_writtenActions")
-      );
-      (storedWrittenActions || gameData.actions) &&
-        setActions((prevActions) => {
-          if (phase === "write") {
-            // const storedWrittenActions =
-            //   JSON.parse(localStorage.getItem("SGTriaction_writtenActions")) ||
-            //   {};
-            const savedToken = storedWrittenActions.roomToken;
-            const savedWrittenActions = storedWrittenActions.actions;
-            if (savedToken === roomToken) return savedWrittenActions;
-          } else if (phase === "exchange") {
-            const actions = { ...gameData.actions[user.name] };
-            delete actions.backed;
-            return actions;
-          }
-          return prevActions;
-        });
+      setActions((prevActions) => {
+        if (phase === "write") {
+          const storedWrittenActions =
+            JSON.parse(localStorage.getItem("SGTriaction_writtenActions")) ||
+            {};
+          const savedToken = storedWrittenActions.roomToken;
+          const savedWrittenActions = storedWrittenActions.actions;
+          if (savedToken === roomToken) return savedWrittenActions;
+        } else if (phase === "exchange") {
+          const actions = { ...gameData.actions[user.name] };
+          delete actions.backed;
+          return actions;
+        }
+        return prevActions;
+      });
       setSentBack((prevSentBack) => {
         if (gameData.backedActions && gameData.backedActions[user.name])
           return gameData.backedActions[user.name];
@@ -536,16 +532,30 @@ export default function Triaction({
     activeInputRef.current = activeInput;
   }, [activeInput]);
 
-  const handleSetInput = useCallback((func) => {
-    setActions((prevActions) => {
-      const currentInput = activeInputRef.current;
-      const newValue = func(prevActions[currentInput] || "");
-      return {
-        ...prevActions,
-        [currentInput]: capitalizeFirstLetter(newValue),
-      };
-    });
-  }, []);
+  const handleSetInput = useCallback(
+    (func) => {
+      setActions((prevActions) => {
+        const currentInput = activeInputRef.current;
+        const newValue = func(prevActions[currentInput] || "");
+        const updated = {
+          ...prevActions,
+          [currentInput]: capitalizeFirstLetter(newValue),
+        };
+
+        localStorage.setItem(
+          "SGTriaction_writtenActions",
+          JSON.stringify({ actions: updated, roomToken })
+        );
+
+        // return {
+        //   ...prevActions,
+        //   [currentInput]: capitalizeFirstLetter(newValue),
+        // };
+        return updated;
+      });
+    },
+    [roomToken]
+  );
 
   return (
     <div className="flex flex-col items-center justify-start h-full w-full relative overflow-y-auto animate-[fadeIn_1.5s_ease-in-out] relative">
