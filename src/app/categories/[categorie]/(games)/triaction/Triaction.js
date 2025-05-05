@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import "./ripple.css";
 
 import capitalizeFirstLetter from "@/utils/capitalizeFirstLetter";
-import getAreSimilar from "./getAreSimilar";
+// import getAreSimilar from "./getAreSimilar";
 
 import { saveData } from "@/components/Room/actions";
 import { useLongPress, LongPressEventType } from "use-long-press";
@@ -332,7 +332,7 @@ export default function Triaction({
         return;
       }
     });
-    if (getAreSimilar(actions)) ready = false;
+    // if (getAreSimilar(actions)) ready = false;
     setReadyActions(ready);
     if (Object.keys(actions).length) {
       localStorage.setItem(
