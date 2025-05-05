@@ -47,7 +47,8 @@ export default function TriactionKeyboard({
   const [mounted, setMounted] = useState(false);
   const keyboardRef = useRef();
 
-  const handleKeyClick = async (key) => {
+  //   const handleKeyClick = async (key) => {
+  const handleKeyClick = (key) => {
     if (key.startsWith("Empty")) {
       return;
     } else if (key === "Space") {
@@ -55,7 +56,8 @@ export default function TriactionKeyboard({
     } else if (key === "Delete") {
       setInput((prev) => (prev || "").slice(0, -1));
     } else if (key === "Enter") {
-      await onValidate();
+      //   await onValidate();
+      onValidate();
     } else {
       setInput((prev) => (prev || "") + key);
     }
@@ -128,9 +130,9 @@ export default function TriactionKeyboard({
                           //     e.stopPropagation();
                           //     await handleKeyClick(key);
                           //   }}
-                          onClick={async (e) => {
-                            e.stopPropagation();
-                            await handleKeyClick(key);
+                          onClick={(e) => {
+                            // e.stopPropagation();
+                            handleKeyClick(key);
                           }}
                           className={`bg-gray-100 border border-gray-700 text-gray-700 font-semibold py-1 px-2 rounded-xl transition relative h-8 ${
                             isEmpty ? "collapse " : ""
