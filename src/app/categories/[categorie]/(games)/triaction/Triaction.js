@@ -585,10 +585,13 @@ export default function Triaction({
                       />
                     </div>
                   ) : (
-                    <div
-                      className={`${vampiro.className} w-full p-2 m-2 text-center text-red-900 text-lg bg-lime-100 border-4 border-double border-lime-800`}
-                    >
-                      {actions[number]}
+                    <div className="w-full h-full p-1">
+                      <div
+                        className={`${vampiro.className} w-full p-2 mb-1 text-center text-red-900 text-lg bg-lime-100 border-4 border-double border-lime-800`}
+                        style={{ minHeight: "3rem" }}
+                      >
+                        {actions[number]}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -626,13 +629,41 @@ export default function Triaction({
                 />
               )}
 
-              <div className="h-full w-full mt-4">
-                <RipplingButton
-                  onLongPress={validate}
-                  isValidated={isValidated}
-                  setIsValidated={setIsValidated}
-                  isActive={readyActions}
-                />
+              <div
+                onClick={() => {
+                  if (!readyActions || isValidated) return;
+                  setIsValidated(true);
+                  validate();
+                }}
+                className={`rounded-md w-full h-full px-6 py-4 ${
+                  !isValidated
+                    ? !readyActions
+                      ? "bg-slate-400"
+                      : "bg-red-800"
+                    : "bg-lime-800"
+                }  text-slate-100 overflow-hidden relative flex justify-center items-center`}
+              >
+                <span className="relative z-2 select-none">
+                  {!isValidated ? "Envoyer" : "Vraiment ?"}
+                </span>
+                {isValidated && (
+                  <div className="absolute w-full h-full">
+                    <div className="w-full h-full relative">
+                      <div
+                        onClick={() => confirm()}
+                        className="absolute left-[20%] top-1/2 translate-y-[-50%] border border-lime-800 bg-lime-100 text-lime-800 py-1 px-2 font-semibold rounded-md"
+                      >
+                        Oui
+                      </div>
+                      <div
+                        onClick={() => cancel()}
+                        className="absolute right-[20%] top-1/2 translate-y-[-50%] border border-red-800 bg-red-100 text-red-800 py-1 px-2 font-semibold rounded-md"
+                      >
+                        Non
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {!showConfirm ? (
@@ -654,21 +685,7 @@ export default function Triaction({
               ) : (
                 <div className="flex flex-col w-[90%]">
                   <div className="flex justify-center text-center m-2">
-                    Ces trois gages ne seront plus modifiables, tu confirmes ?
-                  </div>
-                  <div className="flex justify-evenly w-full">
-                    <button
-                      onClick={() => confirm()}
-                      className="rounded-md border border-lime-800 bg-lime-600 text-slate-100 font-bold tracking-wide px-4 py-2"
-                    >
-                      Confirmer
-                    </button>
-                    <button
-                      onClick={() => cancel()}
-                      className="rounded-md border border-red-800 bg-red-600 text-slate-100 font-bold tracking-wide px-4 py-2"
-                    >
-                      Modifier
-                    </button>
+                    Ces trois actions ne seront plus modifiables, tu confirmes ?
                   </div>
                 </div>
               )}

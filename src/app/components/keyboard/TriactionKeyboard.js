@@ -8,7 +8,6 @@ import { useUserContext } from "../Room/Room";
 import { FaCheck } from "react-icons/fa";
 import { FiDelete } from "react-icons/fi";
 import { FaChevronUp, FaChevronDown } from "react-icons/fa";
-import { FiChevronUp, FiChevronDown } from "react-icons/fi";
 
 const frenchLayout = [
   ["A", "Z", "E", "R", "T", "Y", "U", "I", "O", "P"],
@@ -21,9 +20,9 @@ const englishLayout = [
   ["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
   ["A", "S", "D", "F", "G", "H", "J", "K", "L", "M"],
   ["Z", "X", "C", "Empty", "Empty", "Empty", "Empty", "V", "B", "N"],
-  //   ["Delete", "Enter", "Space"],
   ["Delete", "UpDown", "Space"],
 ];
+//   ["Delete", "Enter", "Space"],
 
 export default function TriactionKeyboard({
   setInput,

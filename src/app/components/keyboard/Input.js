@@ -46,7 +46,7 @@ export default function Input({
       }}
     >
       <span
-        className="z-10 p-1 text-amber-700 rounded-full"
+        className="z-10 p-1 text-amber-700 rounded-full text-center"
         style={{
           backgroundColor: bgColor,
           color: !active ? inputColor.unactive : inputColor.active, // gray-700 amber-700
