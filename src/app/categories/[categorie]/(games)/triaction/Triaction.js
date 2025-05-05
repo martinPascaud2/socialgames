@@ -323,8 +323,7 @@ export default function Triaction({
   }, [phase, gamers]);
 
   useEffect(() => {
-    // if (phase !== "write") return;
-    if (phase !== "write" || !hasReload) return;
+    if (phase !== "write") return;
     let ready = true;
     if (Object.keys(actions).length < 3) ready = false;
     Object.values(actions).forEach((action) => {
@@ -352,7 +351,7 @@ export default function Triaction({
 
     // return () => clearTimeout(timeout);
     // }, [actions, roomToken, phase]);
-  }, [actions, roomToken, phase, hasReload]);
+  }, [actions, phase]);
   // }, [actions]);
 
   const sendBack = async () => {
