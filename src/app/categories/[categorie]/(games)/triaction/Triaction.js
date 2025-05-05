@@ -640,23 +640,26 @@ export default function Triaction({
                 // }}
 
                 setInput={handleSetInput}
-                onClose={() => {
-                  setShowedKeyboard(false);
-                  setActiveInput(null);
-                }}
-                onValidate={async () => {}}
-                select={{
-                  onUp: () =>
-                    setActiveInput((prevActive) => {
-                      if (prevActive === 1) return 3;
-                      return prevActive - 1;
-                    }),
-                  onDown: () =>
-                    setActiveInput((prevActive) => {
-                      if (prevActive === 3) return 1;
-                      return prevActive + 1;
-                    }),
-                }}
+                // onClose={() => {
+                //   setShowedKeyboard(false);
+                //   setActiveInput(null);
+                // }}
+                // onValidate={async () => {}}
+                // select={{
+                //   onUp: () =>
+                //     setActiveInput((prevActive) => {
+                //       if (prevActive === 1) return 3;
+                //       return prevActive - 1;
+                //     }),
+                //   onDown: () =>
+                //     setActiveInput((prevActive) => {
+                //       if (prevActive === 3) return 1;
+                //       return prevActive + 1;
+                //     }),
+                // }}
+                onClose={() => {}}
+                onValidate={() => {}}
+                select={null}
               />
               {/* )} */}
 
