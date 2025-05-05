@@ -132,7 +132,7 @@ export default function TriactionKeyboard({
                             isEmpty ? "collapse " : ""
                           }`}
                           style={{
-                            touchAction: "manipulation",
+                            // touchAction: "manipulation",
                             width: `10%`,
                           }}
                         >
