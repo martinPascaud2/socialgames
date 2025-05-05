@@ -350,7 +350,7 @@ export default function Triaction({
     }, 500);
 
     return () => clearTimeout(timeout);
-  }, [actions, roomToken]);
+  }, [actions, roomToken, phase]);
   // }, [actions]);
 
   const sendBack = async () => {
@@ -444,6 +444,7 @@ export default function Triaction({
     save();
   }, [gameData, hasReload, isAdmin, roomId]);
   useEffect(() => {
+    return;
     const reload = async () => {
       if (hasReload || !gameData) return;
       setWaiting(senders?.some((sender) => sender.name === user.name));
