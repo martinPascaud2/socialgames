@@ -350,7 +350,7 @@ export default function Triaction({
     // }, 500);
 
     // return () => clearTimeout(timeout);
-  }, [actions]);
+  }, [actions, roomToken]);
 
   const sendBack = async () => {
     setSentBack(selected);
