@@ -503,6 +503,19 @@ export default function Triaction({
     if (showChoose === "waiting" && chooseTimeout) clearTimeout(chooseTimeout);
   }, [showChoose, chooseTimeout]);
 
+  const handleSetInput = useCallback(
+    (func) => {
+      setActions((prevActions) => {
+        const newActions = {
+          ...prevActions,
+          [activeInput]: capitalizeFirstLetter(func(prevActions[activeInput])),
+        };
+        return newActions;
+      });
+    },
+    [setActions, activeInput]
+  );
+
   return (
     <div className="flex flex-col items-center justify-start h-full w-full relative overflow-y-auto animate-[fadeIn_1.5s_ease-in-out] relative">
       {phase === "peek" && (
@@ -598,26 +611,20 @@ export default function Triaction({
               ))}
               {/* {showedKeyboard && ( */}
               <TriactionKeyboard
-                setInput={(func) => {
-                  // setActions((prevActions) => {
-                  //   const newActions = {
-                  //     ...prevActions,
-                  //     [activeInput]: capitalizeFirstLetter(
-                  //       func(prevActions[activeInput])
-                  //     ),
-                  //   };
-                  //   return newActions;
-                  // });
-                  setActions((prev) => {
-                    if (activeInput == null) return prev;
-                    const prevValue = prev[activeInput] || "";
-                    const newValue = func(prevValue);
-                    return {
-                      ...prev,
-                      [activeInput]: capitalizeFirstLetter(newValue),
-                    };
-                  });
-                }}
+                // setInput={(func) => {
+                //   setActions((prevActions) => {
+                //     const newActions = {
+                //       ...prevActions,
+                //       [activeInput]: capitalizeFirstLetter(
+                //         func(prevActions[activeInput])
+                //       ),
+                //     };
+                //     return newActions;
+                //   });
+
+                // }}
+
+                setInput={handleSetInput}
                 onClose={() => {
                   setShowedKeyboard(false);
                   setActiveInput(null);

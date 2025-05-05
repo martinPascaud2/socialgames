@@ -126,19 +126,19 @@ export default function TriactionKeyboard({
                       return (
                         <div
                           key={j}
-                          //   onPointerDown={async (e) => {
-                          //     e.stopPropagation();
-                          //     await handleKeyClick(key);
-                          //   }}
-                          onClick={(e) => {
-                            // e.stopPropagation();
-                            handleKeyClick(key);
+                          onPointerDown={async (e) => {
+                            e.stopPropagation();
+                            await handleKeyClick(key);
                           }}
+                          //   onClick={(e) => {
+                          // e.stopPropagation();
+                          // handleKeyClick(key);
+                          //   }}
                           className={`bg-gray-100 border border-gray-700 text-gray-700 font-semibold py-1 px-2 rounded-xl transition relative h-8 ${
                             isEmpty ? "collapse " : ""
                           }`}
                           style={{
-                            // touchAction: "manipulation",
+                            touchAction: "manipulation",
                             width: `10%`,
                           }}
                         >
@@ -218,7 +218,7 @@ export default function TriactionKeyboard({
                         case "UpDown":
                           layout = (
                             <div key={key} className={`w-[${width}] h-6`}>
-                              <div className="absolute mb-4 h-8 w-full flex justify-center gap-1 bottom-0 left-0 translate-x-[–50%]">
+                              {/* <div className="absolute mb-4 h-8 w-full flex justify-center gap-1 bottom-0 left-0 translate-x-[–50%]">
                                 <div
                                   onClick={() => select.onUp()}
                                   className="bg-gray-100 border border-gray-700 text-gray-700 py-1 px-2 rounded-xl w-12 h-12 flex justify-center items-center"
@@ -231,7 +231,7 @@ export default function TriactionKeyboard({
                                     className="w-4/5 h-4/5"
                                   />
                                 </div>
-                              </div>
+                              </div> */}
                             </div>
                           );
                           break;
