@@ -323,7 +323,8 @@ export default function Triaction({
   }, [phase, gamers]);
 
   useEffect(() => {
-    if (phase !== "write") return;
+    // if (phase !== "write") return;
+    if (phase !== "write" || !hasReload) return;
     let ready = true;
     if (Object.keys(actions).length < 3) ready = false;
     Object.values(actions).forEach((action) => {
@@ -350,7 +351,8 @@ export default function Triaction({
     }, 500);
 
     return () => clearTimeout(timeout);
-  }, [actions, roomToken, phase]);
+    // }, [actions, roomToken, phase]);
+  }, [actions, roomToken, phase, hasReload]);
   // }, [actions]);
 
   const sendBack = async () => {
@@ -444,7 +446,6 @@ export default function Triaction({
     save();
   }, [gameData, hasReload, isAdmin, roomId]);
   useEffect(() => {
-    return;
     const reload = async () => {
       if (hasReload || !gameData) return;
       setWaiting(senders?.some((sender) => sender.name === user.name));
