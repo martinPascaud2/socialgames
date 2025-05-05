@@ -124,7 +124,11 @@ export default function TriactionKeyboard({
                       return (
                         <div
                           key={j}
-                          onPointerDown={async (e) => {
+                          //   onPointerDown={async (e) => {
+                          //     e.stopPropagation();
+                          //     await handleKeyClick(key);
+                          //   }}
+                          onClick={async (e) => {
                             e.stopPropagation();
                             await handleKeyClick(key);
                           }}
