@@ -334,12 +334,12 @@ export default function Triaction({
     });
     // if (getAreSimilar(actions)) ready = false;
     setReadyActions(ready);
-    if (Object.keys(actions).length) {
-      localStorage.setItem(
-        "SGTriaction_writtenActions",
-        JSON.stringify({ actions, roomToken })
-      );
-    }
+    // if (Object.keys(actions).length) {
+    //   localStorage.setItem(
+    //     "SGTriaction_writtenActions",
+    //     JSON.stringify({ actions, roomToken })
+    //   );
+    // }
   }, [actions]);
 
   const sendBack = async () => {
