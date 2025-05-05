@@ -596,38 +596,38 @@ export default function Triaction({
                   )}
                 </div>
               ))}
-              {showedKeyboard && (
-                <TriactionKeyboard
-                  setInput={(func) => {
-                    setActions((prevActions) => {
-                      const newActions = {
-                        ...prevActions,
-                        [activeInput]: capitalizeFirstLetter(
-                          func(prevActions[activeInput])
-                        ),
-                      };
-                      return newActions;
-                    });
-                  }}
-                  onClose={() => {
-                    setShowedKeyboard(false);
-                    setActiveInput(null);
-                  }}
-                  onValidate={async () => {}}
-                  select={{
-                    onUp: () =>
-                      setActiveInput((prevActive) => {
-                        if (prevActive === 1) return 3;
-                        return prevActive - 1;
-                      }),
-                    onDown: () =>
-                      setActiveInput((prevActive) => {
-                        if (prevActive === 3) return 1;
-                        return prevActive + 1;
-                      }),
-                  }}
-                />
-              )}
+              {/* {showedKeyboard && ( */}
+              <TriactionKeyboard
+                setInput={(func) => {
+                  setActions((prevActions) => {
+                    const newActions = {
+                      ...prevActions,
+                      [activeInput]: capitalizeFirstLetter(
+                        func(prevActions[activeInput])
+                      ),
+                    };
+                    return newActions;
+                  });
+                }}
+                onClose={() => {
+                  setShowedKeyboard(false);
+                  setActiveInput(null);
+                }}
+                onValidate={async () => {}}
+                select={{
+                  onUp: () =>
+                    setActiveInput((prevActive) => {
+                      if (prevActive === 1) return 3;
+                      return prevActive - 1;
+                    }),
+                  onDown: () =>
+                    setActiveInput((prevActive) => {
+                      if (prevActive === 3) return 1;
+                      return prevActive + 1;
+                    }),
+                }}
+              />
+              {/* )} */}
 
               <div
                 onClick={() => {
