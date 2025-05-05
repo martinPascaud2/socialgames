@@ -444,9 +444,8 @@ export default function Triaction({
     save();
   }, [gameData, hasReload, isAdmin, roomId]);
   useEffect(() => {
-    if (hasReload || !gameData) return;
-    // const reload = async () => {
-    const reload = () => {
+    const reload = async () => {
+      if (hasReload || !gameData) return;
       setWaiting(senders?.some((sender) => sender.name === user.name));
       setActions((prevActions) => {
         if (phase === "write") {
