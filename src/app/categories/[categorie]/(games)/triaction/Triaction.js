@@ -324,7 +324,7 @@ export default function Triaction({
 
   useEffect(() => {
     // if (phase !== "write") return;
-    if (phase !== "write" || !hasReload || !Object.keys(actions).length) return;
+    if (phase !== "write" || !hasReload) return;
     let ready = true;
     if (Object.keys(actions).length < 3) ready = false;
     Object.values(actions).forEach((action) => {
@@ -449,21 +449,25 @@ export default function Triaction({
     const reload = async () => {
       if (hasReload || !gameData) return;
       setWaiting(senders?.some((sender) => sender.name === user.name));
-      setActions((prevActions) => {
-        if (phase === "write") {
-          const storedWrittenActions =
-            JSON.parse(localStorage.getItem("SGTriaction_writtenActions")) ||
-            {};
-          const savedToken = storedWrittenActions.roomToken;
-          const savedWrittenActions = storedWrittenActions.actions;
-          if (savedToken === roomToken) return savedWrittenActions;
-        } else if (phase === "exchange") {
-          const actions = { ...gameData.actions[user.name] };
-          delete actions.backed;
-          return actions;
-        }
-        return prevActions;
-      });
+      const storedWrittenActions = JSON.parse(
+        localStorage.getItem("SGTriaction_writtenActions")
+      );
+      (storedWrittenActions || gameData.actions) &&
+        setActions((prevActions) => {
+          if (phase === "write") {
+            // const storedWrittenActions =
+            //   JSON.parse(localStorage.getItem("SGTriaction_writtenActions")) ||
+            //   {};
+            const savedToken = storedWrittenActions.roomToken;
+            const savedWrittenActions = storedWrittenActions.actions;
+            if (savedToken === roomToken) return savedWrittenActions;
+          } else if (phase === "exchange") {
+            const actions = { ...gameData.actions[user.name] };
+            delete actions.backed;
+            return actions;
+          }
+          return prevActions;
+        });
       setSentBack((prevSentBack) => {
         if (gameData.backedActions && gameData.backedActions[user.name])
           return gameData.backedActions[user.name];
@@ -504,7 +508,7 @@ export default function Triaction({
     gameData,
     roomId,
     isAdmin,
-    // actions,
+    actions,
     hasReload,
     user,
     senders,
