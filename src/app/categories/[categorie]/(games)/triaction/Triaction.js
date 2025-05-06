@@ -686,14 +686,32 @@ export default function Triaction({
               </div>
               <button
                 // onClick={async () => await confirm()}
-                onClick={(e) => {
+                onClick={async (e) => {
                   e.stopPropagation();
-                  confirm();
+                  // confirm();
+
+                  await sendActions({
+                    sender: gamers.find((gamer) => gamer.name === user.name),
+                    aimed,
+                    sentActions: actions,
+                    roomToken,
+                    gameData,
+                  });
+                  setWaiting(true);
                 }}
                 // onPointerDown={confirm}
-                onTouchEnd={(e) => {
+                onTouchEnd={async (e) => {
                   e.stopPropagation();
-                  confirm();
+                  // confirm();
+
+                  await sendActions({
+                    sender: gamers.find((gamer) => gamer.name === user.name),
+                    aimed,
+                    sentActions: actions,
+                    roomToken,
+                    gameData,
+                  });
+                  setWaiting(true);
                 }}
                 className="absolute left-[20%] top-1/2 translate-y-[-50%] border border-lime-800 bg-lime-100 text-lime-800 py-1 px-2 font-semibold rounded-md"
                 style={{ pointerEvents: "auto", zIndex: 9999 }}
