@@ -290,7 +290,6 @@ export default function Triaction({
   };
 
   const confirm = async () => {
-    setWaiting(true);
     await sendActions({
       sender: gamers.find((gamer) => gamer.name === user.name),
       aimed,
@@ -298,6 +297,7 @@ export default function Triaction({
       roomToken,
       gameData,
     });
+    setWaiting(true);
   };
 
   const cancel = () => {
