@@ -659,7 +659,8 @@ export default function Triaction({
                   <div className="absolute w-full h-full">
                     <div className="w-full h-full relative">
                       <div
-                        onClick={async () => await confirm()}
+                        // onClick={async () => await confirm()}
+                        onClick={confirm}
                         className="absolute left-[20%] top-1/2 translate-y-[-50%] border border-lime-800 bg-lime-100 text-lime-800 py-1 px-2 font-semibold rounded-md"
                       >
                         Oui
