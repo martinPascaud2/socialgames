@@ -684,6 +684,22 @@ export default function Triaction({
                   </div>
                 )}
               </div>
+              <button
+                // onClick={async () => await confirm()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  confirm();
+                }}
+                // onPointerDown={confirm}
+                onTouchEnd={(e) => {
+                  e.stopPropagation();
+                  confirm();
+                }}
+                className="absolute left-[20%] top-1/2 translate-y-[-50%] border border-lime-800 bg-lime-100 text-lime-800 py-1 px-2 font-semibold rounded-md"
+                style={{ pointerEvents: "auto", zIndex: 9999 }}
+              >
+                Oui
+              </button>
 
               {!showConfirm ? (
                 <div className="flex justify-center m-2 text-slate-900">
