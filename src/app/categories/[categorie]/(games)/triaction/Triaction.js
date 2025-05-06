@@ -661,7 +661,8 @@ export default function Triaction({
                       <button
                         // onClick={async () => await confirm()}
                         onClick={confirm}
-                        onPointerDown={confirm}
+                        // onPointerDown={confirm}
+                        onTouchEnd={confirm}
                         className="absolute left-[20%] top-1/2 translate-y-[-50%] border border-lime-800 bg-lime-100 text-lime-800 py-1 px-2 font-semibold rounded-md"
                         style={{ pointerEvents: "auto" }}
                       >
