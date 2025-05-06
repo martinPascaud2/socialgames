@@ -650,7 +650,7 @@ export default function Triaction({
                       ? "bg-slate-400"
                       : "bg-red-800"
                     : "bg-lime-800"
-                }  text-slate-100 overflow-hidden relative flex justify-center items-center`}
+                }  text-slate-100 relative flex justify-center items-center`}
               >
                 <span className="relative z-2 select-none">
                   {!isValidated ? "Envoyer" : "Vraiment ?"}
@@ -660,9 +660,15 @@ export default function Triaction({
                     <div className="w-full h-full relative">
                       <button
                         // onClick={async () => await confirm()}
-                        onClick={confirm}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          confirm();
+                        }}
                         // onPointerDown={confirm}
-                        onTouchEnd={confirm}
+                        onTouchEnd={(e) => {
+                          e.stopPropagation();
+                          confirm();
+                        }}
                         className="absolute left-[20%] top-1/2 translate-y-[-50%] border border-lime-800 bg-lime-100 text-lime-800 py-1 px-2 font-semibold rounded-md"
                         style={{ pointerEvents: "auto", zIndex: 9999 }}
                       >
