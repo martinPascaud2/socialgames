@@ -1,6 +1,6 @@
 "use client";
 
-import ReactDOM, { useFormState } from "react-dom";
+import ReactDOM from "react-dom";
 import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 

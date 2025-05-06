@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { useUserContext } from "../Room/Room";
 
-import { FaCheck } from "react-icons/fa";
 import { FiDelete } from "react-icons/fi";
 import { FaChevronUp, FaChevronDown } from "react-icons/fa";
 
@@ -22,10 +21,13 @@ const englishLayout = [
   ["Z", "X", "C", "Empty", "Empty", "Empty", "Empty", "V", "B", "N"],
   ["Delete", "UpDown", "Space"],
 ];
-//   ["Delete", "Enter", "Space"],
 
-// export default function TriactionKeyboard({
-function TriactionKeyboard({ setInput, onClose, onValidate, select }) {
+export default function TriactionKeyboard({
+  setInput,
+  onClose,
+  onValidate,
+  select,
+}) {
   const contextValue = useUserContext();
   const { userParams } = contextValue;
   const bottomBarSize = userParams?.bottomBarSize || 8;
@@ -43,8 +45,7 @@ function TriactionKeyboard({ setInput, onClose, onValidate, select }) {
   const [mounted, setMounted] = useState(false);
   const keyboardRef = useRef();
 
-  //   const handleKeyClick = async (key) => {
-  const handleKeyClick = (key) => {
+  const handleKeyClick = async (key) => {
     if (key.startsWith("Empty")) {
       return;
     } else if (key === "Space") {
@@ -52,7 +53,7 @@ function TriactionKeyboard({ setInput, onClose, onValidate, select }) {
     } else if (key === "Delete") {
       setInput((prev) => (prev || "").slice(0, -1));
     } else if (key === "Enter") {
-      //   await onValidate();
+      await onValidate();
       onValidate();
     } else {
       setInput((prev) => (prev || "") + key);
@@ -68,12 +69,10 @@ function TriactionKeyboard({ setInput, onClose, onValidate, select }) {
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-    // document.addEventListener("touchstart", handleClickOutside);
     document.addEventListener("touchend", handleClickOutside);
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
-      //   document.removeEventListener("touchstart", handleClickOutside);
       document.removeEventListener("touchend", handleClickOutside);
     };
   }, [onClose]);
@@ -126,10 +125,6 @@ function TriactionKeyboard({ setInput, onClose, onValidate, select }) {
                             e.stopPropagation();
                             await handleKeyClick(key);
                           }}
-                          //   onClick={(e) => {
-                          // e.stopPropagation();
-                          // handleKeyClick(key);
-                          //   }}
                           className={`bg-gray-100 border border-gray-700 text-gray-700 font-semibold py-1 px-2 rounded-xl transition relative h-8 ${
                             isEmpty ? "collapse " : ""
                           }`}
@@ -214,7 +209,7 @@ function TriactionKeyboard({ setInput, onClose, onValidate, select }) {
                         case "UpDown":
                           layout = (
                             <div key={key} className={`w-[${width}] h-6`}>
-                              {/* <div className="absolute mb-4 h-8 w-full flex justify-center gap-1 bottom-0 left-0 translate-x-[–50%]">
+                              <div className="absolute mb-4 h-8 w-full flex justify-center gap-1 bottom-0 left-0 translate-x-[–50%]">
                                 <div
                                   onClick={() => select.onUp()}
                                   className="bg-gray-100 border border-gray-700 text-gray-700 py-1 px-2 rounded-xl w-12 h-12 flex justify-center items-center"
@@ -227,7 +222,7 @@ function TriactionKeyboard({ setInput, onClose, onValidate, select }) {
                                     className="w-4/5 h-4/5"
                                   />
                                 </div>
-                              </div> */}
+                              </div>
                             </div>
                           );
                           break;
@@ -266,5 +261,3 @@ function TriactionKeyboard({ setInput, onClose, onValidate, select }) {
     document.body
   );
 }
-
-export default React.memo(TriactionKeyboard);

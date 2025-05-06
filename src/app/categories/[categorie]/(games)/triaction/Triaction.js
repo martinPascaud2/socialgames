@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import "./ripple.css";
 
 import capitalizeFirstLetter from "@/utils/capitalizeFirstLetter";
-// import getAreSimilar from "./getAreSimilar";
+import getAreSimilar from "./getAreSimilar";
 
 import { saveData } from "@/components/Room/actions";
 import { useLongPress, LongPressEventType } from "use-long-press";
@@ -332,27 +332,9 @@ export default function Triaction({
         return;
       }
     });
-    // if (getAreSimilar(actions)) ready = false;
+    if (getAreSimilar(actions)) ready = false;
     setReadyActions(ready);
-    // if (Object.keys(actions).length) {
-    //   localStorage.setItem(
-    //     "SGTriaction_writtenActions",
-    //     JSON.stringify({ actions, roomToken })
-    //   );
-    // }
-    // const timeout = setTimeout(() => {
-    //   if (Object.keys(actions).length) {
-    //     localStorage.setItem(
-    //       "SGTriaction_writtenActions",
-    //       JSON.stringify({ actions, roomToken })
-    //     );
-    //   }
-    // }, 500);
-
-    // return () => clearTimeout(timeout);
-    // }, [actions, roomToken, phase]);
   }, [actions, phase]);
-  // }, [actions]);
 
   const sendBack = async () => {
     setSentBack(selected);
@@ -514,23 +496,10 @@ export default function Triaction({
     if (showChoose === "waiting" && chooseTimeout) clearTimeout(chooseTimeout);
   }, [showChoose, chooseTimeout]);
 
-  // const handleSetInput = useCallback(
-  //   (func) => {
-  //     setActions((prevActions) => {
-  //       const newActions = {
-  //         ...prevActions,
-  //         [activeInput]: capitalizeFirstLetter(func(prevActions[activeInput])),
-  //       };
-  //       return newActions;
-  //     });
-  //   },
-  //   [setActions, activeInput]
-  // );
   const activeInputRef = useRef(activeInput);
   useEffect(() => {
     activeInputRef.current = activeInput;
   }, [activeInput]);
-
   const handleSetInput = useCallback(
     (func) => {
       setActions((prevActions) => {
@@ -546,10 +515,6 @@ export default function Triaction({
           JSON.stringify({ actions: updated, roomToken })
         );
 
-        // return {
-        //   ...prevActions,
-        //   [currentInput]: capitalizeFirstLetter(newValue),
-        // };
         return updated;
       });
     },
@@ -649,44 +614,29 @@ export default function Triaction({
                   )}
                 </div>
               ))}
-              {/* {showedKeyboard && ( */}
-              <TriactionKeyboard
-                // setInput={(func) => {
-                //   setActions((prevActions) => {
-                //     const newActions = {
-                //       ...prevActions,
-                //       [activeInput]: capitalizeFirstLetter(
-                //         func(prevActions[activeInput])
-                //       ),
-                //     };
-                //     return newActions;
-                //   });
 
-                // }}
-
-                setInput={handleSetInput}
-                // onClose={() => {
-                //   setShowedKeyboard(false);
-                //   setActiveInput(null);
-                // }}
-                // onValidate={async () => {}}
-                // select={{
-                //   onUp: () =>
-                //     setActiveInput((prevActive) => {
-                //       if (prevActive === 1) return 3;
-                //       return prevActive - 1;
-                //     }),
-                //   onDown: () =>
-                //     setActiveInput((prevActive) => {
-                //       if (prevActive === 3) return 1;
-                //       return prevActive + 1;
-                //     }),
-                // }}
-                onClose={() => {}}
-                onValidate={() => {}}
-                select={null}
-              />
-              {/* )} */}
+              {showedKeyboard && (
+                <TriactionKeyboard
+                  setInput={handleSetInput}
+                  onClose={() => {
+                    setShowedKeyboard(false);
+                    setActiveInput(null);
+                  }}
+                  onValidate={async () => {}}
+                  select={{
+                    onUp: () =>
+                      setActiveInput((prevActive) => {
+                        if (prevActive === 1) return 3;
+                        return prevActive - 1;
+                      }),
+                    onDown: () =>
+                      setActiveInput((prevActive) => {
+                        if (prevActive === 3) return 1;
+                        return prevActive + 1;
+                      }),
+                  }}
+                />
+              )}
 
               <div
                 onClick={() => {
