@@ -743,7 +743,7 @@ export default function Triaction({
                               selected.id === action[0]
                             )
                               setSelected({});
-                            else if (!Object.keys(selected)?.length)
+                            else
                               setSelected({
                                 id: action[0],
                                 aimed: previous,
@@ -810,7 +810,7 @@ export default function Triaction({
                             selected.id === action[0]
                           )
                             setSelected({});
-                          else if (!Object.keys(selected)?.length)
+                          else
                             setSelected({
                               //check
                               id: action[0],
@@ -865,12 +865,7 @@ export default function Triaction({
               )}
             </>
           ) : (
-            <>
-              <PendingGamerList gamers={gamers} senders={senders} />
-              <div className="m-4 text-center">
-                Les joueurs renvoient et proposent leurs actions
-              </div>
-            </>
+            <PendingGamerList gamers={gamers} senders={senders} />
           )}
         </div>
       )}

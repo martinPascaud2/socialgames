@@ -178,7 +178,7 @@ export async function proposeAction({
   };
 
   const { senders } = gameData;
-  const newSenders = [...senders, sender];
+  const newSenders = [...senders, { ...sender, sendingDate: new Date() }];
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
