@@ -658,14 +658,15 @@ export default function Triaction({
                 {isValidated && (
                   <div className="absolute w-full h-full">
                     <div className="w-full h-full relative">
-                      <div
+                      <button
                         // onClick={async () => await confirm()}
                         onClick={confirm}
                         onPointerDown={confirm}
                         className="absolute left-[20%] top-1/2 translate-y-[-50%] border border-lime-800 bg-lime-100 text-lime-800 py-1 px-2 font-semibold rounded-md"
+                        style={{ pointerEvents: "auto" }}
                       >
                         Oui
-                      </div>
+                      </button>
                       <div
                         onClick={() => cancel()}
                         className="absolute right-[20%] top-1/2 translate-y-[-50%] border border-red-800 bg-red-100 text-red-800 py-1 px-2 font-semibold rounded-md"
