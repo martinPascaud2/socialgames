@@ -576,17 +576,14 @@ export default function Triaction({
       )}
 
       {phase === "write" && (
-        <div className="w-[90%] m-2 flex flex-col items-center">
+        <div className="w-[90%] flex flex-col items-center">
           {!waiting ? (
             <>
               {[1, 2, 3].map((number) => (
                 <div
                   key={number}
-                  className="w-full h-full rounded-md border border-lime-800 my-3 py-2 px-4 flex flex-col items-center shadow-lg shadow-gray-800 bg-lime-700"
+                  className="w-full h-full rounded-md border border-lime-800 my-3 py-2 px-4 flex flex-col items-center justify-center shadow-lg shadow-gray-800 bg-lime-700"
                 >
-                  <label className="font-bold text-slate-100 tracking-wide">
-                    Action {number}
-                  </label>
                   {!showConfirm ? (
                     <div className="w-full h-full p-2">
                       <Input
@@ -619,7 +616,7 @@ export default function Triaction({
                   ) : (
                     <div className="w-full h-full p-1">
                       <div
-                        className={`${vampiro.className} w-full p-2 mb-1 text-center text-red-900 text-lg bg-lime-100 border-4 border-double border-lime-800`}
+                        className={`${vampiro.className} w-full p-2 text-center text-red-900 text-lg bg-lime-100 border-4 border-double border-lime-800`}
                         style={{ minHeight: "3rem" }}
                       >
                         {actions[number]}
@@ -657,9 +654,10 @@ export default function Triaction({
                   if (!readyActions || isValidated) return;
                   setShowedKeyboard(false);
                   setIsValidated(true);
+                  setActiveInput(null);
                   validate();
                 }}
-                className={`rounded-md w-full h-full px-6 py-4 ${
+                className={`rounded-md w-full mt-3 px-6 py-4 ${
                   !isValidated
                     ? !readyActions
                       ? "bg-slate-400"
@@ -732,12 +730,13 @@ export default function Triaction({
               {!Object.keys(sentBack).length ? (
                 <div className="w-[90%] flex flex-col items-center">
                   {actions &&
-                    Object.entries(actions).map((action) => {
+                    Object.entries(actions).map((action, number) => {
                       if (action[0] === "backed") return;
                       return (
                         <div
                           key={action[0]}
                           onClick={() => {
+                            setIsValidated(false);
                             if (
                               Object.keys(selected)?.length &&
                               selected.id === action[0]
@@ -752,7 +751,7 @@ export default function Triaction({
                           }}
                           className={`${
                             selected?.id === action[0] && "bg-green-100"
-                          } w-full rounded-md border my-2 p-2 flex flex-col items-center`}
+                          } w-full rounded-md border my-2 p-2 flex flex-col items-center relative`}
                           style={{
                             borderColor:
                               selected?.id === action[0]
@@ -760,23 +759,73 @@ export default function Triaction({
                                 : "#64748b",
                           }} // lime-900 slate-500
                         >
-                          <label>Action {action[0]}</label>
                           <div
                             className={`${vampiro.className} w-full p-2 m-2 text-center`}
                           >
                             {action[1]}
+                          </div>
+                          <div
+                            className="absolute right-0 top-0"
+                            style={{
+                              writingMode: "vertical-rl",
+                              textOrientation: "upright",
+                              letterSpacing: "-4px",
+                            }}
+                          >
+                            {previous.name.slice(0, 3).toUpperCase()}
+                          </div>
+
+                          <div
+                            className={`absolute right-1.5 bottom-[-2px] font-semibold text-lg mr-${
+                              number === 0 ? "0.5" : "0"
+                            }`}
+                          >
+                            {number + 1}
                           </div>
                         </div>
                       );
                     })}
 
                   <div className="w-full h-full mt-4">
-                    <RipplingButton
-                      onLongPress={sendBack}
-                      isValidated={isValidated}
-                      setIsValidated={setIsValidated}
-                      isActive={!!selected.id}
-                    />
+                    <div
+                      onTouchEnd={() => {
+                        if (isValidated || !Object.keys(selected).length)
+                          return;
+                        setIsValidated(true);
+                      }}
+                      className={`rounded-md w-full mt-3 px-6 py-4 ${
+                        !isValidated
+                          ? !Object.keys(selected).length
+                            ? "bg-slate-400"
+                            : "bg-red-800"
+                          : "bg-lime-800"
+                      }  text-slate-100 relative flex justify-center items-center`}
+                    >
+                      <span className="relative z-2 select-none">
+                        {!isValidated ? "Envoyer" : "Vraiment ?"}
+                      </span>
+                      {isValidated && (
+                        <div className="absolute w-full h-full">
+                          <div className="w-full h-full relative">
+                            <button
+                              onTouchEnd={(e) => {
+                                e.stopPropagation();
+                                sendBack();
+                              }}
+                              className="absolute left-[20%] top-1/2 translate-y-[-50%] border border-lime-800 bg-lime-100 text-lime-800 py-1 px-2 font-semibold rounded-md"
+                            >
+                              Oui
+                            </button>
+                            <div
+                              onClick={() => cancel()}
+                              className="absolute right-[20%] top-1/2 translate-y-[-50%] border border-red-800 bg-red-100 text-red-800 py-1 px-2 font-semibold rounded-md"
+                            >
+                              Non
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="w-full flex text-center justify-center m-2">
                     {!selected.id ? (
@@ -797,7 +846,7 @@ export default function Triaction({
                 </div>
               ) : (
                 <div className="w-[90%] flex flex-col items-center">
-                  {Object.entries(actions).map((action) => {
+                  {Object.entries(actions).map((action, number) => {
                     if (action[0] === "backed") return;
                     const isBacked = action[0] === sentBack.id;
                     return (
@@ -805,6 +854,7 @@ export default function Triaction({
                         key={action[0]}
                         onClick={() => {
                           if (isBacked) return;
+                          setIsValidated(false);
                           if (
                             Object.keys(selected)?.length &&
                             selected.id === action[0]
@@ -821,29 +871,79 @@ export default function Triaction({
                           isBacked
                             ? "bg-slate-100"
                             : selected?.id === action[0] && "bg-green-100"
-                        } w-full rounded-md border my-2 p-2 flex flex-col items-center`}
+                        } w-full rounded-md border my-2 p-2 flex flex-col items-center relative`}
                         style={{
                           borderColor:
                             selected?.id === action[0] ? "#3f6212" : "#64748b", // lime-900 slate-500
                         }}
                       >
-                        <label>Action {action[0]}</label>
                         <div
                           className={`${vampiro.className} w-full p-2 m-2 text-center`}
                         >
                           {action[1]}
+                        </div>
+                        <div
+                          className="absolute right-0 top-0"
+                          style={{
+                            writingMode: "vertical-rl",
+                            textOrientation: "upright",
+                            letterSpacing: "-4px",
+                          }}
+                        >
+                          {previous.name.slice(0, 3).toUpperCase()}
+                        </div>
+
+                        <div
+                          className={`absolute right-1.5 bottom-[-2px] font-semibold text-lg mr-${
+                            number === 0 ? "0.5" : "0"
+                          }`}
+                        >
+                          {number + 1}
                         </div>
                       </div>
                     );
                   })}
 
                   <div className="w-full h-full mt-4">
-                    <RipplingButton
-                      onLongPress={propose}
-                      isValidated={isValidated}
-                      setIsValidated={setIsValidated}
-                      isActive={!!selected.id}
-                    />
+                    <div
+                      onTouchEnd={() => {
+                        if (isValidated || !Object.keys(selected).length)
+                          return;
+                        setIsValidated(true);
+                      }}
+                      className={`rounded-md w-full mt-3 px-6 py-4 ${
+                        !isValidated
+                          ? !Object.keys(selected).length
+                            ? "bg-slate-400"
+                            : "bg-red-800"
+                          : "bg-lime-800"
+                      }  text-slate-100 relative flex justify-center items-center`}
+                    >
+                      <span className="relative z-2 select-none">
+                        {!isValidated ? "Envoyer" : "Vraiment ?"}
+                      </span>
+                      {isValidated && (
+                        <div className="absolute w-full h-full">
+                          <div className="w-full h-full relative">
+                            <button
+                              onTouchEnd={(e) => {
+                                e.stopPropagation();
+                                propose();
+                              }}
+                              className="absolute left-[20%] top-1/2 translate-y-[-50%] border border-lime-800 bg-lime-100 text-lime-800 py-1 px-2 font-semibold rounded-md"
+                            >
+                              Oui
+                            </button>
+                            <div
+                              onClick={() => cancel()}
+                              className="absolute right-[20%] top-1/2 translate-y-[-50%] border border-red-800 bg-red-100 text-red-800 py-1 px-2 font-semibold rounded-md"
+                            >
+                              Non
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
                   <div className="w-full flex text-center justify-center flex-wrap m-2">
                     {!selected.id ? (
