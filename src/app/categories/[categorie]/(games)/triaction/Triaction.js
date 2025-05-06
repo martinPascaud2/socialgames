@@ -480,7 +480,7 @@ export default function Triaction({
 
       setHasReload(true);
     };
-    reload();
+    // reload();
   }, [
     gameData,
     roomId,
