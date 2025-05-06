@@ -289,7 +289,15 @@ export default function Triaction({
     setShowConfirm(true);
   };
 
-  const confirm = async () => {
+  const confirm = useCallback(async () => {
+    if (
+      !gamers ||
+      !aimed ||
+      !Object.keys(actions).length ||
+      !roomToken ||
+      !gameData
+    )
+      return;
     await sendActions({
       sender: gamers.find((gamer) => gamer.name === user.name),
       aimed,
@@ -298,7 +306,7 @@ export default function Triaction({
       gameData,
     });
     setWaiting(true);
-  };
+  }, [gamers, aimed, actions, roomToken, gameData]);
 
   const cancel = () => {
     setIsValidated(false);
@@ -320,7 +328,7 @@ export default function Triaction({
       setPrevious(prev);
       setIsValidated(false);
     }
-  }, [phase, gamers]);
+  }, [phase, gamers, gameData]);
 
   useEffect(() => {
     if (phase !== "write") return;
@@ -428,7 +436,7 @@ export default function Triaction({
   }, [gameData, hasReload, isAdmin, roomId]);
   useEffect(() => {
     const reload = async () => {
-      if (hasReload || !gameData) return;
+      if (hasReload || !gameData || !gamers.length) return;
       setWaiting(senders?.some((sender) => sender.name === user.name));
       setActions((prevActions) => {
         if (phase === "write") {
@@ -480,7 +488,7 @@ export default function Triaction({
 
       setHasReload(true);
     };
-    // reload();
+    reload();
   }, [
     gameData,
     roomId,
@@ -639,8 +647,9 @@ export default function Triaction({
               )}
 
               <div
-                onClick={() => {
+                onTouchEnd={() => {
                   if (!readyActions || isValidated) return;
+                  setShowedKeyboard(false);
                   setIsValidated(true);
                   validate();
                 }}
@@ -659,18 +668,11 @@ export default function Triaction({
                   <div className="absolute w-full h-full">
                     <div className="w-full h-full relative">
                       <button
-                        // onClick={async () => await confirm()}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          confirm();
-                        }}
-                        // onPointerDown={confirm}
                         onTouchEnd={(e) => {
                           e.stopPropagation();
                           confirm();
                         }}
                         className="absolute left-[20%] top-1/2 translate-y-[-50%] border border-lime-800 bg-lime-100 text-lime-800 py-1 px-2 font-semibold rounded-md"
-                        style={{ pointerEvents: "auto", zIndex: 9999 }}
                       >
                         Oui
                       </button>
@@ -684,40 +686,6 @@ export default function Triaction({
                   </div>
                 )}
               </div>
-              <button
-                // onClick={async () => await confirm()}
-                onClick={async (e) => {
-                  e.stopPropagation();
-                  // confirm();
-
-                  await sendActions({
-                    sender: gamers.find((gamer) => gamer.name === user.name),
-                    aimed,
-                    sentActions: actions,
-                    roomToken,
-                    gameData,
-                  });
-                  setWaiting(true);
-                }}
-                // onPointerDown={confirm}
-                onTouchEnd={async (e) => {
-                  e.stopPropagation();
-                  // confirm();
-
-                  await sendActions({
-                    sender: gamers.find((gamer) => gamer.name === user.name),
-                    aimed,
-                    sentActions: actions,
-                    roomToken,
-                    gameData,
-                  });
-                  setWaiting(true);
-                }}
-                className="absolute left-[20%] top-1/2 translate-y-[-50%] border border-lime-800 bg-lime-100 text-lime-800 py-1 px-2 font-semibold rounded-md"
-                style={{ pointerEvents: "auto", zIndex: 9999 }}
-              >
-                Oui
-              </button>
 
               {!showConfirm ? (
                 <div className="flex justify-center m-2 text-slate-900">
