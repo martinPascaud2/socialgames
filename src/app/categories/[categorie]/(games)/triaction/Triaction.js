@@ -116,28 +116,34 @@ const RipplingButton = ({
 };
 
 const PendingGamerList = ({ gamers, senders }) => {
+  const sortedSenders = senders.sort(
+    (a, b) => new Date(a.sendingDate) - new Date(b.sendingDate)
+  );
+
+  const sendersSet = new Set(senders.map((sender) => sender.name));
+  const sortedNotSenders = gamers
+    .filter((gamer) => !sendersSet.has(gamer.name))
+    .sort((a, b) =>
+      a.name.localeCompare(b.name, "fr", { sensitivity: "base" })
+    );
+
   return (
     <div>
-      {[...gamers.map((gamer) => gamer.name)].sort().map((gamer, i) => {
-        const hasSent =
-          senders.find((sender) => sender.name === gamer) !== undefined;
+      {sortedSenders.map((sender, i) => {
         return (
           <div key={i} className="flex justify-center items-center">
-            <div
-              className={`w-20 m-2 py-4 px-2 text-center rounded-md border ${
-                hasSent
-                  ? "border-green-300 bg-green-100"
-                  : "border-red-300 bg-red-100"
-              }`}
-            >
-              {gamer}
+            <div className="w-40 m-2 py-4 px-2 text-center rounded-md border border-green-700 bg-green-100 text-green-700">
+              {sender.name}
             </div>
-            <div
-              className={`w-20 m-2 ${
-                hasSent ? "text-green-300" : "text-red-300"
-              }`}
-            >
-              {hasSent ? "Validé" : "En attente"}
+          </div>
+        );
+      })}
+
+      {sortedNotSenders.map((notSender, i) => {
+        return (
+          <div key={i} className="flex justify-center items-center">
+            <div className="w-40 m-2 py-4 px-2 text-center rounded-md border border-red-700 bg-red-100 text-red-700">
+              {notSender.name}
             </div>
           </div>
         );
@@ -714,8 +720,6 @@ export default function Triaction({
           ) : (
             <div className="absolute w-full h-full flex flex-col justify-center items-center">
               <PendingGamerList gamers={gamers} senders={senders} />
-
-              <div className="m-4">Les joueurs rédigent les actions</div>
             </div>
           )}
         </div>

@@ -109,7 +109,7 @@ export async function sendActions({
 }) {
   const { actions, senders } = gameData;
   const newActions = { ...actions, [aimed.name]: sentActions };
-  const newSenders = [...senders, sender];
+  const newSenders = [...senders, { ...sender, sendingDate: new Date() }];
 
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
