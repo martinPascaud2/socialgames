@@ -260,7 +260,7 @@ export default function Triaction({
   gameData,
   storedLocation,
 }) {
-  const { phase, gamers, activePlayer, senders } = gameData;
+  const { phase, gamers, activePlayer, senders, postgameRef } = gameData;
   const isAdmin = gameData.admin === user.name;
   const isActive = gameData.activePlayer?.id === user.id;
   const [isValidated, setIsValidated] = useState(false);
@@ -536,7 +536,7 @@ export default function Triaction({
   );
 
   return (
-    <div className="flex flex-col items-center justify-start h-full w-full relative overflow-y-auto animate-[fadeIn_1.5s_ease-in-out] relative">
+    <div className="flex flex-col items-center justify-start h-full w-full relative overflow-y-auto animate-[fadeIn_1.5s_ease-in-out]">
       {phase === "peek" && (
         <div className="h-full w-full flex flex-col items-center justify-center">
           <div className="mx-3 text-center">
@@ -1094,6 +1094,7 @@ export default function Triaction({
           roomToken={roomToken}
           roomId={roomId}
           reset={() => console.log("to be done")}
+          postgameRef={postgameRef}
           storedLocation={storedLocation}
           user={user}
         />

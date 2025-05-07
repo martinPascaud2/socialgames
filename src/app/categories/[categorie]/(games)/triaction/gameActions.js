@@ -271,6 +271,8 @@ export async function sendPropositionBack({
       phase: "finalReveal",
       actions: newActions,
       senders: newSenders,
+      ended: true,
+      postgameRef: "/post-game/?game=triaction",
     };
 
     await createPostGame({ gameData: finalData, gameName: "triaction" });

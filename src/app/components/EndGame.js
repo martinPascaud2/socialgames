@@ -35,6 +35,19 @@ export default function EndGame({ gameData, user, isFirst = false }) {
         </>
       )}
 
+      {gameData?.postgameRef && !user.multiGuest && (
+        <>
+          <button
+            onClick={() => {
+              router.push(`${gameData.postgameRef}`);
+            }}
+            className="border border-blue-300 bg-blue-100"
+          >
+            Post game
+          </button>
+        </>
+      )}
+
       {gameData.admin !== user.name && (
         <button
           onClick={async () => {

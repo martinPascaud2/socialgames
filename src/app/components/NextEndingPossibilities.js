@@ -1,10 +1,12 @@
 "use client";
 
+import { useUserContext } from "./Room/Room";
+
 import { StaticNextStep } from "@/components/NextStep";
 import FinishGame from "@/components/FinishGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import EndGame from "@/components/EndGame";
-import { useUserContext } from "./Room/Room";
+import GoPostgame from "./GoPostGame";
 
 export default function NextEndingPossibilities({
   isAdmin,
@@ -13,12 +15,33 @@ export default function NextEndingPossibilities({
   roomToken,
   roomId,
   reset,
+  postgameRef,
   storedLocation,
   user,
   showed = true,
 }) {
   const contextValue = useUserContext();
   const userParams = contextValue.userParams;
+
+  if (postgameRef)
+    return (
+      <div
+        className={`absolute w-full ${!showed ? "hidden" : ""}`}
+        style={{
+          bottom: `${userParams?.bottomBarSize / 4 || 2}rem`,
+          pointerEvents: "none",
+        }}
+      >
+        <div className="w-full flex justify-around h-full">
+          <GoPostgame
+            postgameRef={postgameRef}
+            isAdmin={isAdmin}
+            roomId={roomId}
+            user={user}
+          />
+        </div>
+      </div>
+    );
 
   return (
     <div
