@@ -6,7 +6,7 @@ import { StaticNextStep } from "@/components/NextStep";
 import FinishGame from "@/components/FinishGame";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import EndGame from "@/components/EndGame";
-import GoPostgame from "./GoPostGame";
+import GoPostgame from "./GoPostgame";
 
 export default function NextEndingPossibilities({
   isAdmin,
