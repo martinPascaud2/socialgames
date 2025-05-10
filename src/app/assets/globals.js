@@ -127,6 +127,12 @@ export const subCategories = {
       description:
         "Au début de la partie, chacun reçoit un mot secret. Les joueurs doivent ensuite révéler petit à petit des informations sur leur mot pour deviner qui a le même mot qu’eux ! Après quelques tours d’élimination, réussiront-ils à découvrir leur identité et à se défaire de leurs ennemis ?",
     },
+    {
+      name: "Recherche",
+      path: "research",
+      // img: "/undercover.png",
+      description: "Description de la recherche",
+    },
   ],
   categorie6: [
     {
@@ -214,6 +220,12 @@ export const gamesRefs = {
     categorie: "categorie5",
     modes: [{ label: "Tableau", path: "Tableau" }],
     limits: { min: 2, max: 10, opti: 6 },
+  },
+  research: {
+    name: "Recherche",
+    categorie: "categorie5",
+    modes: [{ label: "Chasse", path: "Chasse" }],
+    limits: { min: 1, max: 10, opti: 6 },
   },
 };
 
@@ -304,11 +316,16 @@ export const modesRules = {
     name: "Tableau",
     limits: { min: 2, max: 10, opti: 6 },
   },
+
+  Chasse: {
+    name: "Chasse",
+    limits: { min: 1, max: 10, opti: 6 },
+  },
 };
 
 export const toolsList = [
   { tool: "buzzer", layout: "Buzzer" },
-  { tool: "osef", layout: "Rien" },
+  { tool: "map", layout: "Carte" },
 ];
 
 export const postGamesList = [

@@ -36,6 +36,7 @@ model User {
   ptitbacLastParams           Json?
   triaction_random_LastParams Json?
   triaction_peek_LastParams   Json?
+  chasseLastParams            Json?
   tableauLastParams           Json?
   png                         String                    @default("") @db.Text
   drawChain                   DrawLink[]
@@ -45,6 +46,7 @@ model User {
   tableauSecondSorted         Json?
   tableauRevelationSeen       Boolean                   @default(false)
   podiumTops                  Json?
+  huntingPosition             Json?
   postGames                   UserPostGame[]
 }
 

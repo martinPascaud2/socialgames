@@ -4,6 +4,13 @@ import { useEffect, useRef, useState, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 
+import Pusher from "pusher-js";
+
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import L from "leaflet";
+import { useMap } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+
 import usePreventBackSwipe from "@/utils/usePreventBackSwipe";
 
 import { audios } from "./audios";
@@ -37,8 +44,6 @@ const Buzzer = () => {
     audio.current = new Audio(`/sounds/${selectedAudio}`);
   }, [selectedAudio]);
 
-  console.log("selectedAudio", selectedAudio);
-
   return (
     <div className="flex flex-col justify-center items-center w-full h-full relative">
       <select
@@ -58,6 +63,96 @@ const Buzzer = () => {
         }}
         className="w-36 h-36 rounded-full border border-2 m-2 border-red-900 bg-red-600 text-red-900 shadow-[inset_0_0px_2rem_0px_#7f1d1d]"
       ></button>
+    </div>
+  );
+};
+
+const userIcon = new L.Icon({
+  iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+  iconSize: [35, 35],
+});
+
+const RealtimeMap = ({ position }) => {
+  const map = useMap();
+  useEffect(() => {
+    map.setView(position);
+  }, [position]);
+  return null;
+};
+
+const Map = ({ user }) => {
+  const [position, setPosition] = useState([48.8566, 2.3522]);
+
+  useEffect(() => {
+    const pusher = new Pusher("61853af9f30abf9d5b3d", {
+      cluster: "eu",
+      useTLS: true,
+    });
+
+    const channel = pusher.subscribe("user-location");
+    channel.bind("location-update", (data) => {
+      if (data && data.lat && data.lng) {
+        setPosition([data.lat, data.lng]);
+      }
+    });
+
+    return () => {
+      channel.unbind_all();
+      channel.unsubscribe();
+    };
+  }, []);
+
+  // dev
+  const simulateNewPosition = () => {
+    setPosition(([lat, lng]) => [lat + 0.0001, lng + 0.0001]);
+  };
+
+  useEffect(() => {
+    const watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        const coords = [pos.coords.latitude, pos.coords.longitude];
+        setPosition(coords);
+      },
+      (err) => console.error(err),
+      { enableHighAccuracy: true }
+    );
+
+    return () => navigator.geolocation.clearWatch(watchId);
+  }, []);
+
+  return (
+    <div className="w-full h-full flex justify-center items-center">
+      <MapContainer
+        id="map"
+        center={position}
+        zoom={17}
+        style={{ height: "70vh", width: "90%" }}
+        zoomControl={false}
+        scrollWheelZoom={false}
+        doubleClickZoom={false}
+        touchZoom={false}
+      >
+        <RealtimeMap position={position} />
+
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+
+        <Marker position={position} icon={userIcon}>
+          <Popup>
+            Position actuelle de l'utilisateur :<br />
+            {position[0]}, {position[1]}
+          </Popup>
+        </Marker>
+      </MapContainer>
+
+      <button
+        onClick={simulateNewPosition}
+        style={{ position: "absolute", zIndex: 1000 }}
+      >
+        Simuler
+      </button>
     </div>
   );
 };
@@ -199,13 +294,13 @@ export default function Tools({ user }) {
           </div>
           <div
             onClick={() => {
-              setSelectedTool("osef");
+              setSelectedTool("map");
               setShowedControls(false);
               setShowedToolsList(false);
             }}
-            className={selectionClass("osef")}
+            className={selectionClass("map")}
           >
-            Rien
+            Carte
           </div>
         </div>
       )}
@@ -217,7 +312,7 @@ export default function Tools({ user }) {
               Buzzer : c'est un buzzer
             </div>
             <div className="text-sky-700 text-sm w-full flex items-center justify-center">
-              Rien : nada
+              Carte : une carte
             </div>
           </div>
         </div>
@@ -227,8 +322,8 @@ export default function Tools({ user }) {
         <Buzzer />
       )}
 
-      {selectedTool === "osef" && !showedToolsList && !showedInfo && (
-        <div></div>
+      {selectedTool === "map" && !showedToolsList && !showedInfo && (
+        <Map user={user} />
       )}
     </div>
   );
