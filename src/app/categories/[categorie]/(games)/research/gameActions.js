@@ -3,6 +3,7 @@
 import checkPlayers from "@/utils/checkPlayers";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkViceAdminAndArrivals from "@/utils/checkViceAdminAndArrivals";
+import { saveLastParams } from "@/utils/getLastParams";
 import { saveAndDispatchData } from "@/components/Room/actions";
 
 export async function launchGame({
@@ -45,6 +46,13 @@ export async function launchGame({
       gamersAndGuests,
     });
 
+  await saveLastParams({ userId: adminId, options });
+
+  const positions = [];
+  gamersAndGuests.forEach((gamer) => {
+    positions.push({ name: gamer.name, latitude: null, longitude: null });
+  });
+
   let newData;
   if (options.mode === "Chasse") {
     newData = {
@@ -53,6 +61,7 @@ export async function launchGame({
       arrivalsOrder,
       gamers: gamersAndGuests,
       options,
+      positions,
     };
   }
 
@@ -62,6 +71,93 @@ export async function launchGame({
   });
 
   return {};
+}
+
+export async function sendPosition({ roomId, roomToken, user, newPosition }) {
+  // const gameData = (
+  //   await prisma.room.findFirst({
+  //     where: { id: roomId },
+  //     select: { gameData: true },
+  //   })
+  // ).gameData;
+
+  // const { positions } = gameData;
+  // console.log("gameData", gameData);
+  // console.log("userName", userName);
+  // console.log("newPosition", newPosition);
+
+  // const gamerIndex = positions.findIndex((pos) => pos.name === userName);
+  // const newPositions = [...positions];
+  // newPositions[gamerIndex] = {
+  //   ...newPositions[gamerIndex],
+  //   latitude: newPosition[0],
+  //   longitude: newPosition[1],
+  // };
+
+  // const newData = { ...gameData, positions: newPositions };
+  // console.log("newData", newData);
+  // await saveAndDispatchData({ roomId, roomToken, newData });
+
+  if (user.multiGuest) {
+    await prisma.multiguest.upsert({
+      where: { id: user.dataId },
+      update: { huntingPosition: newPosition },
+      create: {
+        id: user.dataId,
+        huntingPosition: newPosition,
+      },
+    });
+  } else {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { huntingPosition: newPosition },
+    });
+  }
+
+  const roomData = (
+    await prisma.room.findFirst({
+      where: { id: roomId },
+      select: { gameData: true },
+    })
+  ).gameData;
+  console.log("roomData", roomData);
+
+  const { gamers } = roomData;
+
+  const allPositions = [];
+  await Promise.all(
+    gamers.map(async (gamer) => {
+      if (!gamer.multiGuest) {
+        const huntingPosition = (
+          await prisma.user.findFirst({
+            where: { id: gamer.id },
+            select: { huntingPosition: true },
+          })
+        ).huntingPosition;
+        allPositions.push({
+          name: gamer.name,
+          latitude: huntingPosition[0],
+          longitude: huntingPosition[1],
+        });
+      } else {
+        const huntingPosition = (
+          await prisma.multiguest.findFirst({
+            where: { id: gamer.dataId },
+            select: { huntingPosition: true },
+          })
+        ).huntingPosition;
+        allPositions.push({
+          name: gamer.name,
+          latitude: huntingPosition[0],
+          longitude: huntingPosition[1],
+        });
+      }
+    })
+  );
+
+  console.log("allPositions", allPositions);
+  const newData = { ...roomData, positions: allPositions };
+  await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
 export async function removeStandardGamers({

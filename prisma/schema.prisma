@@ -60,6 +60,7 @@ model Multiguest {
   tableauSecondSorted    Json?
   tableauRevelationSeen  Boolean           @default(false)
   podiumTops             Json?
+  huntingPosition        Json?
 }
 
 model PostGame {
