@@ -61,6 +61,8 @@ export default function ModeSelector({
     );
   }, [value, modeList, setMode, setOptions, isAdmin, options]);
 
+  if (modeList.length === 1) return null;
+
   return (
     <div className="flex w-full items-center justify-center mt-2 mb-4">
       {Select()}

@@ -13,9 +13,9 @@ import { useSearchParams, usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import Pusher from "pusher-js";
 import QRCode from "react-qr-code";
+
 import useWake from "@/utils/useWake";
 import usePreventBackSwipe from "@/utils/usePreventBackSwipe";
-
 import usePreventScroll from "@/utils/usePreventScroll";
 import genToken from "@/utils/genToken";
 import getLocation from "@/utils/getLocation";
@@ -35,6 +35,7 @@ import { CornerTriangle } from "../Triangle";
 import { LobbyDeleteGroup } from "@/components/DeleteGroup";
 import ChooseAnotherGame from "./ChooseAnotherGame";
 import Limits from "./Limits";
+import IconFromName from "../IconFromName";
 import GameChooser from "./GameChooser";
 import NextStep from "../NextStep";
 import AnimatedDots from "../AnimatedDots";
@@ -1364,17 +1365,24 @@ export default function Room({
                       <div className="h-[4dvh] w-[4dvh]" />
                     )}
 
-                    <div className="text-center text-purple-950 text-4xl font-medium flex justify-center items-center mx-2 p-2 min-w-[50vw]">
+                    <div className="text-center text-purple-950 text-3xl font-medium flex justify-center items-center mx-2 p-2 min-w-[50vw]">
                       {!gameData.isSearching ? (
                         gamesRefs[gameName].categorie === "grouping" ? (
                           <span>Lobby</span>
                         ) : (
-                          gamesRefs[gameName].name
+                          <span>
+                            {searchMode ||
+                              options?.mode ||
+                              gamesRefs[gameName].name}
+                          </span>
                         )
                       ) : (
                         <>
                           {adminSelectedGame ? (
-                            <div>{adminSelectedGame.name}</div>
+                            <div>
+                              {adminSelectedMode?.label ||
+                                adminSelectedGame?.name}
+                            </div>
                           ) : (
                             <div>
                               {/* text-amber-500 */}
@@ -1433,8 +1441,21 @@ export default function Room({
                         !gameData.isSearching &&
                         options?.mode && (
                           <div className="w-full">
-                            <div className="text-xl absolute top-1.5 left-[50%] translate-x-[-50%] w-full text-center">
-                              {options?.mode}
+                            <div className="text-xl absolute top-1.5 left-[50%] translate-x-[-50%] w-full text-center flex justify-center items-center gap-2">
+                              {options?.mode &&
+                                Object.entries(options).map(
+                                  ([option, value]) => {
+                                    if (option === "mode") return;
+                                    return (
+                                      <IconFromName
+                                        key={option}
+                                        mode={options.mode}
+                                        value={value}
+                                        className="h-6 w-6"
+                                      />
+                                    );
+                                  }
+                                )}
                             </div>
                           </div>
                         )}
