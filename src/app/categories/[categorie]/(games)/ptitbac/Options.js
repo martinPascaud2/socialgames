@@ -28,6 +28,7 @@ export default function PtitbacOptions({
   const [modeList, setModeList] = useState([]);
   const [lastLoaded, setLastLoaded] = useState(false);
   const [show, setShow] = useState(false);
+  const [isSelectingMode, setIsSelectingMode] = useState(false);
 
   useEffect(() => {
     if (!mode) return;
@@ -62,31 +63,38 @@ export default function PtitbacOptions({
         modeList={modeList}
         setMode={setMode}
         setOptions={setOptions}
+        isSelectingMode={isSelectingMode}
+        setIsSelectingMode={setIsSelectingMode}
       />
-      <Countdown
-        isAdmin={isAdmin}
-        options={options}
-        setOptions={setOptions}
-        min={1}
-        max={7}
-        last={lastParams?.countDownTime}
-      />
-      <AimPoints
-        isAdmin={isAdmin}
-        options={options}
-        setOptions={setOptions}
-        min={0}
-        max={30}
-        defaultValue={lastParams?.aimPoints || 0}
-      />
-      <PtitbacThemeOption
-        isAdmin={isAdmin}
-        options={options}
-        setOptions={setOptions}
-        max={6}
-        lastParams={lastParams}
-        setServerMessage={setServerMessage}
-      />
+
+      {!isSelectingMode && (
+        <>
+          <Countdown
+            isAdmin={isAdmin}
+            options={options}
+            setOptions={setOptions}
+            min={1}
+            max={7}
+            last={lastParams?.countDownTime}
+          />
+          <AimPoints
+            isAdmin={isAdmin}
+            options={options}
+            setOptions={setOptions}
+            min={0}
+            max={30}
+            defaultValue={lastParams?.aimPoints || 0}
+          />
+          <PtitbacThemeOption
+            isAdmin={isAdmin}
+            options={options}
+            setOptions={setOptions}
+            max={6}
+            lastParams={lastParams}
+            setServerMessage={setServerMessage}
+          />
+        </>
+      )}
     </div>
   );
 }

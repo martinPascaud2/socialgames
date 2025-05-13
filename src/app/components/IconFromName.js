@@ -15,6 +15,8 @@ const iconsList = {
 export default function IconFromName({ mode, value, ...props }) {
   if (typeof value !== "string") return null;
 
+  if (!iconsList.mode) return null;
+
   const IconComponent = iconsList[mode][value];
 
   if (!IconComponent) return null;

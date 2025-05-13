@@ -29,6 +29,7 @@ export default function MemoryOptions({
   const [pairsNumber, setPairsNumber] = useState(12);
   const [selectedThemes, setSelectedThemes] = useState([]);
   const [isFetched, setIsFetched] = useState(false);
+  const [isSelectingMode, setIsSelectingMode] = useState(false);
 
   useEffect(() => {
     if (isFetched || !mode) return;
@@ -95,54 +96,60 @@ export default function MemoryOptions({
               modeList={modeList}
               setMode={setMode}
               setOptions={setOptions}
+              isSelectingMode={isSelectingMode}
+              setIsSelectingMode={setIsSelectingMode}
             />
           )}
 
-          <div className="mb-4 flex flex-col items-center">
-            <div>Nombre de paires</div>
-            <div className="w-[60%] flex">
-              <button
-                onClick={() => {
-                  const newPairsNumber = pairsNumber - 2;
-                  if (newPairsNumber < selectedThemes.length) {
-                    setServerMessage("coucou"); // can be used
-                    return;
-                  }
-                  setPairsNumber((pairs) => pairs - 2);
-                }}
-                className={`mr-auto border border-amber-700 bg-amber-100 text-amber-700 w-[20%] flex justify-center ${
-                  !isAdmin ? "collapse" : ""
-                }`}
-              >
-                -
-              </button>
-              <div
-                className={`flex items-center w-[60%] border border-sky-700 ${
-                  isAdmin ? "border-x-0 w-[60%]" : "p-1 w-full"
-                } justify-center font-semibold`}
-              >
-                {pairsNumber}
+          {!isSelectingMode && (
+            <>
+              <div className="mb-4 flex flex-col items-center">
+                <div>Nombre de paires</div>
+                <div className="w-[60%] flex">
+                  <button
+                    onClick={() => {
+                      const newPairsNumber = pairsNumber - 2;
+                      if (newPairsNumber < selectedThemes.length) {
+                        setServerMessage("coucou"); // can be used
+                        return;
+                      }
+                      setPairsNumber((pairs) => pairs - 2);
+                    }}
+                    className={`mr-auto border border-amber-700 bg-amber-100 text-amber-700 w-[20%] flex justify-center ${
+                      !isAdmin ? "collapse" : ""
+                    }`}
+                  >
+                    -
+                  </button>
+                  <div
+                    className={`flex items-center w-[60%] border border-sky-700 ${
+                      isAdmin ? "border-x-0 w-[60%]" : "p-1 w-full"
+                    } justify-center font-semibold`}
+                  >
+                    {pairsNumber}
+                  </div>
+                  <button
+                    onClick={() => setPairsNumber((pairs) => pairs + 2)}
+                    className={`ml-auto border border-amber-700 bg-amber-100 text-amber-700 w-[20%] flex justify-center ${
+                      !isAdmin ? "collapse" : ""
+                    }`}
+                  >
+                    +
+                  </button>
+                </div>
               </div>
-              <button
-                onClick={() => setPairsNumber((pairs) => pairs + 2)}
-                className={`ml-auto border border-amber-700 bg-amber-100 text-amber-700 w-[20%] flex justify-center ${
-                  !isAdmin ? "collapse" : ""
-                }`}
-              >
-                +
-              </button>
-            </div>
-          </div>
 
-          <MemoryThemeOption
-            isAdmin={isAdmin}
-            setOptions={setOptions}
-            selectedThemes={selectedThemes}
-            setSelectedThemes={setSelectedThemes}
-            max={pairsNumber}
-            setServerMessage={setServerMessage}
-            lastParams={lastParams}
-          />
+              <MemoryThemeOption
+                isAdmin={isAdmin}
+                setOptions={setOptions}
+                selectedThemes={selectedThemes}
+                setSelectedThemes={setSelectedThemes}
+                max={pairsNumber}
+                setServerMessage={setServerMessage}
+                lastParams={lastParams}
+              />
+            </>
+          )}
         </>
       )}
     </div>

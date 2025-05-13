@@ -23,6 +23,7 @@ export default function DrawingOptions({
   );
   const [lastParams, setLastParams] = useState();
   const [modeList, setModeList] = useState([]);
+  const [isSelectingMode, setIsSelectingMode] = useState(false);
 
   useEffect(() => {
     if (!mode) return;
@@ -47,7 +48,7 @@ export default function DrawingOptions({
   // const same = lastMode.mode === mode; //can be used
 
   return (
-    <>
+    <div className="h-full">
       <ModeSelector
         isAdmin={isAdmin}
         options={options}
@@ -56,9 +57,11 @@ export default function DrawingOptions({
         modeList={modeList}
         setMode={setMode}
         setOptions={setOptions}
+        isSelectingMode={isSelectingMode}
+        setIsSelectingMode={setIsSelectingMode}
       />
 
-      {mode === "Pictionary" && (
+      {mode === "Pictionary" && !isSelectingMode && (
         <div className="flex flex-wrap justify-center">
           <div>
             <MakeTeams
@@ -89,7 +92,7 @@ export default function DrawingOptions({
         </div>
       )}
 
-      {mode === "Esquissé" && (
+      {mode === "Esquissé" && !isSelectingMode && (
         <>
           <Countdown
             isAdmin={isAdmin}
@@ -101,6 +104,6 @@ export default function DrawingOptions({
           />
         </>
       )}
-    </>
+    </div>
   );
 }

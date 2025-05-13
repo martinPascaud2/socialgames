@@ -22,6 +22,7 @@ export default function PtitbacOptions({
       "Triaction (random)"
   );
   const [modeList, setModeList] = useState([]);
+  const [isSelectingMode, setIsSelectingMode] = useState(false);
 
   useEffect(() => {
     if (!mode) return;
@@ -47,6 +48,8 @@ export default function PtitbacOptions({
         modeList={modeList}
         setMode={setMode}
         setOptions={setOptions}
+        isSelectingMode={isSelectingMode}
+        setIsSelectingMode={setIsSelectingMode}
       />
     </>
   );

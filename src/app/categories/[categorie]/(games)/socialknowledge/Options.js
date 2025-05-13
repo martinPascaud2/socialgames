@@ -29,6 +29,7 @@ export default function SocialKnowledgeOptions({
   const [lastParams, setLastParams] = useState();
   const [lastLoaded, setLastLoaded] = useState(false);
   const [show, setShow] = useState(false);
+  const [isSelectingMode, setIsSelectingMode] = useState(false);
 
   useEffect(() => {
     if (!mode) return;
@@ -63,8 +64,11 @@ export default function SocialKnowledgeOptions({
         modeList={modeList}
         setMode={setMode}
         setOptions={setOptions}
+        isSelectingMode={isSelectingMode}
+        setIsSelectingMode={setIsSelectingMode}
       />
-      {mode === "Tableau" && (
+
+      {mode === "Tableau" && !isSelectingMode && (
         <>
           <PresetCountdown
             isAdmin={isAdmin}

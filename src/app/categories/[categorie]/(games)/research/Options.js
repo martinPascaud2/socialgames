@@ -25,6 +25,7 @@ export default function ResearchOptions({
   const [lastParams, setLastParams] = useState();
   const [lastLoaded, setLastLoaded] = useState(false);
   const [show, setShow] = useState(false);
+  const [isSelectingMode, setIsSelectingMode] = useState(false);
 
   useEffect(() => {
     if (!mode) return;
@@ -59,6 +60,8 @@ export default function ResearchOptions({
         modeList={modeList}
         setMode={setMode}
         setOptions={setOptions}
+        isSelectingMode={isSelectingMode}
+        setIsSelectingMode={setIsSelectingMode}
       />
     </>
   );

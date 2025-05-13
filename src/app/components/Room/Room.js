@@ -1349,7 +1349,7 @@ export default function Room({
                 </div>
 
                 <div className="absolute left-1/2 translate-x-[-50%] h-[10dvh] w-full">
-                  <div className="absolute top-[6dvh] w-full flex justify-center items-center">
+                  <div className="absolute top-[5dvh] w-full flex justify-center items-center h-full">
                     {(isAdmin || searchIsAdmin) && !gameData.isSearching ? (
                       <div className="h-[4dvh] w-[4dvh]">
                         <ChooseAnotherGame
@@ -1365,7 +1365,7 @@ export default function Room({
                       <div className="h-[4dvh] w-[4dvh]" />
                     )}
 
-                    <div className="text-center text-purple-950 text-3xl font-medium flex justify-center items-center mx-2 p-2 min-w-[50vw]">
+                    <div className="w-fit break-words text-wrap text-center text-purple-950 text-3xl font-medium flex justify-center items-center min-w-[50vw] max-w-[60vw] p-2">
                       {!gameData.isSearching ? (
                         gamesRefs[gameName].categorie === "grouping" ? (
                           <span>Lobby</span>
@@ -1376,20 +1376,15 @@ export default function Room({
                               gamesRefs[gameName].name}
                           </span>
                         )
+                      ) : adminSelectedGame ? (
+                        <span>
+                          {adminSelectedMode?.label || adminSelectedGame?.name}
+                        </span>
                       ) : (
-                        <>
-                          {adminSelectedGame ? (
-                            <div>
-                              {adminSelectedMode?.label ||
-                                adminSelectedGame?.name}
-                            </div>
-                          ) : (
-                            <div>
-                              {/* text-amber-500 */}
-                              <AnimatedDots color="#f59e0b" text="5xl" />
-                            </div>
-                          )}
-                        </>
+                        <div>
+                          {/* text-amber-500 */}
+                          <AnimatedDots color="#f59e0b" text="5xl" />
+                        </div>
                       )}
                     </div>
 
@@ -1460,7 +1455,9 @@ export default function Room({
                           </div>
                         )}
 
-                      <div className={`${!showConfig && "hidden"}`}>
+                      <div
+                        className={`${!showConfig && "hidden"} h-full w-full`}
+                      >
                         {!isJoining &&
                           Options &&
                           options &&

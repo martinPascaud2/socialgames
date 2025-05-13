@@ -26,6 +26,7 @@ export default function RankingOptions({
   );
   const [lastParams, setLastParams] = useState();
   const [modeList, setModeList] = useState([]);
+  const [isSelectingMode, setIsSelectingMode] = useState(false);
 
   useEffect(() => {
     if (!mode) return;
@@ -57,9 +58,11 @@ export default function RankingOptions({
         modeList={modeList}
         setMode={setMode}
         setOptions={setOptions}
+        isSelectingMode={isSelectingMode}
+        setIsSelectingMode={setIsSelectingMode}
       />
 
-      {mode === "Podium" && (
+      {mode === "Podium" && !isSelectingMode && (
         <div className="flex flex-col items-center">
           <div className="w-full flex justify-center my-2">
             <div
