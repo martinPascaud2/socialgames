@@ -43,7 +43,7 @@ export default function ModeSelector({
       return (
         <div
           onClick={() => setIsSelectingMode(true)}
-          className="w-2/3 text-2xl text-amber-700 font-semibold border border-amber-700 bg-amber-100 p-2 text-center"
+          className="w-2/3 text-2xl text-amber-700 font-semibold border border-amber-700 bg-amber-100 p-2 text-center rounded"
         >
           {value}
         </div>
@@ -62,7 +62,7 @@ export default function ModeSelector({
                 });
                 setIsSelectingMode(false);
               }}
-              className="w-full text-2xl text-amber-700 border border-amber-700 p-2 text-center border-dotted"
+              className="w-full text-2xl text-amber-700 border border-amber-700 p-2 text-center border-dotted rounded"
             >
               {mode.text}
             </div>

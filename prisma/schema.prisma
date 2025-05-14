@@ -11,44 +11,42 @@ datasource db {
 }
 
 model User {
-  id                          Int                       @id @default(autoincrement())
-  email                       String                    @unique
-  name                        String                    @unique
-  password                    String
-  tmpToken                    String?
-  creationDate                DateTime                  @db.Date
-  params                      Json?
-  lastControlPanel            DateTime?                 @db.DateTime(0)
-  friends                     Friend[]                  @relation("userFriends")
-  friendOf                    Friend[]                  @relation("userFriendOf")
-  room                        Room?                     @relation(fields: [roomId], references: [id])
-  roomId                      Int?
-  lastPlayed                  String?
-  alreadyActionouverite       Json?
-  alreadyUndercovertheme      UndercoverthemesOnUsers[]
-  alreadyPtitbactheme         PtitbacthemesOnUsers[]
-  alreadyDrawingWords         DrawingWordsOnUsers[]
-  ptitbacResponses            String                    @default("")
-  pictionaryLastParams        Json?
-  esquisseLastParams          Json?
-  memoryLastParams            Json?
-  podiumLastParams            Json?
-  ptitbacLastParams           Json?
-  triactionLastParams         Json?
-  triaction_random_LastParams Json?
-  triaction_peek_LastParams   Json?
-  chasseLastParams            Json?
-  tableauLastParams           Json?
-  png                         String                    @default("") @db.Text
-  drawChain                   DrawLink[]
-  unoCount                    Int?
-  tableauResponses            TableauResponse[]
-  tableauSortedResponses      Json?
-  tableauSecondSorted         Json?
-  tableauRevelationSeen       Boolean                   @default(false)
-  podiumTops                  Json?
-  huntingPosition             Json?
-  postGames                   UserPostGame[]
+  id                     Int                       @id @default(autoincrement())
+  email                  String                    @unique
+  name                   String                    @unique
+  password               String
+  tmpToken               String?
+  creationDate           DateTime                  @db.Date
+  params                 Json?
+  lastControlPanel       DateTime?                 @db.DateTime(0)
+  friends                Friend[]                  @relation("userFriends")
+  friendOf               Friend[]                  @relation("userFriendOf")
+  room                   Room?                     @relation(fields: [roomId], references: [id])
+  roomId                 Int?
+  lastPlayed             String?
+  alreadyActionouverite  Json?
+  alreadyUndercovertheme UndercoverthemesOnUsers[]
+  alreadyPtitbactheme    PtitbacthemesOnUsers[]
+  alreadyDrawingWords    DrawingWordsOnUsers[]
+  ptitbacResponses       String                    @default("")
+  pictionaryLastParams   Json?
+  esquisseLastParams     Json?
+  memoryLastParams       Json?
+  podiumLastParams       Json?
+  ptitbacLastParams      Json?
+  triactionLastParams    Json?
+  chasseLastParams       Json?
+  tableauLastParams      Json?
+  png                    String                    @default("") @db.Text
+  drawChain              DrawLink[]
+  unoCount               Int?
+  tableauResponses       TableauResponse[]
+  tableauSortedResponses Json?
+  tableauSecondSorted    Json?
+  tableauRevelationSeen  Boolean                   @default(false)
+  podiumTops             Json?
+  huntingPosition        Json?
+  postGames              UserPostGame[]
 }
 
 model Multiguest {
