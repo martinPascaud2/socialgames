@@ -12,6 +12,7 @@ export default function GameChooser({
   adminSelectedGame,
   setAdminSelectedGame,
   adminSearchtGame,
+  setAdminSearchtGame,
   adminSelectedMode,
   setAdminSelectedMode,
   initialHeight,
@@ -102,7 +103,10 @@ export default function GameChooser({
         {subCategories[adminSearchtCategorie].map((subCat, i) => (
           <div
             key={i}
-            onClick={() => setAdminSelectedGame(subCat)}
+            onClick={() => {
+              setAdminSelectedGame(subCat);
+              setAdminSearchtGame(subCat);
+            }}
             className={`p-4 text-2xl whitespace-nowrap overflow-hidden text-ellipsis ${
               adminSelectedGame?.name === subCat?.name &&
               "outline outline-2 font-semibold"

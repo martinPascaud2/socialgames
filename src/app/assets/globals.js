@@ -42,6 +42,15 @@ export const categories = [
   },
 ];
 
+export const categoriesLabels = {
+  categorie1: "Réflexion",
+  categorie2: "Culture",
+  categorie3: "Tout public",
+  categorie4: "Cartes",
+  categorie5: "Social",
+  categorie6: "Pour deux",
+};
+
 export const categoriesIcons = {
   categorie1: "/categoriesIcons/cerebral.webp",
   categorie2: "/categoriesIcons/knowledge2.png",

@@ -23,7 +23,7 @@ import getErrorInformations from "@/utils/getErrorInformations";
 import { getRoomFriendList } from "@/utils/getFriendList";
 import { saveLastParams } from "@/utils/getLastParams";
 import cancelBack from "@/utils/cancelBack";
-import { gamesRefs, categoriesIcons } from "@/assets/globals";
+import { gamesRefs, categoriesIcons, categoriesLabels } from "@/assets/globals";
 
 // import dynamic from "next/dynamic";
 // const CornerTriangle = dynamic(
@@ -1275,7 +1275,7 @@ export default function Room({
             {(isAdmin || searchIsAdmin) &&
               ((!gameData.isSearching && gameName !== "grouping") ||
                 (adminSelectedCategorie && !adminSearchtCategorie) ||
-                (adminSearchtCategorie && adminSelectedGame)) && (
+                (adminSearchtGame && adminSelectedMode)) && (
                 <div
                   onClick={async () => await deleteInvs()}
                   className={`${!isLaunching ? "" : "hidden"}`}
@@ -1380,6 +1380,8 @@ export default function Room({
                         <span>
                           {adminSelectedMode?.label || adminSelectedGame?.name}
                         </span>
+                      ) : adminSelectedCategorie ? (
+                        <div>{categoriesLabels[adminSelectedCategorie]}</div>
                       ) : (
                         <div>
                           {/* text-amber-500 */}
