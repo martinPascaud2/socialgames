@@ -117,8 +117,8 @@ export const subCategories = {
       description: "La description de connaissance des autres",
     },
     {
-      name: "Triaction",
-      path: "triaction",
+      name: "Défi",
+      path: "defi",
       img: "/triathlon.jpeg",
       description: "Blablabla eojrnvenrvlejrv ervedv dfvdvf",
     },
@@ -203,13 +203,10 @@ export const gamesRefs = {
     modes: [{ label: "Uno (classique)", path: "Uno" }],
     limits: { min: 2, max: 10, opti: 6 },
   },
-  triaction: {
-    name: "Triaction",
+  defi: {
+    name: "Défi",
     categorie: "categorie5",
-    modes: [
-      { label: "Triaction (random)", path: "Triaction%20(random)" },
-      { label: "Triaction (peek)", path: "Triaction%20(peek)" },
-    ],
+    modes: [{ label: "Triaction", path: "Triaction" }],
     limits: { min: 3, max: 8, opti: 5 },
   },
   ranking: {
@@ -276,16 +273,8 @@ export const modesRules = {
     limits: { min: 2, max: 2, opti: 2 },
   },
 
-  triaction: {
+  Triaction: {
     // put mode in disconnected
-    name: "Triaction",
-    limits: { min: 3, max: 8, opti: 5 },
-  },
-  "Triaction (random)": {
-    name: "Triaction",
-    limits: { min: 3, max: 8, opti: 5 },
-  },
-  "Triaction (peek)": {
     name: "Triaction",
     limits: { min: 3, max: 8, opti: 5 },
   },

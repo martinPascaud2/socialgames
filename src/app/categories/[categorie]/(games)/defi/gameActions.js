@@ -45,7 +45,7 @@ export async function launchGame({
       gamersAndGuests,
     });
 
-  if (options.mode === "Triaction (peek)") {
+  if (options.aimSelection === "peek") {
     gamersAndGuests[0].place = 1;
   } else {
     const places = gamersAndGuests.map((_, i) => i + 1);
@@ -57,7 +57,7 @@ export async function launchGame({
     });
   }
 
-  const phase = options.mode === "Triaction (peek)" ? "peek" : "write";
+  const phase = options.aimSelection === "peek" ? "peek" : "write";
 
   const newData = {
     admin: startedRoom.admin,
@@ -284,7 +284,7 @@ export async function sendPropositionBack({
   }
 }
 
-export async function removeGamers({
+export async function removeTriactionGamers({
   roomId,
   roomToken,
   gameData,

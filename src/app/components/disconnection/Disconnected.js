@@ -115,7 +115,7 @@ const getDiscoWarningMessage = ({
     case "Esquissé":
       return <span>La position de certains joueurs pourra être décalée.</span>;
     case "Pictionary":
-    case "triaction": // to do: triaction modes
+    case "Triaction":
       return <span>Attention, ceci mettra fin à la partie.</span>;
 
     case "undercover":

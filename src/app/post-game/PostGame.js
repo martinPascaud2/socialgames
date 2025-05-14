@@ -14,7 +14,7 @@ import usePreventBackSwipe from "@/utils/usePreventBackSwipe";
 import ThreeSmoke from "@/components/Room/ThreeSmoke";
 import { StaticNextStep } from "@/components/NextStep";
 import ControlButton from "@/components/ControlButton";
-import WrittenCard from "@/categories/[categorie]/(games)/triaction/WrittenCard";
+import WrittenCard from "@/categories/[categorie]/(games)/defi/WrittenCard";
 import CountDown from "@/components/CountDown";
 import LoadingRoomOctagon from "@/components/Room/LoadingRoomOctagon";
 

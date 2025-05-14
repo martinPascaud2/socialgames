@@ -3,10 +3,10 @@ import getUser from "@/utils/getUser";
 import { launchGame } from "./gameActions";
 
 import Room from "@/components/Room/Room";
-import Triaction from "./Triaction";
-import TriactionOptions from "./Options";
+import Défi from "./Défi";
+import DéfiOptions from "./Options";
 
-export default async function TriactionPage({ params, searchParams }) {
+export default async function DéfiPage({ params, searchParams }) {
   const user = await getUser();
 
   if (!user)
@@ -14,9 +14,9 @@ export default async function TriactionPage({ params, searchParams }) {
       <Room
         user={{ name: searchParams.guestName, multiGuest: true }}
         categorie={params?.categorie}
-        gameName="triaction"
-        Game={Triaction}
-        Options={TriactionOptions}
+        gameName="defi"
+        Game={Défi}
+        Options={DéfiOptions}
         launchGame={null}
       />
     );
@@ -27,9 +27,9 @@ export default async function TriactionPage({ params, searchParams }) {
     <Room
       user={{ id, name, params: userParams }}
       categorie={params?.categorie}
-      gameName="triaction"
-      Game={Triaction}
-      Options={TriactionOptions}
+      gameName="defi"
+      Game={Défi}
+      Options={DéfiOptions}
       launchGame={launchGame}
     />
   );

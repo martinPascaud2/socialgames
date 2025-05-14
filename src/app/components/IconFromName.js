@@ -1,6 +1,8 @@
 import { IoPeople } from "react-icons/io5";
 import { BsThreeDots } from "react-icons/bs";
-import { GiPodium } from "react-icons/gi";
+import { GiPodium, GiPerspectiveDiceSixFacesRandom } from "react-icons/gi";
+import { AiOutlineAim } from "react-icons/ai";
+
 import Infinity from "@/components/icons/Infinity";
 
 const iconsList = {
@@ -10,12 +12,16 @@ const iconsList = {
     3: GiPodium,
     infinite: (props) => <Infinity size={props?.size || 32} />,
   },
+  Triaction: {
+    random: GiPerspectiveDiceSixFacesRandom,
+    peek: AiOutlineAim,
+  },
 };
 
 export default function IconFromName({ mode, value, ...props }) {
   if (typeof value !== "string") return null;
 
-  if (!iconsList.mode) return null;
+  if (!iconsList[mode]) return null;
 
   const IconComponent = iconsList[mode][value];
 

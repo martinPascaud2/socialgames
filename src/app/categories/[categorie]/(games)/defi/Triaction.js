@@ -14,7 +14,6 @@ import {
   sendActionBack,
   proposeAction,
   sendPropositionBack,
-  removeGamers,
 } from "./gameActions";
 
 import { vampiro } from "@/assets/fonts";
@@ -22,8 +21,6 @@ import { vampiro } from "@/assets/fonts";
 import Input from "@/components/keyboard/Input";
 import TriactionKeyboard from "@/components/keyboard/TriactionKeyboard";
 import WrittenCard from "./WrittenCard";
-import NextEndingPossibilities from "@/components/NextEndingPossibilities";
-import Disconnected from "@/components/disconnection/Disconnected";
 
 const RipplingButton = ({
   onLongPress,
@@ -256,11 +253,10 @@ export default function Triaction({
   roomId,
   roomToken,
   user,
-  onlineGamers,
   gameData,
-  storedLocation,
+  // setShowNext,
 }) {
-  const { phase, gamers, activePlayer, senders, postgameRef } = gameData;
+  const { phase, gamers, activePlayer, senders } = gameData;
   const isAdmin = gameData.admin === user.name;
   const isActive = gameData.activePlayer?.id === user.id;
   const [isValidated, setIsValidated] = useState(false);
@@ -283,7 +279,6 @@ export default function Triaction({
   const [showChoose, setShowChoose] = useState("backed");
   const [chooseTimeout, setChooseTimeout] = useState();
 
-  const [isEnded, setIsEnded] = useState(false);
   const [hasReload, setHasReload] = useState(false);
 
   const aim = async ({ aimerPlace, aimed }) => {
@@ -428,10 +423,6 @@ export default function Triaction({
       clearTimeout(chooseTimeout);
     };
   }, [showChoose]);
-
-  useEffect(() => {
-    if (phase === "finalReveal" || gameData.ended) setIsEnded(true);
-  }, [phase, gameData.ended]);
 
   useEffect(() => {
     if (!isAdmin || !hasReload) return;
@@ -772,7 +763,7 @@ export default function Triaction({
                               letterSpacing: "-4px",
                             }}
                           >
-                            {previous.name.slice(0, 3).toUpperCase()}
+                            {previous?.name.slice(0, 3).toUpperCase()}
                           </div>
 
                           <div
@@ -1085,41 +1076,6 @@ export default function Triaction({
             </div>
           );
         })()}
-
-      {!showedKeyboard && (
-        <NextEndingPossibilities
-          isAdmin={isAdmin}
-          isEnded={isEnded}
-          gameData={gameData}
-          roomToken={roomToken}
-          roomId={roomId}
-          reset={() => console.log("to be done")}
-          postgameRef={postgameRef}
-          storedLocation={storedLocation}
-          user={user}
-        />
-      )}
-
-      <Disconnected
-        roomId={roomId}
-        roomToken={roomToken}
-        onlineGamers={onlineGamers}
-        gamers={gamers}
-        isAdmin={isAdmin}
-        onGameBye={({ admins, arrivalsOrder }) =>
-          removeGamers({
-            roomId,
-            roomToken,
-            gameData,
-            onlineGamers,
-            admins,
-            arrivalsOrder,
-          })
-        }
-        modeName="triaction"
-        gameData={gameData}
-        user={user}
-      />
     </div>
   );
 }
