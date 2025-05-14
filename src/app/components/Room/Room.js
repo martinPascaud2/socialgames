@@ -1427,6 +1427,8 @@ export default function Room({
                         }
                       }}
                       className={`overflow-hidden relative border w-[80%] transition-[height] duration-1000 ease-in-out ${
+                        gameData.isSearching ? "hidden" : ""
+                      } ${
                         !showConfig
                           ? `h-12 border border-2 rounded-md border-amber-700 bg-amber-100 text-amber-700 p-2`
                           : `h-full border border-2 rounded-md border-sky-700 bg-sky-100 text-sky-700 p-2`
