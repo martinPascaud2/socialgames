@@ -130,11 +130,10 @@ export const subCategories = {
     //     "A tour de rôle, chaque joueur choisit entre une Action à réaliser, ou une Vérité à révéler... surprise !",
     // },
     {
-      name: "Undercover",
-      path: "undercover",
+      name: "Secret",
+      path: "secret",
       img: "/undercover.png",
-      description:
-        "Au début de la partie, chacun reçoit un mot secret. Les joueurs doivent ensuite révéler petit à petit des informations sur leur mot pour deviner qui a le même mot qu’eux ! Après quelques tours d’élimination, réussiront-ils à découvrir leur identité et à se défaire de leurs ennemis ?",
+      description: "Description de secret",
     },
     {
       name: "Recherche",
@@ -164,10 +163,10 @@ export const gamesRefs = {
   //   limits: { min: 2, max: 15 },
   //   isGuestsAllowed: true,
   // },
-  undercover: {
-    name: "Undercover",
+  secret: {
+    name: "Secret",
     categorie: "categorie5",
-    modes: [{ label: "Undercover (classique)", path: "Undercover" }],
+    modes: [{ label: "Undercover", path: "Undercover" }],
     limits: { min: 3, max: 15, opti: 8 },
   },
   dobble: {

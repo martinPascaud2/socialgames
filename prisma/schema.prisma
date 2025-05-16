@@ -34,6 +34,7 @@ model User {
   memoryLastParams       Json?
   podiumLastParams       Json?
   ptitbacLastParams      Json?
+  undercoverLastParams   Json?
   triactionLastParams    Json?
   chasseLastParams       Json?
   tableauLastParams      Json?

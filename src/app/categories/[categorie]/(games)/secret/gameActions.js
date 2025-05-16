@@ -4,6 +4,7 @@ import { saveAndDispatchData } from "@/components/Room/actions";
 import checkPlayers from "@/utils/checkPlayers";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkViceAdminAndArrivals from "@/utils/checkViceAdminAndArrivals";
+import { saveLastParams } from "@/utils/getLastParams";
 
 export async function launchGame({
   roomId,
@@ -15,7 +16,7 @@ export async function launchGame({
   options,
 }) {
   const { error: playersError } = checkPlayers({
-    mode: "undercover",
+    mode: options.mode,
     gamers,
     guests,
     multiGuests,
@@ -109,6 +110,8 @@ export async function launchGame({
       viceAdmin: startedRoom.viceAdmin,
       gamersAndGuests,
     });
+
+  await saveLastParams({ userId: adminId, options });
 
   const whiteNumber = gamersAndGuests.length > 3 ? 1 : 0;
   const assignWhite = () => {
@@ -370,7 +373,7 @@ export async function whiteGuess(
   return { message: null };
 }
 
-export async function removeGamers({
+export async function removeUndercoverGamers({
   roomId,
   roomToken,
   gameData,

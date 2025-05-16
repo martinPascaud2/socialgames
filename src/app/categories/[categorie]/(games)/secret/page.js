@@ -3,9 +3,10 @@ import getUser from "@/utils/getUser";
 import { launchGame } from "./gameActions";
 
 import Room from "@/components/Room/Room";
-import Undercover from "./Undercover";
+import SecretOptions from "./Options";
+import Secret from "./Secret";
 
-export default async function UndercoverPage({ params, searchParams }) {
+export default async function SecretPage({ params, searchParams }) {
   const user = await getUser();
 
   if (!user)
@@ -13,8 +14,9 @@ export default async function UndercoverPage({ params, searchParams }) {
       <Room
         user={{ name: searchParams.guestName, multiGuest: true }}
         categorie={params?.categorie}
-        gameName="undercover"
-        Game={Undercover}
+        gameName="secret"
+        Game={Secret}
+        Options={SecretOptions}
         launchGame={null}
       />
     );
@@ -25,8 +27,9 @@ export default async function UndercoverPage({ params, searchParams }) {
     <Room
       user={{ id, name, params: userParams }}
       categorie={params?.categorie}
-      gameName="undercover"
-      Game={Undercover}
+      gameName="secret"
+      Game={Secret}
+      Options={SecretOptions}
       launchGame={launchGame}
     />
   );

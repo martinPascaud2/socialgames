@@ -4,8 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useFormState } from "react-dom";
 
 import NextStep from "@/components/NextStep";
-import NextEndingPossibilities from "@/components/NextEndingPossibilities";
-import Disconnected from "@/components/disconnection/Disconnected";
 
 const initialState = {
   message: null,
@@ -18,16 +16,14 @@ import {
   voteAgainst,
   goddessVote,
   whiteGuess,
-  removeGamers,
 } from "./gameActions";
 
 export default function Undercover({
   roomId,
   roomToken,
   user,
-  onlineGamers,
   gameData,
-  storedLocation,
+  // setShowNext
 }) {
   const [deviceGamers, setDeviceGamers] = useState([]);
 
@@ -379,38 +375,6 @@ export default function Undercover({
           </>
         )}
       </div>
-
-      <NextEndingPossibilities
-        isAdmin={isAdmin}
-        isEnded={isEnded}
-        gameData={gameData}
-        roomToken={roomToken}
-        roomId={roomId}
-        reset={() => console.log("to be done")}
-        storedLocation={storedLocation}
-        user={user}
-      />
-
-      <Disconnected
-        roomId={roomId}
-        roomToken={roomToken}
-        onlineGamers={onlineGamers}
-        gamers={gamers}
-        isAdmin={isAdmin}
-        onGameBye={({ admins, arrivalsOrder }) =>
-          removeGamers({
-            roomId,
-            roomToken,
-            gameData,
-            onlineGamers,
-            admins,
-            arrivalsOrder,
-          })
-        }
-        modeName="undercover"
-        gameData={gameData}
-        user={user}
-      />
     </div>
   );
 }

@@ -118,7 +118,7 @@ const getDiscoWarningMessage = ({
     case "Triaction":
       return <span>Attention, ceci mettra fin à la partie.</span>;
 
-    case "undercover":
+    case "Undercover":
       return (
         <div className="flex flex-col">
           <span>
