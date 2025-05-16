@@ -980,6 +980,7 @@ export default function Podium({
   const { phase } = gameData;
 
   useEffect(() => {
+    if (!phase) return;
     if (phase !== "preparing") setShowNext(true);
   }, [phase]);
 

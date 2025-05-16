@@ -33,7 +33,8 @@ export default function Sort({
   const [isLocked, setIsLocked] = useState(false);
 
   useEffect(() => {
-    if (gameData.ended) setIsEnded(true);
+    setIsEnded(!!gameData.ended);
+    setShowNext(!!gameData.ended);
   }, [gameData.ended]);
 
   useEffect(() => {

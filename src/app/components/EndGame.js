@@ -22,11 +22,10 @@ export default function EndGame({ gameData, user, isFirst = false }) {
         <>
           <button
             onClick={() => {
-              router.push(
-                `${gameData.nextGame.path}${
-                  user.multiGuest ? `&guestName=${user.name}` : ""
-                }`
-              );
+              const path = `${gameData.nextGame.path}${
+                user.multiGuest ? `&guestName=${user.name}` : ""
+              }`;
+              router.push(`/categories/back/backToLobby/?path=${path}`);
             }}
             className="border border-blue-300 bg-blue-100"
           >

@@ -22,7 +22,8 @@ export default function Ranking({
   const [showNext, setShowNext] = useState(false);
 
   useEffect(() => {
-    setIsEnded(gameData.ended);
+    setIsEnded(!!gameData.ended);
+    setShowNext(!!gameData.ended);
   }, [gameData.ended]);
 
   const removeGamers = useCallback(

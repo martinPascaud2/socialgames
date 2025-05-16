@@ -123,7 +123,8 @@ export default function Ptitbac({
   }, [inputRefs, phase, themes]);
 
   useEffect(() => {
-    if (gameData.ended) setIsEnded(true);
+    setIsEnded(!!gameData.ended);
+    setShowNext(!!gameData.ended);
   }, [gameData.ended]);
 
   const handleChange = (e, i) => {

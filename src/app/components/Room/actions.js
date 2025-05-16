@@ -85,7 +85,16 @@ export async function saveLocation({ geoLocation, roomId }) {
   });
 }
 
-export async function finishGame({ roomToken, gameData }) {
+export async function finishGame({ roomToken, gameData, roomId }) {
+  const game = (
+    await prisma.room.findFirst({
+      where: { id: roomId },
+      select: { game: true },
+    })
+  ).game;
+
+  const categorie = gamesRefs[game].categorie;
+
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     gameData: {
       ...gameData,
@@ -93,6 +102,8 @@ export async function finishGame({ roomToken, gameData }) {
       isSearching: false,
     },
   });
+
+  return { game, categorie };
 }
 
 // ChooseAnotherGame (lobby)

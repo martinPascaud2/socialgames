@@ -22,7 +22,8 @@ export default function SocialKnowledge({
 
   const [isEnded, setIsEnded] = useState(false);
   useEffect(() => {
-    if (gameData.ended) setIsEnded(true);
+    setIsEnded(!!gameData.ended);
+    setShowNext(!!gameData.ended);
   }, [gameData.ended]);
 
   const removeGamers = useCallback(

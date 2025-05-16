@@ -96,7 +96,8 @@ export default function Memory({
   }, [gameData.adminLoad, isAdmin]);
 
   useEffect(() => {
-    gameData.ended && setIsEnded(gameData.ended);
+    setIsEnded(!!gameData.ended);
+    setShowNext(!!gameData.ended);
   }, [gameData.ended]);
 
   useEffect(() => {

@@ -47,7 +47,9 @@ export default function Uno({
 
   const [isEnded, setIsEnded] = useState(false);
   useEffect(() => {
-    setIsEnded(gameData.ended || gameData.nextGame);
+    setIsEnded(gameData.ended || gameData.nextGame); // check
+    // setIsEnded(!!gameData.ended);
+    setShowNext(!!gameData.ended);
   }, [gameData.ended, gameData.nextGame]);
 
   const checkIsAllowed = ({

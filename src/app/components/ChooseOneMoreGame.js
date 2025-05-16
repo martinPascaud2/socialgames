@@ -25,7 +25,7 @@ export default function ChooseOneMoreGame({
   const gameName = path.split("/")[3];
 
   const goChooseGame = useCallback(
-    (priv) => {
+    async (priv) => {
       const gamers = gameData.gamers.filter(
         (gamer) => !gamer.guest && !gamer.multiGuest
       );
@@ -46,13 +46,19 @@ export default function ChooseOneMoreGame({
       };
       localStorage.setItem("group", JSON.stringify(group));
 
-      finishGame({ gameData, roomToken });
+      const { game, categorie } = await finishGame({
+        gameData,
+        roomToken,
+        roomId,
+      });
 
       router.push(
-        isFirst ? `/categories?group=true` : `/categories/grouping/grouping`
+        isFirst
+          ? `/categories?group=true`
+          : `/categories/back/backToLobby/?categorie=${categorie}&game=${game}`
       );
     },
-    [gameData, roomToken, router, isFirst]
+    [gameData, roomToken, router, isFirst, roomId]
   );
 
   useEffect(() => {

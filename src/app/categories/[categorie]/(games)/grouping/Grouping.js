@@ -1,5 +1,5 @@
 "use client";
-
+// check all
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import { useEffect, useState } from "react";
 
@@ -16,6 +16,8 @@ export default function Grouping({
   }, [gameData.admin, user.name]);
 
   if (!isAdmin) return null;
+
+  return null;
 
   return (
     <>
