@@ -1008,6 +1008,7 @@ export default function Room({
       setAdminSearchtCategorie(null);
       setAdminSelectedGame(null);
     } else {
+      setAdminSelectedGame(null);
       setAdminSearchtGame(null);
       setAdminSelectedMode(null);
     }
