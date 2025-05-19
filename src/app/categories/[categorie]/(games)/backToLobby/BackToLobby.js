@@ -10,5 +10,9 @@ export default function BackToLobby({ href }) {
   //     setTimeout(() => router.push(href), 5000);
   //   }, []);
 
-  return <div className="h-screen w-screen bg-black text-white">{href}</div>;
+  return (
+    <div className="h-screen w-screen bg-black text-white flex justify-center items-center">
+      {href}
+    </div>
+  );
 }
