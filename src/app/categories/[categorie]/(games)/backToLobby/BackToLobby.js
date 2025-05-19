@@ -7,7 +7,7 @@ export default function BackToLobby({ href }) {
   const router = useRouter();
 
   useEffect(() => {
-    router.push(href);
+    setTimeout(() => router.push(href), 5000);
   }, []);
 
   return <div className="h-screen w-screen bg-black" />;
