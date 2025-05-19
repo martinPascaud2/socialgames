@@ -1327,7 +1327,8 @@ export default function Room({
               >
                 {/* <div className="absolute top-[2dvh] w-full h-[4.5dvh] flex justify-center items-center"> */}
                 <div className="absolute top-[2vh] w-full h-[4.5dvh] flex justify-center items-center">
-                  {categorie !== "grouping" &&
+                  {categorie &&
+                    categorie !== "grouping" &&
                     categoriesIcons &&
                     (!gameData.isSearching || adminSelectedCategorie) && (
                       <div className="flex flex-col items-center">
