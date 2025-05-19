@@ -23,6 +23,8 @@ export default function ChooseOneMoreGame({
   const [privacy, setPrivacy] = useState(null);
   const path = usePathname();
   const gameName = path.split("/")[3];
+  const [game, setGame] = useState();
+  const [categorie, setCategorie] = useState();
 
   const goChooseGame = useCallback(
     async (priv) => {
@@ -51,12 +53,14 @@ export default function ChooseOneMoreGame({
         roomToken,
         roomId,
       });
+      setGame(game);
+      setCategorie(categorie);
 
-      router.push(
-        isFirst
-          ? `/categories?group=true`
-          : `/categories/back/backToLobby/?categorie=${categorie}&game=${game}`
-      );
+      // router.push(
+      //   isFirst
+      //     ? `/categories?group=true`
+      //     : `/categories/back/backToLobby/?categorie=${categorie}&game=${game}`
+      // );
     },
     [gameData, roomToken, router, isFirst, roomId]
   );
@@ -86,6 +90,9 @@ export default function ChooseOneMoreGame({
             </button>
           </div>
         )}
+
+        <div>game: {game}</div>
+        <div>categorie: {categorie}</div>
 
         <div className={`absolute left-0`}>
           <DeleteGroup roomToken={roomToken} roomId={roomId} />
