@@ -1325,33 +1325,27 @@ export default function Room({
                     : "opacity-0 animate-[fadeOut_1.5s_ease-in-out]"
                 } relative h-full w-full`}
               >
-                {/* <div className="absolute top-[2dvh] w-full h-[4.5dvh] flex justify-center items-center"> */}
-                <div className="absolute top-[2vh] w-full h-[4.5dvh] flex justify-center items-center">
-                  {categorie &&
-                    categorie !== "grouping" &&
+                <div className="absolute top-[2dvh] w-full h-[4.5dvh] flex justify-center items-center">
+                  {categorie !== "grouping" &&
                     categoriesIcons &&
                     (!gameData.isSearching || adminSelectedCategorie) && (
-                      <div className="flex flex-col items-center">
-                        <div>admselcat: {String(adminSelectedCategorie)}</div>
-                        <div>categorie: {categorie}</div>
-                        <Image
-                          src={
-                            !adminSelectedCategorie
-                              ? categoriesIcons[categorie]
-                              : categoriesIcons[adminSelectedCategorie]
-                          }
-                          alt={`${categorie} image`}
-                          className="max-h-[4.5dvh] max-w-[4.5dvh] aspect-square"
-                          style={{
-                            objectFit: "contain",
-                            filter:
-                              "invert(9%) sepia(73%) saturate(3540%) hue-rotate(267deg) brightness(94%) contrast(110%)", // purple-950
-                          }}
-                          width={500}
-                          height={500}
-                          priority
-                        />
-                      </div>
+                      <Image
+                        src={
+                          !adminSelectedCategorie
+                            ? categoriesIcons[categorie]
+                            : categoriesIcons[adminSelectedCategorie]
+                        }
+                        alt={`${categorie} image`}
+                        className="max-h-[4.5dvh] max-w-[4.5dvh] aspect-square"
+                        style={{
+                          objectFit: "contain",
+                          filter:
+                            "invert(9%) sepia(73%) saturate(3540%) hue-rotate(267deg) brightness(94%) contrast(110%)", // purple-950
+                        }}
+                        width={500}
+                        height={500}
+                        priority
+                      />
                     )}
                 </div>
 
