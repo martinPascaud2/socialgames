@@ -170,21 +170,27 @@ export const gamesRefs = {
     limits: { min: 3, max: 15, opti: 8 },
   },
   dobble: {
-    name: "Identiques",
+    // name: "Identiques",
+    name: "Dobble",
     categorie: "categorie1",
-    modes: [{ label: "Dobble (classique)", path: "Dobble" }],
+    // modes: [{ label: "Dobble (classique)", path: "Dobble" }],
+    modes: [{ label: "Dobble", path: "Dobble" }],
     limits: { min: 2, max: 15, opti: 4 },
   },
   memory: {
-    name: "Mémoire",
+    // name: "Mémoire",
+    name: "Mémory",
     categorie: "categorie6",
-    modes: [{ label: "Memory (classique)", path: "Memory" }],
+    // modes: [{ label: "Memory (classique)", path: "Memory" }],
+    modes: [{ label: "Memory", path: "Memory" }],
     limits: { min: 2, max: 2, opti: 2 },
   },
   ptitbac: {
-    name: "Quel mot ?",
+    // name: "Quel mot ?",
+    name: "P'tit bac",
     categorie: "categorie3",
-    modes: [{ label: "P'tit bac (classique)", path: "P%27tit%20bac" }],
+    // modes: [{ label: "P'tit bac (classique)", path: "P%27tit%20bac" }],
+    modes: [{ label: "P'tit bac", path: "P%27tit%20bac" }],
     limits: { min: 2, max: 15, opti: 7 },
   },
   drawing: {
@@ -197,9 +203,11 @@ export const gamesRefs = {
     limits: { min: 4, max: 10, opti: 7 },
   },
   uno: {
-    name: "Classico",
+    // name: "Classico",
+    name: "Uno",
     categorie: "categorie4",
-    modes: [{ label: "Uno (classique)", path: "Uno" }],
+    // modes: [{ label: "Uno (classique)", path: "Uno" }],
+    modes: [{ label: "Uno", path: "Uno" }],
     limits: { min: 2, max: 10, opti: 6 },
   },
   defi: {
@@ -217,7 +225,8 @@ export const gamesRefs = {
   sort: {
     name: "Placement",
     categorie: "categorie2",
-    modes: [{ label: "Placement (classique)", path: "Sort" }],
+    // modes: [{ label: "Placement (classique)", path: "Sort" }],
+    modes: [{ label: "Placement", path: "Placement" }],
     limits: { min: 2, max: 8, opti: 5 },
   },
   socialknowledge: {
@@ -301,6 +310,10 @@ export const modesRules = {
     limits: { min: 2, max: 8, opti: 5 },
   },
   Sort: {
+    name: "Placement",
+    limits: { min: 2, max: 8, opti: 5 },
+  },
+  Placement: {
     name: "Placement",
     limits: { min: 2, max: 8, opti: 5 },
   },

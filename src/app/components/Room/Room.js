@@ -174,7 +174,7 @@ export default function Room({
   const searchToken = searchParams.get("token");
   const searchChangeGame = Boolean(searchParams.get("changeGame"));
   const searchIsAdmin = Boolean(searchParams.get("isAdmin"));
-  const searchMode = searchParams.get("mode");
+  const searchMode = useMemo(() => searchParams.get("mode"), []);
 
   const [isAdmin, setIsAdmin] = useState(false);
   const [roomId, setRoomId] = useState(0);
@@ -935,8 +935,8 @@ export default function Room({
     await deleteInvs();
 
     if (group) {
-      const gamers = [...group.gamers];
-      const multiGuests = [...group.multiGuests];
+      const gamers = group.gamers && [...group.gamers];
+      const multiGuests = group.multiGuests && [...group.multiGuests];
       const lastGame = group.lastGame;
       const viceAdmin = group.viceAdmin;
       const arrivalsOrder = group.arrivalsOrder;
@@ -1374,7 +1374,7 @@ export default function Room({
                           <span>
                             {searchMode ||
                               options?.mode ||
-                              gamesRefs[gameName].name}
+                              (!Options && gamesRefs[gameName].name)}
                           </span>
                         )
                       ) : adminSelectedGame ? (
