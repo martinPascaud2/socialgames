@@ -1325,7 +1325,8 @@ export default function Room({
                     : "opacity-0 animate-[fadeOut_1.5s_ease-in-out]"
                 } relative h-full w-full`}
               >
-                <div className="absolute top-[2dvh] w-full h-[4.5dvh] flex justify-center items-center">
+                {/* <div className="absolute top-[2dvh] w-full h-[4.5dvh] flex justify-center items-center"> */}
+                <div className="absolute top-[2vh] w-full h-[4.5dvh] flex justify-center items-center">
                   {categorie !== "grouping" &&
                     categoriesIcons &&
                     (!gameData.isSearching || adminSelectedCategorie) && (
