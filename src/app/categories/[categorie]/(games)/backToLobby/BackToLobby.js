@@ -4,15 +4,17 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 
-export default function BackToLobby({ href }) {
+export default function BackToLobby({ path }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const categorie = searchParams.get("categorie");
   const game = searchParams.get("game");
 
-  //   useEffect(() => {
-  //     setTimeout(() => router.push(href), 5000);
-  //   }, []);
+  const href = !path ? `/categories/${categorie}/${game}/` : path;
+
+  useEffect(() => {
+    setTimeout(() => router.push(href), 0);
+  }, []);
 
   return (
     <div className="h-screen w-screen bg-black text-white flex justify-center items-center">
