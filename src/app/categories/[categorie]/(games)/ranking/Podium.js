@@ -9,6 +9,7 @@ import capitalizeFirstLetter from "@/utils/capitalizeFirstLetter";
 import usePreventScroll from "@/utils/usePreventScroll";
 import {
   toggleTarget,
+  toggleTop,
   addTheme,
   addObject,
   goPreTurnFast,
@@ -32,6 +33,8 @@ import { SlBubble } from "react-icons/sl";
 import { IoSettingsSharp } from "react-icons/io5";
 import { IoMdArrowDropright } from "react-icons/io";
 import { TfiWrite } from "react-icons/tfi";
+import { GiPodium } from "react-icons/gi";
+import Infinity from "@/components/icons/Infinity";
 import Gold from "/public/gold.png";
 import Silver from "/public/silver.png";
 import Bronze from "/public/bronze.png";
@@ -56,17 +59,22 @@ const PreparingPhase = ({
   const [showedKeyboard, setShowedKeyboard] = useState(true);
 
   const { options, theme, objects } = gameData;
-  const { target } = options;
-  const [checked, setChecked] = useState(target === "players");
+  const { target, top } = options;
+  const [checkedTarget, setCheckedTarget] = useState(target === "players");
+  const [checkedTop, setCheckedTop] = useState(top === "3");
 
   const objectNumber = objects ? Object.keys(objects).length + 1 : 1;
 
-  const handleToggle = useCallback(async () => {
+  const handleToggleTarget = useCallback(async () => {
     await toggleTarget({ gameData, roomId, roomToken });
   }, [gameData, roomId, roomToken]);
+  const handleToggleTop = useCallback(async () => {
+    await toggleTop({ gameData, roomId, roomToken });
+  }, [gameData, roomId, roomToken]);
   useEffect(() => {
-    setChecked(target === "players");
-  }, [target]);
+    setCheckedTarget(target === "players");
+    setCheckedTop(top === "3");
+  }, [target, top]);
 
   useEffect(() => {
     if (showedControls) setShowNext(true);
@@ -93,7 +101,9 @@ const PreparingPhase = ({
                     setShowedKeyboard(false);
                   }}
                 >
-                  <div className="text-sm">{"Contrôles"}</div>
+                  <div className="text-sm">
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                  </div>
                 </StaticNextStep>
               ) : (
                 <div
@@ -105,19 +115,19 @@ const PreparingPhase = ({
                   className="w-full flex justify-around"
                 >
                   <ControlButton
-                    layout="?"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowedInfo(true);
-                      setShowedToggle(false);
-                    }}
-                  />
-                  <ControlButton
                     layout="!"
                     onClick={(e) => {
                       e.stopPropagation();
                       setShowedInfo(false);
-                      setShowedToggle(true);
+                      setShowedToggle(!showedToggle);
+                    }}
+                  />
+                  <ControlButton
+                    layout="?"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setShowedInfo(!showedInfo);
+                      setShowedToggle(false);
                     }}
                   />
                 </div>
@@ -134,33 +144,53 @@ const PreparingPhase = ({
                 className="absolute top-[12%] flex w-full justify-center items-center h-20"
               >
                 {showedToggle && (
-                  <>
-                    <div className="mr-2 text-sky-700">
-                      <IoPeople className="h-8 w-8" />
+                  <div className="w-full flex flex-col items-center gap-4">
+                    <div className="w-full flex justify-center items-center">
+                      <div className="mr-2 text-stone-100">
+                        <IoPeople className="h-8 w-8" />
+                      </div>
+                      <ToggleCheckbox
+                        checked={checkedTarget}
+                        onChange={handleToggleTarget}
+                        colors={{
+                          bg: { yes: "#fef3c7", no: "#f5f5f4" },
+                          border: { yes: "#b45309", no: "#44403c" },
+                        }}
+                        size={70}
+                      />
+                      <div className="ml-2 text-stone-100">
+                        <BsThreeDots className="h-8 w-8" />
+                      </div>
                     </div>
-                    <ToggleCheckbox
-                      checked={checked}
-                      onChange={handleToggle}
-                      colors={{
-                        bg: { yes: "#fef3c7", no: "#e0f2fe" },
-                        border: { yes: "#b45309", no: "#0369a1" },
-                      }}
-                      size={70}
-                    />
-                    <div className="ml-2 text-sky-700">
-                      <BsThreeDots className="h-8 w-8" />
+
+                    <div className="w-full flex justify-center items-center">
+                      <div className="mr-2 text-stone-100">
+                        <GiPodium className="h-8 w-8 mb-2" />
+                      </div>
+                      <ToggleCheckbox
+                        checked={checkedTop}
+                        onChange={handleToggleTop}
+                        colors={{
+                          bg: { yes: "#fef3c7", no: "#f5f5f4" },
+                          border: { yes: "#b45309", no: "#44403c" },
+                        }}
+                        size={70}
+                      />
+                      <div className="ml-2 text-stone-100">
+                        <Infinity size={32} />
+                      </div>
                     </div>
-                  </>
+                  </div>
                 )}
                 {showedInfo && (
-                  <div className="w-fit border rounded-md border-sky-700 bg-sky-100 text-sky-700 p-2 flex flex-col">
-                    <div className="text-sky-700 text-sm w-full flex items-center">
+                  <div className="w-fit border rounded-md border-stone-700 bg-stone-100 text-stone-700 p-2 flex flex-col">
+                    <div className="text-stone-700 text-sm w-full flex items-center">
                       <IoPeople className="h-8 w-8" />
                       <span>
                         &nbsp;Classez les autres joueurs en fonction du critère
                       </span>
                     </div>
-                    <div className="text-sky-700 text-sm w-full flex items-center">
+                    <div className="text-stone-700 text-sm w-full flex items-center">
                       <BsThreeDots className="h-8 w-8" />
                       <span>
                         &nbsp;Classez les objets en fonction du critère
@@ -629,6 +659,16 @@ const DraggableItem = ({
   );
 };
 
+const OutsideItem = ({ moveItem }) => {
+  const [, globalDropRef] = useDrop({
+    accept: ItemType,
+    drop: (draggedItem) => {
+      moveItem({ draggedItem });
+    },
+  });
+  return <div ref={globalDropRef} className="w-full h-full" />;
+};
+
 const Preview = ({}) => {
   const preview = usePreview();
 
@@ -647,6 +687,64 @@ const Preview = ({}) => {
       style={{ ...style, width: item.type === "item" ? "30%" : "50%" }}
     >
       {value}
+    </div>
+  );
+};
+
+const ValidateButton = ({
+  tops,
+  user,
+  gameData,
+  roomId,
+  roomToken,
+  setHasValidated,
+  hasValidated,
+  moveItem,
+}) => {
+  const threeTops = Object.keys(tops).length === 3;
+  const allTopsDefined = Object.values(tops).every((top) => top !== undefined);
+
+  const [, dropRef] = useDrop({
+    accept: ItemType,
+    drop: (draggedItem) => {
+      moveItem({ draggedItem });
+    },
+  });
+
+  return (
+    <div
+      ref={dropRef}
+      onClick={async () => {
+        if (!threeTops || !allTopsDefined) return;
+        await sendTops({ user, tops, gameData, roomId, roomToken });
+        setHasValidated(true);
+      }}
+      className={`absolute top-20 w-[30%] text-center border ${
+        !threeTops || !allTopsDefined
+          ? "border-gray-700 bg-gray-100 text-gray-700"
+          : !hasValidated
+          ? "border-amber-700 bg-amber-100 text-amber-700"
+          : "border-green-700 bg-green-100 text-green-700"
+      } p-2`}
+    >
+      Valider
+    </div>
+  );
+};
+
+const ThemeTitle = ({ theme, moveItem }) => {
+  const [, dropRef] = useDrop({
+    accept: ItemType,
+    drop: (draggedItem) => {
+      moveItem({ draggedItem });
+    },
+  });
+  return (
+    <div
+      ref={dropRef}
+      className="absolute bottom-full w-full text-center text-3xl font-bold mb-4"
+    >
+      {theme}
     </div>
   );
 };
@@ -673,7 +771,23 @@ const TurnPhase = ({ gameData, roomId, roomToken, user }) => {
   }, []);
 
   const moveItem = ({ draggedItem, to }) => {
-    if (to.type === "item") return;
+    if (to?.type === "item") return;
+
+    if (!to) {
+      if (draggedItem.type === "top") {
+        setTops((prevTops) => {
+          const newTops = { ...prevTops };
+          delete newTops[draggedItem.index];
+          return newTops;
+        });
+        setItems((prevItems) => {
+          const newItems = [...prevItems];
+          newItems.push(draggedItem.value);
+          return newItems;
+        });
+      }
+      return;
+    }
 
     if (draggedItem.type === "item") {
       setTops((prevTops) => {
@@ -705,102 +819,92 @@ const TurnPhase = ({ gameData, roomId, roomToken, user }) => {
 
   return (
     <div className="h-full w-full flex flex-col justify-center items-center relative">
-      {(() => {
-        const threeTops = Object.keys(tops).length === 3;
-        const allTopsDefined = Object.values(tops).every(
-          (top) => top !== undefined
-        );
-        return (
-          <div
-            onClick={async () => {
-              if (!threeTops || !allTopsDefined) return;
-              await sendTops({ user, tops, gameData, roomId, roomToken });
-              setHasValidated(true);
-            }}
-            className={`absolute top-20 w-[30%] text-center border ${
-              !threeTops || !allTopsDefined
-                ? "border-gray-700 bg-gray-100 text-gray-700"
-                : !hasValidated
-                ? "border-amber-700 bg-amber-100 text-amber-700"
-                : "border-green-700 bg-green-100 text-green-700"
-            } p-2`}
-          >
-            Valider
-          </div>
-        );
-      })()}
-
       <DndProvider backend={TouchBackend} options={{ HTML5toTouch }}>
-        <div className="relative w-full h-fit">
-          <div className="absolute bottom-full w-full text-center text-3xl font-bold mb-4">
-            {gameData.theme}
+        <>
+          <div className="absolute w-full h-full">
+            <OutsideItem moveItem={moveItem} />
           </div>
 
-          {["1", "2", "3"].map((top) => {
-            return (
-              <div key={top} className="flex w-full justify-center">
-                <div className="flex justify-center items-center py-1 w-[10%]">
-                  <div
-                    className={`border h-full w-full flex justify-center items-center ${
-                      !tops[top]
-                        ? "border-sky-700 bg-sky-100 border-dashed"
-                        : "border-amber-700 bg-amber-100"
-                    }`}
-                  >
-                    {(() => {
-                      let imgSrc;
-                      switch (top) {
-                        case "1":
-                          imgSrc = Gold;
-                          break;
-                        case "2":
-                          imgSrc = Silver;
-                          break;
-                        case "3":
-                          imgSrc = Bronze;
-                          break;
-                      }
-                      return (
-                        <div className="w-8 h-8">
-                          <Image
-                            alt="place"
-                            src={imgSrc}
-                            width={500}
-                            height={500}
-                          />
-                        </div>
-                      );
-                    })()}
+          <ValidateButton
+            tops={tops}
+            user={user}
+            gameData={gameData}
+            roomId={roomId}
+            roomToken={roomToken}
+            setHasValidated={setHasValidated}
+            hasValidated={hasValidated}
+            moveItem={moveItem}
+          />
+
+          <div className="relative w-full h-fit">
+            <ThemeTitle theme={gameData.theme} moveItem={moveItem} />
+
+            {["1", "2", "3"].map((top) => {
+              return (
+                <div key={top} className="flex w-full justify-center">
+                  <div className="flex justify-center items-center py-1 w-[10%]">
+                    <div
+                      className={`border h-full w-full flex justify-center items-center ${
+                        !tops[top]
+                          ? "border-sky-700 bg-sky-100 border-dashed"
+                          : "border-amber-700 bg-amber-100"
+                      }`}
+                    >
+                      {(() => {
+                        let imgSrc;
+                        switch (top) {
+                          case "1":
+                            imgSrc = Gold;
+                            break;
+                          case "2":
+                            imgSrc = Silver;
+                            break;
+                          case "3":
+                            imgSrc = Bronze;
+                            break;
+                        }
+                        return (
+                          <div className="w-8 h-8">
+                            <Image
+                              alt="place"
+                              src={imgSrc}
+                              width={500}
+                              height={500}
+                            />
+                          </div>
+                        );
+                      })()}
+                    </div>
                   </div>
+
+                  <DraggableItem
+                    type="top"
+                    index={top}
+                    value={tops[top]}
+                    moveItem={moveItem}
+                    setDraggedTop={setDraggedTop}
+                    draggedTop={draggedTop}
+                  />
                 </div>
+              );
+            })}
+          </div>
 
+          <div className="absolute bottom-10 flex flex-wrap justify-around w-full">
+            {items.map((item, index) => {
+              return (
                 <DraggableItem
-                  type="top"
-                  index={top}
-                  value={tops[top]}
+                  key={index}
+                  type="item"
+                  index={index}
+                  value={item}
                   moveItem={moveItem}
-                  setDraggedTop={setDraggedTop}
-                  draggedTop={draggedTop}
                 />
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="absolute bottom-10 flex flex-wrap justify-around w-full">
-          {items.map((item, index) => {
-            return (
-              <DraggableItem
-                key={index}
-                type="item"
-                index={index}
-                value={item}
-                moveItem={moveItem}
-              />
-            );
-          })}
-        </div>
-        <Preview />
+              );
+            })}
+          </div>
+          <Preview />
+        </>
       </DndProvider>
     </div>
   );

@@ -73,6 +73,14 @@ export async function toggleTarget({ gameData, roomId, roomToken }) {
   await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
+export async function toggleTop({ gameData, roomId, roomToken }) {
+  const { top } = gameData.options;
+  const newTop = top === "3" ? "infinite" : "3";
+  const newOptions = { ...gameData.options, top: newTop };
+  const newData = { ...gameData, options: newOptions };
+  await saveAndDispatchData({ roomId, roomToken, newData });
+}
+
 export async function addTheme({ gameData, roomId, roomToken, theme }) {
   const capTheme = capitalizeFirstLetter(theme);
   const { target } = gameData.options;

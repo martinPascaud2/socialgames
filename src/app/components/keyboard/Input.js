@@ -6,17 +6,17 @@ export default function Input({
   active,
   placeholder,
   deactivated,
-  outlineColor = { unactive: "#374151", active: "#b45309" }, // gray-700 amber-700
+  outlineColor = { unactive: "#44403c", active: "#b45309" }, // stone-700 amber-700
   backgroundColor = {
-    deactivated: "#9ca3af",
-    unactive: "#f3f4f6",
+    deactivated: "#a8a29e",
+    unactive: "#f5f5f4",
     active: "#fef3c7",
-  }, // gray-400 gray-100 // amber-100
+  }, // stone-400 stone-100 // amber-100
   placeholderColor = {
-    unactive: "#9ca3af",
+    unactive: "#a8a29e",
     active: "#38bdf8",
-  }, // gray-400 sky-400
-  inputColor = { unactive: "#374151", active: "#b45309" }, // gray-700 amber-700
+  }, // stone-400 sky-400
+  inputColor = { unactive: "#44403c", active: "#b45309" }, // stone-700 amber-700
   font,
   rounded = "",
   minHeight = "2rem",
@@ -41,7 +41,7 @@ export default function Input({
           ? !active
             ? outlineColor.unactive
             : outlineColor.active
-          : "", // gray-700 amber-700
+          : "",
         minHeight,
       }}
     >
@@ -49,7 +49,7 @@ export default function Input({
         className="z-10 p-1 text-amber-700 rounded-full text-center"
         style={{
           backgroundColor: bgColor,
-          color: !active ? inputColor.unactive : inputColor.active, // gray-700 amber-700
+          color: !active ? inputColor.unactive : inputColor.active,
         }}
       >
         {input}
@@ -58,7 +58,7 @@ export default function Input({
         className="absolute right-0 bottom-0 text-sm z-0 pr-1"
         style={{
           color: !active ? placeholderColor.unactive : placeholderColor.active,
-        }} // gray-400 sky-400
+        }}
       >
         {placeholder}
       </div>
