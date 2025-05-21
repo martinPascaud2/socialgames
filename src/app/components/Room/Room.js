@@ -1276,38 +1276,48 @@ export default function Room({
             {(isAdmin || searchIsAdmin) &&
               ((!gameData.isSearching && gameName !== "grouping") ||
                 (adminSelectedCategorie && !adminSearchtCategorie) ||
-                (adminSearchtGame && adminSelectedMode)) && (
-                <div
-                  onClick={async () => await deleteInvs()}
-                  className={`${!isLaunching ? "" : "hidden"}`}
-                >
-                  <NextStep
-                    onClick={async () => {
-                      if (!adminSelectedCategorie) {
-                        launchRoom();
-                      } else if (
-                        adminSelectedCategorie &&
-                        !adminSearchtCategorie
-                      ) {
-                        setAdminSearchtCategorie(adminSelectedCategorie);
-                      } else if (adminSelectedGame && !adminSearchtGame) {
-                        setAdminSearchtGame(adminSelectedGame);
-                      } else {
-                        localStorage.setItem("localWidth", window.innerWidth);
-                        adminSearchtGame.path === gameName &&
-                          (await cancelSearchGame({
-                            roomId,
-                            roomToken,
-                            gameData,
-                          }));
-                        await changeGame();
-                      }
-                    }}
+                (adminSearchtGame && adminSelectedMode)) &&
+              (() => {
+                let iconName;
+                if (!gameData.isSearching) iconName = "startGame";
+                else if (adminSelectedCategorie && !adminSearchtCategorie)
+                  iconName = "next";
+                else iconName = "validate";
+
+                return (
+                  <div
+                    onClick={async () => await deleteInvs()}
+                    className={`${!isLaunching ? "" : "hidden"}`}
                   >
-                    <div>Lancer</div>
-                  </NextStep>
-                </div>
-              )}
+                    <NextStep
+                      onClick={async () => {
+                        if (!adminSelectedCategorie) {
+                          launchRoom();
+                        } else if (
+                          adminSelectedCategorie &&
+                          !adminSearchtCategorie
+                        ) {
+                          setAdminSearchtCategorie(adminSelectedCategorie);
+                        } else if (adminSelectedGame && !adminSearchtGame) {
+                          setAdminSearchtGame(adminSelectedGame);
+                        } else {
+                          localStorage.setItem("localWidth", window.innerWidth);
+                          adminSearchtGame.path === gameName &&
+                            (await cancelSearchGame({
+                              roomId,
+                              roomToken,
+                              gameData,
+                            }));
+                          await changeGame();
+                        }
+                      }}
+                      iconName={iconName}
+                    >
+                      <div>Lancer</div>
+                    </NextStep>
+                  </div>
+                );
+              })()}
 
             <div
               className="h-full w-full absolute top-0 left-0 z-20 px-2"
