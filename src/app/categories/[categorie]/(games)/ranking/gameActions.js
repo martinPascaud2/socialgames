@@ -86,7 +86,7 @@ export async function addTheme({ gameData, roomId, roomToken, theme }) {
   const { target } = gameData.options;
 
   let newPhase;
-  if (target === "players") newPhase = "turn";
+  if (target === "players") newPhase = "preturn";
   else newPhase = "preparing";
 
   const { gamers } = gameData;
@@ -114,10 +114,18 @@ export async function addTheme({ gameData, roomId, roomToken, theme }) {
     })
   );
 
+  const objects =
+    target === "others"
+      ? {}
+      : Object.fromEntries(
+          gamers.map((gamer, index) => [index + 1, gamer.name])
+        );
+
   const newData = {
     ...gameData,
     theme: capTheme,
     phase: newPhase,
+    objects,
   };
   await saveAndDispatchData({ roomId, roomToken, newData });
 }
@@ -189,6 +197,30 @@ export async function editValues({
     };
     await saveAndDispatchData({ roomId, roomToken, newData });
   }
+}
+
+export async function addPlayer({ value, gameData, roomId, roomToken }) {
+  const { objects } = gameData;
+  const newKey = Object.keys(objects).length + 1;
+  const newObjects = { ...objects, [newKey]: value };
+  const newData = {
+    ...gameData,
+    objects: newObjects,
+  };
+  await saveAndDispatchData({ roomId, roomToken, newData });
+}
+
+export async function deletePlayer({ key, gameData, roomId, roomToken }) {
+  const objects = { ...gameData.objects };
+  delete objects[key];
+  const newObjects = Object.fromEntries(
+    Object.entries(objects).map(([, value], index) => [index + 1, value])
+  );
+  const newData = {
+    ...gameData,
+    objects: newObjects,
+  };
+  await saveAndDispatchData({ roomId, roomToken, newData });
 }
 
 export async function goTurnPhase({ gameData, roomId, roomToken }) {

@@ -15,6 +15,8 @@ import {
   goPreTurnFast,
   adminEditing,
   editValues,
+  addPlayer,
+  deletePlayer,
   goTurnPhase,
   sendTops,
   showResults,
@@ -34,6 +36,9 @@ import { IoSettingsSharp } from "react-icons/io5";
 import { IoMdArrowDropright } from "react-icons/io";
 import { TfiWrite } from "react-icons/tfi";
 import { GiPodium } from "react-icons/gi";
+import { FaPlus } from "react-icons/fa6";
+import { TiDelete } from "react-icons/ti";
+
 import Infinity from "@/components/icons/Infinity";
 import Gold from "/public/gold.png";
 import Silver from "/public/silver.png";
@@ -370,9 +375,11 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
   const [input, setInput] = useState("");
   const [showedKeyboard, setShowedKeyboard] = useState(false);
 
-  const { theme, objects, adminEdition } = gameData;
+  const { theme, objects, adminEdition, options } = gameData;
+  const { target } = options;
   const [isChanging, setIsChanging] = useState(false);
   const [isEditing, setIsEditing] = useState(null);
+  const [isAdding, setIsAdding] = useState(null);
 
   const [type, setType] = useState("");
   const [objectKey, setObjectKey] = useState("");
@@ -381,7 +388,7 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
     <div className="h-full w-full flex flex-col justify-center items-center relative">
       <div className="w-full flex flex-col items-center">
         <div className="flex justify-center mb-2.5">
-          <div className="flex items-center">
+          <div className="flex items-center relative">
             {isAdmin ? (
               <div
                 onClick={() => {
@@ -397,22 +404,22 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
                     roomToken,
                   });
                 }}
-                className={`font-bold text-3xl border ${
+                className={`font-bold text-3xl border border-2 ${
                   !isChanging
-                    ? ""
+                    ? "text-stone-700 bg-stone-100"
                     : isEditing === null
                     ? "text-amber-700 bg-amber-100"
                     : isEditing !== "theme"
-                    ? ""
+                    ? "text-stone-700"
                     : "text-sky-700 bg-sky-100"
                 } px-2 py-0.5`}
                 style={{
                   borderColor: !isChanging
-                    ? "#f3f4f6" // gray-100
+                    ? "#44403c" // stone-700
                     : isEditing === null
                     ? "#b45309" // amber-700
                     : isEditing !== "theme"
-                    ? "#f3f4f6"
+                    ? "#44403c" // stone-700
                     : "#0369a1", // sky-700
                 }}
               >
@@ -421,14 +428,14 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
             ) : (
               <div className="flex items-center relative">
                 <div
-                  className={`font-bold text-3xl border border-dashed ${
+                  className={`font-bold text-3xl border border-2 ${
                     adminEdition?.type === "theme"
                       ? "text-sky-700 bg-sky-100"
-                      : ""
+                      : "text-stone-700 bg-stone-100"
                   } px-2 py-0.5`}
                   style={{
                     borderColor:
-                      adminEdition?.type === "theme" ? "#0369a1" : "#f3f4f6", // sky-700 gray-100
+                      adminEdition?.type === "theme" ? "#0369a1" : "#44403c", // sky-700 stone-700
                   }}
                 >
                   <div className="whitespace-nowrap">{theme}</div>
@@ -441,6 +448,25 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
                 )}
               </div>
             )}
+            {target === "players" && isAdmin && (
+              <div
+                onClick={() => {
+                  setType("theme");
+                  setIsEditing("theme");
+                  setInput(theme);
+                  setShowedKeyboard(true);
+                  adminEditing({
+                    type: "theme",
+                    objectKey: null,
+                    roomId,
+                    roomToken,
+                  });
+                }}
+                className="absolute left-full ml-2 text-amber-700"
+              >
+                <TfiWrite className="w-8 h-8" />
+              </div>
+            )}
           </div>
         </div>
 
@@ -448,51 +474,71 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
           return (
             <div key={key} className="flex justify-center mb-1.5">
               {isAdmin ? (
-                <div
-                  onClick={() => {
-                    if (!isChanging || !isAdmin) return;
-                    setType("objects");
-                    setObjectKey(key);
-                    setInput(value);
-                    setIsEditing(key);
-                    setShowedKeyboard(true);
-                    adminEditing({
-                      type: "objects",
-                      objectKey: key,
-                      roomId,
-                      roomToken,
-                    });
-                  }}
-                  className={`flex items-center py-0.5 border pr-2 mr-3 ${
-                    !isChanging
-                      ? ""
-                      : isEditing === null
-                      ? "text-amber-700 bg-amber-100"
-                      : isEditing !== key
-                      ? ""
-                      : "text-sky-700 bg-sky-100"
-                  } rounded-sm`}
-                  style={{
-                    borderColor: !isChanging
-                      ? "#f3f4f6" // gray-100
-                      : isEditing === null
-                      ? "#b45309" // amber-700
-                      : isEditing !== key
-                      ? "#f3f4f6"
-                      : "#0369a1", // sky-700
-                  }}
-                >
-                  <IoMdArrowDropright className="w-5 h-5 mt-0.5" />
-                  <div className="whitespace-nowrap text-2xl">{value}</div>
-                </div>
+                target === "others" ? (
+                  <div
+                    onClick={() => {
+                      if (!isChanging || !isAdmin) return;
+                      setType("objects");
+                      setObjectKey(key);
+                      setInput(value);
+                      setIsEditing(key);
+                      setShowedKeyboard(true);
+                      adminEditing({
+                        type: "objects",
+                        objectKey: key,
+                        roomId,
+                        roomToken,
+                      });
+                    }}
+                    className={`flex items-center py-0.5 border pr-2 mr-3 ${
+                      !isChanging
+                        ? "text-stone-700 bg-stone-100"
+                        : isEditing === null
+                        ? "text-amber-700 bg-amber-100"
+                        : isEditing !== key
+                        ? "text-stone-700"
+                        : "text-sky-700 bg-sky-100"
+                    } rounded-sm`}
+                    style={{
+                      borderColor: !isChanging
+                        ? "#44403c" // stone-700
+                        : isEditing === null
+                        ? "#b45309" // amber-700
+                        : isEditing !== key
+                        ? "#44403c" // stone-700
+                        : "#0369a1", // sky-700
+                    }}
+                  >
+                    <IoMdArrowDropright className="w-5 h-5 mt-0.5" />
+                    <div className="whitespace-nowrap text-2xl">{value}</div>
+                  </div>
+                ) : (
+                  <div className="border border-stone-700 bg-stone-100 text-stone-700 py-0.5 pr-2 mr-3 flex justify-center items-center relative">
+                    <IoMdArrowDropright className="w-5 h-5 mt-0.5" />
+                    <div className="whitespace-nowrap text-2xl">{value}</div>
+                    <div className="absolute left-full ml-2">
+                      <TiDelete
+                        onClick={async () => {
+                          await deletePlayer({
+                            key,
+                            gameData,
+                            roomId,
+                            roomToken,
+                          });
+                        }}
+                        className="w-8 h-8 text-amber-700"
+                      />
+                    </div>
+                  </div>
+                )
               ) : (
                 <div className="flex items-center relative">
                   <div
-                    className={`flex items-center border border-dashed ${
+                    className={`flex items-center border ${
                       adminEdition?.type === "objects" &&
                       adminEdition.objectKey === key
                         ? "text-sky-700 bg-sky-100"
-                        : ""
+                        : "text-stone-700 bg-stone-100"
                     } pr-2 py-0.5`}
                     style={{
                       borderColor:
@@ -528,10 +574,21 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
                 : "border-sky-700 bg-sky-100 text-sky-700"
             } p-2`}
           >
-            <TfiWrite
-              onClick={() => setIsChanging(!isChanging)}
-              className="w-8 h-8"
-            />
+            {target === "others" && (
+              <TfiWrite
+                onClick={() => setIsChanging(!isChanging)}
+                className="w-8 h-8"
+              />
+            )}
+            {target === "players" && (
+              <FaPlus
+                onClick={() => {
+                  setIsAdding(!isAdding);
+                  setShowedKeyboard(true);
+                }}
+                className="w-8 h-8"
+              />
+            )}
           </div>
 
           <div className="absolute top-24 flex justify-center items-start h-8 w-48">
@@ -540,7 +597,7 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
               openKeyboard={() => setShowedKeyboard(true)}
               active={showedKeyboard}
               placeholder=""
-              deactivated={isEditing === null}
+              deactivated={isEditing === null && isAdding === null}
             />
           </div>
           {showedKeyboard && (
@@ -558,6 +615,7 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
                 });
                 setIsChanging(false);
                 setIsEditing(null);
+                setIsAdding(null);
                 setShowedKeyboard(false);
                 setInput("");
               }}
@@ -567,18 +625,39 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
                 } else if (input.length > 15) {
                   return;
                 }
-                await editValues({
-                  gameData,
-                  roomId,
-                  roomToken,
-                  type,
-                  newValue: input,
-                  objectKey,
-                });
+                if (target === "others") {
+                  await editValues({
+                    gameData,
+                    roomId,
+                    roomToken,
+                    type,
+                    newValue: input,
+                    objectKey,
+                  });
+                } else if (target === "players") {
+                  if (isAdding) {
+                    await addPlayer({
+                      gameData,
+                      roomId,
+                      roomToken,
+                      value: input,
+                    });
+                  } else if (isEditing) {
+                    await editValues({
+                      gameData,
+                      roomId,
+                      roomToken,
+                      type,
+                      newValue: input,
+                      objectKey,
+                    });
+                  }
+                }
 
                 setInput("");
                 setIsChanging(false);
                 setIsEditing(null);
+                setIsAdding(null);
                 setShowedKeyboard(false);
               }}
             />
