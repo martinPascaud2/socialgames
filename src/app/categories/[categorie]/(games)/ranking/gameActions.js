@@ -5,8 +5,10 @@ import prisma from "@/utils/prisma";
 import checkPlayers from "@/utils/checkPlayers";
 import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkViceAdminAndArrivals from "@/utils/checkViceAdminAndArrivals";
+import { saveLastParams } from "@/utils/getLastParams";
 import { saveAndDispatchData } from "@/components/Room/actions";
 import capitalizeFirstLetter from "@/utils/capitalizeFirstLetter";
+import shuffleArray from "@/utils/shuffleArray";
 
 export async function launchGame({
   roomId,
@@ -47,6 +49,8 @@ export async function launchGame({
       viceAdmin: startedRoom.viceAdmin,
       gamersAndGuests,
     });
+
+  await saveLastParams({ userId: adminId, options });
 
   const newData = {
     admin: startedRoom.admin,
@@ -114,11 +118,15 @@ export async function addTheme({ gameData, roomId, roomToken, theme }) {
     })
   );
 
+  const shuffledGamers = shuffleArray(gamers);
+
   const objects =
     target === "others"
       ? {}
+      : gameData.objects
+      ? gameData.objects
       : Object.fromEntries(
-          gamers.map((gamer, index) => [index + 1, gamer.name])
+          shuffledGamers.map((gamer, index) => [index + 1, gamer.name])
         );
 
   const newData = {
@@ -366,7 +374,8 @@ export async function showResults({ gameData, roomId, roomToken }) {
 export async function goNewPodium({ gameData, roomId, roomToken }) {
   const newPhase = "preparing";
   const newTheme = undefined;
-  const newObjects = undefined;
+  const newObjects =
+    gameData.options.target === "others" ? undefined : gameData.objects;
   const newAdminEdition = undefined;
   const newPodium = undefined;
   const newShow = undefined;
