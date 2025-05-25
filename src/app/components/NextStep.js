@@ -39,11 +39,11 @@ export default function NextStep({ onClick, iconName, children }) {
         onPointerDown={onClick}
       >
         <div
-          className="absolute -inset-[1px]"
+          className="absolute -inset-[2px]"
           style={{
             clipPath:
               "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
-            backgroundColor: "#500724", // pink-950
+            backgroundColor: "#b45309", // amber-700
             zIndex: 0,
           }}
         />
@@ -53,8 +53,8 @@ export default function NextStep({ onClick, iconName, children }) {
           style={{
             clipPath:
               "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
-            backgroundColor: "#db2777", // pink-600
-            color: "#500724", // pink-950
+            backgroundColor: "#fef3c7", // amber-100
+            color: "#b45309", // amber-700
             zIndex: 1,
           }}
         >
@@ -134,11 +134,11 @@ export function ValidateButton({ onClick, iconName, children }) {
         onPointerDown={onClick}
       >
         <div
-          className="absolute -inset-[1px]"
+          className="absolute -inset-[2px]"
           style={{
             clipPath:
               "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
-            backgroundColor: "#500724", // pink-950
+            backgroundColor: "#b45309", // amber-700
             zIndex: 0,
           }}
         />
@@ -148,8 +148,8 @@ export function ValidateButton({ onClick, iconName, children }) {
           style={{
             clipPath:
               "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
-            backgroundColor: "#db2777", // pink-600
-            color: "#500724", // pink-950
+            backgroundColor: "#fef3c7", // amber-100
+            color: "#b45309", // amber-700
             zIndex: 1,
           }}
         >
