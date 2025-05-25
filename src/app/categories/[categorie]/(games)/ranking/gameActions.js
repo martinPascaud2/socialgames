@@ -7,6 +7,8 @@ import { initGamersAndGuests } from "@/utils/initGamersAndGuests";
 import checkViceAdminAndArrivals from "@/utils/checkViceAdminAndArrivals";
 import { saveLastParams } from "@/utils/getLastParams";
 import { saveAndDispatchData } from "@/components/Room/actions";
+import wait from "@/utils/queue/wait";
+import free from "@/utils/queue/free";
 import capitalizeFirstLetter from "@/utils/capitalizeFirstLetter";
 import shuffleArray from "@/utils/shuffleArray";
 
@@ -341,6 +343,8 @@ const checkTops = async ({ gameData, roomId, roomToken }) => {
 };
 
 export async function sendTops({ user, tops, gameData, roomId, roomToken }) {
+  await wait({ roomId });
+
   if (!user.multiGuest) {
     await prisma.user.update({
       where: { id: user.id },
@@ -358,6 +362,8 @@ export async function sendTops({ user, tops, gameData, roomId, roomToken }) {
   }
 
   await checkTops({ gameData, roomId, roomToken });
+
+  await free({ roomId });
 }
 
 export async function showResults({ gameData, roomId, roomToken }) {

@@ -91,23 +91,24 @@ model Friend {
 }
 
 model Room {
-  id            Int           @id @default(autoincrement())
-  creationDate  DateTime      @db.DateTime(0)
-  private       Boolean       @default(false)
-  game          String
-  options       Json?
-  token         String
-  admin         String
-  adminLocation Json?
-  viceAdmin     String?
-  gamers        Json?
-  guests        Json?
-  multiGuests   Json?
-  arrivalsOrder RoomArrival[]
-  started       Boolean       @default(false)
-  gameData      Json?
-  haveLeft      Json?
-  User          User[]
+  id               Int           @id @default(autoincrement())
+  creationDate     DateTime      @db.DateTime(0)
+  private          Boolean       @default(false)
+  game             String
+  options          Json?
+  token            String
+  admin            String
+  adminLocation    Json?
+  viceAdmin        String?
+  gamers           Json?
+  guests           Json?
+  multiGuests      Json?
+  arrivalsOrder    RoomArrival[]
+  started          Boolean       @default(false)
+  actionInProgress Boolean       @default(false)
+  gameData         Json?
+  haveLeft         Json?
+  User             User[]
 }
 
 model RoomArrival {
