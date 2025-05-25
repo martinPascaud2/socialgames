@@ -21,6 +21,7 @@ export default function SocialKnowledge({
   const isAdmin = gameData.admin === user.name;
 
   const [isEnded, setIsEnded] = useState(false);
+  const [showNext, setShowNext] = useState(true);
   useEffect(() => {
     setIsEnded(!!gameData.ended);
     setShowNext(!!gameData.ended);

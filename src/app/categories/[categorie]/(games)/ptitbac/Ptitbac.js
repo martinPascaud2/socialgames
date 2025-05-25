@@ -117,6 +117,7 @@ export default function Ptitbac({
   const [allFalse, setAllFalse] = useState();
   const [refereeValidation, setRefereeValidation] = useState({});
   const [isEnded, setIsEnded] = useState(false);
+  const [showNext, setShowNext] = useState(true);
 
   useEffect(() => {
     inputRefs?.current[0]?.focus();

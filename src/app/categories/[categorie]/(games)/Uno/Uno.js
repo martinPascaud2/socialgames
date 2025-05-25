@@ -46,6 +46,7 @@ export default function Uno({
   const [newHand, setNewHand] = useState(null);
 
   const [isEnded, setIsEnded] = useState(false);
+  const [showNext, setShowNext] = useState(true);
   useEffect(() => {
     setIsEnded(gameData.ended || gameData.nextGame); // check
     // setIsEnded(!!gameData.ended);

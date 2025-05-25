@@ -25,6 +25,7 @@ export default function Sort({
   const { gamers } = gameData;
 
   const [isEnded, setIsEnded] = useState(false);
+  const [showNext, setShowNext] = useState(true);
 
   const [items, setItems] = useState([]);
   const [gamerItems, setGamerItems] = useState([]);

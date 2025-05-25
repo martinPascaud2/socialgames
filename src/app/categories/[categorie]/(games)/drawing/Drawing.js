@@ -20,6 +20,7 @@ export default function Drawing({
 }) {
   const mode = gameData.options?.mode;
   const isAdmin = gameData.admin === user.name;
+  const [showNext, setShowNext] = useState(true);
 
   const [isEnded, setIsEnded] = useState(false);
   useEffect(() => {

@@ -42,6 +42,7 @@ export default function Memory({
   const [triggeredNumber, setTriggeredNumber] = useState(0);
 
   const [isEnded, setIsEnded] = useState(false);
+  const [showNext, setShowNext] = useState(true);
   const [options, setOptions] = useState(gameData.options);
   const [serverMessage, setServerMessage] = useState("");
   const [newGame, setNewGame] = useState(false);
