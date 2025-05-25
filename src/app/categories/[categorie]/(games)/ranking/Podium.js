@@ -57,7 +57,6 @@ const PreparingPhase = ({
   isAdmin,
   setShowNext,
 }) => {
-  const [showedControls, setShowedControls] = useState(false);
   const [showedToggle, setShowedToggle] = useState(false);
   const [showedInfo, setShowedInfo] = useState(false);
   const [input, setInput] = useState("");
@@ -82,11 +81,6 @@ const PreparingPhase = ({
   }, [target, top]);
 
   useEffect(() => {
-    if (showedControls) setShowNext(true);
-    else setShowNext(false);
-  }, [showedControls, setShowNext]);
-
-  useEffect(() => {
     if (gameData.ended) setShowedKeyboard(false);
   }, [gameData.ended]);
 
@@ -99,55 +93,36 @@ const PreparingPhase = ({
               onClick={() => setShowedKeyboard(true)}
               className={`w-full h-full flex justify-center absolute top-[5%]`}
             >
-              {!showedControls ? (
-                <StaticNextStep
-                  onLongPress={() => {
-                    setShowedControls(true);
-                    setShowedKeyboard(false);
-                  }}
-                >
-                  <div className="text-sm">
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                  </div>
-                </StaticNextStep>
-              ) : (
-                <div
-                  onClick={() => {
-                    setShowedToggle(false);
+              <div
+                onClick={() => {
+                  setShowedToggle(false);
+                  setShowedInfo(false);
+                }}
+                className="w-full flex justify-around"
+              >
+                <ControlButton
+                  layout="!"
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setShowedInfo(false);
-                    setShowedControls(false);
+                    setShowedToggle(!showedToggle);
                   }}
-                  className="w-full flex justify-around"
-                >
-                  <ControlButton
-                    layout="!"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowedInfo(false);
-                      setShowedToggle(!showedToggle);
-                    }}
-                  />
-                  <ControlButton
-                    layout="?"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setShowedInfo(!showedInfo);
-                      setShowedToggle(false);
-                    }}
-                  />
-                </div>
-              )}
+                />
+                <ControlButton
+                  layout="?"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowedInfo(!showedInfo);
+                    setShowedToggle(false);
+                  }}
+                />
+              </div>
             </div>
           )}
 
           {!theme && (
             <>
-              <div
-                onClick={() => {
-                  if (!showedToggle && !showedInfo) setShowedControls(false);
-                }}
-                className="absolute top-[12%] flex w-full justify-center items-center h-20"
-              >
+              <div className="absolute top-[12%] flex w-full justify-center items-center h-20">
                 {showedToggle && (
                   <div className="w-full flex flex-col items-center gap-4">
                     <div className="w-full flex justify-center items-center">
@@ -226,7 +201,6 @@ const PreparingPhase = ({
                         setShowedKeyboard(true);
                         setShowedInfo(false);
                         setShowedToggle(false);
-                        setShowedControls(false);
                       }}
                       active={showedKeyboard}
                       placeholder="Critère"
@@ -254,7 +228,6 @@ const PreparingPhase = ({
                     });
                     setInput("");
                     setShowNext(true);
-                    setShowedControls(true);
                   }}
                 />
               )}
@@ -296,7 +269,6 @@ const PreparingPhase = ({
                         setShowedKeyboard(true);
                         setShowedInfo(false);
                         setShowedToggle(false);
-                        setShowedControls(false);
                       }}
                       active={showedKeyboard}
                       placeholder={`Objet ${objectNumber}`}

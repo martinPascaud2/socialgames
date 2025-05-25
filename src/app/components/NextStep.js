@@ -115,3 +115,47 @@ export function StaticNextStep({ onClick, onLongPress, children }) {
     </div>
   );
 }
+
+export function ValidateButton({ onClick, iconName, children }) {
+  const [content, setContent] = useState();
+
+  useEffect(() => {
+    if (!iconName) return;
+    if (!iconsList[iconName]) return;
+    const IconComponent = iconsList[iconName];
+    if (!IconComponent) return;
+    setContent(<IconComponent className="w-12 h-12" />);
+  }, [iconName]);
+
+  return (
+    <div>
+      <div
+        className={`relative w-full aspect-square flex justify-center items-center`}
+        onPointerDown={onClick}
+      >
+        <div
+          className="absolute -inset-[1px]"
+          style={{
+            clipPath:
+              "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
+            backgroundColor: "#500724", // pink-950
+            zIndex: 0,
+          }}
+        />
+
+        <div
+          className="w-full h-full flex justify-center items-center p-2"
+          style={{
+            clipPath:
+              "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
+            backgroundColor: "#db2777", // pink-600
+            color: "#500724", // pink-950
+            zIndex: 1,
+          }}
+        >
+          {!iconName ? children : content}
+        </div>
+      </div>
+    </div>
+  );
+}

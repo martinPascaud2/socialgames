@@ -5,7 +5,8 @@ import { createPortal } from "react-dom";
 
 import { useUserContext } from "../Room/Room";
 
-import { FaCheck } from "react-icons/fa";
+import { ValidateButton } from "../NextStep";
+
 import { FiDelete } from "react-icons/fi";
 
 const frenchLayout = [
@@ -104,7 +105,7 @@ export default function Keyboard({ setInput, onClose, onValidate }) {
                             e.stopPropagation();
                             await handleKeyClick(key);
                           }}
-                          className={`bg-gray-100 border border-gray-700 text-gray-700 font-semibold py-1 px-2 rounded-xl transition relative h-8 ${
+                          className={`bg-stone-100 border border-stone-700 text-stone-700 font-semibold py-1 px-2 rounded-xl transition relative h-8 ${
                             isEmpty ? "collapse " : ""
                           }`}
                           style={{
@@ -137,7 +138,7 @@ export default function Keyboard({ setInput, onClose, onValidate }) {
                               className={`w-[${width}] h-8 flex justify-center items-center`}
                             >
                               <div
-                                className={`bg-gray-100 border border-gray-700 text-gray-700 font-semibold py-1 px-2 rounded-xl transition relative w-2/3 h-full flex justify-center items-center`}
+                                className={`bg-stone-100 border border-stone-700 text-stone-700 font-semibold py-1 px-2 rounded-xl transition relative w-2/3 h-full flex justify-center items-center`}
                                 onPointerDown={async (e) => {
                                   e.stopPropagation();
                                   await handleKeyClick(key);
@@ -152,36 +153,15 @@ export default function Keyboard({ setInput, onClose, onValidate }) {
                               key={key}
                               className={`w-[${width}] h-6 relative flex justify-center items-center translate-y-[-50%]`}
                             >
-                              <div
-                                className={`relative w-2/5 aspect-square flex justify-center items-center`}
-                                onPointerDown={async (e) => {
+                              <ValidateButton
+                                onClick={async (e) => {
                                   e.stopPropagation();
                                   await handleKeyClick(key);
                                 }}
+                                iconName="validate"
                               >
-                                <div
-                                  className="absolute -inset-[1px]"
-                                  style={{
-                                    clipPath:
-                                      "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
-                                    backgroundColor: "#374151", // gray-700
-                                    zIndex: 0,
-                                  }}
-                                />
-
-                                <div
-                                  className="w-full h-full flex justify-center items-center"
-                                  style={{
-                                    clipPath:
-                                      "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
-                                    backgroundColor: "#f3f4f6", // gray-100
-                                    color: "#374151", // gray-700
-                                    zIndex: 1,
-                                  }}
-                                >
-                                  <FaCheck className="w-6 h-6" />
-                                </div>
-                              </div>
+                                <div>Suite</div>
+                              </ValidateButton>
                             </div>
                           );
                           break;
@@ -192,7 +172,7 @@ export default function Keyboard({ setInput, onClose, onValidate }) {
                               className={`w-[${width}] h-8 flex justify-center items-center`}
                             >
                               <div
-                                className={`bg-gray-100 border border-gray-700 text-gray-700 font-semibold py-1 px-2 rounded-xl transition relative w-2/3 h-full flex justify-center items-center`}
+                                className={`bg-stone-100 border border-stone-700 text-stone-700 font-semibold py-1 px-2 rounded-xl transition relative w-2/3 h-full flex justify-center items-center`}
                                 onPointerDown={async (e) => {
                                   e.stopPropagation();
                                   await handleKeyClick(key);
