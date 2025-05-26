@@ -2092,7 +2092,7 @@ export default function Room({
               paddingBottom: `${barsSizes.bottom / 4}rem`,
             }}
           >
-            <div className="w-full h-full">
+            <div className="w-full h-full relative">
               <Game
                 roomId={roomId}
                 roomToken={roomToken}

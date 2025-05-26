@@ -24,7 +24,7 @@ import {
 
 import ToggleCheckbox from "@/components/ToggleCheckbox";
 import AnimatedDots from "@/components/AnimatedDots";
-import { StaticNextStep } from "@/components/NextStep";
+import NextStep from "@/components/NextStep";
 import Keyboard from "@/components/keyboard/Keyboard";
 import Input from "@/components/keyboard/Input";
 import ControlButton from "@/components/ControlButton";
@@ -234,18 +234,19 @@ const PreparingPhase = ({
             </>
           )}
 
-          {theme && (
+          {theme && !gameData.ended && (
             <div className="relative">
               <div
                 className={`w-full flex justify-center absolute bottom-full mb-20 ${
                   objectNumber < 4 && "hidden"
                 }`}
               >
-                <StaticNextStep
+                <NextStep
                   onClick={() => goPreTurnFast({ gameData, roomId, roomToken })}
+                  iconName="validate"
                 >
-                  <div className="text-lg">Suite</div>
-                </StaticNextStep>
+                  Suite
+                </NextStep>
               </div>
 
               {ReactDOM.createPortal(
@@ -517,7 +518,7 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
                         adminEdition?.type === "objects" &&
                         adminEdition.objectKey === key
                           ? "#0369a1"
-                          : "#f3f4f6", // sky-700 gray-100
+                          : "#f5f5f4", // sky-700 stone-100
                     }}
                   >
                     <IoMdArrowDropright className="w-5 h-5 mt-0.5" />
@@ -637,13 +638,14 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
         </>
       )}
 
-      {isAdmin && (
+      {isAdmin && !gameData.ended && (
         <div className="mt-8">
-          <StaticNextStep
+          <NextStep
             onClick={() => goTurnPhase({ gameData, roomId, roomToken })}
+            iconName="validate"
           >
             Suite
-          </StaticNextStep>
+          </NextStep>
         </div>
       )}
     </div>
@@ -742,7 +744,7 @@ const Preview = ({}) => {
   );
 };
 
-const ValidateButton = ({
+const Validate = ({
   tops,
   user,
   gameData,
@@ -772,7 +774,7 @@ const ValidateButton = ({
       }}
       className={`absolute top-20 w-[30%] text-center border ${
         !threeTops || !allTopsDefined
-          ? "border-gray-700 bg-gray-100 text-gray-700"
+          ? "border-stone-700 bg-stone-100 text-stone-700"
           : !hasValidated
           ? "border-amber-700 bg-amber-100 text-amber-700"
           : "border-green-700 bg-green-100 text-green-700"
@@ -876,7 +878,7 @@ const TurnPhase = ({ gameData, roomId, roomToken, user }) => {
             <OutsideItem moveItem={moveItem} />
           </div>
 
-          <ValidateButton
+          <Validate
             tops={tops}
             user={user}
             gameData={gameData}
@@ -1076,7 +1078,7 @@ const ResultPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
       })()}
 
       <div className="flex justify-center items-end w-full p-4">
-        <div className="w-1/3 h-32 flex justify-center items-center bg-gray-600 relative">
+        <div className="w-1/3 h-32 flex justify-center items-center bg-stone-600 relative">
           {seconds.map((second, index) => (
             <GamerName
               key={index}
@@ -1090,7 +1092,7 @@ const ResultPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
             <Image alt="place" src={Silver} width={500} height={500} />
           </div>
         </div>
-        <div className="w-1/3 h-48 flex justify-center items-center bg-gray-600 relative">
+        <div className="w-1/3 h-48 flex justify-center items-center bg-stone-600 relative">
           {firsts.map((first, index) => (
             <GamerName
               key={index}
@@ -1104,7 +1106,7 @@ const ResultPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
             <Image alt="place" src={Gold} width={500} height={500} />
           </div>
         </div>
-        <div className="w-1/3 h-20 flex justify-center items-center bg-gray-600 relative">
+        <div className="w-1/3 h-20 flex justify-center items-center bg-stone-600 relative">
           {thirds.map((third, index) => (
             <GamerName
               key={index}

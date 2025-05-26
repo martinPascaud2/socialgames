@@ -19,7 +19,7 @@ export default function Ranking({
   const mode = gameData.options?.mode;
   const isAdmin = gameData.admin === user.name;
   const [isEnded, setIsEnded] = useState(false);
-  const [showNext, setShowNext] = useState(false);
+  const [showNext, setShowNext] = useState(true);
 
   useEffect(() => {
     setIsEnded(!!gameData.ended);
