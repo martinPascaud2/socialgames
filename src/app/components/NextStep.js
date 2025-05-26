@@ -14,10 +14,11 @@ const iconsList = {
   validate: FaCheck,
 };
 
-export default function NextStep({ onClick, iconName, children }) {
+export default function NextStep({ onClick, onLongPress, iconName, children }) {
   const contextValue = useUserContext();
   const userParams = contextValue.userParams;
   const [content, setContent] = useState();
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
     if (!iconName) return;
@@ -26,6 +27,16 @@ export default function NextStep({ onClick, iconName, children }) {
     if (!IconComponent) return;
     setContent(<IconComponent className="w-12 h-12" />);
   }, [iconName]);
+
+  const startPress = () => {
+    timeoutRef.current = setTimeout(() => {
+      onLongPress && onLongPress();
+    }, 600);
+  };
+
+  const cancelPress = () => {
+    clearTimeout(timeoutRef.current);
+  };
 
   return (
     <div
@@ -37,6 +48,9 @@ export default function NextStep({ onClick, iconName, children }) {
       <div
         className={`relative w-full aspect-square flex justify-center items-center`}
         onPointerDown={onClick}
+        onTouchStart={startPress}
+        onTouchEnd={cancelPress}
+        onTouchCancel={cancelPress}
       >
         <div
           className="absolute -inset-[2px]"
@@ -116,8 +130,9 @@ export function StaticNextStep({ onClick, onLongPress, children }) {
   );
 }
 
-export function ValidateButton({ onClick, iconName, children }) {
+export function ValidateButton({ onClick, onLongPress, iconName, children }) {
   const [content, setContent] = useState();
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
     if (!iconName) return;
@@ -127,14 +142,29 @@ export function ValidateButton({ onClick, iconName, children }) {
     setContent(<IconComponent className="w-12 h-12" />);
   }, [iconName]);
 
+  const startPress = () => {
+    timeoutRef.current = setTimeout(() => {
+      onLongPress && onLongPress();
+    }, 600);
+  };
+
+  const cancelPress = () => {
+    clearTimeout(timeoutRef.current);
+  };
+
   return (
     <div>
       <div
         className={`relative w-full aspect-square flex justify-center items-center`}
         onPointerDown={onClick}
+        onTouchStart={startPress}
+        onTouchEnd={cancelPress}
+        onTouchCancel={cancelPress}
       >
         <div
-          className="absolute -inset-[2px]"
+          className={`absolute -inset-[${!onLongPress ? "2" : "4"}px] ${
+            !onLongPress ? "" : "animate-pulse"
+          }`}
           style={{
             clipPath:
               "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
@@ -148,7 +178,9 @@ export function ValidateButton({ onClick, iconName, children }) {
           style={{
             clipPath:
               "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
-            backgroundColor: "#fef3c7", // amber-100
+            background: !onLongPress
+              ? "#fef3c7" // amber-100
+              : "radial-gradient(#fef3c7 55%, #b45309 100%)", // amber-100 amber-700
             color: "#b45309", // amber-700
             zIndex: 1,
           }}

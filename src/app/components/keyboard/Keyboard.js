@@ -23,7 +23,12 @@ const englishLayout = [
   ["Delete", "Enter", "Space"],
 ];
 
-export default function Keyboard({ setInput, onClose, onValidate }) {
+export default function Keyboard({
+  setInput,
+  onClose,
+  onValidate,
+  onLongPress,
+}) {
   const contextValue = useUserContext();
   const { userParams } = contextValue;
   const bottomBarSize = userParams?.bottomBarSize || 8;
@@ -158,6 +163,7 @@ export default function Keyboard({ setInput, onClose, onValidate }) {
                                   e.stopPropagation();
                                   await handleKeyClick(key);
                                 }}
+                                onLongPress={onLongPress}
                                 iconName="validate"
                               >
                                 <div>Suite</div>

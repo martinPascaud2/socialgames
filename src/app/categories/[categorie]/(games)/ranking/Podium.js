@@ -24,7 +24,7 @@ import {
 
 import ToggleCheckbox from "@/components/ToggleCheckbox";
 import AnimatedDots from "@/components/AnimatedDots";
-import NextStep from "@/components/NextStep";
+import NextStep, { ValidateButton } from "@/components/NextStep";
 import Keyboard from "@/components/keyboard/Keyboard";
 import Input from "@/components/keyboard/Input";
 import ControlButton from "@/components/ControlButton";
@@ -90,7 +90,10 @@ const PreparingPhase = ({
         <>
           {!theme && (
             <div
-              onClick={() => setShowedKeyboard(true)}
+              onClick={() => {
+                setShowNext(false);
+                setShowedKeyboard(true);
+              }}
               className={`w-full h-full flex justify-center absolute top-[5%]`}
             >
               <div
@@ -201,6 +204,7 @@ const PreparingPhase = ({
                         setShowedKeyboard(true);
                         setShowedInfo(false);
                         setShowedToggle(false);
+                        setShowNext(false);
                       }}
                       active={showedKeyboard}
                       placeholder="Critère"
@@ -227,6 +231,9 @@ const PreparingPhase = ({
                       theme: input,
                     });
                     setInput("");
+                  }}
+                  onLongPress={() => {
+                    setShowedKeyboard(false);
                     setShowNext(true);
                   }}
                 />
@@ -235,20 +242,13 @@ const PreparingPhase = ({
           )}
 
           {theme && !gameData.ended && (
-            <div className="relative">
-              <div
-                className={`w-full flex justify-center absolute bottom-full mb-20 ${
-                  objectNumber < 4 && "hidden"
-                }`}
-              >
-                <NextStep
-                  onClick={() => goPreTurnFast({ gameData, roomId, roomToken })}
-                  iconName="validate"
-                >
-                  Suite
-                </NextStep>
-              </div>
-
+            <div
+              onClick={() => {
+                setShowNext(false);
+                setShowedKeyboard(true);
+              }}
+              className="relative w-full h-full flex items-center"
+            >
               {ReactDOM.createPortal(
                 <div
                   className="w-[100vw] fixed top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] flex items-center justify-center"
@@ -259,17 +259,33 @@ const PreparingPhase = ({
                   }}
                 >
                   <div
-                    className="flex justify-center items-center h-8 w-48"
+                    className="flex justify-center items-center h-8 w-48 relative"
                     style={{
                       pointerEvents: "auto",
                     }}
                   >
+                    <div
+                      className={`w-full flex justify-center absolute bottom-full mb-12 ${
+                        objectNumber < 4 && "hidden"
+                      }`}
+                    >
+                      <ValidateButton
+                        onClick={() =>
+                          goPreTurnFast({ gameData, roomId, roomToken })
+                        }
+                        iconName="next"
+                      >
+                        Suite
+                      </ValidateButton>
+                    </div>
+
                     <Input
                       input={input}
                       openKeyboard={() => {
                         setShowedKeyboard(true);
                         setShowedInfo(false);
                         setShowedToggle(false);
+                        setShowNext(false);
                       }}
                       active={showedKeyboard}
                       placeholder={`Objet ${objectNumber}`}
@@ -287,7 +303,6 @@ const PreparingPhase = ({
                   }}
                   onClose={() => {}}
                   onValidate={async () => {
-                    setShowNext(true);
                     if (input.length < 4) {
                       return;
                     } else if (input.length > 15) {
@@ -301,6 +316,10 @@ const PreparingPhase = ({
                       object: input,
                     });
                     setInput("");
+                  }}
+                  onLongPress={() => {
+                    setShowedKeyboard(false);
+                    setShowNext(true);
                   }}
                 />
               )}
@@ -344,7 +363,13 @@ const PreparingPhase = ({
   );
 };
 
-const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
+const PreturnPhase = ({
+  gameData,
+  roomId,
+  roomToken,
+  isAdmin,
+  setShowNext,
+}) => {
   const [input, setInput] = useState("");
   const [showedKeyboard, setShowedKeyboard] = useState(false);
 
@@ -370,6 +395,7 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
                   setIsEditing("theme");
                   setInput(theme);
                   setShowedKeyboard(true);
+                  setShowNext(false);
                   adminEditing({
                     type: "theme",
                     objectKey: null,
@@ -428,6 +454,7 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
                   setIsEditing("theme");
                   setInput(theme);
                   setShowedKeyboard(true);
+                  setShowNext(false);
                   adminEditing({
                     type: "theme",
                     objectKey: null,
@@ -456,6 +483,7 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
                       setInput(value);
                       setIsEditing(key);
                       setShowedKeyboard(true);
+                      setShowNext(false);
                       adminEditing({
                         type: "objects",
                         objectKey: key,
@@ -558,6 +586,7 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
                 onClick={() => {
                   setIsAdding(!isAdding);
                   setShowedKeyboard(true);
+                  setShowNext(false);
                 }}
                 className="w-8 h-8"
               />
@@ -567,7 +596,10 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
           <div className="absolute top-24 flex justify-center items-start h-8 w-48">
             <Input
               input={input}
-              openKeyboard={() => setShowedKeyboard(true)}
+              openKeyboard={() => {
+                setShowedKeyboard(true);
+                setShowNext(false);
+              }}
               active={showedKeyboard}
               placeholder=""
               deactivated={isEditing === null && isAdding === null}
@@ -591,6 +623,7 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
                 setIsAdding(null);
                 setShowedKeyboard(false);
                 setInput("");
+                setShowNext(true);
               }}
               onValidate={async () => {
                 if (input.length < 4) {
@@ -632,6 +665,7 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
                 setIsEditing(null);
                 setIsAdding(null);
                 setShowedKeyboard(false);
+                setShowNext(true);
               }}
             />
           )}
@@ -639,10 +673,10 @@ const PreturnPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
       )}
 
       {isAdmin && !gameData.ended && (
-        <div className="mt-8">
+        <div className={`mt-8 ${showedKeyboard && "collapse"}`}>
           <NextStep
             onClick={() => goTurnPhase({ gameData, roomId, roomToken })}
-            iconName="validate"
+            iconName="next"
           >
             Suite
           </NextStep>
@@ -1078,7 +1112,7 @@ const ResultPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
       })()}
 
       <div className="flex justify-center items-end w-full p-4">
-        <div className="w-1/3 h-32 flex justify-center items-center bg-stone-600 relative">
+        <div className="w-1/3 h-32 flex justify-center items-center bg-gray-600 relative">
           {seconds.map((second, index) => (
             <GamerName
               key={index}
@@ -1092,7 +1126,7 @@ const ResultPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
             <Image alt="place" src={Silver} width={500} height={500} />
           </div>
         </div>
-        <div className="w-1/3 h-48 flex justify-center items-center bg-stone-600 relative">
+        <div className="w-1/3 h-48 flex justify-center items-center bg-gray-600 relative">
           {firsts.map((first, index) => (
             <GamerName
               key={index}
@@ -1106,7 +1140,7 @@ const ResultPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
             <Image alt="place" src={Gold} width={500} height={500} />
           </div>
         </div>
-        <div className="w-1/3 h-20 flex justify-center items-center bg-stone-600 relative">
+        <div className="w-1/3 h-20 flex justify-center items-center bg-gray-600 relative">
           {thirds.map((third, index) => (
             <GamerName
               key={index}
@@ -1159,6 +1193,7 @@ export default function Podium({
           roomId={roomId}
           roomToken={roomToken}
           isAdmin={isAdmin}
+          setShowNext={setShowNext}
         />
       )}
 
