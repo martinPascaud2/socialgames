@@ -112,7 +112,8 @@ import "./ThreeSmoke.css";
 
 export default function ThreeSmoke() {
   const mountRef = useRef(null);
-  const [loaded, setLoaded] = useState(false);
+  // const [loaded, setLoaded] = useState(false);
+  const [loaded, setLoaded] = useState(true);
   const smokeParticles = useRef([]);
   const rendererRef = useRef(null);
   const cameraRef = useRef(null);
@@ -167,7 +168,6 @@ export default function ThreeSmoke() {
       alpha: true,
       antialias: true,
       preserveDrawingBuffer: false,
-      // preserveDrawingBuffer: true,
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
 
