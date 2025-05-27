@@ -112,8 +112,7 @@ import "./ThreeSmoke.css";
 
 export default function ThreeSmoke() {
   const mountRef = useRef(null);
-  // const [loaded, setLoaded] = useState(false);
-  const [loaded, setLoaded] = useState(true);
+  const [loaded, setLoaded] = useState(false);
   const smokeParticles = useRef([]);
   const rendererRef = useRef(null);
   const cameraRef = useRef(null);
@@ -137,21 +136,27 @@ export default function ThreeSmoke() {
   useEffect(() => {
     if (!loaded || !mountRef.current) return;
 
-    const isWebGLAvailable = () => {
-      try {
-        const canvas = document.createElement("canvas");
-        return !!(
-          window.WebGLRenderingContext &&
-          (canvas.getContext("webgl") ||
-            canvas.getContext("experimental-webgl"))
-        );
-      } catch {
-        return false;
-      }
-    };
+    // const isWebGLAvailable = () => {
+    //   try {
+    //     const canvas = document.createElement("canvas");
+    //     return !!(
+    //       window.WebGLRenderingContext &&
+    //       (canvas.getContext("webgl") ||
+    //         canvas.getContext("experimental-webgl"))
+    //     );
+    //   } catch {
+    //     return false;
+    //   }
+    // };
 
-    if (!isWebGLAvailable()) {
-      console.error("WebGL non supporté sur ce navigateur !");
+    // if (!isWebGLAvailable()) {
+    //   console.error("WebGL non supporté sur ce navigateur !");
+    //   return;
+    // }
+    const canvas = document.createElement("canvas");
+    const gl = canvas.getContext("webgl");
+    if (!gl) {
+      console.error("WebGL1 non disponible");
       return;
     }
 
@@ -167,7 +172,8 @@ export default function ThreeSmoke() {
     const renderer = new Three.WebGLRenderer({
       alpha: true,
       antialias: true,
-      preserveDrawingBuffer: false,
+      // preserveDrawingBuffer: false,
+      preserveDrawingBuffer: true,
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
 
