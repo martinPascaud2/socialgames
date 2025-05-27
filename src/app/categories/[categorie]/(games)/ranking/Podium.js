@@ -15,7 +15,7 @@ import {
   goPreTurnFast,
   adminEditing,
   editValues,
-  addPlayer,
+  addValue,
   deletePlayer,
   goTurnPhase,
   sendTops,
@@ -377,9 +377,32 @@ const PreturnPhase = ({
   const [isChanging, setIsChanging] = useState(false);
   const [isEditing, setIsEditing] = useState(null);
   const [isAdding, setIsAdding] = useState(null);
+  const [addingPlace, setAddingPlace] = useState(null);
+  const [editedObjects, setEditedObjects] = useState(null);
 
   const [type, setType] = useState("");
   const [objectKey, setObjectKey] = useState("");
+
+  useEffect(() => {
+    if (!isAdding) {
+      setEditedObjects(null);
+      return;
+    }
+
+    if (editedObjects) {
+      setEditedObjects((prevEditedObjects) => {
+        return { ...prevEditedObjects, [addingPlace]: input };
+      });
+    } else {
+      const newEditedObjects = { ...objects };
+      const maxKey = Object.keys(newEditedObjects).length;
+      for (let i = maxKey; i >= addingPlace; i--) {
+        newEditedObjects[i + 1] = newEditedObjects[i];
+      }
+      newEditedObjects[addingPlace] = input;
+      setEditedObjects(newEditedObjects);
+    }
+  }, [isAdding, setEditedObjects, objects, addingPlace, input]);
 
   return (
     <div className="h-full w-full flex flex-col justify-center items-center relative">
@@ -421,7 +444,11 @@ const PreturnPhase = ({
                     : "#0369a1", // sky-700
                 }}
               >
-                <div className="whitespace-nowrap">{theme}</div>
+                <div className="whitespace-nowrap">
+                  {adminEdition?.type === "theme" && isEditing === "theme"
+                    ? input
+                    : theme}
+                </div>
               </div>
             ) : (
               <div className="flex items-center relative">
@@ -436,7 +463,11 @@ const PreturnPhase = ({
                       adminEdition?.type === "theme" ? "#0369a1" : "#44403c", // sky-700 stone-700
                   }}
                 >
-                  <div className="whitespace-nowrap">{theme}</div>
+                  <div className="whitespace-nowrap">
+                    {adminEdition?.type === "theme" && isEditing === "theme"
+                      ? input
+                      : theme}
+                  </div>
                 </div>
                 {adminEdition?.type === "theme" && (
                   <div className="flex items-center absolute left-full">
@@ -450,6 +481,7 @@ const PreturnPhase = ({
               <div
                 onClick={() => {
                   setType("theme");
+                  setIsChanging(!isChanging);
                   setIsEditing("theme");
                   setInput(theme);
                   setShowedKeyboard(true);
@@ -469,7 +501,10 @@ const PreturnPhase = ({
           </div>
         </div>
 
-        {Object.entries(objects).map(([key, value]) => {
+        {Object.entries(editedObjects || objects).map(([key, value]) => {
+          let dynamicValue;
+          if (isAdmin && isEditing === key) dynamicValue = input;
+          else dynamicValue = value;
           return (
             <div key={key} className="flex justify-center mb-1.5">
               {isAdmin ? (
@@ -491,12 +526,12 @@ const PreturnPhase = ({
                       });
                     }}
                     className={`flex items-center py-0.5 border pr-2 mr-3 ${
-                      !isChanging
+                      !isChanging && !isAdding
                         ? "text-stone-700 bg-stone-100"
-                        : isEditing === null
+                        : isEditing === null && addingPlace === null
                         ? "text-amber-700 bg-amber-100"
-                        : isEditing !== key
-                        ? "text-stone-700"
+                        : isEditing !== key && addingPlace !== parseInt(key)
+                        ? "text-stone-700 bg-stone-100"
                         : "text-sky-700 bg-sky-100"
                     } rounded-sm`}
                     style={{
@@ -510,12 +545,26 @@ const PreturnPhase = ({
                     }}
                   >
                     <IoMdArrowDropright className="w-5 h-5 mt-0.5" />
-                    <div className="whitespace-nowrap text-2xl">{value}</div>
+                    <div className="whitespace-nowrap text-2xl">
+                      {(dynamicValue.length && dynamicValue) || "..."}
+                    </div>
                   </div>
                 ) : (
-                  <div className="border border-stone-700 bg-stone-100 text-stone-700 py-0.5 pr-2 mr-3 flex justify-center items-center relative">
+                  <div
+                    className={`flex items-center justify-center py-0.5 border pr-2 mr-3 relative ${
+                      addingPlace !== parseInt(key)
+                        ? "text-stone-700 bg-stone-100"
+                        : "text-sky-700 bg-sky-100"
+                    }`}
+                    style={{
+                      borderColor:
+                        addingPlace !== parseInt(key) ? "#44403c" : "#0369a1", // stone-700 sky-700
+                    }}
+                  >
                     <IoMdArrowDropright className="w-5 h-5 mt-0.5" />
-                    <div className="whitespace-nowrap text-2xl">{value}</div>
+                    <div className="whitespace-nowrap text-2xl">
+                      {(value.length && value) || "..."}
+                    </div>
                     <div className="absolute left-full ml-2">
                       <TiDelete
                         onClick={async () => {
@@ -567,44 +616,49 @@ const PreturnPhase = ({
 
       {isAdmin && (
         <>
-          <div
-            className={`mt-4 border ${
-              !isChanging
-                ? "border-amber-700 bg-amber-100 text-amber-700"
-                : "border-sky-700 bg-sky-100 text-sky-700"
-            } p-2`}
-          >
-            {target === "others" && (
+          {target === "others" && (
+            <div
+              className={`mt-4 border ${
+                !isChanging
+                  ? "border-amber-700 bg-amber-100 text-amber-700"
+                  : "border-sky-700 bg-sky-100 text-sky-700"
+              } p-2`}
+            >
               <TfiWrite
                 onClick={() => setIsChanging(!isChanging)}
                 className="w-8 h-8"
               />
-            )}
-            {target === "players" && (
-              <FaPlus
-                onClick={() => {
-                  setIsAdding(!isAdding);
-                  setType("objects");
-                  setShowedKeyboard(true);
-                  setShowNext(false);
-                }}
-                className="w-8 h-8"
-              />
-            )}
-          </div>
+            </div>
+          )}
 
-          <div className="absolute top-24 flex justify-center items-start h-8 w-48">
-            <Input
-              input={input}
-              openKeyboard={() => {
+          <div
+            className={`mt-4 border ${
+              !isAdding
+                ? "border-amber-700 bg-amber-100 text-amber-700"
+                : "border-sky-700 bg-sky-100 text-sky-700"
+            } p-2`}
+          >
+            <FaPlus
+              onClick={() => {
+                setIsAdding(!isAdding);
+                setType("objects");
                 setShowedKeyboard(true);
                 setShowNext(false);
+
+                let newAddingPlace;
+                if (target === "others")
+                  newAddingPlace = Object.keys(objects).length + 1;
+                else
+                  newAddingPlace =
+                    Math.floor(
+                      Math.random() * (Object.keys(objects).length + 1)
+                    ) + 1;
+                setAddingPlace(newAddingPlace);
               }}
-              active={showedKeyboard}
-              placeholder=""
-              deactivated={isEditing === null && isAdding === null}
+              className="w-8 h-8"
             />
           </div>
+
           {showedKeyboard && (
             <Keyboard
               input={input}
@@ -621,6 +675,7 @@ const PreturnPhase = ({
                 setIsChanging(false);
                 setIsEditing(null);
                 setIsAdding(null);
+                setAddingPlace(null);
                 setShowedKeyboard(false);
                 setInput("");
                 setShowNext(true);
@@ -631,7 +686,15 @@ const PreturnPhase = ({
                 else if (input.length < 4 && type === "theme") return;
                 else if (input.length > 15) return;
 
-                if (target === "others") {
+                if (isAdding) {
+                  await addValue({
+                    gameData,
+                    roomId,
+                    roomToken,
+                    value: input,
+                    addingPlace,
+                  });
+                } else if (isEditing) {
                   await editValues({
                     gameData,
                     roomId,
@@ -640,30 +703,13 @@ const PreturnPhase = ({
                     newValue: input,
                     objectKey,
                   });
-                } else if (target === "players") {
-                  if (isAdding) {
-                    await addPlayer({
-                      gameData,
-                      roomId,
-                      roomToken,
-                      value: input,
-                    });
-                  } else if (isEditing) {
-                    await editValues({
-                      gameData,
-                      roomId,
-                      roomToken,
-                      type,
-                      newValue: input,
-                      objectKey,
-                    });
-                  }
                 }
 
                 setInput("");
                 setIsChanging(false);
                 setIsEditing(null);
                 setIsAdding(null);
+                setAddingPlace(null);
                 setShowedKeyboard(false);
                 setShowNext(true);
               }}

@@ -164,12 +164,14 @@ export function ValidateButton({ onClick, onLongPress, iconName, children }) {
         onTouchCancel={cancelPress}
       >
         <div
-          className={`absolute -inset-[${!onLongPress ? "2" : "4"}px] ${
-            !onLongPress ? "" : "animate-pulse"
-          }`}
+          className={`absolute ${!onLongPress ? "" : "animate-pulse"}`}
           style={{
             clipPath:
               "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
+            top: !onLongPress ? "-2px" : "-4px",
+            right: !onLongPress ? "-2px" : "-4px",
+            bottom: !onLongPress ? "-2px" : "-4px",
+            left: !onLongPress ? "-2px" : "-4px",
             backgroundColor: "#b45309", // amber-700
             zIndex: 0,
           }}

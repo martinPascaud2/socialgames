@@ -209,17 +209,22 @@ export async function editValues({
   }
 }
 
-export async function addPlayer({ value, gameData, roomId, roomToken }) {
+export async function addValue({
+  value,
+  gameData,
+  roomId,
+  roomToken,
+  addingPlace,
+}) {
   const { objects: newObjects } = gameData;
 
   const keys = Object.keys(newObjects).map(Number);
   const maxKey = Math.max(...keys);
-  const insertKey = Math.floor(Math.random() * (maxKey + 1)) + 1;
 
-  for (let i = maxKey; i >= insertKey; i--) {
+  for (let i = maxKey; i >= addingPlace; i--) {
     newObjects[i + 1] = newObjects[i];
   }
-  newObjects[insertKey] = value;
+  newObjects[addingPlace] = value;
 
   const newData = {
     ...gameData,
@@ -230,6 +235,7 @@ export async function addPlayer({ value, gameData, roomId, roomToken }) {
 
 export async function deletePlayer({ key, gameData, roomId, roomToken }) {
   const objects = { ...gameData.objects };
+  if (Object.keys(objects).length === 1) return;
   delete objects[key];
   const newObjects = Object.fromEntries(
     Object.entries(objects).map(([, value], index) => [index + 1, value])
