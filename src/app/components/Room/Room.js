@@ -2083,7 +2083,7 @@ export default function Room({
     return (
       // <div className="absolute h-screen w-full z-50 bg-black">
       // <div className="relative h-screen w-full z-50 bg-black">
-      <div className="relative h-screen w-full">
+      <div className="relative h-full w-full">
         <ThreeSmoke />
         <UserContext.Provider value={{ userParams }}>
           <div
