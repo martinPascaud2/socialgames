@@ -154,9 +154,9 @@ export default function ThreeSmoke() {
     //   return;
     // }
     const canvas = document.createElement("canvas");
-    const gl = canvas.getContext("webgl2");
+    const gl = canvas.getContext("webgl");
     if (!gl) {
-      console.error("WebGL2 non disponible");
+      console.error("WebGL non disponible");
       return;
     }
 
@@ -174,8 +174,10 @@ export default function ThreeSmoke() {
       antialias: true,
       // preserveDrawingBuffer: false,
       preserveDrawingBuffer: true,
+      premultipliedAlpha: true,
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setClearColor(0x000000, 0); // transparent bg
 
     mountRef.current.innerHTML = ""; // clean previous canvas if needed
     mountRef.current.appendChild(renderer.domElement);
