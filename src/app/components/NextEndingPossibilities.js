@@ -2,11 +2,11 @@
 
 import { useUserContext } from "./Room/Room";
 
-import { StaticNextStep } from "@/components/NextStep";
+import GoPostgame from "./GoPostgame";
 import FinishGame from "@/components/FinishGame";
+import { ValidateButton } from "@/components/NextStep";
 import ChooseOneMoreGame from "@/components/ChooseOneMoreGame";
 import EndGame from "@/components/EndGame";
-import GoPostgame from "./GoPostgame";
 
 export default function NextEndingPossibilities({
   isAdmin,
@@ -68,11 +68,12 @@ export default function NextEndingPossibilities({
                 pointerEvents: "auto",
               }}
             >
-              <StaticNextStep
+              <ValidateButton
                 onClick={() => reset({ roomId, roomToken, gameData })}
+                iconName="again"
               >
                 Encore
-              </StaticNextStep>
+              </ValidateButton>
 
               <div>
                 <ChooseOneMoreGame

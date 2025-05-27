@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { MdRocketLaunch } from "react-icons/md";
 import { IoArrowForward } from "react-icons/io5";
 import { FaCheck } from "react-icons/fa6";
+import { RiRefreshLine } from "react-icons/ri";
 
 import { useUserContext } from "./Room/Room";
 
@@ -12,6 +13,7 @@ const iconsList = {
   startGame: MdRocketLaunch,
   next: IoArrowForward,
   validate: FaCheck,
+  again: RiRefreshLine,
 };
 
 export default function NextStep({ onClick, onLongPress, iconName, children }) {
