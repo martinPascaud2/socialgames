@@ -2083,7 +2083,7 @@ export default function Room({
     return (
       // <div className="absolute h-screen w-full z-50 bg-black">
       <div className="relative h-screen w-full z-50 bg-black">
-        {/* <ThreeSmoke /> */}
+        <ThreeSmoke />
         <UserContext.Provider value={{ userParams }}>
           <div
             className={`z-[60] w-full h-full relative`}
@@ -2093,7 +2093,6 @@ export default function Room({
             }}
           >
             <div className="w-full h-full relative">
-              <ThreeSmoke />
               <Game
                 roomId={roomId}
                 roomToken={roomToken}
