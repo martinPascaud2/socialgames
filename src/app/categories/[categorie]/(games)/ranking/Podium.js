@@ -431,7 +431,7 @@ const PreturnPhase = ({
                     : isEditing === null
                     ? "text-amber-700 bg-amber-100"
                     : isEditing !== "theme"
-                    ? "text-stone-700"
+                    ? "text-stone-700 bg-stone-100"
                     : "text-sky-700 bg-sky-100"
                 } px-2 py-0.5`}
                 style={{
