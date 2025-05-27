@@ -210,9 +210,17 @@ export async function editValues({
 }
 
 export async function addPlayer({ value, gameData, roomId, roomToken }) {
-  const { objects } = gameData;
-  const newKey = Object.keys(objects).length + 1;
-  const newObjects = { ...objects, [newKey]: value };
+  const { objects: newObjects } = gameData;
+
+  const keys = Object.keys(newObjects).map(Number);
+  const maxKey = Math.max(...keys);
+  const insertKey = Math.floor(Math.random() * (maxKey + 1)) + 1;
+
+  for (let i = maxKey; i >= insertKey; i--) {
+    newObjects[i + 1] = newObjects[i];
+  }
+  newObjects[insertKey] = value;
+
   const newData = {
     ...gameData,
     objects: newObjects,
