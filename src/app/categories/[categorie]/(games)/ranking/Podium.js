@@ -303,11 +303,10 @@ const PreparingPhase = ({
                   }}
                   onClose={() => {}}
                   onValidate={async () => {
-                    if (input.length < 4) {
-                      return;
-                    } else if (input.length > 15) {
-                      return;
-                    }
+                    if (input.length < 4 && target === "others") return;
+                    else if (input.length < 2 && target === "players") return;
+                    else if (input.length > 15) return;
+
                     await addObject({
                       objectNumber,
                       gameData,
@@ -585,6 +584,7 @@ const PreturnPhase = ({
               <FaPlus
                 onClick={() => {
                   setIsAdding(!isAdding);
+                  setType("objects");
                   setShowedKeyboard(true);
                   setShowNext(false);
                 }}
@@ -626,11 +626,11 @@ const PreturnPhase = ({
                 setShowNext(true);
               }}
               onValidate={async () => {
-                if (input.length < 4) {
-                  return;
-                } else if (input.length > 15) {
-                  return;
-                }
+                if (input.length < 4 && target === "others") return;
+                else if (input.length < 2 && target === "players") return;
+                else if (input.length < 4 && type === "theme") return;
+                else if (input.length > 15) return;
+
                 if (target === "others") {
                   await editValues({
                     gameData,
