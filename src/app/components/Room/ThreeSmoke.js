@@ -154,9 +154,9 @@ export default function ThreeSmoke() {
     //   return;
     // }
     const canvas = document.createElement("canvas");
-    const gl = canvas.getContext("webgl");
+    const gl = canvas.getContext("webgl2");
     if (!gl) {
-      console.error("WebGL1 non disponible");
+      console.error("WebGL2 non disponible");
       return;
     }
 
