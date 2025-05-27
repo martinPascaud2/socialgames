@@ -166,8 +166,8 @@ export default function ThreeSmoke() {
     const renderer = new Three.WebGLRenderer({
       alpha: true,
       antialias: true,
-      // preserveDrawingBuffer: false,
-      preserveDrawingBuffer: true,
+      preserveDrawingBuffer: false,
+      // preserveDrawingBuffer: true,
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
 
@@ -193,8 +193,7 @@ export default function ThreeSmoke() {
           transparent: true,
           opacity: 0.1,
           depthWrite: false,
-          // blending: Three.AdditiveBlending,
-          blending: Three.NormalBlending,
+          blending: Three.AdditiveBlending,
         });
 
         const geometry = new Three.PlaneGeometry(2000, 2000);
