@@ -2082,9 +2082,8 @@ export default function Room({
   } else {
     return (
       // <div className="absolute h-screen w-full z-50 bg-black">
-      // <div className="relative h-screen w-full z-50 bg-black">
-      <div className="relative h-full w-full">
-        <ThreeSmoke />
+      <div className="relative h-screen w-full z-50 bg-black">
+        {/* <ThreeSmoke /> */}
         <UserContext.Provider value={{ userParams }}>
           <div
             className={`z-[60] w-full h-full relative`}
@@ -2093,6 +2092,8 @@ export default function Room({
               paddingBottom: `${barsSizes.bottom / 4}rem`,
             }}
           >
+            <ThreeSmoke />
+
             <div className="w-full h-full relative">
               <Game
                 roomId={roomId}
