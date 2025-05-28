@@ -16,11 +16,20 @@ const iconsList = {
   again: RiRefreshLine,
 };
 
-export default function NextStep({ onClick, onLongPress, iconName, children }) {
+export default function NextStep({
+  onClick,
+  onLongPress,
+  iconName,
+  children,
+  ready = true,
+  hasValidated = false,
+}) {
   const contextValue = useUserContext();
   const userParams = contextValue.userParams;
+
   const [content, setContent] = useState();
   const timeoutRef = useRef(null);
+  const isLongPressTriggered = useRef(false);
 
   useEffect(() => {
     if (!iconName) return;
@@ -31,13 +40,18 @@ export default function NextStep({ onClick, onLongPress, iconName, children }) {
   }, [iconName]);
 
   const startPress = () => {
+    isLongPressTriggered.current = false;
     timeoutRef.current = setTimeout(() => {
+      isLongPressTriggered.current = true;
       onLongPress && onLongPress();
     }, 600);
   };
 
-  const cancelPress = () => {
+  const endPress = () => {
     clearTimeout(timeoutRef.current);
+    if (!isLongPressTriggered.current) {
+      ready && onClick && onClick();
+    }
   };
 
   return (
@@ -49,17 +63,22 @@ export default function NextStep({ onClick, onLongPress, iconName, children }) {
     >
       <div
         className={`relative w-full aspect-square flex justify-center items-center`}
-        onPointerDown={onClick}
+        onMouseDown={startPress}
+        onMouseUp={endPress}
         onTouchStart={startPress}
-        onTouchEnd={cancelPress}
-        onTouchCancel={cancelPress}
+        onTouchEnd={endPress}
+        onTouchCancel={() => clearTimeout(timeoutRef.current)}
       >
         <div
-          className="absolute -inset-[2px]"
+          className={`absolute ${!onLongPress ? "" : "animate-pulse"}`}
           style={{
             clipPath:
               "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
-            backgroundColor: "#b45309", // amber-700
+            top: !onLongPress ? "-2px" : "-4px",
+            right: !onLongPress ? "-2px" : "-4px",
+            bottom: !onLongPress ? "-2px" : "-4px",
+            left: !onLongPress ? "-2px" : "-4px",
+            backgroundColor: !hasValidated ? "#b45309" : "#15803d", // amber-700 green-700
             zIndex: 0,
           }}
         />
@@ -69,12 +88,14 @@ export default function NextStep({ onClick, onLongPress, iconName, children }) {
           style={{
             clipPath:
               "polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)",
-            backgroundColor: "#fef3c7", // amber-100
-            color: "#b45309", // amber-700
+            backgroundColor: !hasValidated ? "#fef3c7" : "#dcfce7", // amber-100 green-100
+            color: !hasValidated ? "#b45309" : "#15803d", // amber-700 green-700
             zIndex: 1,
           }}
         >
-          {!iconName ? children : content}
+          <div className={`h-full w-full ${!ready ? "collapse" : ""}`}>
+            {!iconName ? children : content}
+          </div>
         </div>
       </div>
     </div>
@@ -132,9 +153,16 @@ export function StaticNextStep({ onClick, onLongPress, children }) {
   );
 }
 
-export function ValidateButton({ onClick, onLongPress, iconName, children }) {
+export function ValidateButton({
+  onClick,
+  onLongPress,
+  iconName,
+  children,
+  ready = true,
+}) {
   const [content, setContent] = useState();
   const timeoutRef = useRef(null);
+  const isLongPressTriggered = useRef(false);
 
   useEffect(() => {
     if (!iconName) return;
@@ -145,23 +173,29 @@ export function ValidateButton({ onClick, onLongPress, iconName, children }) {
   }, [iconName]);
 
   const startPress = () => {
+    isLongPressTriggered.current = false;
     timeoutRef.current = setTimeout(() => {
+      isLongPressTriggered.current = true;
       onLongPress && onLongPress();
     }, 600);
   };
 
-  const cancelPress = () => {
+  const endPress = () => {
     clearTimeout(timeoutRef.current);
+    if (!isLongPressTriggered.current) {
+      ready && onClick && onClick();
+    }
   };
 
   return (
     <div>
       <div
         className={`relative w-full aspect-square flex justify-center items-center`}
-        onPointerDown={onClick}
+        onMouseDown={startPress}
+        onMouseUp={endPress}
         onTouchStart={startPress}
-        onTouchEnd={cancelPress}
-        onTouchCancel={cancelPress}
+        onTouchEnd={endPress}
+        onTouchCancel={() => clearTimeout(timeoutRef.current)}
       >
         <div
           className={`absolute ${!onLongPress ? "" : "animate-pulse"}`}
@@ -189,7 +223,9 @@ export function ValidateButton({ onClick, onLongPress, iconName, children }) {
             zIndex: 1,
           }}
         >
-          {!iconName ? children : content}
+          <div className={`h-full w-full ${!ready ? "collapse" : ""}`}>
+            {!iconName ? children : content}
+          </div>
         </div>
       </div>
     </div>

@@ -28,6 +28,7 @@ export default function Keyboard({
   onClose,
   onValidate,
   onLongPress,
+  ready = true,
 }) {
   const contextValue = useUserContext();
   const { userParams } = contextValue;
@@ -54,7 +55,7 @@ export default function Keyboard({
     } else if (key === "Delete") {
       setInput((prev) => (prev || "").slice(0, -1));
     } else if (key === "Enter") {
-      await onValidate();
+      ready && (await onValidate());
     } else {
       setInput((prev) => (prev || "") + key);
     }
@@ -140,7 +141,8 @@ export default function Keyboard({
                           layout = (
                             <div
                               key={key}
-                              className={`w-[${width}] h-8 flex justify-center items-center`}
+                              className="h-8 flex justify-center items-center"
+                              style={{ width }}
                             >
                               <div
                                 className={`bg-stone-100 border border-stone-700 text-stone-700 font-semibold py-1 px-2 rounded-xl transition relative w-2/3 h-full flex justify-center items-center`}
@@ -156,15 +158,16 @@ export default function Keyboard({
                           layout = (
                             <div
                               key={key}
-                              className={`w-[${width}] h-6 relative flex justify-center items-center translate-y-[-50%]`}
+                              className="h-6 relative flex justify-center items-center translate-y-[-50%]"
+                              style={{ width }}
                             >
                               <ValidateButton
-                                onClick={async (e) => {
-                                  e.stopPropagation();
+                                onClick={async () => {
                                   await handleKeyClick(key);
                                 }}
                                 onLongPress={onLongPress}
                                 iconName="validate"
+                                ready={ready}
                               >
                                 <div>Suite</div>
                               </ValidateButton>
@@ -175,7 +178,8 @@ export default function Keyboard({
                           layout = (
                             <div
                               key={key}
-                              className={`w-[${width}] h-8 flex justify-center items-center`}
+                              className="h-8 flex justify-center items-center"
+                              style={{ width }}
                             >
                               <div
                                 className={`bg-stone-100 border border-stone-700 text-stone-700 font-semibold py-1 px-2 rounded-xl transition relative w-2/3 h-full flex justify-center items-center`}

@@ -90,10 +90,9 @@ const PreparingPhase = ({
         <>
           {!theme && (
             <div
-              onClick={() => {
-                setShowNext(false);
-                setShowedKeyboard(true);
-              }}
+              onClick={() =>
+                !gameData.ended && (setShowNext(false), setShowedKeyboard(true))
+              }
               className={`w-full h-full flex justify-center absolute top-[5%]`}
             >
               <div
@@ -232,10 +231,14 @@ const PreparingPhase = ({
                     });
                     setInput("");
                   }}
-                  onLongPress={() => {
-                    setShowedKeyboard(false);
-                    setShowNext(true);
-                  }}
+                  onLongPress={
+                    isAdmin &&
+                    (() => {
+                      setShowedKeyboard(false);
+                      setShowNext(true);
+                    })
+                  }
+                  ready={input.length >= 4 && input.length <= 15}
                 />
               )}
             </>
@@ -316,10 +319,19 @@ const PreparingPhase = ({
                     });
                     setInput("");
                   }}
-                  onLongPress={() => {
-                    setShowedKeyboard(false);
-                    setShowNext(true);
-                  }}
+                  onLongPress={(() => {
+                    if (!isAdmin) return;
+                    else
+                      return () => {
+                        setShowedKeyboard(false);
+                        setShowNext(true);
+                      };
+                  })()}
+                  ready={
+                    ((input.length >= 4 && target === "others") ||
+                      (input.length >= 2 && target === "players")) &&
+                    input.length <= 15
+                  }
                 />
               )}
             </div>
@@ -383,6 +395,13 @@ const PreturnPhase = ({
   const [type, setType] = useState("");
   const [objectKey, setObjectKey] = useState("");
 
+  let ready;
+  if (input.length < 4 && target === "others") ready = false;
+  else if (input.length < 2 && target === "players") ready = false;
+  else if (input.length < 4 && type === "theme") ready = false;
+  else if (input.length > 15) ready = false;
+  else ready = true;
+
   useEffect(() => {
     if (!isAdding) {
       setEditedObjects(null);
@@ -405,7 +424,10 @@ const PreturnPhase = ({
   }, [isAdding, setEditedObjects, objects, addingPlace, input]);
 
   return (
-    <div className="h-full w-full flex flex-col justify-center items-center relative">
+    <div
+      onClick={() => !gameData.ended && setShowNext(false)}
+      className="h-full w-full flex flex-col justify-center items-center relative"
+    >
       <div className="w-full flex flex-col items-center">
         <div className="flex justify-center mb-2.5">
           <div className="flex items-center relative">
@@ -480,6 +502,7 @@ const PreturnPhase = ({
             {target === "players" && isAdmin && (
               <div
                 onClick={() => {
+                  if (gameData.ended) return;
                   setType("theme");
                   setIsChanging(!isChanging);
                   setIsEditing("theme");
@@ -568,6 +591,7 @@ const PreturnPhase = ({
                     <div className="absolute left-full ml-2">
                       <TiDelete
                         onClick={async () => {
+                          if (gameData.ended) return;
                           await deletePlayer({
                             key,
                             gameData,
@@ -625,7 +649,7 @@ const PreturnPhase = ({
               } p-2`}
             >
               <TfiWrite
-                onClick={() => setIsChanging(!isChanging)}
+                onClick={() => !gameData.ended && setIsChanging(!isChanging)}
                 className="w-8 h-8"
               />
             </div>
@@ -640,6 +664,7 @@ const PreturnPhase = ({
           >
             <FaPlus
               onClick={() => {
+                if (gameData.ended) return;
                 setIsAdding(!isAdding);
                 setType("objects");
                 setShowedKeyboard(true);
@@ -681,10 +706,7 @@ const PreturnPhase = ({
                 setShowNext(true);
               }}
               onValidate={async () => {
-                if (input.length < 4 && target === "others") return;
-                else if (input.length < 2 && target === "players") return;
-                else if (input.length < 4 && type === "theme") return;
-                else if (input.length > 15) return;
+                if (!ready) return;
 
                 if (isAdding) {
                   await addValue({
@@ -711,8 +733,8 @@ const PreturnPhase = ({
                 setIsAdding(null);
                 setAddingPlace(null);
                 setShowedKeyboard(false);
-                setShowNext(true);
               }}
+              ready={ready}
             />
           )}
         </>
@@ -722,7 +744,9 @@ const PreturnPhase = ({
         <div className={`mt-8 ${showedKeyboard && "collapse"}`}>
           <NextStep
             onClick={() => goTurnPhase({ gameData, roomId, roomToken })}
+            onLongPress={isAdmin && (() => setShowNext(true))}
             iconName="next"
+            ready={Object.keys(objects).length >= 3}
           >
             Suite
           </NextStep>
@@ -814,7 +838,7 @@ const Preview = ({}) => {
 
   return (
     <div
-      className={`p-2 border border-amber-700 bg-amber-100 text-center text-amber-700 text-${
+      className={`p-2 z-40 border border-amber-700 bg-amber-100 text-center text-amber-700 text-${
         item.type === "item" ? "base" : "2xl"
       }`}
       style={{ ...style, width: item.type === "item" ? "30%" : "50%" }}
@@ -831,8 +855,8 @@ const Validate = ({
   roomId,
   roomToken,
   setHasValidated,
-  hasValidated,
   moveItem,
+  children,
 }) => {
   const threeTops = Object.keys(tops).length === 3;
   const allTopsDefined = Object.values(tops).every((top) => top !== undefined);
@@ -852,15 +876,8 @@ const Validate = ({
         await sendTops({ user, tops, gameData, roomId, roomToken });
         setHasValidated(true);
       }}
-      className={`absolute top-20 w-[30%] text-center border ${
-        !threeTops || !allTopsDefined
-          ? "border-stone-700 bg-stone-100 text-stone-700"
-          : !hasValidated
-          ? "border-amber-700 bg-amber-100 text-amber-700"
-          : "border-green-700 bg-green-100 text-green-700"
-      } p-2`}
     >
-      Valider
+      {children}
     </div>
   );
 };
@@ -882,11 +899,22 @@ const ThemeTitle = ({ theme, moveItem }) => {
   );
 };
 
-const TurnPhase = ({ gameData, roomId, roomToken, user }) => {
+const TurnPhase = ({
+  gameData,
+  roomId,
+  roomToken,
+  user,
+  isAdmin,
+  setShowNext,
+}) => {
   const [items, setItems] = useState();
   const [tops, setTops] = useState({});
   const [draggedTop, setDraggedTop] = useState(null);
   const [hasValidated, setHasValidated] = useState(false);
+
+  const threeTops = Object.keys(tops).length === 3;
+  const allTopsDefined = Object.values(tops).every((top) => top !== undefined);
+  const ready = threeTops && allTopsDefined;
 
   useEffect(() => {
     if (!gameData.objects) {
@@ -951,23 +979,15 @@ const TurnPhase = ({ gameData, roomId, roomToken, user }) => {
   if (!items) return null;
 
   return (
-    <div className="h-full w-full flex flex-col justify-center items-center relative">
+    <div
+      onClick={() => !gameData.ended && setShowNext(false)}
+      className="h-full w-full flex flex-col justify-center items-center relative"
+    >
       <DndProvider backend={TouchBackend} options={{ HTML5toTouch }}>
         <>
           <div className="absolute w-full h-full">
             <OutsideItem moveItem={moveItem} />
           </div>
-
-          <Validate
-            tops={tops}
-            user={user}
-            gameData={gameData}
-            roomId={roomId}
-            roomToken={roomToken}
-            setHasValidated={setHasValidated}
-            hasValidated={hasValidated}
-            moveItem={moveItem}
-          />
 
           <div className="relative w-full h-fit">
             <ThemeTitle theme={gameData.theme} moveItem={moveItem} />
@@ -1021,29 +1041,57 @@ const TurnPhase = ({ gameData, roomId, roomToken, user }) => {
                 </div>
               );
             })}
+
+            <div className="mt-8 flex flex-wrap justify-around w-full">
+              {items.map((item, index) => {
+                return (
+                  <DraggableItem
+                    key={index}
+                    type="item"
+                    index={index}
+                    value={item}
+                    moveItem={moveItem}
+                  />
+                );
+              })}
+            </div>
           </div>
 
-          <div className="absolute bottom-10 flex flex-wrap justify-around w-full">
-            {items.map((item, index) => {
-              return (
-                <DraggableItem
-                  key={index}
-                  type="item"
-                  index={index}
-                  value={item}
-                  moveItem={moveItem}
-                />
-              );
-            })}
-          </div>
           <Preview />
+
+          {!gameData.ended && (
+            <Validate
+              tops={tops}
+              user={user}
+              gameData={gameData}
+              roomId={roomId}
+              roomToken={roomToken}
+              setHasValidated={setHasValidated}
+              moveItem={moveItem}
+            >
+              <NextStep
+                onClick={() => {}}
+                onLongPress={
+                  isAdmin &&
+                  (() => {
+                    setShowNext(true);
+                  })
+                }
+                iconName="validate"
+                ready={ready}
+                hasValidated={hasValidated}
+              >
+                Valider
+              </NextStep>
+            </Validate>
+          )}
         </>
       </DndProvider>
     </div>
   );
 };
 
-const ResultPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
+const ResultPhase = ({ gameData, roomId, roomToken, isAdmin, setShowNext }) => {
   const { podium } = gameData;
   const { firsts, seconds, thirds } = podium;
 
@@ -1124,39 +1172,10 @@ const ResultPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
   }, []);
 
   return (
-    <div className="h-full w-full flex flex-col justify-center items-center relative">
-      {(() => {
-        if (showFirsts || !isAdmin) return null;
-
-        let place;
-        if (showSeconds) place = "first";
-        else if (showThirds) place = "second";
-        else place = "third";
-        const { lightColor, darkColor } = getPlaceColors({ place });
-
-        return (
-          <div
-            onClick={() => showResults({ gameData, roomId, roomToken })}
-            className="absolute top-20 border p-2 rounded text-xl font-semibold"
-            style={{
-              backgroundColor: lightColor,
-              color: darkColor,
-              borderColor: darkColor,
-            }}
-          >
-            {(() => {
-              if (showSeconds) {
-                return "Or";
-              } else if (showThirds) {
-                return "Argent";
-              } else {
-                return "Bronze";
-              }
-            })()}
-          </div>
-        );
-      })()}
-
+    <div
+      onClick={() => !gameData.ended && setShowNext(false)}
+      className="h-full w-full flex flex-col justify-center items-center relative"
+    >
       <div className="flex justify-center items-end w-full p-4">
         <div className="w-1/3 h-32 flex justify-center items-center bg-gray-600 relative">
           {seconds.map((second, index) => (
@@ -1201,6 +1220,30 @@ const ResultPhase = ({ gameData, roomId, roomToken, isAdmin }) => {
           </div>
         </div>
       </div>
+
+      {isAdmin && !gameData.ended && (
+        <NextStep
+          onClick={() => showResults({ gameData, roomId, roomToken })}
+          onLongPress={() => setShowNext(true)}
+        >
+          <div className="w-12 h-12">
+            <Image
+              alt="place"
+              src={(() => {
+                if (showSeconds) {
+                  return Gold;
+                } else if (showThirds) {
+                  return Silver;
+                } else {
+                  return Bronze;
+                }
+              })()}
+              width={500}
+              height={500}
+            />
+          </div>
+        </NextStep>
+      )}
     </div>
   );
 };
@@ -1215,11 +1258,6 @@ export default function Podium({
   usePreventScroll();
   const isAdmin = gameData.admin === user.name;
   const { phase } = gameData;
-
-  useEffect(() => {
-    if (!phase) return;
-    if (phase !== "preparing") setShowNext(true);
-  }, [phase]);
 
   return (
     <div className="relative h-full w-full animate-[fadeIn_1.5s_ease-in-out]">
@@ -1249,6 +1287,8 @@ export default function Podium({
           roomId={roomId}
           roomToken={roomToken}
           user={user}
+          isAdmin={isAdmin}
+          setShowNext={setShowNext}
         />
       )}
 
@@ -1258,6 +1298,7 @@ export default function Podium({
           roomId={roomId}
           roomToken={roomToken}
           isAdmin={isAdmin}
+          setShowNext={setShowNext}
         />
       )}
     </div>
