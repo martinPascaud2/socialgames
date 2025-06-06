@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 
-export default function BackToLobby({ path }) {
+export default function BackToLobby({ path, user, guestName }) {
   const router = useRouter();
 
   const searchParams = useSearchParams();
@@ -11,7 +11,9 @@ export default function BackToLobby({ path }) {
   const game = searchParams.get("game");
 
   // no path when admin
-  const href = !path ? `/categories/${categorie}/${game}/` : path;
+  const href = !path
+    ? `/categories/${categorie}/${game}/`
+    : `${path}&guestName=${guestName}`;
 
   useEffect(() => {
     setTimeout(() => router.push(href), 0);

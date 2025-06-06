@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect, useCallback } from "react";
+import ReactDOM from "react-dom";
 import { useLongPress, LongPressEventType } from "use-long-press";
 
 import "./ripple.css";
@@ -102,12 +103,7 @@ const DisconnectionRipplingButton = ({
   );
 };
 
-const getDiscoWarningMessage = ({
-  modeName,
-  gameData,
-  onlineGamers,
-  isSeveral,
-}) => {
+const getDiscoWarningMessage = ({ modeName, gameData, onlineGamers }) => {
   if (modesRules[modeName]?.limits.min > onlineGamers.length)
     return <span>Attention, ceci mettra fin à la partie.</span>;
 
@@ -121,19 +117,13 @@ const getDiscoWarningMessage = ({
     case "Undercover":
       return (
         <div className="flex flex-col">
-          <span>
-            {!isSeveral
-              ? "Le joueur sera éliminé."
-              : "Les joueurs seront éliminés."}
-          </span>
+          <span>La partie continuera avec les joueurs restants.</span>
           <span>Attention, ceci pourra mettre fin à la partie.</span>
         </div>
       );
 
     default:
-      return (
-        <span>La partie continuera sans {!isSeveral ? "lui" : "eux"}.</span>
-      );
+      return <span>La partie continuera avec les joueurs restants.</span>;
   }
 };
 
@@ -215,14 +205,6 @@ export default function Disconnected({
       setShowDiscoModal(false);
       setIsValidated(false);
     }
-
-    // no await
-    sendPresenceSign({
-      roomToken,
-      userName: user.name,
-      userId: user.id,
-      multiGuest: !!user.multiGuest,
-    });
   }, [onlineGamers, gamers, roomToken, user]);
 
   useEffect(() => {
@@ -279,9 +261,7 @@ export default function Disconnected({
     const discoList = convertNameListToString(disconnectedList);
     const isSeveral = disconnectedList.length >= 2;
     const statusMessage = (
-      <span>
-        {!isSeveral ? "s'est " : "se sont "}déconnecté{!isSeveral ? "" : "s"}.
-      </span>
+      <span>{!isSeveral ? "est " : "sont "}hors ligne.</span>
     );
     const WaitingMessage = (
       <div className="flex justify-center w-full p-2">
@@ -375,5 +355,16 @@ export default function Disconnected({
   )
     return null;
 
-  return <DiscoModal isOpen={showDiscoModal}>{Message}</DiscoModal>;
+  return ReactDOM.createPortal(
+    <div
+      className="w-[100vw] fixed top-1/2 left-1/2 translate-x-[-50%] translate-y-[-50%] flex items-center justify-center"
+      style={{
+        height: `${window.screen.height}px`,
+        zIndex: 1000,
+      }}
+    >
+      <DiscoModal isOpen={showDiscoModal}>{Message}</DiscoModal>
+    </div>,
+    document.body
+  );
 }

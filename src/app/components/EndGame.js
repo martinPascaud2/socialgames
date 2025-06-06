@@ -1,14 +1,34 @@
+"use client";
+
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 import cancelBack from "@/utils/cancelBack";
+import { useUserContext } from "./Room/Room";
 import {
   removeArrival,
   serverDeleteGamer,
   serverDeleteMultiGuest,
 } from "./Room/actions";
 
-export default function EndGame({ gameData, user, isFirst = false }) {
+export default function EndGame({
+  gameData,
+  user,
+  roomToken,
+  isFirst = false,
+}) {
   const router = useRouter();
+  const [path, setPath] = useState();
+  const contextValue = useUserContext();
+  const pusher = contextValue.pusher;
+  const pusherPresence = contextValue.pusherPresence;
+
+  useEffect(() => {
+    const newPath = `${gameData?.nextGame?.path}${
+      user.multiGuest ? `&guestName=${user.name}` : ""
+    }`;
+    setPath(newPath);
+  }, [gameData, user]);
 
   return (
     <div className={`flex items-center justify-center`}>
@@ -22,9 +42,9 @@ export default function EndGame({ gameData, user, isFirst = false }) {
         <>
           <button
             onClick={() => {
-              const path = `${gameData.nextGame.path}${
-                user.multiGuest ? `&guestName=${user.name}` : ""
-              }`;
+              if (!path) return;
+              pusher.unsubscribe(`room-${roomToken}`);
+              pusherPresence.unsubscribe(`custom-presence-${roomToken}`);
               router.push(`/categories/back/backToLobby/?path=${path}`);
             }}
             className="border border-blue-300 bg-blue-100"
@@ -38,6 +58,8 @@ export default function EndGame({ gameData, user, isFirst = false }) {
         <>
           <button
             onClick={() => {
+              pusher.unsubscribe(`room-${roomToken}`);
+              pusherPresence.unsubscribe(`custom-presence-${roomToken}`);
               router.push(`${gameData.postgameRef}`);
             }}
             className="border border-blue-300 bg-blue-100"
@@ -66,7 +88,8 @@ export default function EndGame({ gameData, user, isFirst = false }) {
                   multiGuestName: user.name,
                 });
             }
-
+            pusher.unsubscribe(`room-${roomToken}`);
+            pusherPresence.unsubscribe(`custom-presence-${roomToken}`);
             window.location.href = "/categories";
           }}
           className="border border-blue-300 bg-blue-100"

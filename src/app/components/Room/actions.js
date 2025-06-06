@@ -4,6 +4,8 @@ import prisma from "@/utils/prisma";
 import pusher from "@/utils/pusher";
 import getDistance from "@/utils/getDistance";
 import { getRoomFriendList } from "@/utils/getFriendList";
+import wait from "@/utils/queue/wait";
+import free from "@/utils/queue/free";
 import { gamesRefs } from "@/assets/globals";
 
 const putLastPlayed = async ({ userId, game }) => {
@@ -162,13 +164,14 @@ export async function changeOptions({ roomId, roomToken, options }) {
       ).options;
 
       if (JSON.stringify(roomOptions) !== JSON.stringify(options)) {
+        const newOptions = { ...roomOptions, ...options };
         await prisma.room.update({
           where: { id: roomId },
-          data: { options: options },
+          data: { options: newOptions },
         });
 
         await pusher.trigger(`room-${roomToken}`, "room-event", {
-          options,
+          options: newOptions,
         });
       }
     });
@@ -352,6 +355,8 @@ export async function serverJoin({ token, user }) {
         room.haveLeft && Object.keys(room.haveLeft).includes(user.name);
       if (hasLeft) return { error: "La partie n'est plus accessible" };
 
+      await wait({ roomId: room.id });
+
       if (!room.viceAdmin && user.name !== room.admin) {
         await prisma.room.update({
           where: { id: room.id },
@@ -376,6 +381,8 @@ export async function serverJoin({ token, user }) {
 
       // if (room.started) return { error: "La partie a déjà été lancée" };
       if (Object.values(room.gamers).includes(user.id)) {
+        await free({ roomId: room.id });
+
         return {
           joinData: {
             isJoinAgain: true,
@@ -419,6 +426,7 @@ export async function serverJoin({ token, user }) {
       const guests = Object.keys(room.guests);
       const multiGuests = Object.keys(room.multiGuests);
 
+      await free({ roomId: room.id });
       return {
         joinData: {
           admin: room.admin,
@@ -449,6 +457,8 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
 
   if (!room) return { error: "Token incorrect" };
 
+  await wait({ roomId: room.id });
+
   if (!room.viceAdmin) {
     await prisma.room.update({
       where: { id: room.id },
@@ -473,6 +483,7 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
 
   // if (room.started) return { error: "La partie a déjà été lancée" };
   if (room.started) {
+    await free({ roomId: room.id });
     return {
       data: {
         isJoinAgain: true,
@@ -510,6 +521,7 @@ export async function serverAddMultiGuest(token, multiGuestName, geoLocation) {
     ).multiGuests
   );
 
+  await free({ roomId: room.id });
   return {
     data: {
       admin: room.admin,
@@ -538,6 +550,8 @@ export async function retryGamerConnection({
   roomToken,
   userId,
 }) {
+  await wait({ roomId });
+
   const room = await prisma.room.findFirst({ where: { id: roomId } });
 
   const newGamerList = Object.keys(
@@ -557,6 +571,8 @@ export async function retryGamerConnection({
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     clientGamerList: newGamerList,
   });
+
+  await free({ roomId });
 }
 
 export async function retryMultiGuestConnection({
@@ -564,6 +580,8 @@ export async function retryMultiGuestConnection({
   uniqueName,
   roomToken,
 }) {
+  await wait({ roomId });
+
   const room = await prisma.room.findFirst({ where: { id: roomId } });
 
   const newMultiGuests = Object.keys(
@@ -583,6 +601,8 @@ export async function retryMultiGuestConnection({
   await pusher.trigger(`room-${roomToken}`, "room-event", {
     multiGuestList: newMultiGuests,
   });
+
+  await free({ roomId });
 }
 
 export async function triggerGamers({ roomToken, gamers }) {
@@ -721,11 +741,17 @@ export async function sendPresenceSign({
   userId,
   multiGuest,
 }) {
-  await pusher.trigger(`presence-${roomToken}`, "check-presence", {
+  await pusher.trigger(`custom-presence-${roomToken}`, "check-presence", {
     userName,
     time: Date.now(),
     userId,
     multiGuest,
+  });
+}
+
+export async function sendOnlineGamers({ roomToken, onlineGamers }) {
+  await pusher.trigger(`custom-presence-${roomToken}`, "send-onlineGamers", {
+    onlineGamers,
   });
 }
 

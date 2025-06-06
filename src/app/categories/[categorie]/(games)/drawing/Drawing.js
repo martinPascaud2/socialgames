@@ -91,13 +91,14 @@ export default function Drawing({
         onlineGamers={onlineGamers}
         gamers={gameData.gamers}
         isAdmin={isAdmin}
-        onGameBye={async ({ admins }) => {
+        onGameBye={async ({ admins, arrivalsOrder }) => {
           await removeGamers({
             roomId,
             roomToken,
             gameData,
             onlineGamers,
             admins,
+            arrivalsOrder,
           });
         }}
         modeName={mode}

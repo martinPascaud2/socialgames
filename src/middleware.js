@@ -47,8 +47,10 @@ export async function middleware(request) {
     request.nextUrl.pathname !== "/" &&
     !checkGuestAllowed(request.nextUrl.href) &&
     request.nextUrl.pathname !== "/invitation/" &&
+    request.nextUrl.pathname !== "/categories/back/backToLobby/" &&
     request.nextUrl.pathname !== "/api/pusherAuth/" &&
-    !request.nextUrl.pathname.startsWith("/categoriesIcons/")
+    !request.nextUrl.pathname.startsWith("/categoriesIcons/") &&
+    !request.nextUrl.pathname.startsWith("/smoke")
   ) {
     return NextResponse.redirect(new URL("/", request.url));
   }

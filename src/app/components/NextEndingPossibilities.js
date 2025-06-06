@@ -38,6 +38,7 @@ export default function NextEndingPossibilities({
             isAdmin={isAdmin}
             roomId={roomId}
             user={user}
+            roomToken={roomToken}
           />
         </div>
       </div>
@@ -92,7 +93,7 @@ export default function NextEndingPossibilities({
               pointerEvents: "auto",
             }}
           >
-            <EndGame gameData={gameData} user={user} />
+            <EndGame gameData={gameData} user={user} roomToken={roomToken} />
           </div>
         ) : null}
       </div>

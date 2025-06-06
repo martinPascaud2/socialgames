@@ -4,6 +4,7 @@ import {
   useMemo,
   useState,
   useEffect,
+  useRef,
   useCallback,
   createContext,
   useContext,
@@ -22,6 +23,8 @@ import getLocation from "@/utils/getLocation";
 import getErrorInformations from "@/utils/getErrorInformations";
 import { getRoomFriendList } from "@/utils/getFriendList";
 import { saveLastParams } from "@/utils/getLastParams";
+import free from "@/utils/queue/free";
+import wait from "@/utils/queue/wait";
 import cancelBack from "@/utils/cancelBack";
 import { gamesRefs, categoriesIcons, categoriesLabels } from "@/assets/globals";
 
@@ -61,6 +64,7 @@ var pusher = new Pusher("61853af9f30abf9d5b3d", {
   useTLS: true,
 });
 var pusherPresence;
+var presenceChannel;
 
 const UserContext = createContext();
 
@@ -88,17 +92,12 @@ import {
   retryGamerConnection,
   retryMultiGuestConnection,
   sendPresenceSign,
+  sendOnlineGamers,
   getGroup,
   cancelSearchGame,
 } from "./actions";
 
-const subscribePresenceChannel = ({
-  userId,
-  userName,
-  status,
-  setOnlineGamers,
-  roomToken,
-}) => {
+const subscribePresenceChannel = ({ userId, userName, status, roomToken }) => {
   pusherPresence = new Pusher("61853af9f30abf9d5b3d", {
     cluster: "eu",
     useTLS: true,
@@ -114,30 +113,18 @@ const subscribePresenceChannel = ({
       },
     },
   });
-  const presenceChannel = pusherPresence.subscribe(`presence-${roomToken}`);
+
+  presenceChannel = pusherPresence.subscribe(`custom-presence-${roomToken}`);
+};
+
+const bindCheckPresence = ({ setOnlineGamers }) => {
   let pingTimeStamps = {};
-
-  // presenceChannel.bind("pusher:subscription_succeeded", ({ members }) => {
-  //   setOnlineGamers(Object.values(members));
-  // });
-
-  // presenceChannel.bind("pusher:subscription_error", (status) => {
-  //   console.error("Subscription failed:", status);
-  // });
-
-  // presenceChannel.bind("pusher:member_added", (member) => {
-  //   setOnlineGamers(Object.values(presenceChannel.members.members));
-  // });
-
-  // presenceChannel.bind("pusher:member_removed", (member) => {
-  //   setOnlineGamers(Object.values(presenceChannel.members.members));
-  // });
 
   presenceChannel.bind("check-presence", (presence) => {
     pingTimeStamps[presence.userName] = presence.time;
 
     Object.entries(pingTimeStamps).forEach((stamp) => {
-      if (Date.now() - stamp[1] > 15000) {
+      if (Date.now() - stamp[1] > 40000) {
         delete pingTimeStamps[stamp[0]];
         setOnlineGamers((prevOnlines) => {
           const newOnlines = prevOnlines.filter(
@@ -154,6 +141,13 @@ const subscribePresenceChannel = ({
         });
       }
     });
+  });
+};
+
+const bindAdminOnlines = ({ setOnlineGamers, lastAdminPingRef }) => {
+  presenceChannel.bind("send-onlineGamers", (onlines) => {
+    lastAdminPingRef.current = Date.now();
+    setOnlineGamers(onlines.onlineGamers);
   });
 };
 
@@ -183,6 +177,12 @@ export default function Room({
   const [isChosen, setIsChosen] = useState(false); // gamer has joined
   const [uniqueName, setUniqueName] = useState();
   const [isHere, setIsHere] = useState(false); // connection
+  const isPresenceIntervalStartedRef = useRef(false);
+  const isBoundCheckPresenceRef = useRef(false);
+  const onlineGamersRef = useRef([]);
+  const lastSentOnlinesRef = useRef([]);
+  const adminNameRef = useRef();
+  const lastAdminPingRef = useRef();
   const [multiGuestId, setMultiGuestId] = useState();
   const [multiGuestDataId, setMultiGuestDataId] = useState();
   const [joinError, setJoinError] = useState();
@@ -281,11 +281,13 @@ export default function Room({
 
         channel.bind("room-event", async function (data) {
           data.clientGamerList &&
-            setGamerList([...new Set([...data.clientGamerList, ...gamerList])]);
+            setGamerList((prevGamerList) => [
+              ...new Set([...data.clientGamerList, ...prevGamerList]),
+            ]);
           data.multiGuestList &&
             data.multiGuestList.length &&
-            setMultiGuestList([
-              ...new Set([...data.multiGuestList, ...multiGuestList]),
+            setMultiGuestList((prevMultiGuestList) => [
+              ...new Set([...data.multiGuestList, ...prevMultiGuestList]),
             ]);
           data.gameData && setGameData(data.gameData);
           if (data.deleted) {
@@ -471,208 +473,216 @@ export default function Room({
   // ------------------------------
 
   // join Room
-  const joinRoom = useCallback(async () => {
-    if (!isChosen || !inputToken) {
-      setIsChosen(true);
-      return;
-    }
+  const joinRoom = useCallback(
+    async ({ inputToken }) => {
+      const token = inputToken.toUpperCase();
+      const room_id = await getRoomId(token);
 
-    const token = inputToken.toUpperCase();
-    const room_id = await getRoomId(token);
+      const reserved = JSON.parse(localStorage.getItem("reservedName"));
+      const reservedToken = reserved?.roomToken;
+      const reservedName = reserved?.name;
+      const isReserved =
+        reservedToken === token ||
+        (reservedToken === group?.roomToken && reservedToken && group);
+      const wantedName = isReserved ? reservedName : user.name;
+      const uniqueUserName = await getUniqueName(
+        room_id,
+        wantedName,
+        isReserved
+      );
+      localStorage.setItem(
+        "reservedName",
+        JSON.stringify({ roomToken: token, name: uniqueUserName })
+      );
 
-    const reserved = JSON.parse(localStorage.getItem("reservedName"));
-    const reservedToken = reserved?.roomToken;
-    const reservedName = reserved?.name;
-    const isReserved =
-      reservedToken === token ||
-      (reservedToken === group?.roomToken && reservedToken && group);
-    const wantedName = isReserved ? reservedName : user.name;
-    const uniqueUserName = await getUniqueName(room_id, wantedName, isReserved);
-    localStorage.setItem(
-      "reservedName",
-      JSON.stringify({ roomToken: token, name: uniqueUserName })
-    );
+      const { error, joinData } = await serverJoin({
+        token,
+        user: { ...user, name: uniqueUserName },
+      });
 
-    const { error, joinData } = await serverJoin({
-      token,
-      user: { ...user, name: uniqueUserName },
-    });
-
-    if (error) {
-      setJoinError(error);
-    } else {
-      if (joinData === undefined) return;
-      if (joinData.isJoinAgain) {
-        setIsStarted(joinData.isStarted);
-        setIsJoinStarted(joinData.isStarted);
-        setGameData(joinData.gameData);
-        setIsAdmin(joinData.admin === uniqueUserName);
-        joinData.admin === uniqueUserName &&
-          joinData.adminLocation &&
-          setGeoLocation(joinData.adminLocation);
-        setOptions(joinData.options);
-      }
-      const { gamers, guests, multiGuests, options } = joinData;
-      const isBackedAdmin = joinData.admin === uniqueUserName;
-
-      const channel = pusher.subscribe(`room-${token}`);
-      channel.bind("room-event", async function (data) {
-        data.clientGamerList &&
-          data.clientGamerList.length &&
-          setGamerList([...new Set([...data.clientGamerList, ...gamerList])]);
-        data.multiGuestList &&
-          data.multiGuestList.length &&
-          setMultiGuestList([
-            ...new Set([...data.multiGuestList, ...multiGuestList]),
-          ]);
-        data.started && setIsStarted(true);
-        data.gameData && setGameData(data.gameData);
-        if (data.deleted) {
-          isBackedAdmin &&
-            (await removeArrival({
-              roomId: room_id,
-              deletedGamer: data.deleted,
-            }));
-
-          setDeletedGamer(data.deleted);
-          setInvitedList((prevInv) =>
-            prevInv.filter((inv) => inv !== data.deleted)
-          );
-          if (isBackedAdmin) {
-            setGroup((prevGroup) => ({
-              ...prevGroup,
-              gamers: gamerList.filter((gamer) => gamer !== data.deleted),
-              multiGuests: multiGuestList.filter(
-                (multiGuest) => multiGuest !== data.deleted
-              ),
-              arrivalsOrder: prevGroup?.arrivalsOrder?.filter(
-                (arrival) => arrival.userName !== data.deleted
-              ),
-            }));
-          }
+      if (error) {
+        setJoinError(error);
+      } else {
+        if (joinData === undefined) return;
+        if (joinData.isJoinAgain) {
+          setIsStarted(joinData.isStarted);
+          setIsJoinStarted(joinData.isStarted);
+          setGameData(joinData.gameData);
+          setIsAdmin(joinData.admin === uniqueUserName);
+          joinData.admin === uniqueUserName &&
+            joinData.adminLocation &&
+            setGeoLocation(joinData.adminLocation);
+          setOptions(joinData.options);
         }
-        !isBackedAdmin && data.options && setOptions(data.options);
-        data.privacy !== undefined && setIsPrivate(data.privacy);
-      });
+        const { gamers, guests, multiGuests, options } = joinData;
+        const isBackedAdmin = joinData.admin === uniqueUserName;
 
-      !isBackedAdmin && (await triggerGamers({ roomToken: token, gamers }));
+        const channel = pusher.subscribe(`room-${token}`);
+        channel.bind("room-event", async function (data) {
+          data.clientGamerList &&
+            data.clientGamerList.length &&
+            gamerList &&
+            setGamerList((prevGamerList) => [
+              ...new Set([...data.clientGamerList, ...prevGamerList]),
+            ]);
+          data.multiGuestList &&
+            data.multiGuestList.length &&
+            multiGuestList &&
+            setMultiGuestList((prevMultiGuestList) => [
+              ...new Set([...data.multiGuestList, ...prevMultiGuestList]),
+            ]);
+          data.started && setIsStarted(true);
+          data.gameData && setGameData(data.gameData);
+          if (data.deleted) {
+            isBackedAdmin &&
+              (await removeArrival({
+                roomId: room_id,
+                deletedGamer: data.deleted,
+              }));
 
-      subscribePresenceChannel({
-        userId: user.id,
-        userName: uniqueUserName,
-        status: "standard",
-        setOnlineGamers,
-        roomToken: token,
-      });
+            setDeletedGamer(data.deleted);
+            setInvitedList((prevInv) =>
+              prevInv.filter((inv) => inv !== data.deleted)
+            );
+            if (isBackedAdmin) {
+              setGroup((prevGroup) => ({
+                ...prevGroup,
+                gamers: gamerList.filter((gamer) => gamer !== data.deleted),
+                multiGuests: multiGuestList.filter(
+                  (multiGuest) => multiGuest !== data.deleted
+                ),
+                arrivalsOrder: prevGroup?.arrivalsOrder?.filter(
+                  (arrival) => arrival.userName !== data.deleted
+                ),
+              }));
+            }
+          }
+          !isBackedAdmin && data.options && setOptions(data.options);
+          data.privacy !== undefined && setIsPrivate(data.privacy);
+        });
 
-      setRoomToken(token);
-      setUniqueName(uniqueUserName);
-      setGamerList(gamers);
-      setGuestList(guests);
-      setMultiGuestList(multiGuests);
-      setOptions(options);
-      setServerMessage("");
-    }
-  }, [inputToken, user, gamerList, isChosen]);
+        !isBackedAdmin &&
+          (await triggerGamers({ roomToken: token, gamers }),
+          await triggerMultiguests({ roomToken: token, multiGuests }));
 
-  const addMultiGuest = useCallback(async () => {
-    // if (!isChosen || !inputToken || !geoLocation) {
-    if (!isChosen || !inputToken) {
-      setIsChosen(true);
-      return;
-    }
+        subscribePresenceChannel({
+          userId: user.id,
+          userName: uniqueUserName,
+          status: "standard",
+          setOnlineGamers,
+          roomToken: token,
+        });
 
-    const token = inputToken.toUpperCase();
-    const id = await getRoomId(token);
-
-    const paramsName = searchParams.get("guestName");
-    const reserved = JSON.parse(localStorage.getItem("reservedName"));
-    const reservedToken = reserved?.roomToken;
-    const reservedName = reserved?.name;
-
-    const isReserved =
-      reservedToken === token ||
-      (reservedToken === group?.roomToken && reservedToken && group);
-
-    const wantedName = isReserved ? reservedName : paramsName;
-    const multiGuestName = await getUniqueName(id, wantedName, isReserved);
-    localStorage.setItem(
-      "reservedName",
-      JSON.stringify({ roomToken: token, name: multiGuestName })
-    );
-
-    const { error, data } = await serverAddMultiGuest(
-      token,
-      multiGuestName,
-      geoLocation
-    );
-
-    if (error) {
-      setJoinError(error);
-    } else {
-      if (data === undefined) return;
-      if (data.isJoinAgain) {
-        setIsStarted(data.isStarted);
-        setIsJoinStarted(joinData.isStarted);
-        setGameData(data.gameData);
-        setOptions(data.options);
+        setRoomToken(token);
+        setUniqueName(uniqueUserName);
+        setGamerList(gamers);
+        setGuestList(guests);
+        setMultiGuestList(multiGuests);
+        setOptions(options);
+        setServerMessage("");
       }
-      const { gamers, guests, multiGuests, options } = data;
-      const channel = pusher.subscribe(`room-${token}`);
-      channel.bind("room-event", function (data) {
-        data.clientGamerList &&
-          data.clientGamerList.length &&
-          setGamerList([...new Set([...data.clientGamerList, ...gamers])]);
-        data.multiGuestList &&
-          data.multiGuestList.length &&
-          setMultiGuestList([
-            ...new Set([...data.multiGuestList, ...multiGuestList]),
-          ]);
-        data.started && setIsStarted(true);
-        data.gameData && setGameData(data.gameData);
-        data.deleted && setDeletedGamer(data.deleted);
-        data.options && setOptions(data.options);
-      });
+    },
+    [user]
+  );
 
-      await triggerMultiguests({ roomToken: token, multiGuests });
+  const addMultiGuest = useCallback(
+    async ({ inputToken }) => {
+      if (isChosen) return;
 
-      setRoomToken(token);
-      setUniqueName(multiGuestName);
-      setGamerList(gamers);
-      setGuestList(guests);
-      setMultiGuestList(multiGuests);
-      setOptions(options);
-      setServerMessage("");
-    }
-  }, [geoLocation, searchParams, inputToken, isChosen]);
+      const token = inputToken.toUpperCase();
+      const id = await getRoomId(token);
+
+      const paramsName = searchParams.get("guestName");
+      const reserved = JSON.parse(localStorage.getItem("reservedName"));
+      const reservedToken = reserved?.roomToken;
+      const reservedName = reserved?.name;
+
+      const isReserved =
+        reservedToken === token ||
+        (reservedToken === group?.roomToken && reservedToken && group);
+
+      const wantedName = isReserved ? reservedName : paramsName;
+      const multiGuestName = await getUniqueName(id, wantedName, isReserved);
+      localStorage.setItem(
+        "reservedName",
+        JSON.stringify({ roomToken: token, name: multiGuestName })
+      );
+
+      const { error, data } = await serverAddMultiGuest(
+        token,
+        multiGuestName,
+        geoLocation
+      );
+
+      if (error) {
+        setJoinError(error);
+      } else {
+        if (data === undefined) return;
+        if (data.isJoinAgain) {
+          setIsStarted(data.isStarted);
+          setIsJoinStarted(data.isStarted);
+          setGameData(data.gameData);
+          setOptions(data.options);
+        }
+        const { gamers, guests, multiGuests, options } = data;
+        const channel = pusher.subscribe(`room-${token}`);
+        channel.bind("room-event", function (data) {
+          data.clientGamerList &&
+            data.clientGamerList.length &&
+            setGamerList((prevGamerList) => [
+              ...new Set([...data.clientGamerList, ...prevGamerList]),
+            ]);
+          data.multiGuestList &&
+            data.multiGuestList.length &&
+            setMultiGuestList((prevMultiGuestList) => [
+              ...new Set([...data.multiGuestList, ...prevMultiGuestList]),
+            ]);
+          data.started && setIsStarted(true);
+          data.gameData && setGameData(data.gameData);
+          data.deleted && setDeletedGamer(data.deleted);
+          data.options && setOptions(data.options);
+        });
+
+        await triggerGamers({ roomToken: token, gamers });
+        await triggerMultiguests({ roomToken: token, multiGuests });
+
+        setRoomToken(token);
+        setUniqueName(multiGuestName);
+        setGamerList(gamers);
+        setGuestList(guests);
+        setMultiGuestList(multiGuests);
+        setOptions(options);
+        setServerMessage("");
+      }
+    },
+    [geoLocation, searchParams, inputToken, isChosen]
+  );
 
   useEffect(() => {
-    if (searchToken) {
+    if (searchToken && !isChosen && user && !uniqueName) {
+      setIsChosen(true);
       setInputToken(searchToken);
-
       const join = async () => {
         if (
           !user.multiGuest &&
-          !uniqueName &&
-          !gamerList?.some((gamerName) => gamerName === uniqueName) &&
-          deletedGamer !== uniqueName
-        )
-          await joinRoom();
-        else if (
+          !gamerList?.some((gamerName) => gamerName === uniqueName)
+        ) {
+          await joinRoom({ inputToken: searchToken });
+        } else if (
           user.multiGuest &&
-          !uniqueName &&
-          !multiGuestList?.some((multiName) => multiName === uniqueName) &&
-          deletedGamer !== uniqueName
-        )
-          await addMultiGuest();
+          !multiGuestList?.some((multiName) => multiName === uniqueName)
+        ) {
+          await addMultiGuest({ inputToken: searchToken });
+        }
       };
       join();
     }
   }, [
     searchToken,
+    isChosen,
     joinRoom,
     addMultiGuest,
-    user.multiGuest,
+    user,
     gamerList,
     multiGuestList,
     uniqueName,
@@ -729,6 +739,7 @@ export default function Room({
   useEffect(() => {
     const friendsListInterval = setInterval(async () => {
       await getFriends();
+      if (adminNameRef.current) clearInterval(friendsListInterval); // tricky: to show if started
     }, 5000);
     return () => clearInterval(friendsListInterval);
   }, [getFriends]);
@@ -750,13 +761,14 @@ export default function Room({
 
   // delete CP_invitations
   const deleteInvs = useCallback(async () => {
+    if (user.multiGuest) return;
     await deleteInvitations({
       userId: user.id,
       categorie,
       gameName,
       roomToken,
     });
-  }, [user.id, categorie, gameName, roomToken]);
+  }, [user, categorie, gameName, roomToken]);
 
   const deletePublicInvs = useCallback(async () => {
     await deletePublicInvitations({
@@ -856,8 +868,10 @@ export default function Room({
       token: roomToken,
       gamerName: gamer,
     });
-    if (gamer === uniqueName)
-      pusherPresence.unsubscribe(`presence-${roomToken}`);
+    if (gamer === uniqueName) {
+      pusher.unsubscribe(`room-${roomToken}`);
+      pusherPresence.unsubscribe(`custom-presence-${roomToken}`);
+    }
     if (!gamers) router.push("/");
 
     setServerMessage(`Joueur ${gamer} retiré`);
@@ -870,7 +884,11 @@ export default function Room({
       token: roomToken,
       multiGuestName: multiGuest,
     });
-    if (!multiGuests) router.push("/");
+    if (!multiGuests) {
+      pusher.unsubscribe(`room-${roomToken}`);
+      pusherPresence.unsubscribe(`custom-presence-${roomToken}`);
+      router.push("/");
+    }
 
     setServerMessage(`Guest ${multiGuest} retiré`);
     setMultiGuestList(multiGuests);
@@ -882,6 +900,8 @@ export default function Room({
       try {
         //tricky: router before
         localStorage.removeItem("reservedName");
+        pusher.unsubscribe(`room-${roomToken}`);
+        pusherPresence.unsubscribe(`custom-presence-${roomToken}`);
         router.push("/categories");
         !user.multiGuest && (await cancelBack({ userId: user.id }));
       } catch (error) {
@@ -976,6 +996,8 @@ export default function Room({
       localStorage.setItem("group", JSON.stringify(stored));
     }
 
+    pusher.unsubscribe(`room-${roomToken}`);
+    pusherPresence.unsubscribe(`custom-presence-${roomToken}`);
     router.push(
       `/categories/${adminSearchtCategorie}/${adminSearchtGame.path}/?mode=${adminSelectedMode.path}&changeGame=true&isAdmin=true`
     );
@@ -1043,6 +1065,9 @@ export default function Room({
         localStorage.setItem("group", JSON.stringify(group));
         localStorage.setItem("localWidth", window.innerWidth);
 
+        pusher.unsubscribe(`room-${roomToken}`);
+        pusherPresence.unsubscribe(`custom-presence-${roomToken}`);
+
         const href = `${gameData.nextGame.path}${
           user.multiGuest ? `&guestName=${user.name}` : ""
         }`;
@@ -1053,30 +1078,112 @@ export default function Room({
   }, [gameData, gameName, isStarted, user]);
   // ------------------------------
 
-  // send presence_sign
+  // [admin + gamers] presence
   useEffect(() => {
-    if (!roomToken || !user) return;
-    const sendFirstPresenceSign = async () => {
-      await sendPresenceSign({
-        roomToken,
-        userName: user.name,
-        userId: user.id,
-        multiGuest: !!user.multiGuest,
-      });
+    if (
+      !roomToken ||
+      (!user?.id && !user?.multiGuest) ||
+      !user?.name ||
+      isPresenceIntervalStartedRef.current ||
+      !presenceChannel
+    )
+      return;
+
+    isPresenceIntervalStartedRef.current = true;
+
+    lastAdminPingRef.current = Date.now();
+    bindAdminOnlines({ setOnlineGamers, lastAdminPingRef });
+
+    const { id, name, multiGuest } = user;
+
+    const send = async () => {
+      try {
+        await sendPresenceSign({
+          roomToken,
+          userName: name,
+          userId: id,
+          multiGuest: !!multiGuest,
+        });
+
+        if (
+          lastAdminPingRef.current &&
+          adminNameRef.current &&
+          Date.now() - lastAdminPingRef.current > 40000
+        ) {
+          setOnlineGamers((prevOnlines) => {
+            const newOnlines = prevOnlines.filter(
+              (online) => online.userName !== adminNameRef.current
+            );
+            return newOnlines;
+          });
+        }
+      } catch (e) {
+        console.error("sendPresenceSign error:", e);
+      }
     };
-    sendFirstPresenceSign();
 
-    const interval = setInterval(async () => {
-      await sendPresenceSign({
-        roomToken,
-        userName: user.name,
-        userId: user.id,
-        multiGuest: !!user.multiGuest,
-      });
-    }, 5000);
+    send(); // First sign
+    const interval = setInterval(send, 30000);
 
-    return () => clearInterval(interval);
-  }, [roomToken, user]);
+    return () => {
+      clearInterval(interval);
+      isPresenceIntervalStartedRef.current = false;
+    };
+  }, [roomToken, user?.id, user?.name, user?.multiGuest, presenceChannel]);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    onlineGamersRef.current = onlineGamers;
+  }, [onlineGamers, isAdmin]);
+  useEffect(() => {
+    if (!isAdmin || !roomToken || isBoundCheckPresenceRef.current) return;
+
+    isBoundCheckPresenceRef.current = true;
+    bindCheckPresence({ setOnlineGamers });
+    presenceChannel.unbind("send-onlineGamers");
+
+    sendOnlineGamers({ roomToken, onlineGamers: [] });
+
+    const sendOnlinesInterval = setInterval(async () => {
+      try {
+        const currentOnlines = onlineGamersRef.current;
+        await sendOnlineGamers({ roomToken, onlineGamers: currentOnlines });
+      } catch (e) {
+        console.error("sendOnlines error:", e);
+      }
+    }, 30000);
+
+    const checkChangeInterval = setInterval(async () => {
+      try {
+        const currentOnlines = onlineGamersRef.current;
+        const lastSent = lastSentOnlinesRef.current;
+
+        const changed =
+          JSON.stringify(currentOnlines) !== JSON.stringify(lastSent);
+
+        if (changed) {
+          lastSentOnlinesRef.current = currentOnlines;
+          await sendOnlineGamers({ roomToken, onlineGamers: currentOnlines });
+        }
+      } catch (e) {
+        console.error("checkChangeInterval error:", e);
+      }
+    }, 3000);
+
+    return () => {
+      clearInterval(sendOnlinesInterval);
+      clearInterval(checkChangeInterval);
+    };
+  }, [isAdmin, roomToken]);
+
+  useEffect(() => {
+    if (!gameData?.admin || !user?.name) return;
+    if (gameData.admin === user.name) {
+      setIsAdmin(true);
+    } else {
+      adminNameRef.current = gameData.admin;
+    }
+  }, [gameData.admin, user]);
   // ------------------------------
 
   // deleted_group: return home
@@ -1084,6 +1191,8 @@ export default function Room({
     const leaveLobby = async () => {
       if (gameData && gameData?.nextGame === "deleted group" && user) {
         !user.multiGuest && (await deleteInvs());
+        pusher.unsubscribe(`room-${roomToken}`);
+        pusherPresence.unsubscribe(`custom-presence-${roomToken}`);
         router.push("/categories");
       }
     };
@@ -2084,7 +2193,7 @@ export default function Room({
       // <div className="absolute h-screen w-full z-50 bg-black">
       <div className="relative h-screen w-full z-50 bg-black">
         <ThreeSmoke />
-        <UserContext.Provider value={{ userParams }}>
+        <UserContext.Provider value={{ userParams, pusher, pusherPresence }}>
           <div
             className={`z-[60] w-full h-full relative`}
             style={{

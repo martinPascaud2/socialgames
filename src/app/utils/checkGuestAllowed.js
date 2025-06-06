@@ -8,13 +8,23 @@ export const checkGuestAllowed = (href) => {
     });
   }
 
-  const pattern = new RegExp(
-    `^${process.env.NEXT_PUBLIC_APP_URL}\\/(${allowedPaths.join(
-      "|"
-    )})\\?token=[A-Za-z0-9]+&guestName=[A-Za-z0-9%+]+$`
-  );
+  let isGuestAllowed;
 
-  const isGuestAllowed = pattern.test(href);
+  try {
+    const url = new URL(href);
+    const path = url.pathname.replace(/^\//, ""); // remove leading slash
+    const searchParams = url.searchParams;
+
+    const hasToken = searchParams.has("token");
+    const hasGuestName = searchParams.has("guestName");
+
+    const isPathAllowed = allowedPaths.includes(path);
+
+    isGuestAllowed = isPathAllowed && hasToken && hasGuestName;
+  } catch (err) {
+    console.error("Invalid URL in checkGuestAllowed:", href);
+    isGuestAllowed = false;
+  }
 
   return isGuestAllowed;
 };

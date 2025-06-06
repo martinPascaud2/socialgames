@@ -19,6 +19,8 @@ export default function ChooseOneMoreGame({
 }) {
   const contextValue = useUserContext();
   const userParams = contextValue.userParams;
+  const pusher = contextValue.pusher;
+  const pusherPresence = contextValue.pusherPresence;
   const router = useRouter();
   const [privacy, setPrivacy] = useState(null);
   const path = usePathname();
@@ -51,6 +53,9 @@ export default function ChooseOneMoreGame({
         roomToken,
         roomId,
       });
+
+      pusher.unsubscribe(`room-${roomToken}`);
+      pusherPresence.unsubscribe(`custom-presence-${roomToken}`);
 
       router.push(
         isFirst

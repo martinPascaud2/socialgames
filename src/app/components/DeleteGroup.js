@@ -12,12 +12,16 @@ export default function DeleteGroup({ roomToken, roomId }) {
   const router = useRouter();
   const contextValue = useUserContext();
   const userParams = contextValue.userParams;
+  const pusher = contextValue.pusher;
+  const pusherPresence = contextValue.pusherPresence;
 
   return (
     <button
       onClick={async () => {
         await deleteGroup({ groupToken: roomToken });
         await deleteRoom({ roomId });
+        pusher.unsubscribe(`room-${roomToken}`);
+        pusherPresence.unsubscribe(`custom-presence-${roomToken}`);
         window.location.href = "/categories";
       }}
       className="border border-blue-300 bg-blue-100"
