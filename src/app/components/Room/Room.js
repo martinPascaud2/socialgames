@@ -717,6 +717,7 @@ export default function Room({
 
     return () => {
       pusher.unsubscribe(`room-${roomToken}`);
+      console.log("coucou 1");
     };
   }, [roomToken, isAdmin]);
   // ------------------------------
