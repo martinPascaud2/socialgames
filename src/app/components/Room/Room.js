@@ -715,10 +715,10 @@ export default function Room({
     }
     get();
 
-    return () => {
-      pusher.unsubscribe(`room-${roomToken}`);
-      console.log("coucou 1");
-    };
+    // return () => {
+    //   pusher.unsubscribe(`room-${roomToken}`);
+    //   console.log("coucou 1");
+    // };
   }, [roomToken, isAdmin]);
   // ------------------------------
 
