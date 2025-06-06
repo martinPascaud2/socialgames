@@ -18,10 +18,10 @@ export default function DeleteGroup({ roomToken, roomId }) {
   return (
     <button
       onClick={async () => {
-        await deleteGroup({ groupToken: roomToken });
-        await deleteRoom({ roomId });
         pusher.unsubscribe(`room-${roomToken}`);
         pusherPresence.unsubscribe(`custom-presence-${roomToken}`);
+        await deleteGroup({ groupToken: roomToken });
+        await deleteRoom({ roomId });
         window.location.href = "/categories";
       }}
       className="border border-blue-300 bg-blue-100"

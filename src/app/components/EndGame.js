@@ -72,6 +72,9 @@ export default function EndGame({
       {gameData.admin !== user.name && (
         <button
           onClick={async () => {
+            pusher.unsubscribe(`room-${roomToken}`);
+            pusherPresence.unsubscribe(`custom-presence-${roomToken}`);
+
             await cancelBack({ userId: user.id });
 
             if (gameData?.nextGame) {
@@ -88,8 +91,6 @@ export default function EndGame({
                   multiGuestName: user.name,
                 });
             }
-            pusher.unsubscribe(`room-${roomToken}`);
-            pusherPresence.unsubscribe(`custom-presence-${roomToken}`);
             window.location.href = "/categories";
           }}
           className="border border-blue-300 bg-blue-100"
