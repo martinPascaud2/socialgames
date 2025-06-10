@@ -135,12 +135,6 @@ export const subCategories = {
       img: "/undercover.png",
       description: "Description de secret",
     },
-    {
-      name: "Recherche",
-      path: "research",
-      // img: "/undercover.png",
-      description: "Description de la recherche",
-    },
   ],
   categorie6: [
     {
@@ -235,12 +229,6 @@ export const gamesRefs = {
     modes: [{ label: "Tableau", path: "Tableau" }],
     limits: { min: 2, max: 10, opti: 6 },
   },
-  research: {
-    name: "Recherche",
-    categorie: "categorie5",
-    modes: [{ label: "Chasse", path: "Chasse" }],
-    limits: { min: 1, max: 10, opti: 6 },
-  },
 };
 
 export const modesRules = {
@@ -325,11 +313,6 @@ export const modesRules = {
   Tableau: {
     name: "Tableau",
     limits: { min: 2, max: 10, opti: 6 },
-  },
-
-  Chasse: {
-    name: "Chasse",
-    limits: { min: 1, max: 10, opti: 6 },
   },
 };
 
